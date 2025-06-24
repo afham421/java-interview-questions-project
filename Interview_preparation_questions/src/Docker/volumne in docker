@@ -1,0 +1,57 @@
+📦 What is a Docker Volume?
+A Docker volume is a special storage location managed by Docker. It allows data to persist even after a container is stopped or deleted.
+
+🧠 Think of volumes as external hard drives for your containers.
+
+🛠️ Why Use Docker Volumes?
+Persist data (e.g., database files, logs, uploads)
+
+Share data between containers
+
+Separate application code from data
+
+Easier backups and restores
+
+📌 Types of Storage in Docker
+| Type            | Description                                            |
+| --------------- | ------------------------------------------------------ |
+| **Volumes**     | Managed by Docker, stored in `/var/lib/docker/volumes` |
+| **Bind Mounts** | Use a specific path on the host machine                |
+| **tmpfs**       | Data stored in memory only (non-persistent)            |
+
+
+🧪 Common Volume Commands
+1. Create a volume
+
+docker volume create my-volume
+2. Run a container with a volume
+
+docker run -d --name myapp -v my-volume:/app/data my-image
+3. Inspect a volume
+
+docker volume inspect my-volume
+4. List all volumes
+
+docker volume ls
+5. Remove a volume
+
+docker volume rm my-volume
+📂 Example: Volume in a Spring Boot App with MySQL
+
+docker run -d \
+  --name mysql-db \
+  -e MYSQL_ROOT_PASSWORD=root \
+  -v mysql-data:/var/lib/mysql \
+  mysql:8
+mysql-data is the volume
+
+/var/lib/mysql is where MySQL stores its database files
+
+Data will persist even if the container is removed
+
+✅ Summary
+| Concept   | Description                               |
+| --------- | ----------------------------------------- |
+| Volume    | Persistent data storage managed by Docker |
+| `-v` flag | Mounts volume to a path in the container  |
+| Use Cases | DB files, logs, configs, user uploads     |

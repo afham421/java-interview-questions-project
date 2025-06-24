@@ -1,0 +1,25 @@
+
+In MySQL, a view is a virtual table that is defined by a query. It allows you to encapsulate complex queries, simplify your database interactions,
+and present data in a specific format without altering the actual data in the tables.
+
+Creating a View
+To create a view, you use the CREATE VIEW statement. Here’s the basic syntax:
+
+CREATE VIEW view_name AS
+SELECT column1, column2, ...
+FROM table_name
+WHERE condition;
+
+Example
+Suppose you have a table called employees and you want to create a view that shows only employees from a specific department:
+
+CREATE VIEW department_employees AS
+SELECT employee_id, first_name, last_name, department
+FROM employees
+WHERE department = 'Sales';
+
+
+Querying a View
+You can query a view just like you would a regular table:
+
+SELECT * FROM department_employees;

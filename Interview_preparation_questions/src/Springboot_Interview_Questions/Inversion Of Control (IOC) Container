@@ -1,0 +1,31 @@
+in start we provide object manually but now by dependency injection its the primary way ioc[framework] is implemented now its handled by IOC container
+now we will not manage it manually we inverted the control to IOC
+
+In Spring Boot, Inversion of Control (IoC) is a fundamental concept that underpins the framework's ability to manage dependencies and control the flow of a program.
+IoC is a design principle where the control of creating objects, configuring them, and managing their dependencies is transferred from the developer to the Spring framework.
+for example : in old way we create a new object to get other class data now in springboot we get with Autowire or constructor or setter methods
+
+How IoC Works in Spring Boot
+
+Dependency Injection (DI):
+The primary way IoC is implemented in Spring is through Dependency Injection. Instead of creating objects manually within your classes,
+ you define dependencies in your configuration, and Spring automatically injects the necessary components where needed.
+There are three main types of DI in Spring:
+1.Constructor Injection
+2.Setter Injection
+3.Field Injection (via @Autowired)
+
+Spring Container:
+The Spring IoC container is responsible for instantiating, configuring, and managing the lifecycle of beans (objects) in a Spring application.
+ When you start a Spring Boot application, the container is automatically created, and it starts scanning for components to manage.
+Components that are managed by the Spring container are typically annotated with @Component, @Service, @Repository, or @Controller.
+
+Bean Definitions:
+Beans are the objects that form the backbone of a Spring application and are managed by the Spring IoC container.
+ You define beans either using annotations or XML configuration (though XML is less common in Spring Boot).
+Common annotations for defining beans include @Bean and @Configuration.
+
+Component Scanning:
+Spring Boot uses component scanning to automatically detect and register beans in the application context. By default,
+ it scans the package where the main application class resides and its sub-packages.
+You can customize the scan using @ComponentScan.

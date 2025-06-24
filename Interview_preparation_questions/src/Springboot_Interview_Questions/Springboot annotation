@@ -1,0 +1,83 @@
+//////////////////////////////////////////////////////////////////////////////////////////////
+Top Spring Boot Annotations
+
+@SpringBootApplication:
+Combines @Configuration, @EnableAutoConfiguration, and @ComponentScan. It marks the main class of a Spring Boot application and triggers auto-configuration and component scanning.
+
+@RestController:
+Combines @Controller and @ResponseBody. It is used to create RESTful web services by automatically converting return values into JSON or XML responses.
+
+@RequestMapping:
+Used to map web requests to specific handler methods in controllers. It can be applied at both the class and method levels to define request URLs.
+
+@GetMapping, @PostMapping, @PutMapping, @DeleteMapping, @PatchMapping:
+Specialized versions of @RequestMapping for handling specific HTTP methods (GET, POST, PUT, DELETE, PATCH).
+
+@Autowired:
+Used for automatic dependency injection. It allows Spring to resolve and inject beans into your classes.
+
+@Component, @Service, @Repository, @Controller:
+Stereotype annotations that define Spring-managed beans. @Component is a generic annotation, while @Service, @Repository, and @Controller are specialized for service classes, data repositories, and web controllers, respectively.
+
+@Configuration:
+Indicates that a class contains Spring bean definitions. It's used to define beans using Java configuration rather than XML.
+
+@EnableAutoConfiguration:
+Enables Spring Boot’s auto-configuration mechanism, which automatically configures your application based on the dependencies in the classpath.
+
+@Entity:
+Marks a class as a JPA entity, meaning it will be mapped to a database table. Used in conjunction with JPA for database operations.
+
+@Value:
+Used to inject values from properties or environment variables into Spring-managed beans.
+
+@Bean:
+Indicates that a method produces a bean to be managed by the Spring container. It's typically used in @Configuration classes.
+
+@Qualifier:
+Used alongside @Autowired to differentiate between multiple beans of the same type. It specifies which bean should be injected.
+public interface Vehicle {
+    void start();
+}
+@Component
+@Qualifier("car")
+public class Car implements Vehicle {
+    @Override
+    public void start() {
+        System.out.println("Car started");
+    }
+}
+@Component
+@Qualifier("bike")
+public class Bike implements Vehicle {
+    @Override
+    public void start() {
+        System.out.println("Bike started");
+    }
+}
+@Component
+public class VehicleService {
+
+    private final Vehicle vehicle;
+
+    @Autowired
+    public VehicleService(@Qualifier("car") Vehicle vehicle) {
+        this.vehicle = vehicle;
+    }
+
+    public void service() {
+        vehicle.start(); // Will print: Car started
+    }
+}
+
+
+
+@SpringBootTest:
+Used to write integration tests for Spring Boot applications. It loads the full application context for testing purposes.
+
+@ConditionalOnProperty, @ConditionalOnMissingBean, @ConditionalOnClass:
+Conditional annotations that allow beans to be loaded only under certain conditions, such as when a specific property is set or when a particular class is on the classpath.
+
+@Profile:
+Used to specify that a particular bean or configuration should only be loaded in a specific environment or profile (e.g., development, production).
+

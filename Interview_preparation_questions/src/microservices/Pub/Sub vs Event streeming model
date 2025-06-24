@@ -1,0 +1,80 @@
+📣 1. Pub/Sub (Publish-Subscribe)
+🔍 What It Is:
+Pub/Sub is a messaging pattern where producers (publishers) send messages (events), and consumers (subscribers) receive them through a message broker.
+
+🔁 Core Characteristics:
+Decoupled: Publishers and subscribers don’t know about each other.
+
+One-to-many: One event can be received by multiple subscribers.
+
+Message is transient: If a subscriber is offline, it may miss the event (unless the system supports durable subscriptions).
+
+🔧 Tools That Support Pub/Sub:
+Google Cloud Pub/Sub
+
+Amazon SNS
+
+RabbitMQ (fanout exchange)
+
+Kafka (as a pattern)
+
+📦 Example:
+A UserService publishes a UserRegistered event:
+
+EmailService subscribes to send welcome emails.
+
+AnalyticsService subscribes to log user behavior.
+
+🔄 2. Event Streaming
+🔍 What It Is:
+Event streaming means continuous flow of events that are recorded, stored, and can be replayed. It's used not only for messaging, but also for event-driven processing, storage, and analytics.
+
+🔁 Core Characteristics:
+Durable: Events are stored on disk and can be replayed.
+
+Ordered: Events are typically ordered by topic/partition.
+
+Replayable: Consumers can reprocess past events.
+
+Scalable: Can handle high-throughput, real-time data streams.
+
+🔧 Tools That Support Event Streaming:
+Apache Kafka ✅ (most popular)
+
+Apache Pulsar
+
+Amazon Kinesis
+
+Redpanda
+
+📦 Example:
+ClickStreamService streams millions of web clicks into Kafka.
+
+FraudDetectionService consumes the stream in real-time.
+
+DataLakeIngestor also consumes the same stream to store it in S3 for analytics.
+
+⚖️ Comparison Table
+| Feature           | Pub/Sub                       | Event Streaming                    |
+| ----------------- | ----------------------------- | ---------------------------------- |
+| Purpose           | Message distribution          | Real-time data processing          |
+| Message Retention | Short-lived (unless durable)  | Long-lived, replayable             |
+| Consumer Type     | Subscribers                   | Stream processors or consumers     |
+| Use Case          | Notifications, triggers       | Real-time analytics, state changes |
+| Ordering          | Not guaranteed (by default)   | Guaranteed (by partition)          |
+| Example Tools     | SNS, RabbitMQ, Google Pub/Sub | Kafka, Pulsar, Kinesis             |
+
+
+✅ Use Cases
+Use Pub/Sub when:
+You need simple, fast delivery of events.
+
+You want to trigger microservices or notifications.
+
+Use Event Streaming when:
+You need to process, store, or analyze data in real-time.
+
+You want replayable event history.
+
+You want to implement event sourcing or CQRS.
+

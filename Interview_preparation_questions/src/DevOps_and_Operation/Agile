@@ -1,0 +1,93 @@
+✅ What is Agile?
+Agile is a software development approach that focuses on collaboration, customer feedback, rapid delivery, and continuous improvement.
+ It breaks down projects into small, manageable iterations (often called sprints) to deliver value quickly and adapt to changing requirements.
+
+🎯 Core Principles of Agile (from the Agile Manifesto)
+Customer satisfaction through early and continuous delivery
+
+Welcome changing requirements, even late in development
+
+Deliver working software frequently (e.g., every 2 weeks)
+
+Collaboration between business stakeholders and developers
+
+Build projects around motivated individuals
+
+Face-to-face conversation is the best form of communication
+
+Working software is the primary measure of progress
+
+Sustainable development, maintaining a constant pace
+
+Continuous attention to technical excellence
+
+Simplicity—the art of maximizing work not done
+
+Self-organizing teams produce better architectures and designs
+
+Regular reflection and adjustments for better efficiency
+
+| **Methodology**              | **Description**                                                                            | **Best For**                     |
+| ---------------------------- | ------------------------------------------------------------------------------------------ | -------------------------------- |
+| **Scrum**                    | Work in sprints (1–4 weeks), defined roles (Scrum Master, Product Owner), regular meetings | Product development teams        |
+| **Kanban**                   | Visualize work on a board, limit work-in-progress, optimize flow                           | Maintenance, support teams       |
+| **Extreme Programming (XP)** | Emphasizes technical practices (TDD, pair programming, refactoring)                        | High-quality, fast-paced dev     |
+| **Lean**                     | Eliminate waste, deliver value faster                                                      | Process improvement              |
+| **SAFe (Scaled Agile)**      | Agile at enterprise level, used in large organizations                                     | Scaling Agile across departments |
+
+
+| Feature       | **Scrum**                                      | **Kanban**                      | **XP (Extreme Programming)**        | **Lean**                            |
+| ------------- | ---------------------------------------------- | ------------------------------- | ----------------------------------- | ----------------------------------- |
+| **Structure** | Highly structured (roles, ceremonies, sprints) | Visual board, flow-based        | Technical-focused, iterative        | Value-stream focused, minimal waste |
+| **Roles**     | Scrum Master, Product Owner, Dev Team          | No mandatory roles              | Programmer, Customer, Tracker       | Usually flexible                    |
+| **Planning**  | Sprint Planning (1–4 weeks)                    | Continuous                      | Iterations (1–2 weeks)              | Based on Just-In-Time decisions     |
+| **Delivery**  | At the end of each sprint                      | Continuous                      | Continuous with frequent releases   | Continuous                          |
+| **Focus**     | Time-boxed delivery                            | Visualizing work & limiting WIP | Code quality & customer feedback    | Efficiency & waste reduction        |
+| **Best for**  | Teams working on defined features              | Support/maintenance teams       | Projects with changing requirements | Optimizing processes                |
+
+✅ Scrum (most relevant to you)
+Since you mentioned Agile (Scrum) in your skills, here’s a quick recap:
+
+Sprint-based work (usually 2 weeks)
+
+Involves ceremonies: Sprint Planning, Daily Standups, Sprint Review, Sprint Retrospective
+
+Clearly defined roles: Product Owner, Scrum Master, and Development Team
+
+Works best for Java development teams building software with clear goals and deadlines (like your work on B-SMS and OBD systems)
+
+
+👥 Key Roles in Agile
+Product Owner: Defines features, prioritizes backlog, represents customer
+
+Scrum Master: Facilitates meetings, removes blockers, ensures Agile practices
+
+Development Team: Cross-functional developers, testers, designers, etc.
+
+🧪 Ceremonies in Scrum (Popular Agile Method)
+Sprint Planning: Plan what will be delivered in the upcoming sprint
+
+Daily Stand-up: 15-minute status update meeting
+
+Sprint Review: Demonstrate completed work to stakeholders
+
+Sprint Retrospective: Reflect on what went well or could be improved
+
+🛠️ Agile in Practice (for Java Developers)
+As a Java developer, you use Agile when:
+
+You work in sprints and deliver modules in iterations
+
+You participate in daily standups
+
+You manage tasks in Jira or Trello
+
+You develop REST APIs, microservices, etc., in small deliverables
+
+You use tools like Jenkins, Git, Docker, Kubernetes in CI/CD pipelines to support Agile delivery
+
+✍️ Sample Interview Answer
+"I work in an Agile environment following Scrum methodology. We operate in 2-week sprints with regular sprint planning, daily stand-ups, and retrospectives.
+ As a Java developer, I deliver backend features, participate in backlog grooming, and collaborate closely with QA and product teams.
+ This allows us to ship high-quality code quickly and adapt to client feedback efficiently."
+

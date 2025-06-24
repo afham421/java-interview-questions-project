@@ -1,0 +1,77 @@
+Event-Driven Microservices is an architectural style where services communicate by producing and consuming events, instead of directly calling each other via HTTP or REST. This approach helps in building loosely coupled, scalable, and resilient systems.
+
+🔧 Key Concepts
+Event: A message indicating that something happened (e.g., UserRegistered, OrderPlaced, PaymentReceived).
+
+Event Producer: A microservice that generates and publishes events.
+
+Event Consumer: A microservice that listens for and reacts to specific events.
+
+Event Broker: A middleware system (like Kafka, RabbitMQ, or AWS SNS/SQS) that transports events between producers and consumers.
+
+Asynchronous Communication: Unlike REST (which is request-response), event-driven systems often work asynchronously.
+
+🧱 Architecture Pattern
+java
+Copy
+Edit
+Service A (Producer) ---> Event Broker ---> Service B (Consumer)
+                             |
+                             ---> Service C (Consumer)
+For example:
+
+OrderService publishes OrderPlaced event.
+
+InventoryService consumes the event to update stock.
+
+NotificationService sends a confirmation SMS/email.
+
+✅ Benefits
+Loose Coupling: Services don’t need to know about each other.
+
+Scalability: Consumers can scale independently.
+
+Resilience: Services can work independently and retry failed events.
+
+Auditability: Events can be logged and replayed.
+
+🔄 Common Patterns
+Event Notification: Fire-and-forget event; consumers may or may not act.
+
+Event-Carried State Transfer: Event contains all the required data (not just an ID).
+
+Event Sourcing: System state is derived by replaying stored events.
+
+CQRS (Command Query Responsibility Segregation): Use events to keep read and write models separate.
+
+📦 Tools & Technologies
+Message Brokers: Apache Kafka, RabbitMQ, Amazon SQS, Google Pub/Sub (Publisher/Subscriber)
+
+Spring Cloud Stream (Java Spring Boot)
+
+Axon Framework (for event sourcing and CQRS)
+
+Apache Pulsar, NATS, Redis Streams
+
+🚀 Example in Java (Spring Boot + Kafka)
+java
+Copy
+Edit
+// Producer
+@Service
+public class OrderService {
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
+
+    public void placeOrder(Order order) {
+        // Save order
+        kafkaTemplate.send("order-topic", new ObjectMapper().writeValueAsString(order));
+    }
+}
+
+// Consumer
+@KafkaListener(topics = "order-topic", groupId = "inventory")
+public void handleOrder(String orderJson) {
+    Order order = new ObjectMapper().readValue(orderJson, Order.class);
+    // Update inventory
+}

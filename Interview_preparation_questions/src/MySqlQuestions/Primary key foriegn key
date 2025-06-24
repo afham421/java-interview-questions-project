@@ -1,0 +1,19 @@
+Primary Key
+A Primary Key is a column (or a set of columns) in a table that uniquely identifies each row in that table.
+Every table in a relational database should have a primary key, which ensures that no two rows can have the same primary key value.
+
+Characteristics of a Primary Key:
+Uniqueness: Each value in the primary key column(s) must be unique across the table.
+Non-nullable: A primary key cannot contain NULL values, ensuring that every record can be uniquely identified.
+Immutable: The values in the primary key column(s) should not change frequently, as they are often used to reference rows in other tables.
+
+
+Foreign Key
+A Foreign Key is a column (or a set of columns) in a table that establishes a link between data in two tables.
+It is used to enforce referential integrity, meaning that it ensures that a value in the foreign key column corresponds to a valid, existing value in the primary key of another table.
+
+Characteristics of a Foreign Key:
+Referential Integrity: A foreign key ensures that relationships between tables remain consistent. For example, if a row in a child table contains a foreign key,
+that value must exist in the parent table’s primary key.
+Allows Duplicates: Unlike a primary key, a foreign key can contain duplicate values because multiple records in the child table can refer to the same record in the parent table.
+Can Be Null: A foreign key can have NULL values, which indicates that a record does not currently have a corresponding record in the related table.

@@ -1,0 +1,75 @@
+
+The issue you're encountering is due to the fact that Spring's @Value annotation doesn't work directly with static fields. In your AppConstant class,
+ if you try to assign a value to a static variable using @Value, it will result in a null value because Spring injects values into instance fields, not static ones.
+
+
+ Solution: Use a Non-Static Field or Provide a Getter Method
+ To resolve this issue, follow these steps:
+
+ 1. Use a Non-Static Field
+ Instead of using a static field, use a non-static field and inject it as a Spring bean. This is the recommended approach.
+
+
+ import org.springframework.beans.factory.annotation.Value;
+ import org.springframework.stereotype.Component;
+
+ @Component
+ public class AppConstant {
+
+     @Value("${CC_EMAIL_ADDRESS}")
+     private String ccEmailAddress;
+
+     public String getCcEmailAddress() {
+         return ccEmailAddress;
+     }
+ }
+ 2. Autowire the AppConstant Class
+ In your other class, you can autowire the AppConstant class and access the value through a getter method.
+
+
+ import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.stereotype.Service;
+
+ @Service
+ public class EmailService {
+
+     private final AppConstant appConstant;
+
+     @Autowired
+     public EmailService(AppConstant appConstant) {
+         this.appConstant = appConstant;
+     }
+
+     public void sendEmail() {
+         String ccEmail = appConstant.getCcEmailAddress();
+         // Use ccEmail for your email logic
+         System.out.println("CC Email: " + ccEmail);
+     }
+ }
+ 3. If You Must Use a Static Field
+ If you absolutely need to use a static field, you can initialize it within a @PostConstruct method:
+
+
+ import org.springframework.beans.factory.annotation.Value;
+ import org.springframework.stereotype.Component;
+
+ import javax.annotation.PostConstruct;
+
+ @Component
+ public class AppConstant {
+
+     @Value("${CC_EMAIL_ADDRESS}")
+     private String ccEmailAddress;
+
+     public static String CC_EMAIL_ADDRESS;
+
+     @PostConstruct
+     public void init() {
+         CC_EMAIL_ADDRESS = ccEmailAddress;
+     }
+ }
+ Now, CC_EMAIL_ADDRESS can be accessed statically, but remember that this approach is generally not recommended as it goes against Spring's design principles.
+
+ Summary
+ Use a non-static field for @Value injection and access it via a getter method.
+ If a static field is necessary, use a @PostConstruct method to assign the value after injection.

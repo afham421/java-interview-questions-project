@@ -1,0 +1,16 @@
+////////////////////////////////////////////
+Summary of Spring Boot Starters
+Spring Boot Starters are pre-configured dependency packages that simplify adding commonly used features to a Spring Boot application.
+Each starter is a collection of dependencies that address a specific use case or functionality, allowing developers to quickly set up and
+integrate essential components without manually configuring individual libraries.
+
+Common Starters:
+spring-boot-starter-web:    For building web applications, includes libraries like Spring MVC, Tomcat, and Jackson.
+spring-boot-starter-data-jpa:    For working with relational databases using Spring Data JPA and Hibernate.
+spring-boot-starter-security:   For adding security features like authentication and authorization.
+spring-boot-starter-test:   For testing, includes libraries like JUnit, Mockito, and Spring Test.
+spring-boot-starter-thymeleaf:  For using the Thymeleaf template engine in web applications.
+spring-boot-starter-actuator:   Adds production-ready features like health checks, metrics, and monitoring endpoints, making it easier to manage and monitor applications in production.
+spring-boot-starter-logging:    Provides logging support using SLF4J and Logback, which are configured by default for consistent logging across the application.
+spring-boot-devtools:   Aids development by enabling automatic restarts, live reloading, and additional debugging tools to improve the development experience.
+spring-boot-starter-cloud:  Part of Spring Cloud, it includes dependencies for building cloud-native applications, supporting features like service discovery, configuration management, and circuit breakers.

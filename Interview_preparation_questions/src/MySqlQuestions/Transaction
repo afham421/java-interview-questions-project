@@ -1,0 +1,19 @@
+
+In MySQL, transactions are used to execute a sequence of operations as a single unit of work.
+ Transactions ensure that either all operations are completed successfully or none are applied, which helps maintain data integrity.
+
+   -- Start a transaction
+   START TRANSACTION;
+
+   BEGIN
+     -- // Perform some operations
+     INSERT INTO accounts (account_id, balance) VALUES (1, 1000);
+     UPDATE accounts SET balance = balance - 100 WHERE account_id = 1;
+
+     --// Check for errors and commit if everything is okay
+     IF @@ERROR = 0 THEN
+       COMMIT; // if auto commit is enabled in mysql then dont need to commit here only rollback
+     ELSE
+       ROLLBACK;
+     END IF;
+   END;

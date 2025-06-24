@@ -1,0 +1,62 @@
+In databases, a sequence is an object that generates a sequence of unique numeric values, typically used for creating unique identifiers for rows in a table,
+ such as primary keys.
+
+Key Features of Sequences:
+Auto-Increment: Sequences automatically generate the next number in the sequence each time they are called.
+Uniqueness: Each value in the sequence is unique within the sequence.
+Customizable: You can define the starting value, increment, minimum and maximum values, and whether the sequence cycles (restarts) when it reaches its maximum value.
+
+Create a Sequence: // first when we create a sequence we can use in multiple tables like (insert into Student values (sequence_name.nextval));
+CREATE SEQUENCE sequence_name
+START WITH 1
+INCREMENT BY 1
+minvalue 1
+maxvalue 100  // max value where it will end and throw an error
+cycle;//mean 1 to 100 then again 1 to 100 like loop and if nocycle then it will not start loop
+//we can use cache also but we should use cache 20 at least or greater than 20
+
+Use Cases:
+Primary Keys: Automatically generating unique IDs for new records.
+Ticket Numbers: Assigning sequential numbers to tickets, orders, etc.
+Batch Processing: Ensuring that operations are executed in a specific order.
+
+
+Define a Sequence in the Database:
+
+First, create the sequence in your database. For example, in PostgreSQL:
+
+CREATE SEQUENCE my_sequence START WITH 1 INCREMENT BY 1;
+
+Configure the Entity Class: // how to use sequences in springboot
+In your Spring Boot application, use the @SequenceGenerator and @GeneratedValue annotations in your JPA entity class to link the sequence to the entity's ID field.
+
+@Entity
+public class MyEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "my_sequence_generator")
+    @SequenceGenerator(name = "my_sequence_generator", sequenceName = "my_sequence", allocationSize = 1)
+    private Long id;
+
+    // other fields, getters, and setters
+}
+
+@Id: Marks the field as the primary key.
+@GeneratedValue: Specifies that the primary key should be generated automatically.
+strategy = GenerationType.SEQUENCE: Indicates that a database sequence should be used.
+generator = "my_sequence_generator": Names the sequence generator.
+@SequenceGenerator: Links the sequence in the database (sequenceName) to the generator.
+
+
+Persisting Entities:
+When you persist an entity, JPA will automatically use the defined sequence to generate the unique ID:
+
+@Autowired
+private MyEntityRepository repository;
+
+public void saveEntity() {
+    MyEntity entity = new MyEntity();
+    // set other fields
+    repository.save(entity);
+}
+After saving, the id field of entity will be populated with the next value from the sequence.

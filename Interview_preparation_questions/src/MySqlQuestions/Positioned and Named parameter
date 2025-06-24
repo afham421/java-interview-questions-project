@@ -1,0 +1,17 @@
+
+Position parameter:
+
+String sql = "SELECT * FROM employees WHERE department_id = ? AND salary > ?";
+PreparedStatement ps = connection.prepareStatement(sql);
+ps.setInt(1, 10);  // First parameter replaces the first '?'
+ps.setDouble(2, 50000);  // Second parameter replaces the second '?'
+ResultSet rs = ps.executeQuery();
+
+
+
+Named parameter:
+
+String sql = "SELECT * FROM employees WHERE department_id = :deptId AND salary > :minSalary";
+MapSqlParameterSource params = new MapSqlParameterSource();
+params.addValue("deptId", 10);
+params.addValue("minSalary", 50000);

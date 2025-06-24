@@ -1,0 +1,125 @@
+✅ Singleton Design Pattern in Java
+The Singleton Pattern ensures that a class has only one instance and provides a global point of access to it. It's commonly used for shared resources like:
+
+Logging
+
+Database connections
+
+Configuration settings
+
+Caches
+
+
+
+🔹 Key Concepts:
+Private constructor: Prevents instantiation from outside the class.
+
+Static variable: Holds the single instance.
+
+Static method: Provides access to the instance.
+
+
+
+
+🔧 Basic Singleton Example (Lazy Initialization - Not Thread Safe)
+
+public class Singleton {
+    private static Singleton instance;
+
+    private Singleton() {
+        // private constructor
+    }
+
+    public static Singleton getInstance() {
+        if (instance == null) {
+            instance = new Singleton(); // creates instance only when needed
+        }
+        return instance;
+    }
+}
+⚠️ Not thread-safe: In multithreading, multiple instances can be created.
+
+
+
+
+🔐 Thread-Safe Singleton (Synchronized Method) >>>>>> means only one thread can access at a time
+
+public class Singleton {
+    private static Singleton instance;
+
+    private Singleton() {}
+
+    public static synchronized Singleton getInstance() {
+        if (instance == null) {
+            instance = new Singleton();
+        }
+        return instance;
+    }
+}
+🟡 Slower due to method-level synchronization.
+
+
+
+
+⚡ Best Practice: Double-Checked Locking (Thread-safe & Fast)
+
+public class Singleton {
+    private static volatile Singleton instance;
+
+    private Singleton() {}
+
+    public static Singleton getInstance() {
+        if (instance == null) {
+            synchronized (Singleton.class) {
+                if (instance == null) {
+                    instance = new Singleton();
+                }
+            }
+        }
+        return instance;
+    }
+}
+✅ Recommended for production-level code (efficient + thread-safe).
+
+
+
+
+🧊 Eager Initialization (Thread-safe but always creates instance)
+
+public class Singleton {
+    private static final Singleton instance = new Singleton();
+
+    private Singleton() {}
+
+    public static Singleton getInstance() {
+        return instance;
+    }
+}
+⚠️ Instance created even if not used — may waste resources.
+
+
+
+
+
+🧵 Singleton with Enum (Best Practice)
+
+public enum Singleton {
+    INSTANCE;
+
+    public void doSomething() {
+        System.out.println("Doing something...");
+    }
+}
+✅ Thread-safe, serialization-safe, and simplest way to implement singleton in Java.
+
+
+
+
+✅ Use Cases in Real Projects:
+Runtime.getRuntime()
+
+Logger.getLogger()
+
+Spring Beans (by default, beans are singletons)
+
+Database Connection Pool Manager

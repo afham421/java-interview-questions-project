@@ -1,0 +1,58 @@
+
+✅ What Are RESTful Services?
+RESTful services are web services that follow the REST (Representational State Transfer) architectural style. They allow systems to communicate over HTTP using standard methods like GET, POST, PUT, and DELETE.
+
+🔍 Definition:
+A RESTful service is an API designed and implemented according to REST principles. It's resource-based, stateless, and uses standard HTTP methods and status codes.
+
+💡 Key Characteristics of RESTful Services:
+Principle	            Description
+Resource-based	            Each entity (e.g., users, products) is treated as a resource accessible via a URL.
+Stateless	            Each request is independent. No session/state is stored on the server.
+Uniform Interface	            Uses HTTP methods (GET, POST, PUT, DELETE) consistently.
+Client-Server	            Clear separation between frontend (client) and backend (server).
+Cacheable	            Responses can be cached to improve performance.
+Layered System	            You can add security, load balancers, etc., in layers without affecting the client.
+
+
+✅ RESTful API Example (Follows REST principles properly):
+Base URL: https://api.example.com/students
+
+HTTP Method	            Endpoint	            Description
+GET	            /students	            Get all students
+GET	            /students/123	            Get a student by ID
+POST	            /students	            Create a new student
+PUT	            /students/123	            Update student with ID 123
+DELETE	            /students/123	            Delete student with ID 123
+
+Stateless: Each request contains all the necessary information (e.g., authentication token, data).
+
+Uniform interface: Uses nouns (students) instead of verbs.
+
+Resource-based: Operates on clear resources (student entities).
+
+HTTP Status codes are used properly (200 OK, 201 Created, 404 Not Found, etc.)
+
+🚫 Non-RESTful (Just REST API) Example:
+Base URL: https://api.example.com/studentService
+
+HTTP Method	            Endpoint	            Description
+POST	            /getStudentList         	Get all students
+POST	            /getStudentById             with JSON {id:123}	Get student by ID
+POST	            /createStudent	            Create a student
+POST	            /deleteStudent          with JSON {id:123}	Delete student
+
+Violates REST principles:
+
+Uses POST for everything
+
+Endpoints use verbs (getStudentById) instead of nouns
+
+Not using proper HTTP methods (GET, PUT, DELETE)
+
+Less intuitive and harder to cache
+
+💡 Summary:
+RESTful API: Follows REST architecture properly (clean, predictable, scalable).
+
+REST API: May just use HTTP and JSON, but doesn't follow all REST principles.

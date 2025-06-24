@@ -1,0 +1,84 @@
+In Java, instance variables and class variables (also known as static variables) are two types of variables that differ in their scope, lifecycle, and usage. Here's a detailed comparison:
+
+//////////////// Instance Variables
+
+Definition:
+Instance variables are variables that belong to an instance of a class. Each object of the class has its own copy of instance variables.
+
+Declaration:
+Declared inside a class but outside any method, constructor, or block, and without the static keyword.
+
+public class Example {
+    int instanceVariable;  // Instance variable
+}
+
+Scope:
+Accessible only through an instance of the class. You need to create an object of the class to access instance variables.
+
+Lifetime:
+The lifetime of an instance variable is tied to the lifecycle of the object. It is created when the object is instantiated and destroyed when the object is garbage collected.
+
+Default Values:
+If not explicitly initialized, instance variables have default values (null for objects, 0 for numeric types, false for boolean, etc.).
+
+Memory Allocation:
+Memory for instance variables is allocated separately for each object of the class.
+
+Usage:
+Used to store data that is specific to each instance of the class.
+
+///////////////////// Class Variables
+Definition:
+Class variables are variables that belong to the class itself rather than any specific instance. They are shared among all instances of the class.
+
+Declaration:
+Declared inside a class with the static keyword.
+
+public class Example {
+    static int classVariable;  // Class variable
+}
+
+Scope:
+Accessible via the class name or through an instance of the class. However, it's best practice to access class variables using the class name.
+
+Lifetime:
+The lifetime of a class variable is tied to the lifecycle of the class. It is created when the class is first loaded and destroyed when the class is unloaded.
+
+Default Values:
+If not explicitly initialized, class variables also have default values (similar to instance variables).
+
+Memory Allocation:
+Memory for class variables is allocated once when the class is loaded, and the same memory is shared by all instances of the class.
+
+Usage:
+Used to store data or constants that are shared across all instances of the class. Commonly used for counting the number of instances or sharing common configuration among instances.
+
+Example Comparison
+public class Example {
+    // Instance variable
+    int instanceVar;
+
+    // Class variable
+    static int classVar;
+
+    // Constructor
+    public Example(int instanceValue) {
+        this.instanceVar = instanceValue;  // Assigning value to instance variable
+        classVar++;  // Modifying class variable
+    }
+
+    // Instance method
+    public void display() {
+        System.out.println("Instance Variable: " + instanceVar);
+        System.out.println("Class Variable: " + classVar);
+    }
+
+    public static void main(String[] args) {
+        Example obj1 = new Example(5);
+        Example obj2 = new Example(10);
+
+        obj1.display();  // Output: Instance Variable: 5, Class Variable: 2
+        obj2.display();  // Output: Instance Variable: 10, Class Variable: 2
+        System.out.println("Class Variable via Class: " + Example.classVar);  // Output: Class Variable: 2
+    }
+}

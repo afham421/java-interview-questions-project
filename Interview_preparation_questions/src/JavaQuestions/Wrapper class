@@ -1,0 +1,74 @@
+In Java, wrapper classes are used to convert primitive data types into objects. Each of the eight primitive data types in Java has a corresponding wrapper
+class in the java.lang package. These wrapper classes provide a way to use primitive data types as objects, which can be useful in situations where an object is required,
+such as in collections like ArrayList or HashMap.
+
+List of Primitive Data Types and Their Wrapper Classes
+Primitive Type	Wrapper Class
+byte	Byte
+short	Short
+int	    Integer
+long	Long
+float	Float
+double	Double
+char	Character
+boolean	Boolean
+
+Why Use Wrapper Classes?
+Collections: Collections in Java, like ArrayList and HashMap, can only store objects, not primitives. Wrapper classes allow you to store primitive values in collections.
+
+ArrayList<Integer> list = new ArrayList<>();
+list.add(10); // Autoboxing: int to Integer
+
+Utility Methods: Wrapper classes provide several utility methods, such as converting a string to a primitive value, comparing values, and more.
+
+int num = Integer.parseInt("123"); // Converts string to int
+
+Immutability: Wrapper class objects are immutable, meaning their values cannot be changed once they are created. This is useful for ensuring the consistency of values.
+
+Default Values in Collections: When you create a collection of wrapper objects, the default value for each element is null, which can help in distinguishing
+between initialized and uninitialized elements.
+
+Autoboxing and Unboxing
+Autoboxing: The automatic conversion of a primitive type into its corresponding wrapper class object.
+
+int num = 5;
+Integer boxedNum = num;  // Autoboxing: int to Integer
+Unboxing: The automatic conversion of a wrapper class object back into its corresponding primitive type.
+
+Integer boxedNum = 10;
+int num = boxedNum;  // Unboxing: Integer to int
+
+Common Methods in Wrapper Classes
+Each wrapper class provides several useful methods. Here are a few examples:
+
+Integer:
+
+parseInt(String s): Converts a string to an int.
+valueOf(String s): Returns an Integer object representing the specified int value.
+compareTo(Integer anotherInteger): Compares two Integer objects.
+
+int num = Integer.parseInt("123");
+Integer integerObject = Integer.valueOf(456);
+int comparison = integerObject.compareTo(123);
+
+Boolean:
+parseBoolean(String s): Converts a string to a boolean.
+valueOf(String s): Returns a Boolean object representing the specified boolean value.
+
+boolean bool = Boolean.parseBoolean("true");
+Boolean boolObj = Boolean.valueOf(false);
+
+Character:
+isDigit(char ch): Determines if the specified character is a digit.
+isLetter(char ch): Determines if the specified character is a letter.
+
+boolean isDigit = Character.isDigit('5');
+boolean isLetter = Character.isLetter('A');
+
+Performance Considerations
+Autoboxing and Unboxing can introduce some performance overhead, as it involves creating objects and potentially more memory usage compared to using primitive types directly.
+Use primitives when performance is critical and the overhead of creating objects is unnecessary.
+
+Summary
+Wrapper classes in Java are essential for working with primitives in situations where objects are required, such as in collections or when using utility methods.
+ They provide additional functionality through methods and allow primitives to interact with the object-oriented aspects of Java, such as generics and collections.

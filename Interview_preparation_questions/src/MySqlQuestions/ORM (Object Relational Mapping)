@@ -1,0 +1,101 @@
+🔍 What is ORM?
+ORM stands for Object-Relational Mapping. It's a programming technique that allows developers to interact with a database using objects in their programming language instead of writing raw SQL queries.
+
+ORM maps Java classes (or other language classes) to database tables, and class fields to table columns.
+
+⚙️ How ORM Works
+| Java Object/Class    | Relational Database Table    |
+| -------------------- | ---------------------------- |
+| `User` class         | `users` table                |
+| `user.getName()`     | `SELECT name FROM users`     |
+| `user.setEmail("x")` | `UPDATE users SET email='x'` |
+
+
+💡 Benefits of Using ORM
+🚫 No SQL needed (or minimal SQL).
+
+🧠 Object-oriented thinking.
+
+🛠 Helps avoid boilerplate CRUD code.
+
+🔒 Protection against SQL injection.
+
+🌍 Portable across different DBMS (MySQL, PostgreSQL, etc.)
+
+🧰 Popular Java ORM Tools
+Hibernate (most popular)
+
+JPA (Java Persistence API — standard, with Hibernate as implementation)
+
+Spring Data JPA (abstraction layer over JPA)
+
+MyBatis (hybrid: supports SQL + mapping)
+
+✅ Example using Spring Boot + Spring Data JPA
+1. Entity Class
+
+java
+Copy
+Edit
+@Entity
+@Table(name = "users")
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+    private String email;
+
+    // Getters and Setters
+}
+2. Repository Interface
+
+java
+Copy
+Edit
+public interface UserRepository extends JpaRepository<User, Long> {
+    List<User> findByName(String name);
+}
+3. Service or Controller Usage
+
+java
+Copy
+Edit
+@Autowired
+private UserRepository userRepository;
+
+public void createUser() {
+    User user = new User();
+    user.setName("Ali");
+    user.setEmail("ali@example.com");
+    userRepository.save(user);  // INSERT INTO users ...
+}
+🗂 Table → Object Mapping Example
+| Database Table (`users`) |
+| ------------------------ |
+| id (PK)                  |
+| name                     |
+| email                    |
+
+⇩
+
+java
+Copy
+Edit
+class User {
+  Long id;
+  String name;
+  String email;
+}
+❗ ORM Gotchas to Avoid
+Lazy loading issues (@OneToMany etc.)
+
+N+1 select problems.
+
+Overusing save() in loops — batch it instead.
+
+Ignoring transactions (@Transactional usage).
+
+Leaky abstraction: sometimes raw SQL is still better for complex queries.
+

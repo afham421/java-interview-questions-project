@@ -1,0 +1,33 @@
+////////////////////////////////////////////////////////////////////////////////////////
+Summary of How Spring Boot Starts
+
+Main Application Class:
+Spring Boot applications typically start with a main class annotated with @SpringBootApplication.
+This annotation combines @Configuration, @EnableAutoConfiguration, and @ComponentScan, setting up the application context.
+
+SpringApplication.run():
+The SpringApplication.run() method is called in the main class. This method bootstraps the application, initializing the Spring context
+ and starting the embedded server if it's a web application.
+
+Auto-Configuration:
+During startup, Spring Boot's auto-configuration feature scans the classpath for dependencies and configures beans and services automatically based on what it finds.
+This reduces the need for manual configuration.
+
+Embedded Server Start:
+If the application is a web application, Spring Boot starts an embedded server (like Tomcat, Jetty, or Undertow) as part of the initialization process.
+This server runs within the same JVM as your application.
+
+Component Scanning:
+Spring Boot automatically scans the package where the main application class resides (and its sub-packages) for Spring components, services, repositories, and controllers
+, wiring them into the application context.
+
+Externalized Configuration:
+Spring Boot loads configuration properties from external sources (e.g., application.properties or application.yml) and applies them during startup.
+These configurations can be environment-specific, supporting different settings for development, testing, and production.
+
+Spring Beans Initialization:
+Beans defined in the application are initialized and managed by the Spring context. Dependency injection is handled automatically, wiring up components based on their dependencies.
+
+Application Startup Complete:
+Once everything is set up, Spring Boot signals that the application is ready to serve requests.
+If it's a web application, it will be accessible on the configured port (default is 8080).

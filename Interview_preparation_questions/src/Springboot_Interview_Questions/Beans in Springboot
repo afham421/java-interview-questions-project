@@ -1,0 +1,134 @@
+Key Concepts of Beans in Spring Boot
+
+Bean Definition:  // you can say bean is a object of class like object of service class ,object of DAO class etc.
+Beans are the objects that form the backbone of a Spring application and are managed by the Spring IoC container.
+A bean can be defined using annotations or XML configuration (though XML is less common in Spring Boot). In Spring Boot, annotations are commonly used for bean definition.
+Common annotations used to define beans include @Component, @Service, @Repository, @Controller, and @Bean.
+
+Bean Scopes:
+Beans in Spring can have different scopes, which determine the lifecycle and visibility of the bean.
+Common bean scopes in Spring include:
+Singleton (@Scope("singleton")): Only one instance of the bean is created for the entire application context. This is the default scope.
+Prototype (@Scope("prototype")): A new instance of the bean is created each time it is requested.
+Request (@Scope("request")): A new instance is created for each HTTP request. Typically used in web applications.
+Session (@Scope("session")): A new instance is created for each HTTP session. Used in web applications.
+Application (@Scope("application")): A single instance is created for the entire lifecycle of a ServletContext.
+WebSocket (@Scope("websocket")): A single instance is created for the lifecycle of a WebSocket.
+
+@Component
+//@Scope("singleton") //By default
+@SessionScope
+public class SingletonBean {
+    public SingletonBean() {
+        System.out.println("SingletonBean instance created");
+    }
+
+    public void doSomething() {
+        System.out.println("SingletonBean doing something");
+    }
+}
+
+
+Bean Lifecycle:
+The lifecycle of a Spring bean involves its creation, initialization, usage, and destruction.
+Bean lifecycle steps:
+1. IOC container creation
+2. Container creates the object of beans as per request
+3. Dependencies is created
+4. Dependencies is injected
+5. Destroyed when container closed
+
+You can hook into the bean lifecycle by defining @PostConstruct (for initialization) and @PreDestroy (for cleanup) methods in your bean class.
+Bean Lifecycle Example
+You can define methods to be called during the bean lifecycle using @PostConstruct and @PreDestroy annotations:
+
+@Component
+public class LifecycleBean {
+
+    @PostConstruct // we can implement this without Annotation  by java with InitializingBean interface it give  afterPropertiesSet method
+    public void init() {
+        System.out.println("Bean is being initialized");
+    }
+
+    @PreDestroy // we can implement this without Annotation by java with DisposableBean interface it give destroy method
+    public void destroy() {
+        System.out.println("Bean is being destroyed");
+    }
+
+    public void doWork() {
+        System.out.println("Bean is doing work");
+    }
+}
+
+Bean Autowiring:
+Spring Boot provides several ways to automatically inject beans into other beans using dependency injection. Common methods include:
+Field Injection: Using @Autowired on fields.
+Constructor Injection: Using @Autowired(optional) or just relying on Spring Boot’s constructor injection without the annotation (preferred for mandatory dependencies).
+Setter Injection: Using @Autowired on setter methods.
+
+Using @Autowired to Inject Beans
+@Controller
+public class MyController {
+
+    @Autowired
+    private MyService myService;
+
+    public void handleRequest() {
+        myService.performService();
+    }
+}
+
+Creating and Using Beans in Spring Boot
+1. Defining Beans Using Annotations
+@Component: A generic stereotype annotation that marks a class as a Spring-managed bean.
+@Service: A specialized form of @Component used for service layer beans.
+@Repository: A specialized form of @Component used for DAO (Data Access Object) beans, often used with Spring Data JPA.
+@Controller: A specialized form of @Component used for Spring MVC controllers.
+
+@Component
+public class MyComponent {
+    public void doSomething() {
+        System.out.println("Doing something...");
+    }
+}
+2. Using the Bean in Another Class
+
+@Service
+public class MyService {
+
+    private final MyComponent myComponent;
+
+    @Autowired
+    public MyService(MyComponent myComponent) {
+        this.myComponent = myComponent;
+    }
+
+    public void performService() {
+        myComponent.doSomething();
+    }
+}
+3. Creating Beans Using @Bean Annotation
+Sometimes, you may want to create beans manually using the @Bean annotation in a @Configuration class.
+@Configuration
+public class AppConfig {
+
+    @Bean
+    public MyComponent myComponent() {
+        return new MyComponent();
+    }
+}
+you can inject it anywhere just like other beans.
+
+@Component
+public class MyService {
+
+    private final MyComponent myComponent;
+
+    public MyService(MyComponent myComponent) {
+        this.myComponent = myComponent;
+    }
+
+    public void doWork() {
+        myComponent.printMessage();
+    }
+}

@@ -1,0 +1,124 @@
+Here’s a simple RabbitMQ implementation demo using Spring Boot. This demo includes:
+
+Producer: Sends a message to a queue.
+
+Consumer: Listens for messages from that queue.
+
+✅ Step 1: Add Maven Dependencies
+In your pom.xml, add:
+
+xml
+Copy
+Edit
+<dependencies>
+    <!-- Spring Boot Starter for AMQP -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-amqp</artifactId>
+    </dependency>
+
+    <!-- Basic Spring Boot Starter -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter</artifactId>
+    </dependency>
+</dependencies>
+✅ Step 2: Configure RabbitMQ in application.yml
+yaml
+Copy
+Edit
+spring:
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+Ensure RabbitMQ is running locally or change these values according to your environment.
+
+✅ Step 3: Create Configuration Class
+java
+Copy
+Edit
+@Configuration
+public class RabbitMQConfig {
+    public static final String QUEUE = "demo_queue";
+    public static final String EXCHANGE = "demo_exchange";
+    public static final String ROUTING_KEY = "demo_routingKey";
+
+    @Bean
+    public Queue queue() {
+        return new Queue(QUEUE);
+    }
+
+    @Bean
+    public TopicExchange exchange() {
+        return new TopicExchange(EXCHANGE);
+    }
+
+    @Bean
+    public Binding binding(Queue queue, TopicExchange exchange) {
+        return BindingBuilder.bind(queue).to(exchange).with(ROUTING_KEY);
+    }
+}
+✅ Step 4: Create the Producer
+java
+Copy
+Edit
+@Service
+public class MessageProducer {
+
+    @Autowired
+    private AmqpTemplate amqpTemplate;
+
+    public void sendMessage(String message) {
+        amqpTemplate.convertAndSend(RabbitMQConfig.EXCHANGE, RabbitMQConfig.ROUTING_KEY, message);
+        System.out.println("Sent message: " + message);
+    }
+}
+✅ Step 5: Create the Consumer
+java
+Copy
+Edit
+@Component
+public class MessageConsumer {
+
+    @RabbitListener(queues = RabbitMQConfig.QUEUE)
+    public void receiveMessage(String message) {
+        System.out.println("Received message: " + message);
+    }
+}
+✅ Step 6: Create a REST Controller to Send Messages
+java
+Copy
+Edit
+@RestController
+@RequestMapping("/api/messages")
+public class MessageController {
+
+    @Autowired
+    private MessageProducer messageProducer;
+
+    @PostMapping
+    public ResponseEntity<String> send(@RequestParam String msg) {
+        messageProducer.sendMessage(msg);
+        return ResponseEntity.ok("Message sent: " + msg);
+    }
+}
+✅ Step 7: Run and Test
+Start RabbitMQ (Docker or installed version)
+
+Run the Spring Boot app
+
+Test via:
+
+bash
+Copy
+Edit
+curl -X POST "http://localhost:8080/api/messages?msg=HelloRabbitMQ"
+You’ll see:
+
+yaml
+Copy
+Edit
+Sent message: HelloRabbitMQ
+Received message: HelloRabbitMQ

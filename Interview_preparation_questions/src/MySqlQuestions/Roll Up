@@ -1,0 +1,56 @@
+In SQL, the ROLLUP operator is used with the GROUP BY clause to generate subtotals and a grand total across multiple grouping levels.
+ It’s a powerful tool for summarizing data hierarchically.
+
+Syntax:
+
+SELECT column1, column2, ..., aggregate_function(columnN)
+FROM table
+GROUP BY ROLLUP(column1, column2, ...);
+
+Example:
+Given a sales table with columns region, city, and sales:
+
+
+SELECT region, city, SUM(sales)
+FROM sales_data
+GROUP BY ROLLUP(region, city);
+
+Result:
+This query will:
+Group by region and city.
+Generate subtotals for each region.
+Add a grand total for all regions.
+
+Example Output:
+region	city	        SUM(sales)
+East	New York	    5000
+East	Boston	        3000
+East	NULL	        8000
+West	San Diego	    2000
+West	LA	            4000
+West	NULL	        6000
+NULL	NULL	        14000
+
+Example 2: Sales by Year, Quarter, and Month
+Let’s say you have year, quarter, month, and sales columns in a sales_report table.
+
+SELECT year, quarter, month, SUM(sales) AS total_sales
+FROM sales_report
+GROUP BY ROLLUP(year, quarter, month);
+
+Result:
+The query will generate totals at multiple levels, such as for each year, each quarter within a year, each month within a quarter, and a grand total.
+
+year	quarter	    month	       total_sales
+2022	1	        Jan	            3000
+2022	1	        Feb	            2500
+2022	1	        Mar	            3500
+2022	1	        NULL	        9000
+2022	2	        Apr	            2800
+2022	2	        May	            3200
+2022	2	        Jun	            2700
+2022	2	        NULL	        8700
+2022	NULL	    NULL	        17700
+NULL	NULL	    NULL	        17700
+
+In summary, ROLLUP helps to create hierarchical totals in your query results.

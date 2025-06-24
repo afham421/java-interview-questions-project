@@ -1,0 +1,102 @@
+In Java, interfaces are used to define contracts that classes can implement. There are several types of interfaces based on usage and context. Here’s a breakdown:
+
+🔹 1. Marker Interface
+Definition: An interface with no methods or fields.
+
+Purpose: Used to "mark" a class for a specific purpose.
+
+Examples: Serializable, Cloneable, Remote.
+
+java
+Copy
+Edit
+class MyClass implements Serializable {
+    // No methods required, just the "mark"
+}
+🔹 2. Functional Interface
+Definition: Interface with only one abstract method.
+
+Purpose: Used in lambda expressions and method references.
+
+Annotation: @FunctionalInterface (optional but recommended).
+
+Examples: Runnable, Comparable, java.util.function.*
+
+java
+Copy
+Edit
+@FunctionalInterface
+interface MyFunctionalInterface {
+    void performAction();
+}
+🔹 3. Normal Interface
+Definition: Interfaces with one or more abstract methods (non-functional).
+
+Examples: List, Map, Set, Comparable.
+
+java
+Copy
+Edit
+interface Vehicle {
+    void start();
+    void stop();
+}
+🔹 4. Tagging Interface (Same as Marker Interface)
+No methods; acts as a tag.
+
+Used for identifying or enabling capabilities via type-checking.
+
+🔹 5. Nested Interfaces
+Interface declared within a class or interface.
+
+Can be:
+
+Static: Inside a class.
+
+Non-static: Inside an interface.
+
+java
+Copy
+Edit
+class Outer {
+    interface InnerInterface {
+        void display();
+    }
+}
+🔹 6. Remote Interface
+Used in RMI (Remote Method Invocation).
+
+Must extend java.rmi.Remote.
+
+Every method must throw RemoteException.
+
+java
+Copy
+Edit
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+public interface MyRemoteService extends Remote {
+    String sayHello() throws RemoteException;
+}
+🔹 7. Functional Interface from Java 8 API
+Built-in interfaces under java.util.function:
+
+Function<T,R>
+
+Predicate<T>
+
+Consumer<T>
+
+Supplier<T>
+
+🔹 Summary Table
+| Type                 | Description                      | Example                     |
+| -------------------- | -------------------------------- | --------------------------- |
+| Marker Interface     | No methods, used as a tag        | `Serializable`              |
+| Functional Interface | One abstract method              | `Runnable`, `Function<T,R>` |
+| Normal Interface     | One or more abstract methods     | `List`, `Map`               |
+| Nested Interface     | Defined inside a class/interface | `Outer.Inner`               |
+| Remote Interface     | For RMI, extends `Remote`        | `MyRemoteService`           |
+
+

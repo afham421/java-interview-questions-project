@@ -1,0 +1,6 @@
+///////////////////////////////////////////////////////////////
+Summary of Spring Boot Starter Parent(it is in parent tag and it maintains the other like starter dependencies versions compatibility etc)
+The Spring Boot Starter Parent is a special type of Maven project that provides a parent POM (Project Object Model) for Spring Boot projects.
+ It simplifies dependency management and project configuration by offering a standardized base configuration
+In summary, the Spring Boot Starter Parent provides a streamlined and consistent approach to managing dependencies and configurations in Spring Boot projects.
+ It simplifies the setup process, enforces best practices, and ensures compatibility across your application’s dependencies and build tools.

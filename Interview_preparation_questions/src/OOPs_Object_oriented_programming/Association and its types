@@ -1,0 +1,132 @@
+📘 Association in OOP
+Association is a relationship between two classes where one class uses or interacts with another.
+It represents a "has-a" or "uses-a" relationship.
+
+🧩 Types of Association
+There are four main types of association:
+
+| Type                    | Description                              | Ownership           | Lifecycle Dependency |
+| ----------------------- | ---------------------------------------- | ------------------- | -------------------- |
+| **Association (Basic)** | General relationship between two classes | No ownership        | Independent          |
+| **Aggregation**         | "Has-a" with weak ownership              | Weak ownership      | Independent          |
+| **Composition**         | "Has-a" with strong ownership            | Strong ownership    | Dependent            |
+| **Dependency**          | "Uses-a" (temporary use)                 | Temporary reference | Independent          |
+
+
+1. 🔹 Association (General Form)
+Basic relationship
+
+Both classes are aware of each other
+
+No lifecycle dependency
+
+E.g., a Teacher teaches Students
+
+java
+Copy
+Edit
+class Teacher {
+    String name;
+}
+
+class Student {
+    String name;
+}
+➡️ This just shows a link; no ownership or lifecycle dependency.
+
+2. 🔹 Aggregation
+A "whole-part" relationship
+
+Child can exist independently
+
+Represented by an open diamond (◊) in UML
+
+✅ Example:
+java
+Copy
+Edit
+class Department {
+    String name;
+}
+
+class University {
+    List<Department> departments;
+    University(List<Department> departments) {
+        this.departments = departments;
+    }
+}
+Department can exist without University
+
+3. 🔹 Composition
+Stronger form of Aggregation
+
+Child object cannot exist without the parent
+
+Represented by a filled diamond (◆) in UML
+
+✅ Example:
+java
+Copy
+Edit
+class Engine {
+    Engine() {
+        System.out.println("Engine created");
+    }
+}
+
+class Car {
+    private Engine engine = new Engine();
+}
+If Car is destroyed, Engine is also destroyed
+
+4. 🔹 Dependency (Uses-a Relationship)
+One class temporarily uses another
+
+Not stored as an attribute; just used in a method
+
+Represented by a dashed arrow (→) in UML
+
+✅ Example:
+java
+Copy
+Edit
+class Printer {
+    void print(Document doc) {
+        System.out.println("Printing: " + doc.getText());
+    }
+}
+
+class Document {
+    String getText() {
+        return "Some document text";
+    }
+}
+Printer uses Document in a method only (no long-term relationship)
+
+🔄 Comparison Table
+| Feature        | Association     | Aggregation           | Composition      | Dependency       |
+| -------------- | --------------- | --------------------- | ---------------- | ---------------- |
+| Ownership      | None            | Weak                  | Strong           | Temporary        |
+| Lifecycle Link | No              | No                    | Yes              | No               |
+| UML Notation   | Straight line   | Open diamond ◊        | Filled diamond ◆ | Dashed arrow →   |
+| Example        | Teacher–Student | University–Department | Car–Engine       | Printer–Document |
+
+
+📌 UML Notation Summary
+| Symbol       | Relationship Type |
+| ------------ | ----------------- |
+| `---------`  | Association       |
+| `◊---------` | Aggregation       |
+| `◆---------` | Composition       |
+| `--->`       | Dependency        |
+
+
+✅ When to Use Each
+Use Association when classes are just linked.
+
+Use Aggregation when the child is optional and independent.
+
+Use Composition when the parent owns and controls the child's existence.
+
+Use Dependency for temporary, method-level usage.
+

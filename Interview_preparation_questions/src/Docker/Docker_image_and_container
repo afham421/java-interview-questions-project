@@ -1,0 +1,56 @@
+🚢 Docker Image
+A Docker image is a blueprint or template used to create Docker containers. It contains:
+
+The application code
+
+Libraries
+
+Dependencies
+
+Configuration files
+
+Environment settings
+
+It's read-only and used to build containers.
+
+🧠 Think of it like a class in Java — it defines what the container will be, but it doesn't "run" by itself.
+
+Example:
+An image might contain:
+
+Ubuntu OS
+
+Java 21
+
+Your Spring Boot app .jar file
+
+You build or pull it using:
+
+
+docker build -t myapp-image .
+or
+
+
+docker pull openjdk:21
+📦 Docker Container
+A Docker container is a running instance of a Docker image. It:
+
+Runs in an isolated environment
+
+Is lightweight and portable
+
+Can be started, stopped, or deleted
+
+🧠 Think of it like an object in Java — it’s a running, live thing created from the image.
+
+Run a container from an image:
+
+docker run -d --name myapp-container myapp-image
+
+Summary:
+| Concept    | Docker Image              | Docker Container               |
+| ---------- | ------------------------- | ------------------------------ |
+| What it is | A template or blueprint   | A running instance of an image |
+| State      | Read-only                 | Read-write (running)           |
+| Purpose    | Used to create containers | Executes your application      |
+| Analogy    | Java class                | Java object                    |

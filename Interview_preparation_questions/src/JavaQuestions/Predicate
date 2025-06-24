@@ -1,0 +1,84 @@
+In Java, a Predicate is a functional interface that represents a single argument function that returns a boolean value.
+Predicates are used primarily for filtering or conditional checks within streams or other collection-based operations.
+The interface is part of the java.util.function package and is commonly used in functional programming in Java.
+
+Key Points About Predicate:
+Functional Interface:
+
+A Predicate<T> is a functional interface that has a single abstract method:
+
+boolean test(T t);
+This method takes an argument of type T and returns a boolean value.
+Usage:
+
+Predicates are often used in stream operations such as filter, allMatch, anyMatch, and noneMatch to apply conditions or filters to a collection.
+Lambda Expressions:
+
+Predicates are usually implemented using lambda expressions because they are functional interfaces. A lambda expression provides a concise way to express the test method.
+Example Usage of Predicate:
+Here’s a simple example to demonstrate the use of a Predicate:
+
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+public class PredicateExample {
+    public static void main(String[] args) {
+        List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+        // Predicate to check if a number is even
+        Predicate<Integer> isEven = num -> num % 2 == 0;
+
+        // Using the predicate to filter even numbers from the list
+        List<Integer> evenNumbers = numbers.stream()
+                                           .filter(isEven)  // Apply the predicate
+                                           .collect(Collectors.toList());
+
+        System.out.println("Even numbers: " + evenNumbers);
+    }
+}
+Explanation of the Example:
+Predicate Definition:
+
+Predicate<Integer> isEven = num -> num % 2 == 0;: Defines a predicate isEven that checks if a number is even. The lambda expression num -> num % 2 == 0 is the implementation of the test method of the Predicate interface.
+Stream and Filter:
+
+numbers.stream().filter(isEven): Creates a stream from the list of numbers and filters the elements using the isEven predicate.
+Collecting the Results:
+
+.collect(Collectors.toList()): Collects the filtered elements (even numbers) into a new list.
+Output of the Example:
+
+Even numbers: [2, 4, 6, 8, 10]
+Methods in Predicate Interface:
+Besides test(), the Predicate interface also provides several default and static methods that allow for composing complex predicates:
+
+and(Predicate<? super T> other): Returns a composed predicate that represents a short-circuiting logical AND of this predicate and another.
+
+or(Predicate<? super T> other): Returns a composed predicate that represents a short-circuiting logical OR of this predicate and another.
+
+negate(): Returns a predicate that represents the logical negation of this predicate.
+
+isEqual(Object targetRef): Returns a predicate that tests if two arguments are equal according to Objects.equals(Object, Object).
+
+Example of Predicate Composition:
+
+Predicate<Integer> isEven = num -> num % 2 == 0;
+Predicate<Integer> isGreaterThanFive = num -> num > 5;
+
+// Combining predicates using 'and'
+Predicate<Integer> isEvenAndGreaterThanFive = isEven.and(isGreaterThanFive);
+
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 6, 8, 10);
+
+List<Integer> filteredNumbers = numbers.stream()
+                                       .filter(isEvenAndGreaterThanFive)
+                                       .collect(Collectors.toList());
+
+System.out.println("Even numbers greater than 5: " + filteredNumbers);
+Output:
+
+Even numbers greater than 5: [6, 8, 10]
+The Predicate interface provides a powerful way to represent and combine conditional logic in Java, particularly when working with streams and other collection-processing scenarios.

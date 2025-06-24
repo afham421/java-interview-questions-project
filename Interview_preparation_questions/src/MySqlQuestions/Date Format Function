@@ -1,0 +1,77 @@
+In MySQL, the DATE_FORMAT function is used to format a date value according to a specified format. This function is particularly useful when you want to display dates in a specific format or convert them to strings.
+
+Syntax
+
+DATE_FORMAT(date, format)
+date: The date or datetime value that you want to format.
+format: A string representing the desired format for the output.
+Format Specifiers
+Below are some commonly used format specifiers:
+
+Format Specifier	    Description	                Example
+%Y	                Year (4 digits)	                                  2024
+%y	                Year (2 digits)	                                 24
+%m	            Month (2 digits)	                              08
+%M	            Month name (full)	                 August
+%d	            Day of the month (2 digits)                  	20
+%D	                Day of the month with suffix                 	20th
+%H	            Hour (24-hour format, 2 digits)	                 14
+%h	        Hour (12-hour format, 2 digits)	                 02
+%i	        Minutes (2 digits)	                 30
+%s	        Seconds (2 digits)	                45
+%p	        AM or PM	                 PM
+%W	        Weekday name (full)	                 Tuesday
+%w	        Day of the week (0=Sunday, 6=Saturday)               	2
+%j	        Day of the year (3 digits)	                 232
+%c	        Month (1 or 2 digits)	                 8
+%b	        Month name (abbreviated)	                 Aug
+Examples
+1. Basic Date Formatting
+Suppose you have a date value '2024-08-20' and you want to format it as 20th August, 2024:
+
+
+SELECT DATE_FORMAT('2024-08-20', '%D %M, %Y') AS formatted_date;
+Output:
+
+
+20th August, 2024
+2. Formatting Date and Time
+If you have a datetime value '2024-08-20 14:30:45' and you want to format it as August 20, 2024 - 02:30:45 PM:
+
+
+SELECT DATE_FORMAT('2024-08-20 14:30:45', '%M %d, %Y - %h:%i:%s %p') AS formatted_datetime;
+Output:
+
+
+August 20, 2024 - 02:30:45 PM
+3. Extracting Parts of a Date
+If you only want the month and year from a date:
+
+
+SELECT DATE_FORMAT('2024-08-20', '%M %Y') AS month_year;
+Output:
+
+
+August 2024
+4. Weekday Name
+To get the full weekday name for a given date:
+
+
+SELECT DATE_FORMAT('2024-08-20', '%W') AS weekday_name;
+Output:
+
+mathematica
+Copy code
+Tuesday
+Using DATE_FORMAT in Queries
+You can use DATE_FORMAT in a SELECT statement to format date columns:
+
+
+SELECT id, name, DATE_FORMAT(joining_date, '%M %d, %Y') AS formatted_joining_date
+FROM employees;
+This query will return the id, name, and the formatted joining_date for each employee.
+
+Summary
+The DATE_FORMAT function in MySQL is used to format date and datetime values according to a specific format.
+It provides a wide range of format specifiers that allow you to display dates in various formats, including full date, time, and specific parts of the date.
+DATE_FORMAT is particularly useful in applications where date values need to be presented to users in a human-readable format.

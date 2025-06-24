@@ -1,0 +1,48 @@
+
+Yes, exactly! The -d flag in Docker stands for "detached mode."
+
+🧾 What is -d in Docker?
+When you run a container using:
+
+bash
+Copy
+Edit
+docker run -d <image-name>
+It tells Docker to run the container in the background (detached from your terminal), allowing you to continue using the terminal for other tasks.
+
+🆚 Without -d (Foreground mode):
+bash
+Copy
+Edit
+docker run <image-name>
+Docker runs the container in the foreground.
+
+You see logs/output directly in your terminal.
+
+You can’t type other commands until you stop it (usually with Ctrl + C).
+
+✅ Use -d when:
+You want the container to keep running in the background.
+
+You’re running web servers, databases, or long-lived applications.
+
+You don’t need to see real-time logs immediately.
+
+🛠 Example:
+bash
+Copy
+Edit
+docker run -d --name spring-app -p 8080:8080 my-spring-image
+This will:
+
+Run my-spring-image in background
+
+Map container's port 8080 to your local port 8080
+
+Name the container spring-app
+
+🔍 To view logs later:
+bash
+Copy
+Edit
+docker logs spring-app

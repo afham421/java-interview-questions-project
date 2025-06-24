@@ -1,0 +1,6 @@
+🧠 Quick Summary
+Feature	                            OOP                         	            FP
+Main unit                           Object	                                    Function
+State	                            Mutable	                                    Immutable
+Concurrency	                        Harder (shared state)	                    Easier (no shared state)
+Use in Java	                        Classes, inheritance, interfaces	        Lambdas, streams, Optional, method refs

@@ -1,0 +1,20 @@
+In Java, synchronization is used to control the access of multiple threads to shared resources.
+ It ensures that only one thread can access the synchronized block or method at a time, preventing thread interference and data inconsistency.
+
+You can synchronize a method or block of code like this:
+
+Synchronized Method:
+
+
+public synchronized void syncMethod() {
+    // critical section
+}
+Synchronized Block:
+
+
+public void method() {
+    synchronized(this) {
+        // critical section
+    }
+}
+In the synchronized block, this refers to the current object; you can also lock on other objects.

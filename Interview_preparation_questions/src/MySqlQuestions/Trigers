@@ -1,0 +1,54 @@
+
+Triggers in a relational database are special kinds of stored procedures that are automatically executed (or "triggered") in response to certain events on a particular table or view.
+Triggers are typically used to enforce business rules, validate data, maintain audit trails, and synchronize tables.
+
+Types of Triggers
+There are several types of triggers, each designed to respond to different types of events:
+
+Before Triggers:
+Executed before the triggering event (such as an INSERT, UPDATE, or DELETE) occurs.
+Often used to validate data before it is committed to the database.
+
+CREATE TRIGGER BeforeEmployeeInsert
+BEFORE INSERT ON Employees
+FOR EACH ROW
+BEGIN
+    IF NEW.Salary < 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Salary cannot be negative';
+    END IF;
+END;
+Explanation:
+    This trigger checks if the Salary value being inserted into the Employees table is negative. If it is, an error is raised, preventing the insertion.
+
+After Triggers:
+Executed after the triggering event has occurred.
+Commonly used for logging, auditing, or updating related tables.
+
+CREATE TRIGGER AfterEmployeeInsert
+AFTER INSERT ON Employees
+FOR EACH ROW
+BEGIN
+    INSERT INTO EmployeeAudit (EmployeeID, Action, ActionDate)
+    VALUES (NEW.EmployeeID, 'INSERT', NOW());
+END;
+Explanation:
+This trigger logs every new employee added to the Employees table into an EmployeeAudit table, capturing the EmployeeID, the action taken (INSERT), and the date the action occurred.
+
+Instead Of Triggers:
+Used primarily with views, INSTEAD OF triggers replace the standard action of the triggering event.
+ For example, instead of directly performing an INSERT on a view, the trigger can insert data into the underlying tables.
+
+ CREATE TRIGGER InsteadOfInsertOnEmployeeView
+ INSTEAD OF INSERT ON EmployeeView
+ FOR EACH ROW
+ BEGIN
+     INSERT INTO Employees (EmployeeID, FullName)
+     VALUES (NEW.EmployeeID, NEW.FullName);
+
+     INSERT INTO Salaries (EmployeeID, Salary)
+     VALUES (NEW.EmployeeID, NEW.Salary);
+ END;
+Explanation:
+In the INSTEAD OF trigger you've provided, the data is inserted into the Employees and Salaries tables, not directly into the EmployeeView.
+The trigger does not insert data into the EmployeeView itself; it redirects the insertion to the underlying Employees and Salaries tables.

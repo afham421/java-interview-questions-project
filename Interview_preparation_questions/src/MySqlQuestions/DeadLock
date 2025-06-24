@@ -1,0 +1,14 @@
+A deadlock in MySQL occurs when two or more transactions block each other by holding locks on resources that the other transactions need.
+ This leads to a situation where none of the transactions can proceed.
+
+Example scenario:
+Transaction A locks Row 1 and waits for Row 2.
+Transaction B locks Row 2 and waits for Row 1.
+Neither transaction can complete because each is waiting for the other to release its lock.
+
+How to handle deadlocks:
+Automatic rollback: MySQL automatically detects deadlocks and rolls back one of the transactions.
+Best practices:
+Ensure that transactions access resources in the same order.
+Keep transactions short and simple.
+Use LOCK IN SHARE MODE or FOR UPDATE selectively to minimize locking.

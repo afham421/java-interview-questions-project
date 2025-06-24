@@ -1,0 +1,118 @@
+In MySQL, constraints are rules applied to table columns to enforce data integrity and consistency. They ensure that the data in a database remains accurate and reliable by imposing restrictions on what can be entered into a table.
+
+Types of Constraints in MySQL
+Primary Key Constraint
+Foreign Key Constraint
+Unique Constraint
+Not Null Constraint
+Check Constraint
+Default Constraint
+Auto Increment Constraint
+
+1. Primary Key Constraint
+Ensures that a column (or a combination of columns) uniquely identifies each row in the table.
+A table can have only one primary key, and it cannot contain NULL values.
+
+CREATE TABLE employees (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100)
+);
+Composite Primary Key: When more than one column is used to define the primary key.
+
+CREATE TABLE orders (
+    order_id INT,
+    product_id INT,
+    PRIMARY KEY (order_id, product_id)
+);
+2. Foreign Key Constraint
+Ensures the referential integrity of the data in one table to match values in another table.
+The foreign key in one table points to a primary key in another table.
+
+CREATE TABLE employees (
+    id INT PRIMARY KEY,
+    name VARCHAR(100)
+);
+
+CREATE TABLE orders (
+    order_id INT PRIMARY KEY,
+    employee_id INT,
+    FOREIGN KEY (employee_id) REFERENCES employees(id)
+);
+3. Unique Constraint
+Ensures that all values in a column (or a combination of columns) are distinct.
+Unlike the primary key, a table can have multiple unique constraints.
+
+CREATE TABLE users (
+    user_id INT PRIMARY KEY,
+    username VARCHAR(100) UNIQUE,
+    email VARCHAR(100) UNIQUE
+);
+4. Not Null Constraint
+Ensures that a column cannot have a NULL value. It's used to enforce that a value must be provided for a specific column.
+
+CREATE TABLE employees (
+    id INT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL
+);
+5. Check Constraint
+Ensures that all values in a column satisfy a specific condition.
+Available from MySQL 8.0.16 onwards.
+
+CREATE TABLE employees (
+    id INT PRIMARY KEY,
+    age INT CHECK (age >= 18),
+    salary DECIMAL(10, 2) CHECK (salary > 0)
+);
+6. Default Constraint
+Sets a default value for a column if no value is provided during the insertion of data.
+
+CREATE TABLE employees (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+7. Auto Increment Constraint
+Automatically generates a unique number for each new row in the table. This is typically used for the primary key column.
+
+CREATE TABLE employees (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100)
+);
+Managing Constraints
+Adding a Constraint: Constraints can be added during table creation or modified later using ALTER TABLE.
+
+ALTER TABLE employees
+ADD CONSTRAINT fk_employee_id
+FOREIGN KEY (employee_id) REFERENCES employees(id);
+Dropping a Constraint: You can drop constraints using ALTER TABLE.
+
+ALTER TABLE employees
+DROP PRIMARY KEY;
+
+ALTER TABLE users
+DROP CONSTRAINT fk_employee_id;
+Examples
+Example 1: Creating a Table with Multiple Constraints
+
+CREATE TABLE students (
+    student_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    age INT CHECK (age >= 18)
+);
+Example 2: Adding a Foreign Key to an Existing Table
+
+ALTER TABLE orders
+ADD CONSTRAINT fk_employee
+FOREIGN KEY (employee_id) REFERENCES employees(id);
+
+Summary
+Primary Key: Uniquely identifies each record in a table.
+Foreign Key: Ensures referential integrity between two tables.
+Unique: Guarantees that all values in a column are different.
+Not Null: Ensures that a column cannot have NULL values.
+Check: Ensures that all values in a column meet a specified condition.
+Default: Assigns a default value if no value is provided.
+Auto Increment: Automatically generates unique numbers for a column.

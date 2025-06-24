@@ -1,0 +1,45 @@
+Difference Between Predicates and Filters in Java & Spring
+Feature	                              Predicates	                                                                                Filters
+Definition	                Functions that return true or false based on input conditions.              	Functions that modify, transform, or block requests/responses.
+Return Type	                            boolean (true or false)         	Typically modifies or processes data, does not return a boolean.
+Use Case	                Used for conditional checks (e.g., filtering a list).	                Used for modifying or intercepting requests in Spring Gateway or web applications.
+Example in Java	                Predicate<Integer> isEven = num -> num % 2 == 0;	                            list.stream().filter(isEven).collect(Collectors.toList());
+Example in Spring Gateway	            Not used in routing.	                                    filters: - AddRequestHeader=X-Header, Value modifies request headers.
+Where Used?	            Java Streams, Functional Programming (Predicate<T>)	                Spring Cloud Gateway (GatewayFilter, GlobalFilter), Security Filters (OncePerRequestFilter).
+
+📌 Quick Summary
+Predicates → Decide whether something passes a condition (true or false).
+Filters → Modify or intercept requests/responses in web applications.
+
+
+
+Example of Predicates and Filters in Java & Spring
+1️⃣ Predicate Example (Java Functional Programming)
+
+import java.util.function.Predicate;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class PredicateExample {
+    public static void main(String[] args) {
+        // Define a predicate: Check if a number is even
+        Predicate<Integer> isEven = num -> num % 2 == 0;
+
+        // Example list
+        List<Integer> numbers = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+        // Filter numbers using the predicate
+        List<Integer> evenNumbers = numbers.stream()
+                                           .filter(isEven)
+                                           .collect(Collectors.toList());
+
+        System.out.println("Even Numbers: " + evenNumbers);
+    }
+}
+🔹 Output:
+Even Numbers: [2, 4, 6, 8, 10]
+
+🔹 Explanation:
+Predicate<Integer> isEven is a function that checks if a number is even.
+
+.filter(isEven) applies this condition to filter the list.

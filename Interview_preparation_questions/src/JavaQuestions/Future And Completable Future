@@ -1,0 +1,80 @@
+In Java, both Future and CompletableFuture are used to represent the result of an asynchronous computation.
+However, they have different levels of functionality and flexibility. Let’s break down their key characteristics:
+
+1. Future in Java
+The Future interface was introduced in Java 5 as part of the java.util.concurrent package.
+ It represents the result of an asynchronous computation and provides methods to check if the computation is complete,
+ retrieve the result, or cancel the computation.
+
+Key Features of Future:
+Blocking: When calling the get() method, the thread will block until the result is available or the task is completed.
+Limited Features: It only provides basic methods such as:
+get(): Waits for the task to finish and retrieves the result.
+isDone(): Checks if the task has been completed.
+cancel(boolean mayInterruptIfRunning): Cancels the execution of the task.
+No Chaining: Future doesn't provide mechanisms to chain computations or handle results asynchronously.
+Example:
+
+ExecutorService executor = Executors.newFixedThreadPool(1);
+
+Future<Integer> future = executor.submit(() -> {
+    Thread.sleep(2000);  // Simulate a long-running task
+    return 42;
+});
+
+try {
+    // This will block until the result is available
+    Integer result = future.get();
+    System.out.println("Result: " + result);
+} catch (InterruptedException | ExecutionException e) {
+    e.printStackTrace();
+} finally {
+    executor.shutdown();
+}
+2. CompletableFuture in Java
+CompletableFuture was introduced in Java 8 as an enhancement over Future. It is part of the java.util.concurrent package and
+provides a more flexible and powerful API for asynchronous programming, including non-blocking operations, chaining tasks, and combining multiple futures.
+
+Key Features of CompletableFuture:
+Non-blocking: It allows non-blocking operations using methods like thenApply(), thenAccept(), and thenCompose().
+Chaining: You can chain tasks to execute one after another once the previous task is done.
+Combining: You can combine multiple CompletableFutures using methods like thenCombine(), allOf(), anyOf().
+Completable: It allows manually completing the future using complete(), which isn't possible with Future.
+Exception Handling: It provides better ways to handle exceptions using methods like handle() and exceptionally().
+Example:
+
+CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
+    try {
+        Thread.sleep(2000);  // Simulate a long-running task
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
+    return 42;
+});
+
+// Non-blocking call, continue when the future completes
+future.thenAccept(result -> {
+    System.out.println("Result: " + result);
+}).exceptionally(ex -> {
+    System.out.println("Something went wrong: " + ex.getMessage());
+    return null;
+});
+Key Methods of CompletableFuture:
+supplyAsync(): Asynchronously starts a computation.
+thenApply(): Applies a function to the result of a computation when it's done.
+thenAccept(): Consumes the result when it's ready without returning a new result.
+thenCompose(): Chains another CompletableFuture after the current one.
+handle(): Allows handling both the result and exceptions.
+complete(): Manually completes the future.
+Differences Between Future and CompletableFuture:
+Feature                     	Future	                                            CompletableFuture
+Blocking	                        Yes (blocks on get())	                                            Can be non-blocking (with thenApply(), etc.)
+Chaining	                        No	                                            Yes, allows chaining tasks (thenApply(), thenCompose())
+Combining	                        No	                                            Yes, allows combining multiple futures
+Exception Handling	                        Limited (via get())                                         	Built-in exception handling (exceptionally(), handle())
+Manual Completion	                        No	                                            Yes, with complete()
+
+Conclusion:
+Use Future when you need a simple, blocking result from an asynchronous task.
+Use CompletableFuture when you need more flexibility, non-blocking behavior, task chaining, and better exception handling.
+In modern Java applications, CompletableFuture is the preferred approach for handling complex asynchronous workflows.

@@ -1,0 +1,34 @@
+1. Primary Key
+A Primary Key is a specific type of candidate key that is chosen to uniquely identify each row in a table. There can only be one primary key in a table,
+and it has certain restrictions:
+
+Uniqueness: The primary key ensures that each row in the table has a unique identifier.we can have only one primary key in a table
+Non-nullable: A primary key column cannot contain NULL values.it should be integer
+Immutability: The value of the primary key should not change frequently.
+
+2. Candidate Key
+A Candidate Key is any column or combination of columns that can uniquely identify a row in a table. There can be multiple candidate keys in a table,
+but only one of them is selected as the primary key. A candidate key has the following characteristics:
+
+Uniqueness: Each candidate key must uniquely identify a row.we can have Multiple candidate key in a table
+Non-nullable: Typically, candidate keys should not allow NULL values (though this can vary depending on the design).it can be both integer or String
+Minimality: A candidate key should have no unnecessary attributes; each attribute in the candidate key is essential for unique identification.
+
+3. Unique Key
+A Unique Key (or Unique Constraint) is similar to a candidate key but with a key difference:
+
+Uniqueness: Like a primary key, a unique key ensures that all values in the column(s) are unique across the table.we can have Multiple Unique key in a table
+Nullable: Unlike a primary key, a unique key can contain NULL values (though each non-null value must be unique).it can be both integer or String
+
+
+
+Key Differences
+Primary Key vs. Candidate Key:
+A primary key is one of the candidate keys chosen to uniquely identify rows in a table. A table can have multiple candidate keys, but only one primary key.
+
+Primary Key vs. Unique Key:
+A primary key does not allow NULL values, while a unique key can allow NULL values. Both enforce uniqueness, but the primary key is the main identifier for table rows.
+
+Candidate Key vs. Unique Key:
+A candidate key is a potential primary key (or part of it), while a unique key is specifically for ensuring uniqueness in a column or set of columns.
+A unique key can be a candidate key if it also meets the criteria of being non-nullable and minimal.

@@ -1,0 +1,9 @@
+Differences Between Multithreading and Multiprocessing:
+
+Feature	                    Multithreading                                                                           	Multiprocessing
+Memory Sharing	                    Shared memory space among threads                                           	Separate memory space for each process
+Communication	                    Easier communication between threads                                 	Requires inter-process communication (IPC) mechanisms
+Overhead	                    Lower overhead, more lightweight	                                     Higher overhead, heavier due to separate memory allocation
+Context                     Switching	Faster context switching	                                              Slower context switching
+Suitability	                    I/O-bound tasks	                                                                          CPU-bound tasks
+Risk of Deadlock                    	Higher risk of deadlock due to shared memory                                            	Lower risk of deadlock

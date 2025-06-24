@@ -1,0 +1,36 @@
+In Java, a class variable is a variable that is associated with the class itself rather than with instances of the class.
+These variables are declared with the static keyword and are shared among all instances of the class. Here's a detailed look at class variables:
+
+Characteristics of Class Variables
+Static Keyword: Class variables are declared with the static keyword. This keyword indicates that the variable belongs to the class rather than to any specific instance.
+
+Shared Across Instances: All instances of the class share the same class variable. Any change made to the variable affects all instances of the class.
+
+Accessed via Class Name: While you can access class variables through an instance of the class, it is more common and recommended to access them using the class name.
+
+Initialization: Class variables are initialized when the class is first loaded. You can provide an initial value during declaration or through a static initializer block.
+
+Syntax
+
+public class MyClass {
+    // Class variable
+    static int classVariable = 0;
+
+    // Static block for initialization
+    static {
+        classVariable = 10;
+    }
+
+    // Instance variable
+    int instanceVariable;
+
+    // Constructor
+    public MyClass(int value) {
+        instanceVariable = value;
+    }
+
+    // Class method
+    public static void incrementClassVariable() {
+        classVariable++;
+    }
+}

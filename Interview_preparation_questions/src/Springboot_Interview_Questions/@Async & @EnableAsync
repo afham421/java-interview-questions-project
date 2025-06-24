@@ -1,0 +1,84 @@
+
+
+
+In Spring, you can enable asynchronous method execution using the @Async annotation. This allows methods to run in a separate thread,
+freeing up the caller thread to continue its execution without waiting for the method to complete. To use @Async, you need to follow a few steps:
+
+Steps to Enable and Use @Async:
+Enable Asynchronous Processing:
+
+Add the @EnableAsync annotation to your Spring Boot application or configuration class. This enables Spring's asynchronous method execution capability.
+it is used to tell Springboot application that we are using @Async in our application
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableAsync;
+
+@SpringBootApplication
+@EnableAsync
+public class AsyncApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(AsyncApplication.class, args);
+    }
+}
+Create an Asynchronous Method: // it is used for example we have task to save lac of record int DB  if we run method without @Async it will take time to complete and
+response in postman by this we have not good user experience of our application but if we use @Async THEN we will get response quickly without completing task
+and this task is working in background in separate thread so that we will get good user experience ////// and we can get fast our Api by ExecutorService
+
+Annotate the method you want to run asynchronously with @Async. This method will be executed in a separate thread.
+
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+
+@Service
+public class MyAsyncService {
+
+    @Async
+    public void asyncMethod() {
+        System.out.println("Async method started.");
+        try {
+            Thread.sleep(2000);  // Simulate a long-running task
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Async method completed.");
+    }
+}
+Call the Asynchronous Method:
+
+You can now call this asynchronous method from any other service or controller. The method will execute in a separate thread,
+and the caller thread will not wait for it to complete.
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class MyController {
+
+    @Autowired
+    private MyAsyncService myAsyncService;
+
+    @GetMapping("/startAsync")
+    public String startAsyncProcess() {
+        myAsyncService.asyncMethod();  // This will be executed asynchronously
+        return "Async process started!";
+    }
+}
+Example Flow:
+When a request is made to /startAsync, the asyncMethod() will be invoked.
+Since asyncMethod() is annotated with @Async, it will run on a different thread.
+The response "Async process started!" will be returned immediately, without waiting for asyncMethod() to finish.
+Meanwhile, asyncMethod() will execute in the background, printing messages after a delay.
+
+//////////////////////////////  in core how we do fast api////////////////////////////////
+
+ExecutorService es = Executors.newFixedThreadPool(10);
+es.execute(new Runnable() {
+@Override
+public void run() {
+
+///// here we will pass our method logic that we use in @Async method and we will get fast response
+
+}
+}

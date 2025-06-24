@@ -1,0 +1,54 @@
+
+Normalization
+Normalization is the process of organizing data in a database to reduce redundancy(Extra Things) and improve data integrity.  // means in city column we have pak ,pakistan etc ...
+It involves dividing large tables into smaller ones and defining relationships between them. // means we create table of city and pass primary key as a foreign key in the city name
+The primary goal of normalization is to eliminate redundant data (storing the same data in more than one place) and ensure data dependencies make sense.
+
+Benefits of Normalization
+Reduces Data Redundancy: By splitting data into multiple related tables, normalization reduces the duplication of data.
+Improves Data Integrity: Ensures that the data is consistent and adheres to certain rules, which helps maintain data accuracy.
+Efficient Data Management: Smaller tables are easier to maintain and update, and the risk of data anomalies is reduced.
+
+Normalization Forms
+There are several "normal forms" (NFs), each addressing a specific type of redundancy: example we have customer id and address in start
+
+First Normal Form (1NF): ----> contains steps 1.primary key  2. Atomic values 3. dont have repeating group
+Ensures that each column contains atomic (indivisible) values and that each record is unique. // means if table has not primary key than initialize into the table
+Example: Splitting a column containing both first and last names into two separate columns.// means we have mailsi,vehari,lahore then we should create 3 separate columns and put one city in on columne
+//now if we found duplicate values in columns then we should create new table of addresses and pass primary key in the place of city name
+//and remove 3 separate columns and make one and pass primary key in the place of city name as a foreign key 1NF achieve but our reqiured output not
+//so we will create a new table that contains customersAddId and customersId and addressId and remove the address columne
+
+Second Normal Form (2NF):----> 1.Partial dependency
+Achieves 1NF and removes partial dependency (a non-key attribute depends on part of a composite key).
+Example: Moving data that depends only on a part of a composite key to another table. //for example we have patientId and patientName and DoctorId and DoctorName and doctorSpecialization
+//doctor and patient are partialy dependent so we split it into two tables first patientId and patientName and  2nd is Doctor table now both tables column are fully dependent on own table
+
+Third Normal Form (3NF): ---> 1.transitive dependency
+Achieves 2NF and removes transitive dependency (a non-key attribute depends on another non-key attribute). //for example we have DoctorId and doctorName and doctorSpecialization
+Example: Moving data that depends on another non-key attribute to a new table.//and location and country . here location and country are dependent on it and on primary key
+//so we will create country table and location table and pass country primary key as a foreign key in location table and pass location primary key as a foreign key into doctor table
+
+
+Boyce-Codd Normal Form (BCNF):
+A stricter version of 3NF, ensuring that every determinant is a candidate key.
+
+Higher Normal Forms (4NF, 5NF, etc.):
+Deal with more complex scenarios like multi-valued dependencies, join dependencies, etc.
+
+
+Denormalization
+Denormalization is the process of combining normalized tables into larger tables to improve read performance.
+ It involves introducing redundancy into a database design, which is typically avoided in normalization.
+
+Benefits of Denormalization
+Improves Query Performance: By reducing the number of joins required to retrieve data, denormalization can speed up read-heavy operations.
+Simplifies Queries: Complex queries that require data from multiple tables can be simplified when the data is stored together.
+Trade-offs of Denormalization
+Increased Redundancy: Denormalization introduces redundant data, which can lead to inconsistencies and make the database more difficult to maintain.
+Data Integrity Issues: With redundant data, ensuring consistency across the database becomes more challenging, increasing the risk of anomalies.
+
+When to Use Normalization vs. Denormalization
+Normalization is typically used in OLTP (Online Transaction Processing) systems where data integrity and consistency are crucial, and the system handles many short transactions.
+Denormalization is often used in OLAP (Online Analytical Processing) systems or data warehousing,
+where read performance and quick data retrieval are more important than strict data integrity.

@@ -1,0 +1,59 @@
+🔗 What is a Docker Network?
+A Docker network is a virtual network that enables communication between containers, and also between containers and the outside world.
+
+Docker manages networking automatically, and you can create custom networks for better isolation and control.
+
+🛠️ Types of Docker Networks
+| Network Type | Description                                                                |
+| ------------ | -------------------------------------------------------------------------- |
+| **bridge**   | Default for standalone containers on a single host. Ideal for most setups. |
+| **host**     | Container shares the host’s network. No network isolation.                 |
+| **none**     | Container has no network connection. Fully isolated.                       |
+| **overlay**  | For multi-host communication (used in Docker Swarm).                       |
+| **macvlan**  | Assigns a MAC address from the local LAN to the container. Advanced use.   |
+
+
+✅ Most Common: Bridge Network
+Each container gets a private IP.
+
+Containers can talk to each other by name (if on the same user-defined bridge network).
+
+Use it for most local development and single-host setups.
+
+📌 Common Commands
+1. List Docker networks
+
+docker network ls
+2. Inspect a network
+
+docker network inspect bridge
+3. Create a custom bridge network
+
+docker network create my-network
+4. Run a container on a specific network
+
+docker run -d --name app1 --network my-network nginx
+docker run -d --name app2 --network my-network alpine
+Now app1 and app2 can talk to each other using their container names.
+
+5. Connect an existing container to a network
+
+docker network connect my-network app1
+🌐 Example in Microservices
+Imagine:
+
+service-a (Java Spring Boot)
+
+service-b (MySQL)
+
+Create a network:
+
+
+docker network create myapp-net
+Run both services on it:
+
+
+docker run -d --name service-a --network myapp-net myapp-image
+docker run -d --name mysql-db --network myapp-net mysql
+Then, in service-a, you can connect to the DB using mysql-db:3306.
+

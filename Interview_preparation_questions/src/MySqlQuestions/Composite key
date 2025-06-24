@@ -1,0 +1,48 @@
+A composite key (or compound key) in a database is a key that consists of two or more columns in a table, which together uniquely identify a row in the table.
+ A composite key is used when a single column is not sufficient to uniquely identify a record,
+ and the combination of multiple columns is required to ensure uniqueness.
+
+Example of a Composite Key
+Consider a table OrderDetails in an e-commerce database, where each row represents a product in a specific order. This table might have the following columns:
+
+OrderID: The ID of the order.
+ProductID: The ID of the product.
+Quantity: The quantity of the product ordered.
+Why Use a Composite Key?
+In this example, neither OrderID nor ProductID alone can uniquely identify a row in the OrderDetails table:
+
+OrderID is repeated because an order can have multiple products.
+ProductID is repeated because the same product can appear in different orders.
+However, the combination of OrderID and ProductID will be unique for each row. Together, they form a composite key that uniquely identifies each row in the table.
+
+Creating a Composite Key
+In SQL (MySQL Example):
+You can create a composite key when defining the table:
+
+CREATE TABLE OrderDetails (
+    OrderID INT,
+    ProductID INT,
+    Quantity INT,
+    PRIMARY KEY (OrderID, ProductID)
+);
+In this example:
+
+The PRIMARY KEY (OrderID, ProductID) statement defines OrderID and ProductID together as the primary key.
+Composite Key Characteristics
+Uniqueness: A composite key ensures that the combination of the key columns is unique across the table, meaning no two rows can have the same values for both OrderID and ProductID.
+
+Foreign Keys: The columns in a composite key can also serve as foreign keys, referencing columns in other tables. This is useful in many-to-many relationships where a junction table (like OrderDetails) links two tables.
+
+Indexing: When a composite key is defined, a composite index is automatically created on the columns that make up the composite key. This index can be used to speed up searches and queries involving these columns.
+
+Advantages of Composite Keys
+Data Integrity: Composite keys help maintain data integrity by ensuring that no duplicate records exist for the combined columns.
+Better Representation of Relationships: They are particularly useful in many-to-many relationships, where the combination of columns can better represent the relationship between different entities.
+Disadvantages of Composite Keys
+Complexity: Queries involving composite keys can be more complex to write and understand compared to queries involving single-column keys.
+Performance: In some cases, especially with large datasets, using composite keys might impact performance due to the need to maintain multiple columns in the key.
+Summary
+A composite key is a primary key that consists of two or more columns.
+It is used when no single column can uniquely identify a row.
+Composite keys are particularly useful in tables representing many-to-many relationships.
+They ensure data uniqueness, but can add complexity to database design and queries.

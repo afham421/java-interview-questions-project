@@ -1,0 +1,89 @@
+🌐 Spring MVC (Model-View-Controller)
+✅ What is it?
+Spring MVC is the traditional, blocking, and servlet-based web framework in Spring. It's built on the Servlet API and uses synchronous (blocking) I/O.
+
+🔧 Key Features
+Blocking architecture: One thread per request.
+
+Thread is blocked while waiting for the response (e.g., database, network).
+
+Suitable for traditional web apps or REST APIs where load is moderate.
+
+🧱 Tech Stack
+Based on Servlet containers like Tomcat or Jetty.
+
+Uses DispatcherServlet as the entry point.
+
+Annotated controllers using @RestController, @GetMapping, etc.
+
+java
+Copy
+Edit
+@RestController
+public class HelloController {
+
+    @GetMapping("/hello")
+    public String hello() {
+        return "Hello, MVC!";
+    }
+}
+⚡ Spring WebFlux
+✅ What is it?
+Spring WebFlux is the non-blocking, reactive web framework introduced in Spring 5. It's designed for high concurrency and real-time apps, and can run on Netty, Undertow, or traditional servlet containers.
+
+🔧 Key Features
+Non-blocking architecture: Uses Reactive Streams.
+
+Efficient under high-load / async systems.
+
+Built on Project Reactor (Flux & Mono types).
+
+Handles backpressure well.
+
+🧱 Tech Stack
+Can run on Netty (default) or traditional servlet containers.
+
+Uses WebHandler, not DispatcherServlet.
+
+Controller methods return Mono<T> (single item) or Flux<T> (stream of items).
+
+java
+Copy
+Edit
+@RestController
+public class HelloReactiveController {
+
+    @GetMapping("/hello")
+    public Mono<String> hello() {
+        return Mono.just("Hello, WebFlux!");
+    }
+}
+🔍 MVC vs WebFlux: Head-to-Head
+| Feature        | Spring MVC                  | Spring WebFlux                       |
+| -------------- | --------------------------- | ------------------------------------ |
+| Type           | Blocking                    | Non-blocking (Reactive)              |
+| Uses           | Servlet API                 | Reactive Streams (Reactor)           |
+| Performance    | Good for typical workloads  | Better for high concurrency          |
+| Return types   | `String`, `ResponseEntity`  | `Mono<T>`, `Flux<T>`                 |
+| Thread model   | One request = one thread    | Event-loop (fewer threads)           |
+| Default server | Tomcat                      | Netty                                |
+| Suitable for   | CRUD APIs, classic web apps | Streaming, chat apps, microservices  |
+| Learning curve | Easier                      | Steeper (requires reactive thinking) |
+
+🧠 When to Use What?
+Use Spring MVC if:
+
+Your app is I/O-light (CPU-bound, like normal APIs).
+
+You're integrating with blocking libraries (JPA, JDBC).
+
+You want simplicity and wide ecosystem support.
+
+Use Spring WebFlux if:
+
+Your app is I/O-heavy (chat apps, streaming, websockets).
+
+You want better scalability under load.
+
+You’re using non-blocking DBs (like R2DBC, Mongo Reactive).
+

@@ -1,0 +1,75 @@
+In Java and other object-oriented programming languages, Dependency Injection (DI) is a design pattern that allows a class to receive its dependencies
+from an external source rather than creating them itself. This promotes loose coupling and makes the code more modular and easier to test.
+
+There are three main types of Dependency Injection:
+
+1. Constructor Injection
+Constructor injection is a type of dependency injection where the dependencies are provided to a class through its constructor.
+ This method ensures that a class is always instantiated with its required dependencies.
+
+Advantages:
+
+Makes the dependency mandatory; the object cannot be created without it. compulsory...
+Ideal for injecting dependencies that are essential for the object’s behavior.
+Promotes immutability by setting dependencies only once, at the time of object creation.
+Example:
+
+public class Service {
+    private final Repository repository;
+
+    public Service(Repository repository) { //in this case there is need to remember the type and order of constructor parameters
+        this.repository = repository;
+    }
+}
+2. Setter Injection
+Setter injection is a type of dependency injection where the dependencies are provided through public setter methods after the object is constructed.
+ This method allows for optional dependencies and can provide default values.
+
+Advantages:
+
+Allows for optional dependencies and changing dependencies at runtime.
+More flexible, as dependencies can be changed or set later.
+Example:
+
+public class Service {
+    private Repository repository;
+
+    public void setRepository(Repository repository) {// in this type no need to remember type and parameters it will take other we can use multiple setter method
+        this.repository = repository;
+    }
+}
+3. Field (Property) Injection
+Field injection is a type of dependency injection where the dependencies are injected directly into the class fields.
+This is often done using reflection (like in Spring Framework) and annotations like @Autowired.
+
+Advantages:
+
+Simplifies the code by eliminating the need for constructors or setters for dependencies.
+Useful for injecting dependencies into legacy code where you do not want to refactor constructors or add setters.
+Example:
+
+public class Service {
+    @Autowired
+    private Repository repository;
+}
+Comparison of Dependency Injection Types:
+Type	                     Description	                                          Advantages	                                        Disadvantages
+Constructor Injection	    Dependencies are provided through a constructor.	    - Mandatory dependencies are enforced.
+                                                                                     - Promotes immutability and simplicity.	- Less flexible as dependencies cannot be changed
+                                                                                 -you can check what dependencies class require
+                                                                                  and its order by looking on constructor                       after object creation.
+                                                                                                                                  - Can become cumbersome with many dependencies.
+Setter Injection	    Dependencies are provided through setter methods.	    - Supports optional and changeable dependencies.
+                                                                                - More flexible and test-friendly.	                - Can lead to partially constructed objects
+                                                                                                                                        if all dependencies are not set.
+                                                                                                                                        - Breaks immutability.
+Field Injection	        Dependencies are injected directly into class fields.	- Simplifies code with less boilerplate.
+                                                                                - Useful for injecting dependencies in legacy code.     	- Breaks encapsulation by making
+                                                                                                                                        fields accessible outside.
+                                                                                                                                        - Harder to identify required dependencies
+                                                                                                                                         and makes testing harder.
+
+Conclusion
+Each type of dependency injection has its own use cases and advantages. Constructor injection is generally preferred for mandatory dependencies and promoting immutability,
+ setter injection is good for optional dependencies, and field injection is convenient but less commonly recommended due to concerns with encapsulation and testing.
+  The choice depends on the specific requirements and constraints of your project.

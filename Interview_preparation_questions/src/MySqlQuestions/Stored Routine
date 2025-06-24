@@ -1,0 +1,133 @@
+In MySQL, stored routines include stored procedures and stored functions. They are a way to encapsulate SQL code in a reusable form, allowing for more complex operations and logic to be executed on the database server.
+
+Types of Stored Routines
+Stored Procedure: A stored procedure is a collection of SQL statements that can be executed as a single unit. It does not return a value directly but can return results through output parameters or by manipulating data in tables.
+
+Stored Function: A stored function is similar to a stored procedure, but it returns a single value. It can be used in SQL statements wherever an expression is valid.
+
+Creating Stored Procedures
+Syntax
+
+DELIMITER $$
+
+CREATE PROCEDURE procedure_name ([IN|OUT|INOUT] parameter_name datatype, ...)
+BEGIN
+    -- SQL statements
+END $$
+
+DELIMITER ;
+IN: The parameter is used to pass a value into the procedure.
+OUT: The parameter is used to return a value from the procedure.
+INOUT: The parameter can be used for both input and output.
+Example: Simple Stored Procedure
+
+DELIMITER $$
+
+CREATE PROCEDURE GetEmployeeSalary(IN emp_id INT, OUT emp_salary DECIMAL(10, 2))
+BEGIN
+    SELECT salary INTO emp_salary
+    FROM employees
+    WHERE id = emp_id;
+END $$
+
+DELIMITER ;
+Usage:
+
+
+CALL GetEmployeeSalary(1, @salary);
+SELECT @salary;
+Creating Stored Functions
+Syntax
+
+DELIMITER $$
+
+CREATE FUNCTION function_name (parameter_name datatype, ...)
+RETURNS datatype
+BEGIN
+    -- SQL statements
+    RETURN value;
+END $$
+
+DELIMITER ;
+Example: Simple Stored Function
+
+DELIMITER $$
+
+CREATE FUNCTION CalculateTax(income DECIMAL(10, 2))
+RETURNS DECIMAL(10, 2)
+BEGIN
+    DECLARE tax DECIMAL(10, 2);
+    SET tax = income * 0.15;
+    RETURN tax;
+END $$
+
+DELIMITER ;
+Usage:
+
+
+SELECT CalculateTax(50000);
+Differences Between Stored Procedures and Stored Functions
+Return Value:
+
+Stored Procedure: Does not return a value directly, but can return values through OUT parameters.
+Stored Function: Must return a single value.
+Usage:
+
+Stored Procedure: Called using the CALL statement and cannot be used in SQL expressions.
+Stored Function: Can be called in SQL expressions, like SELECT or WHERE clauses.
+Purpose:
+
+Stored Procedure: Typically used for executing a series of SQL statements, including complex business logic.
+Stored Function: Used for calculations and returning a single result.
+Example: Using Stored Procedures and Functions Together
+Suppose you have a stored function that calculates tax and a stored procedure that uses this function to update employee salaries after tax.
+
+Stored Function to Calculate Tax
+
+DELIMITER $$
+
+CREATE FUNCTION CalculateTax(income DECIMAL(10, 2))
+RETURNS DECIMAL(10, 2)
+BEGIN
+    DECLARE tax DECIMAL(10, 2);
+    SET tax = income * 0.15;
+    RETURN tax;
+END $$
+
+DELIMITER ;
+Stored Procedure to Update Salaries
+
+DELIMITER $$
+
+CREATE PROCEDURE UpdateSalaryAfterTax(IN emp_id INT)
+BEGIN
+    DECLARE salary_after_tax DECIMAL(10, 2);
+
+    SELECT salary - CalculateTax(salary) INTO salary_after_tax
+    FROM employees
+    WHERE id = emp_id;
+
+    UPDATE employees
+    SET salary = salary_after_tax
+    WHERE id = emp_id;
+END $$
+
+DELIMITER ;
+Usage:
+
+
+CALL UpdateSalaryAfterTax(1);
+Managing Stored Routines
+Viewing Stored Routines:
+
+To list all stored procedures: SHOW PROCEDURE STATUS;
+To list all stored functions: SHOW FUNCTION STATUS;
+Dropping a Stored Routine:
+
+Dropping a stored procedure: DROP PROCEDURE IF EXISTS procedure_name;
+Dropping a stored function: DROP FUNCTION IF EXISTS function_name;
+Benefits of Stored Routines
+Performance: Stored routines are precompiled, so they often execute faster than sending multiple SQL statements from the client to the server.
+Reusability: Stored routines can be reused across different applications and scripts, reducing code duplication.
+Security: You can grant specific privileges for executing stored routines, which helps control access to underlying data.
+Maintainability: Business logic can be centralized in the database, making it easier to manage and update.

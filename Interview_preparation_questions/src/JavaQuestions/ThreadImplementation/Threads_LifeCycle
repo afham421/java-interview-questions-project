@@ -1,0 +1,84 @@
+In Java, a thread goes through several states in its lifecycle, from its creation to its termination.
+These states define the behavior and status of a thread at any given time. Here's a breakdown of the thread lifecycle states:
+
+1. New
+State: NEW
+Description: A thread is in the "new" state when it is created but not yet started. The thread exists as an object but is not yet a separate thread of execution.
+Code Example:
+
+Thread t = new Thread(() -> {
+    // task
+});
+
+2. Runnable
+State: RUNNABLE
+Description: When the start() method is called on a thread, it moves from the "new" state to the "runnable" state.
+ A thread in this state is ready to run and is waiting for CPU time to execute its task. However, it might not be actually running (executing) because the CPU might be executing other threads.
+Code Example:
+
+t.start(); // Thread is now runnable
+
+3. Blocked
+State: BLOCKED
+Description: A thread is in the "blocked" state when it is waiting for a monitor lock to enter a synchronized block/method or
+reenter a synchronized block/method after calling wait(). This state occurs when another thread currently holds the lock that the blocked thread wants to acquire.
+Code Example:
+
+synchronized(lock) {
+    // Some thread is holding this lock, so other threads will be blocked
+}
+
+4. Waiting
+State: WAITING
+Description: A thread is in the "waiting" state when it is waiting indefinitely for another thread to perform a particular action.
+This occurs when a thread calls methods like Object.wait() or Thread.join() without a timeout.
+Code Example:
+
+t.join(); // Current thread waits for 't' to finish
+
+5. Timed Waiting
+State: TIMED_WAITING
+Description: A thread is in the "timed waiting" state when it is waiting for another thread to perform a specific action within a given time frame.
+This state occurs when a thread calls methods like Thread.sleep(long millis), Object.wait(long timeout), or Thread.join(long millis).
+Code Example:
+
+Thread.sleep(1000); // Sleep for 1 second
+
+6. Terminated
+State: TERMINATED
+Description: A thread is in the "terminated" state when it has completed its execution or has been terminated by an exception.
+Once a thread reaches this state, it cannot be restarted.
+Code Example:
+
+// After the run() method completes, the thread enters the terminated state
+// we can stop the thread by calling the stop() method
+
+Diagram of Thread Lifecycle:
+New -> Runnable: Call start().
+Runnable -> Running: The thread scheduler picks it for execution.
+Running -> Blocked/Waiting/Timed Waiting: Thread waits for a lock, a condition, or a specified time.
+Blocked/Waiting/Timed Waiting -> Runnable: Condition or time period ends.
+Running -> Terminated: Execution completes or an uncaught exception occurs.
+
+Example:
+
+public class ThreadLifecycleDemo {
+    public static void main(String[] args) throws InterruptedException {
+        Thread t = new Thread(() -> {
+            System.out.println("Thread is running");
+            try {
+                Thread.sleep(1000); // Timed Waiting state
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+
+        System.out.println("State: " + t.getState()); // NEW
+        t.start();
+        System.out.println("State: " + t.getState()); // RUNNABLE
+        Thread.sleep(500);
+        System.out.println("State: " + t.getState()); // TIMED_WAITING
+        t.join(); // Waits for 't' to die
+        System.out.println("State: " + t.getState()); // TERMINATED
+    }
+}

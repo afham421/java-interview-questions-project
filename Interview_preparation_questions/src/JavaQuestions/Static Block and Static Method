@@ -1,0 +1,107 @@
+In Java, both static blocks and static methods are related to the initialization and management of static members of a class. Here’s how they differ in terms of execution order and purpose:
+
+The Variable is Not Initialized
+If a static variable is declared but not explicitly initialized, its default value will be null (for objects) or 0/false (for primitive types).
+public class MyClass {
+    static String myStaticVariable;
+
+    public static void main(String[] args) {
+        System.out.println("Static variable: " + myStaticVariable);  // This will print "null"
+    }
+}
+
+Solution: Initialize the Static Variable
+Make sure to initialize the static variable when you declare it.
+
+public class MyClass {
+    static String myStaticVariable = "Initialized";
+
+    public static void main(String[] args) {
+        System.out.println("Static variable: " + myStaticVariable);  // This will print "Initialized"
+    }
+}
+
+3. Accessing the Variable Before Initialization
+If you try to access a static variable before it has been initialized (e.g., in a static block or method), it will still be null.
+
+public class MyClass {
+    static String myStaticVariable;
+
+    static {
+        System.out.println("Static block: " + myStaticVariable);  // This will print "null"
+        myStaticVariable = "Initialized in static block";
+    }
+
+    public static void main(String[] args) {
+        System.out.println("Static variable: " + myStaticVariable);  // This will print "Initialized in static block"
+    }
+}
+
+
+Static Block
+Purpose: A static block is used to initialize static variables or to perform any static initialization tasks. It runs when the class is first loaded into memory, before any static methods or constructors are executed.
+Execution Order: Static blocks are executed in the order they appear in the class definition, and they run before any static methods or instance methods of the class are invoked.
+
+Syntax:
+class MyClass {
+    static {
+        System.out.println("Static block executed");
+    }
+
+    public static void myStaticMethod() {
+        System.out.println("Static method executed");
+    }
+
+    public static void main(String[] args) {
+        System.out.println("Main method executed");
+        myStaticMethod();
+    }
+}
+Static Method
+Purpose: A static method belongs to the class rather than any instance. It can be called without creating an instance of the class. Static methods can be called directly using the class name.
+Execution Order: Static methods are executed when they are explicitly called. They are not executed automatically when the class is loaded; instead, they are invoked in response to calls in the program.
+
+Syntax:
+class MyClass {
+    static {
+        System.out.println("Static block executed");
+    }
+
+    public static void myStaticMethod() {
+        System.out.println("Static method executed");
+    }
+
+    public static void main(String[] args) {
+        System.out.println("Main method executed");
+        myStaticMethod();
+    }
+}
+Execution Flow
+In the example provided:
+
+Class Loading: When the MyClass class is loaded by the Java Virtual Machine (JVM), the static block is executed first. This is done only once when the class is loaded.
+Static Methods: The myStaticMethod() static method is not executed automatically. It is called explicitly within the main method, which is the entry point of the program.
+
+Example with Output
+class MyClass {
+    static {
+        System.out.println("Static block executed");
+    }
+
+    public static void myStaticMethod() {
+        System.out.println("Static method executed");
+    }
+
+    public static void main(String[] args) {
+        System.out.println("Main method executed");
+        myStaticMethod();
+    }
+}
+Output:
+Static block executed
+Main method executed
+Static method executed
+
+Summary
+Static Block: Executes automatically when the class is first loaded, and it executes before any static methods or instance methods.
+Static Method: Executes only when explicitly called and can be called anytime after the class is loaded.

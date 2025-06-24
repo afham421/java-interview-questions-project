@@ -1,0 +1,4 @@
+////////////////////////////
+What is Thymeleaf?
+Thymeleaf is a modern server-side Java template engine for web and standalone environments. It is used for rendering web pages and generating HTML content.
+Thymeleaf is often used with Spring Boot to create dynamic web applications.

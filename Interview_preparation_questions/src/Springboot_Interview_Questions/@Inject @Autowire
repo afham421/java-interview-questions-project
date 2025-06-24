@@ -1,0 +1,52 @@
+
+    @Inject and @Autowired are both used for dependency injection in Spring, but they come from different frameworks and have subtle differences.
+    @Autowired:
+    Origin: It is specific to the Spring Framework.
+    Standard: It is a Spring-specific annotation.
+
+    @Inject:
+    Origin: It comes from the Java Dependency Injection (JSR-330) standard.
+    Standard: It is a part of the javax.inject package, which is a standard for dependency injection in Java.
+
+    Usage and Compatibility
+    @Autowired:
+    Spring Specific: It’s tightly coupled with Spring’s dependency injection container and works seamlessly within the Spring ecosystem.
+    Legacy: It’s more commonly used in older Spring applications but remains widely used due to its flexibility and features.
+    @Inject:
+    Framework Agnostic: Since it’s part of a standard, it can be used in any framework that supports JSR-330, making it more portable across different DI frameworks.
+    Modern Applications: It’s more commonly used in modern Java applications that prefer using standard annotations for better portability and framework independence.
+
+@Component
+public class MyService {
+
+    @Autowired
+    private MyRepository myRepository;
+
+     or constructor injection
+    @Autowired
+    public MyService(MyRepository myRepository) {
+        this.myRepository = myRepository;
+    }
+}
+
+
+@Component
+public class MyService {
+
+    @Inject
+    private MyRepository myRepository;
+
+     or constructor injection
+    @Inject
+    public MyService(MyRepository myRepository) {
+        this.myRepository = myRepository;
+    }
+
+     using @Named instead of @Qualifier
+    @Inject
+    @Named("myCustomRepository")
+    private MyRepository myCustomRepository;
+}
+
+Use @Autowired if you are working in a purely Spring-based application and want to leverage Spring-specific features.
+Use @Inject if you prefer to follow Java standards (JSR-330) and aim for portability across different DI frameworks.

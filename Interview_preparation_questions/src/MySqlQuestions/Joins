@@ -1,0 +1,27 @@
+In MySQL, joins are used to combine rows from two or more tables based on a related column between them. Joins are essential for querying data across multiple tables in a relational database.
+
+Types of Joins in MySQL
+INNER JOIN: Returns records that have matching values in both tables.
+LEFT JOIN (or LEFT OUTER JOIN): Returns all records from the left table and the matched records from the right table. If there's no match, NULL values are returned for columns from the right table.
+RIGHT JOIN (or RIGHT OUTER JOIN): Returns all records from the right table and the matched records from the left table. If there's no match, NULL values are returned for columns from the left table.
+FULL JOIN (or FULL OUTER JOIN): Returns all records when there is a match in either left or right table. If there's no match, NULL values are returned for the non-matching side (Note: MySQL does not natively support FULL JOIN, but you can achieve it using a combination of LEFT JOIN and RIGHT JOIN).
+CROSS JOIN: Returns the Cartesian product of the two tables, meaning it returns all possible combinations of rows from the tables.
+
+ INNER JOIN
+
+SELECT employees.employee_id, employees.first_name, departments.department_name
+FROM employees
+INNER JOIN departments ON employees.department_id = departments.department_id;
+
+Explanation: This query returns only the rows where there is a match between employees.department_id and departments.department_id.
+
+
+full join using union
+
+SELECT employees.employee_id, employees.first_name, departments.department_name
+FROM employees
+LEFT JOIN departments ON employees.department_id = departments.department_id
+UNION
+SELECT employees.employee_id, employees.first_name, departments.department_name
+FROM employees
+RIGHT JOIN departments ON employees.department_id = departments.department_id;

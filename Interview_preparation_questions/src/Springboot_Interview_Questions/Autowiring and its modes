@@ -1,0 +1,19 @@
+Autowiring in Spring Framework is a feature used to automatically inject bean dependencies without explicitly specifying them.
+It reduces the need for @Autowired or setters in the configuration by matching and injecting beans based on certain criteria.
+
+Autowiring Modes:
+no (default):
+No autowiring is done, and you need to define all dependencies manually.
+
+byType:
+Autowires the bean by matching the data type of a property with the type of a bean. If exactly one bean of that type is found, it is autowired.it use setter method
+
+byName:
+Autowires the bean by matching the name of a property with a bean's name in the configuration.it use setter method
+
+constructor:
+Autowires the bean using its constructor. It matches the constructor parameter types with available beans.
+
+autodetect (Deprecated):
+Spring first tries constructor autowiring; if it doesn't work, it falls back to byType.
+

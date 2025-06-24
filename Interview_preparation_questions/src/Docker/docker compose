@@ -1,0 +1,88 @@
+🧩 What is Docker Compose?
+Docker Compose is a tool that lets you define and run multi-container applications using a simple YAML file.
+
+Instead of running multiple docker run commands, you define everything in one file: services, networks, volumes, etc.
+
+✅ Why Use Docker Compose?
+Easily manage multi-container setups (e.g., app + database)
+
+Simplifies dev/test environments
+
+Version-controlled infrastructure setup
+
+One command to start everything: docker-compose up
+
+📄 Basic docker-compose.yml Example
+yaml
+Copy
+Edit
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    volumes:
+      - ./logs:/app/logs
+
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mydb
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:
+🧪 Breakdown
+services: Each service is a container (like app, db)
+
+build: Builds from a Dockerfile
+
+image: Pulls a pre-built image (like mysql:8)
+
+ports: Maps ports (host:container)
+
+volumes: Mounts folders or named volumes
+
+depends_on: Ensures db starts before app
+
+environment: Sets environment variables
+
+🧰 Common Commands
+| Command                | What it does                                  |
+| ---------------------- | --------------------------------------------- |
+| `docker-compose up`    | Builds and starts containers                  |
+| `docker-compose up -d` | Starts in detached mode                       |
+| `docker-compose down`  | Stops and removes containers/networks/volumes |
+| `docker-compose ps`    | Lists running services                        |
+| `docker-compose logs`  | Shows container logs                          |
+| `docker-compose build` | Rebuilds images                               |
+
+
+💡 Example Use Case: Spring Boot + MySQL
+If you have:
+
+Dockerfile for Spring Boot app
+
+docker-compose.yml for app + db
+
+You can run the whole stack with:
+
+bash
+Copy
+Edit
+docker-compose up -d
+🗂 File Structure
+css
+Copy
+Edit
+project-root/
+├── Dockerfile
+├── docker-compose.yml
+├── src/
+└── ...

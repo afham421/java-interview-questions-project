@@ -1,0 +1,84 @@
+In Java, an Interceptor is a design pattern commonly used in frameworks like Spring, Hibernate, and Java EE (Jakarta EE) to allow developers to define
+ custom logic that can intercept and modify the execution of methods, requests, or processes. Interceptors are often used for cross-cutting concerns
+ such as logging, authentication, authorization, transaction management, and data validation without modifying the core business logic.
+
+Types of Interceptors in Java
+Spring Interceptors: Used in Spring MVC to intercept HTTP requests before they reach the controller or after the response is generated.
+ Commonly used for tasks like request logging, authentication, or modifying the request/response.
+
+Hibernate Interceptors: Used to intercept operations such as save, update, delete, or load. They are often used to audit changes
+in the database or to enforce business rules at the data level.
+
+EJB Interceptors: In Java EE, interceptors can be used to intercept calls to Enterprise Java Beans (EJB) to perform tasks like logging,
+ security checks, or transaction management.
+
+JAX-RS Interceptors: Used in RESTful web services to intercept requests and responses, allowing developers to modify headers, authenticate users, or compress responses.
+
+How Interceptors Work
+Interceptors work by implementing a specific interface or annotation that allows them to be triggered automatically before or after a specific process.
+
+Example: Spring MVC Interceptor
+In Spring, you can create an interceptor by implementing the HandlerInterceptor interface, which provides three methods:
+
+preHandle(): Called before the controller method is executed.
+postHandle(): Called after the controller method is executed but before the view is rendered.
+afterCompletion(): Called after the complete request is finished.
+Example Code:
+
+
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@Component
+public class CustomInterceptor implements HandlerInterceptor {
+
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        // Logic before the controller method executes
+        System.out.println("Pre Handle method is Calling");
+        return true; // Continue the request
+    }
+
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
+        // Logic after the controller method executes
+        System.out.println("Post Handle method is Calling");
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception exception) {
+        // Logic after the complete request is finished
+        System.out.println("Request and Response is completed");
+    }
+}
+Registering the Interceptor in Spring Configuration:
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+
+    @Autowired
+    CustomInterceptor customInterceptor;
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(customInterceptor);
+    }
+}
+Key Benefits of Using Interceptors:
+Separation of Concerns: Allows you to separate cross-cutting concerns from the main business logic.
+Reusability: Write once and use across multiple parts of the application.
+Centralized Management: Manage authentication, logging, and validation centrally without modifying every controller or service.
+Use Cases:
+Logging: Log the details of requests and responses.
+Authentication and Authorization: Check if the user is logged in or has the right permissions.
+Data Validation: Validate input data before it reaches the controller.
+Performance Monitoring: Track the execution time of requests.
+
+Interceptors are powerful tools for handling cross-cutting concerns efficiently and maintaining clean code architecture.

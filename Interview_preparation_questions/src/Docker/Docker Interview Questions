@@ -1,0 +1,129 @@
+✅ Basic-Level Questions
+1. What is Docker, and why do we use it?
+Answer Tip:
+Docker is a platform for developing, shipping, and running applications in containers.
+It helps Java developers by:
+
+Providing consistent environments across dev, test, and prod
+
+Avoiding "works on my machine" issues
+
+Simplifying dependency management
+
+2. What is the difference between a container and a virtual machine?
+Answer Tip:
+
+Container: lightweight, shares host OS kernel
+
+VM: heavy, full OS per instance
+Containers are faster and more efficient for deploying Java apps.
+
+3. How do you containerize a Java application?
+Answer Tip:
+
+Write a Dockerfile
+
+Use a base image like openjdk
+
+Copy your .jar file into the image
+
+Define the entry point
+
+Example:
+
+dockerfile
+Copy
+Edit
+FROM openjdk:17-jdk-alpine
+COPY target/myapp.jar /app.jar
+ENTRYPOINT ["java", "-jar", "/app.jar"]
+✅ Intermediate-Level Questions
+4. What is a Dockerfile and what are common instructions used in it?
+Answer Tip:
+A Dockerfile is a script that defines how to build a Docker image.
+
+Common instructions:
+
+FROM – base image
+
+COPY – copy files
+
+RUN – run a command
+
+CMD / ENTRYPOINT – define default command
+
+EXPOSE – declare a port
+
+5. How do you manage multiple services with Docker?
+Answer Tip:
+Using Docker Compose. It allows defining multi-container apps (e.g., Java app + database) using a docker-compose.yml file.
+
+Example:
+
+yaml
+Copy
+Edit
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+  db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+6. How do you persist data in Docker containers?
+Answer Tip:
+Using volumes:
+
+Named volumes: -v myvolume:/data
+
+Bind mounts: -v /host/path:/container/path
+
+For databases like MySQL in your Java project, volumes prevent data loss on container restart.
+
+✅ Advanced-Level Questions
+7. What is the difference between CMD and ENTRYPOINT in Docker?
+Answer Tip:
+
+CMD: provides default arguments that can be overridden
+
+ENTRYPOINT: defines the actual command to run and is not overridden easily
+Can be combined like:
+
+dockerfile
+Copy
+Edit
+ENTRYPOINT ["java", "-jar", "/app.jar"]
+CMD ["--spring.profiles.active=dev"]
+8. How do you debug a Java application inside a container?
+Answer Tip:
+
+Expose debug port (e.g., 5005)
+
+Add JVM debug flags:
+
+dockerfile
+Copy
+Edit
+ENTRYPOINT ["java", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005", "-jar", "/app.jar"]
+Connect from IDE to the exposed port
+
+9. How do you reduce the size of a Java Docker image?
+Answer Tip:
+
+Use JDK for build, JRE or jlink for runtime
+
+Use multi-stage builds
+
+Use a lightweight base image like alpine
+
+10. Have you used Docker in your CI/CD pipeline?
+Answer Tip:
+Yes. Example:
+
+Build and test Java app in container
+
+Push image to Docker Hub
+
+Deploy container in staging/prod using Jenkins/GitLab CI

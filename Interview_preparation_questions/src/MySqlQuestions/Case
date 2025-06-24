@@ -1,0 +1,95 @@
+In MySQL, the CASE statement is used to implement conditional logic in SQL queries.
+It is similar to the if-else logic in programming languages and allows you to return different values based on different conditions.
+
+Syntax
+There are two main forms of the CASE statement:
+
+Simple CASE Statement:
+
+Compares an expression to a set of values.
+
+CASE expression
+    WHEN value1 THEN result1
+    WHEN value2 THEN result2
+    ...
+    ELSE default_result
+END
+Searched CASE Statement:
+
+Evaluates a set of conditions, which do not have to be based on a single expression.
+
+CASE
+    WHEN condition1 THEN result1
+    WHEN condition2 THEN result2
+    ...
+    ELSE default_result
+END
+Examples
+1. Simple CASE Statement
+Suppose you have a table named employees with a column job_title. You want to assign a department based on the job_title.
+
+
+SELECT name,
+       job_title,
+       CASE job_title
+           WHEN 'Manager' THEN 'Management'
+           WHEN 'Developer' THEN 'Engineering'
+           WHEN 'Salesperson' THEN 'Sales'
+           ELSE 'Other'
+       END AS department
+FROM employees;
+In this example:
+
+The CASE statement checks the value of job_title and returns the corresponding department.
+If job_title is not one of the specified values, it returns 'Other'.
+2. Searched CASE Statement
+Suppose you have a table orders with a column order_amount, and you want to categorize the orders into 'High', 'Medium', and 'Low' based on the amount.
+
+
+SELECT order_id,
+       order_amount,
+       CASE
+           WHEN order_amount > 1000 THEN 'High'
+           WHEN order_amount BETWEEN 500 AND 1000 THEN 'Medium'
+           ELSE 'Low'
+       END AS order_category
+FROM orders;
+In this example:
+
+The CASE statement evaluates each condition and returns the corresponding result.
+The order_amount is categorized into 'High', 'Medium', or 'Low' based on its value.
+3. Using CASE in an UPDATE Statement
+You can use the CASE statement in an UPDATE query to update values conditionally.
+
+
+UPDATE employees
+SET salary = CASE
+                WHEN job_title = 'Manager' THEN salary * 1.1
+                WHEN job_title = 'Developer' THEN salary * 1.05
+                ELSE salary * 1.02
+             END;
+In this example:
+
+The CASE statement is used to increase the salary of employees based on their job title.
+4. Using CASE in an ORDER BY Clause
+You can also use the CASE statement in an ORDER BY clause to sort data based on complex conditions.
+
+
+SELECT name, age, job_title
+FROM employees
+ORDER BY CASE
+             WHEN job_title = 'Manager' THEN 1
+             WHEN job_title = 'Developer' THEN 2
+             ELSE 3
+         END;
+In this example:
+
+The CASE statement assigns a sorting priority based on the job_title.
+Managers will appear first, followed by Developers, and then others.
+
+
+Summary
+The CASE statement in MySQL provides conditional logic within SQL queries, allowing you to return different results based on specified conditions.
+Simple CASE: Compares a single expression against multiple values.
+Searched CASE: Evaluates multiple conditions independently.
+It can be used in SELECT, UPDATE, ORDER BY, and other SQL clauses to provide flexible and powerful query logic.

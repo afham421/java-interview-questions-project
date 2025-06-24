@@ -1,0 +1,35 @@
+🔤 -it in Docker stands for:
+-i = interactive → Keeps STDIN (standard input) open so you can type into the container
+
+-t = terminal → Allocates a pseudo-TTY (a terminal session)
+
+Together, -it allows you to interact with the container through your terminal — like a command-line interface.
+
+✅ In simple terms:
+-it = Interactive Terminal
+
+Yes — you can think of it as enabling input (keyboard) and output (terminal).
+
+📦 Example:
+
+docker run -it ubuntu
+This command:
+
+Starts a container from the ubuntu image
+
+Gives you a shell inside the container
+
+You can now type commands like ls, cd, apt update, etc.
+
+🔁 Difference from -d:
+| Flag  | Mode        | Description                         |
+| ----- | ----------- | ----------------------------------- |
+| `-it` | Interactive | For manual command-line interaction |
+| `-d`  | Detached    | Runs in the background              |
+
+
+You can also combine both when needed:
+
+
+docker run -it -d ubuntu
+But in most cases, -it is for debugging or exploring a container interactively.

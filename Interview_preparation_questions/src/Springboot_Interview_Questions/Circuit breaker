@@ -1,0 +1,124 @@
+🛑 Circuit Breaker in Spring Boot — Complete Guide
+A Circuit Breaker is a resilience pattern used in microservices to prevent repeated calls to a failing service, protecting your application from cascading failures.
+
+🔧 Why Use Circuit Breaker?
+Without it:
+
+If a downstream service is slow or down, your service keeps calling it.
+
+This causes thread blocking, timeouts, and crashes.
+
+With Circuit Breaker:
+
+After N failures, the breaker opens.
+
+Further calls fail fast (instead of waiting).
+
+After a timeout, it tries again (half-open).
+
+If successful, it closes; otherwise, remains open.
+
+✅ Libraries in Spring Boot
+Use Resilience4j — the recommended lightweight library supported by Spring Boot.
+
+⚙️ Add Resilience4j to Your Project
+1. Add Maven Dependency
+xml
+Copy
+Edit
+<dependency>
+    <groupId>io.github.resilience4j</groupId>
+    <artifactId>resilience4j-spring-boot3</artifactId>
+</dependency>
+🧪 Basic Usage Example
+2. Service Class with Circuit Breaker
+java
+Copy
+Edit
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+@Service
+public class MyService {
+
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    @CircuitBreaker(name = "myCircuitBreaker", fallbackMethod = "fallbackResponse")
+    public String callExternalService() {
+        // Simulate downstream call
+        return restTemplate.getForObject("http://external-service/api", String.class);
+    }
+
+    public String fallbackResponse(Throwable t) {
+        return "Fallback response: service is down";
+    }
+}
+3. Configuration in application.yml
+yaml
+Copy
+Edit
+resilience4j:
+  circuitbreaker:
+    instances:
+      myCircuitBreaker:
+        slidingWindowSize: 5
+        minimumNumberOfCalls: 3
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 2
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+⚙️ Explanation of Parameters
+| Parameter                                      | Meaning                                        |
+| ---------------------------------------------- | ---------------------------------------------- |
+| `slidingWindowSize`                            | Number of recent calls to track                |
+| `minimumNumberOfCalls`                         | Minimum calls before failure rate is evaluated |
+| `failureRateThreshold`                         | % of failed calls to open breaker              |
+| `waitDurationInOpenState`                      | Time to wait before trying again (half-open)   |
+| `permittedNumberOfCallsInHalfOpenState`        | Calls allowed during test phase                |
+| `automaticTransitionFromOpenToHalfOpenEnabled` | Auto-move to half-open                         |
+
+
+📊 States of Circuit Breaker
+text
+Copy
+Edit
+[ CLOSED ] → Too many failures → [ OPEN ]
+[ OPEN ] → Wait time expires → [ HALF-OPEN ]
+[ HALF-OPEN ] → Test call success → [ CLOSED ]
+              → Test call fails → [ OPEN ]
+🔄 Retry + Circuit Breaker
+You can also add retries and timeouts:
+
+yaml
+Copy
+Edit
+resilience4j:
+  retry:
+    instances:
+      myCircuitBreaker:
+        maxAttempts: 3
+        waitDuration: 2s
+📈 Optional: Metrics and Actuator
+xml
+Copy
+Edit
+<dependency>
+    <groupId>io.github.resilience4j</groupId>
+    <artifactId>resilience4j-micrometer</artifactId>
+</dependency>
+Access metrics at:
+
+bash
+Copy
+Edit
+/actuator/metrics/resilience4j.circuitbreaker.calls
+✅ Summary
+| Feature         | Benefit                          |
+| --------------- | -------------------------------- |
+| @CircuitBreaker | Auto fallback when service fails |
+| Retry           | Auto retry failed calls          |
+| TimeLimiter     | Control timeout duration         |
+| Bulkhead        | Limit concurrent requests        |
+
+

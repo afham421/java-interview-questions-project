@@ -1,0 +1,13 @@
+The CONCAT function in SQL is used to combine (concatenate) two or more strings into one string.
+
+Syntax:
+
+CONCAT(string1, string2, ..., stringN)
+Example:
+
+SELECT CONCAT(first_name, ' ', last_name) AS full_name
+FROM employees;
+This would combine the first_name and last_name fields into a single full_name column with a space in between.
+
+Notes:
+If any argument is NULL, CONCAT returns the result as NULL in some databases. In MySQL, however, CONCAT treats NULL as an empty string.

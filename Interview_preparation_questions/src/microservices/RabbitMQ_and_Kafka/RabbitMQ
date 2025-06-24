@@ -1,0 +1,154 @@
+🐰 What is RabbitMQ?
+RabbitMQ is a message broker that allows microservices to communicate asynchronously using the AMQP protocol (Advanced Message Queuing Protocol).
+
+It acts as a middleman between producers (senders) and consumers (receivers).
+
+🧱 Core Concepts
+| Term            | Description                                         |
+| --------------- | --------------------------------------------------- |
+| **Producer**    | Sends messages                                      |
+| **Consumer**    | Receives messages                                   |
+| **Queue**       | Stores messages until consumed                      |
+| **Exchange**    | Routes messages to queues                           |
+| **Routing Key** | Label used to determine routing                     |
+| **Binding**     | Connects exchange to a queue with a routing key     |
+| **Message**     | Actual data being passed (e.g., JSON, text, binary) |
+
+
+🔁 Message Flow
+scss
+Copy
+Edit
+Producer → Exchange → Queue(s) → Consumer(s)
+🧪 Exchange Types in RabbitMQ
+RabbitMQ uses exchanges to route messages to queues based on routing rules. Here are the 4 types:
+
+1. 🔵 Direct Exchange
+Routes messages to queues based on an exact routing key match.
+
+Example:
+text
+Copy
+Edit
+Routing Key = "user.created"
+Queue bound with "user.created" receives the message.
+Use Case:
+Send a message to a specific service (e.g., user events to the UserService).
+
+2. 🟣 Topic Exchange
+Routes messages based on pattern matching in routing keys.
+
+Uses wildcards:
+
+* (matches one word)
+
+# (matches zero or more words)
+
+Example:
+text
+Copy
+Edit
+Routing Key = "order.placed.us"
+
+Queue with binding "order.*.us" will receive it.
+Queue with binding "order.#" will also receive it.
+Use Case:
+Complex routing (e.g., events by region, service, or type).
+
+3. 🟡 Fanout Exchange
+Routes messages to all bound queues, ignores routing key.
+
+Example:
+text
+Copy
+Edit
+Broadcast message to multiple services: Email, SMS, Logging.
+Use Case:
+Broadcasting notifications or events (e.g., OrderPlaced goes to multiple consumers).
+
+4. 🟤 Headers Exchange
+Uses message headers instead of routing keys for routing.
+
+Example:
+text
+Copy
+Edit
+Header: {"env": "prod", "type": "alert"}
+
+Queue binding: match if header `env = prod` AND `type = alert`
+Use Case:
+Complex or dynamic routing using metadata in headers.
+
+✅ Summary Table of Exchange Types
+| Exchange Type | Routing Logic                    | Use Case                              |
+| ------------- | -------------------------------- | ------------------------------------- |
+| **Direct**    | Exact routing key match          | Simple service-to-service messaging   |
+| **Topic**     | Pattern match with wildcards     | Multi-tenant or feature-based routing |
+| **Fanout**    | Broadcast to all bound queues    | Notifications, pub-sub broadcasts     |
+| **Headers**   | Based on message header matching | Dynamic, metadata-based routing       |
+
+
+📦 RabbitMQ Setup in Java (Spring Boot)
+1. Maven Dependency
+xml
+Copy
+Edit
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-amqp</artifactId>
+</dependency>
+2. Producer Example
+java
+Copy
+Edit
+@Autowired
+private RabbitTemplate rabbitTemplate;
+
+public void sendToQueue() {
+    String message = "Order Created";
+    rabbitTemplate.convertAndSend("my-exchange", "order.created", message);
+}
+3. Consumer Example
+java
+Copy
+Edit
+@RabbitListener(queues = "order-queue")
+public void receive(String message) {
+    System.out.println("Received: " + message);
+}
+4. Configuration Example
+java
+Copy
+Edit
+@Bean
+public TopicExchange topicExchange() {
+    return new TopicExchange("my-exchange");
+}
+
+@Bean
+public Queue queue() {
+    return new Queue("order-queue");
+}
+
+@Bean
+public Binding binding(Queue queue, TopicExchange exchange) {
+    return BindingBuilder.bind(queue).to(exchange).with("order.*");
+}
+📊 RabbitMQ Use Cases
+| Use Case                   | Example                                     |
+| -------------------------- | ------------------------------------------- |
+| Asynchronous processing    | User signup → send email in background      |
+| Event-driven microservices | `OrderService` emits → others consume       |
+| Pub/Sub                    | Fanout exchange → notify multiple systems   |
+| Retry & Dead Letter Queues | Retry failed events, log unprocessable ones |
+
+
+🛡️ Bonus Concepts
+Dead Letter Queue (DLQ): Catches messages that can't be processed.
+
+Message TTL: Set message expiration time.
+
+Ack/Nack: Acknowledge message manually after successful processing.
+
+Durable queues & persistent messages: For guaranteed delivery.
+

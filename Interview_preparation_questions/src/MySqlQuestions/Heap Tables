@@ -1,0 +1,19 @@
+Heap tables (also known as Memory tables) in MySQL are tables that store data in memory rather than on disk.
+ This makes them very fast for read and write operations, but the data is temporary and lost if the server crashes or is restarted.
+
+Key Features:
+Storage Engine: Use the MEMORY storage engine.
+Speed: Extremely fast due to data being stored in RAM.
+Volatile: Data is not persisted to disk.
+Table Locking: Uses table-level locking, not row-level locking.
+No BLOB/TEXT: Does not support BLOB or TEXT data types because of memory limitations.
+
+Usage: Best for temporary or session-based data.
+
+Example:
+CREATE TABLE my_heap_table (
+    id INT PRIMARY KEY,
+    name VARCHAR(100)
+) ENGINE=MEMORY;
+
+Heap tables are ideal for quick lookups and temporary data storage where persistence is not required.

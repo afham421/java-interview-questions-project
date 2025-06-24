@@ -1,0 +1,19 @@
+
+
+In Spring, scopes define the lifecycle and visibility of beans within the Spring container.
+By default, Spring beans are singleton, meaning there's only one instance of the bean per Spring IoC container.
+
+
+Singleton: One instance per Spring IoC container (default).
+Prototype: A new instance for every request.
+Request: One instance per HTTP request (web application).
+Session: One instance per HTTP session (web application).
+Application: One instance per ServletContext (web application).
+WebSocket: One instance per WebSocket session (web application).
+
+Singleton (@Scope("singleton")): Only one instance of the bean is created for the entire application context. This is the default scope.
+Prototype (@Scope("prototype")): A new instance of the bean is created each time it is requested.
+Request (@Scope("request")): A new instance is created for each HTTP request. Typically used in web applications.
+Session (@Scope("session")): A new instance is created for each HTTP session. Used in web applications.
+Application (@Scope("application")): A single instance is created for the entire lifecycle of a ServletContext.
+WebSocket (@Scope("websocket")): A single instance is created for the lifecycle of a WebSocket.

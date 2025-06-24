@@ -1,0 +1,82 @@
+
+
+3. Creating Specifications for Filtering
+
+import org.springframework.data.jpa.domain.Specification;
+
+public class EmployeeSpecification {
+
+    public static Specification<Employee> hasName(String name) {
+        return (root, query, criteriaBuilder) ->
+                name != null ? criteriaBuilder.equal(root.get("name"), name) : null;
+    }
+
+    public static Specification<Employee> hasEmail(String email) {
+        return (root, query, criteriaBuilder) ->
+                email != null ? criteriaBuilder.equal(root.get("email"), email) : null;
+    }
+
+    public static Specification<Employee> hasEmployeeType(String employeeType) {
+        return (root, query, criteriaBuilder) ->
+                employeeType != null ? criteriaBuilder.equal(root.get("employeeType"), employeeType) : null;
+    }
+}
+
+4. Applying Filters and Pagination in the Service Layer
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+
+@Service
+public class EmployeeService {
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
+    public Page<Employee> getEmployeesWithFilters(String name, String email, String employeeType, Pageable pageable) {
+        Specification<Employee> spec = Specification.where(EmployeeSpecification.hasName(name))
+                                                    .and(EmployeeSpecification.hasEmail(email))
+                                                    .and(EmployeeSpecification.hasEmployeeType(employeeType));
+
+        return employeeRepository.findAll(spec, pageable);
+    }
+}
+
+
+5. Controller Layer
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class EmployeeController {
+
+    @Autowired
+    private EmployeeService employeeService;
+
+    @GetMapping("/employees")
+    public Page<Employee> getEmployees(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String employeeType,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        return employeeService.getEmployeesWithFilters(name, email, employeeType, pageable);
+    }
+}
+
+Summary:
+
+Filtering: Implemented using Specification in Spring Data JPA.
+Pagination: Managed using Pageable and PageRequest.
+Flexible and Dynamic Queries: The approach allows for dynamic query construction based on provided filters.

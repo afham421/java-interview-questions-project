@@ -1,0 +1,97 @@
+//polymorphism means many forms poly = many, morph = forms(one thing have many forms means many behaviors) one person is son, father, brother etc. at a time
+// method overloading or compile time polymorphism
+class Calculator {
+    public int add(int a, int b) {
+        return a + b;
+    }
+//here we can use only add() method in different scenarios like for int double float etc. if we use different name for every that difficult to remind but by this code readable
+    public double add(double a, double b) {
+        return a + b;
+    }
+}
+In Summary:
+While you could use different method names (like addIntegers(), addDoubles()), method overloading provides a cleaner, more intuitive, and consistent way to handle methods
+that perform similar actions. It simplifies the code, making it easier to read, maintain, and extend without needing to remember many different method names.
+Overloading improves code design by offering flexibility while maintaining a unified interface for performing similar operations across various data types.
+
+
+//method overriding or runtime polymorphism
+class Animal {
+    void sound() {
+        System.out.println("Animal makes a sound");
+    }
+}
+class Dog extends Animal {
+    @Override
+    void sound() {
+        System.out.println("Dog barks");
+    }
+}
+class Cat extends Animal {
+    @Override
+    void sound() {
+        System.out.println("Cat meows");
+    }
+}
+public class Main {
+    public static void main(String[] args) {
+        Animal myDog = new Dog();
+        Animal myCat = new Cat();
+
+        myDog.sound(); // Output: Dog barks
+        myCat.sound(); // Output: Cat meows //if here cate class not override the sound() function then it will call its reference class Animal sound() method
+    }
+}
+1. Polymorphism:
+Method overriding enables runtime polymorphism, where a subclass can provide a specific implementation of a method that is already defined in its superclass.
+With polymorphism, the same method call (sound()) can produce different results based on the object that invokes it (i.e.,
+the behavior depends on whether the object is a Dog, Cat, or any other subclass of Animal).
+This way, client code (code that uses these objects) doesn't need to worry about object-specific method names—it
+just calls the same method and the correct implementation is executed at runtime.
+
+Why Overriding is Better:
+
+Simplifies code: Instead of requiring different method names (dogSound(), catSound()), you can rely on a common method name (sound()),
+reducing complexity and making the code easier to manage.
+Cleaner code: You don't need to perform casting or write different blocks of code to handle each specific type.
+The overridden method ensures the appropriate implementation is called based on the object's actual type.
+  myDog.animalSound(); // Generic method for animal
+        // You need to call dogSound() or catSound() explicitly
+        ((Dog) myDog).dogSound(); // Not clean, requires casting
+        ((Cat) myCat).catSound();
+
+2. Code Reusability:
+Overriding promotes code reusability. A superclass provides a common interface (method), and subclasses can reuse this method and modify its behavior as necessary.
+Without overriding, you would have to define new methods in each subclass, resulting in code duplication.
+ Overriding keeps the logic consistent while allowing for specific behavior customization.
+
+4. Extensibility:
+Overriding allows your system to be easily extended. You can add new subclasses (e.g., Bird, Lion, etc.) without altering the existing code.
+Each new subclass will have its own implementation of the method sound() without affecting how the rest of the system works.
+If you used different method names, you'd have to modify code in many places to account for new behaviors.With overriding, you don't need to change the client
+code—you just add a new class that extends the superclass and provides a specific implementation for the overridden method.
+
+
+6. SOLID Design Principles (Open-Closed Principle):
+One of the key principles in software development is the Open-Closed Principle: “Software entities (classes, modules, functions, etc.)
+should be open for extension but closed for modification.”
+With method overriding, you can extend the behavior of a class by creating a subclass without modifying the existing code.
+ This promotes better design and ensures your system is flexible to changes.
+
+
+
+5. Practical Use Cases
+During an interview, demonstrating the ability to think of practical use cases is key. Examples include:
+
+Payment Processing System: Different payment methods (e.g., credit card, PayPal, bank transfer) can be handled polymorphically,
+each providing its own implementation of a processPayment() method.
+Vehicle Management System: A Vehicle class can have subclasses like Car, Truck, and Bike, each implementing the startEngine() method differently.
+UI Component Hierarchies: In a GUI application, Button, Checkbox, and TextBox can all extend a common Component class,
+but each renders itself differently using polymorphic behavior.
+
+7. Example Interview Question and Answer
+Q: "Can you explain how polymorphism is used in a real-world project you worked on?"
+A: "In my previous project, we used polymorphism extensively in our payment processing module. We had an abstract class PaymentMethod with a method processPayment().
+ We then had subclasses like CreditCardPayment, PayPalPayment, and BankTransferPayment, each implementing processPayment() differently.
+  This design allowed the application to easily add new payment methods without altering the existing codebase, adhering to the Open-Closed Principle.
+   Additionally, it allowed our UI to dynamically show payment options based on user preferences, using the same method call for any payment type."

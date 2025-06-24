@@ -1,0 +1,58 @@
+It looks like you might be referring to the CHECK constraint in MySQL. The CHECK constraint is used to ensure that all values in a column meet a specific condition.
+If a row is inserted or updated that violates the CHECK constraint, the operation will be rejected.
+
+Syntax
+
+CREATE TABLE table_name (
+    column1 datatype CHECK (condition),
+    column2 datatype,
+    ...
+);
+Example
+Let’s say you have a table employees where you want to ensure that the salary is always greater than 0:
+
+
+CREATE TABLE employees (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    salary DECIMAL(10, 2) CHECK (salary > 0)
+);
+In this example:
+
+The CHECK constraint on the salary column ensures that the value entered must be greater than 0.
+Multiple CHECK Constraints
+You can add multiple CHECK constraints to a table, either on different columns or the same column:
+
+
+CREATE TABLE employees (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    salary DECIMAL(10, 2) CHECK (salary > 0),
+    age INT CHECK (age >= 18 AND age <= 65)
+);
+In this example:
+
+The salary must be greater than 0.
+The age must be between 18 and 65.
+Adding CHECK Constraints to Existing Tables
+You can add a CHECK constraint to an existing table using the ALTER TABLE statement:
+
+
+ALTER TABLE employees
+ADD CHECK (salary > 0);
+Limitations
+MySQL Version: The CHECK constraint is supported in MySQL starting from version 8.0.16. In earlier versions, CHECK constraints are parsed but ignored.
+Example with Insert
+
+INSERT INTO employees (id, name, salary, age)
+VALUES (1, 'John Doe', 5000, 30); -- This will succeed
+
+INSERT INTO employees (id, name, salary, age)
+VALUES (2, 'Jane Doe', -1000, 30); -- This will fail because salary is not greater than 0
+In the second INSERT statement, the operation will be rejected because it violates the CHECK constraint on the salary column.
+
+Summary
+The CHECK constraint is used to enforce a condition on the values in a column.
+It ensures data integrity by restricting the values that can be stored in a table.
+This constraint can be applied when creating a new table or added to an existing table.
+CHECK constraints are effective from MySQL version 8.0.16 onwards.

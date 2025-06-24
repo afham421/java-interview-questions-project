@@ -1,0 +1,69 @@
+In Java, the Function<T, R> interface from java.util.function represents a function that accepts one argument of type T and returns a result of type R.
+
+Understanding Function<Claim, T>
+Claim → The input type of the function.
+T → The output (return) type of the function.
+This means you are working with a function that takes an object of type Claim and returns an object of type T.
+
+Example Usage
+1. Transforming a Claim Object
+Imagine you have an Claim class and you want to extract some details from it:
+
+java
+Copy
+Edit
+import java.util.function.Function;
+
+class Claim {
+    String claimId;
+    double amount;
+
+    public Claim(String claimId, double amount) {
+        this.claimId = claimId;
+        this.amount = amount;
+    }
+
+    public String getClaimId() {
+        return claimId;
+    }
+}
+
+public class FunctionExample {
+    public static void main(String[] args) {
+        // Function to extract claim ID from Claim object
+        Function<Claim, String> getClaimId = claim -> claim.getClaimId();
+
+        Claim claim = new Claim("C12345", 5000.0);
+        System.out.println("Claim ID: " + getClaimId.apply(claim));  // Output: Claim ID: C12345
+    }
+}
+2. Mapping Claim to Some Processed Data
+You can transform the Claim object into another type:
+
+java
+Copy
+Edit
+Function<Claim, Double> extractClaimAmount = claim -> claim.amount;
+
+Claim myClaim = new Claim("C56789", 10000.0);
+double amount = extractClaimAmount.apply(myClaim);
+
+System.out.println("Claim Amount: " + amount);  // Output: Claim Amount: 10000.0
+3. Function Chaining with andThen() and compose()
+You can chain functions using andThen() or compose().
+
+java
+Copy
+Edit
+Function<Claim, Double> extractAmount = Claim::getAmount;
+Function<Double, String> formatAmount = amount -> "Amount: $" + amount;
+
+// Chaining functions
+Function<Claim, String> claimToFormattedString = extractAmount.andThen(formatAmount);
+
+System.out.println(claimToFormattedString.apply(new Claim("C8910", 1500.0)));
+// Output: Amount: $1500.0
+Conclusion
+✅ Function<Claim, T> is used to process a Claim object and return another type T.
+✅ It is useful in mapping, transformation, and processing data in Java.
+✅ You can chain functions for cleaner logic.

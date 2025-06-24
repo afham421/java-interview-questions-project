@@ -1,0 +1,76 @@
+The Abstract Factory Pattern and the Factory Method Pattern are both creational design patterns, but they solve different problems and are used in different scenarios.
+
+Here’s a clear difference between Abstract Factory and Factory Method:
+
+🔸 1. Definition
+| Pattern              | Description                                                                                                                |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **Factory Method**   | Defines an interface for creating an object, but lets subclasses decide which class to instantiate.                        |
+| **Abstract Factory** | Provides an interface for creating **families of related or dependent objects** without specifying their concrete classes. |
+
+
+🔸 2. Main Goal
+| Pattern              | Goal                                                                                               |
+| -------------------- | -------------------------------------------------------------------------------------------------- |
+| **Factory Method**   | Delegate object creation to subclasses.                                                            |
+| **Abstract Factory** | Create related objects grouped under a theme or family (e.g., UI components for Light/Dark theme). |
+
+🔸 3. Number of Products Created
+| Pattern              | Number of Product Types                           |
+| -------------------- | ------------------------------------------------- |
+| **Factory Method**   | Creates **one product** at a time.                |
+| **Abstract Factory** | Creates **multiple related products** (families). |
+ related products (families).
+
+🔸 4. Class Diagram Difference
+🏭 Factory Method
+
+🏭 Abstract Factory
+
+(Source: Refactoring.Guru)
+
+🔸 5. Example Difference
+✅ Factory Method Example:
+java
+Copy
+Edit
+abstract class Dialog {
+    public void render() {
+        Button okButton = createButton();
+        okButton.render();
+    }
+
+    abstract Button createButton();
+}
+
+class WindowsDialog extends Dialog {
+    public Button createButton() {
+        return new WindowsButton();
+    }
+}
+➡️ Here, the createButton() is a factory method.
+
+✅ Abstract Factory Example:
+java
+Copy
+Edit
+interface GUIFactory {
+    Button createButton();
+    Checkbox createCheckbox();
+}
+
+class LightFactory implements GUIFactory {
+    public Button createButton() { return new LightButton(); }
+    public Checkbox createCheckbox() { return new LightCheckbox(); }
+}
+➡️ Here, you create a family of related objects (Button + Checkbox) through a single factory.
+
+🟢 In Simple Words:
+| Feature      | **Factory Method**     | **Abstract Factory**                               |
+| ------------ | ---------------------- | -------------------------------------------------- |
+| Creates      | One product            | Family of products                                 |
+| Focus        | Delegation to subclass | Grouped object creation                            |
+| Pattern Type | Simpler                | More abstract, more powerful                       |
+| Example      | `new WindowsButton()`  | `LightFactory.createButton()` + `createCheckbox()` |
+
+
