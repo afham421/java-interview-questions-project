@@ -1,4 +1,4 @@
-package JavaQuestions.ShallowCopyVsDeepCopy;
+package designPattern.CreationalDesignPattern.PrototypePattern.ShallowCopyVsDeepCopy;
 
 
 class Person1 implements Cloneable {

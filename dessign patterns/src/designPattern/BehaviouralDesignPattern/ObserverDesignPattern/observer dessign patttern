@@ -1,0 +1,149 @@
+👀 Observer Design Pattern in Java
+The Observer Pattern is a behavioral design pattern that allows one object (Subject) to notify multiple other objects (Observers) about changes in its state — automatically.
+
+🔍 Definition:
+When one object changes state, all its dependents are notified and updated automatically.
+
+📦 Real-World Analogy:
+Think of a YouTube Channel:
+
+The channel is the Subject.
+
+Subscribers are the Observers.
+
+When the channel uploads a new video, all subscribers are notified.
+
+✅ When to Use Observer Pattern
+When you want to notify multiple objects about changes in another object.
+
+When objects should be loosely coupled (publisher doesn't know much about subscribers).
+
+In event-driven systems, UI frameworks, notification services, etc.
+
+🏗️ Structure
+text
+Copy
+Edit
+[Subject]
+  + attach(Observer)
+  + detach(Observer)
+  + notifyObservers()
+
+[Observer] (interface)
+  + update()
+
+[ConcreteObserver]
+  + update()
+
+[ConcreteSubject]
+  + notifyObservers() → calls update() on all observers
+✅ Java Example – Weather Station
+1. Observer Interface
+java
+Copy
+Edit
+public interface Observer {
+    void update(String weather);
+}
+2. Subject Interface
+java
+Copy
+Edit
+public interface Subject {
+    void attach(Observer o);
+    void detach(Observer o);
+    void notifyObservers();
+}
+3. Concrete Subject
+java
+Copy
+Edit
+import java.util.ArrayList;
+import java.util.List;
+
+public class WeatherStation implements Subject {
+    private List<Observer> observers = new ArrayList<>();
+    private String weather;
+
+    public void setWeather(String weather) {
+        this.weather = weather;
+        notifyObservers();
+    }
+
+    public void attach(Observer o) {
+        observers.add(o);
+    }
+
+    public void detach(Observer o) {
+        observers.remove(o);
+    }
+
+    public void notifyObservers() {
+        for (Observer o : observers) {
+            o.update(weather);
+        }
+    }
+}
+4. Concrete Observers
+java
+Copy
+Edit
+public class PhoneDisplay implements Observer {
+    private String name;
+
+    public PhoneDisplay(String name) {
+        this.name = name;
+    }
+
+    public void update(String weather) {
+        System.out.println(name + " received weather update: " + weather);
+    }
+}
+5. Client Code
+java
+Copy
+Edit
+public class ObserverPatternDemo {
+    public static void main(String[] args) {
+        WeatherStation station = new WeatherStation();
+
+        Observer phone1 = new PhoneDisplay("Phone 1");
+        Observer phone2 = new PhoneDisplay("Phone 2");
+
+        station.attach(phone1);
+        station.attach(phone2);
+
+        station.setWeather("Sunny");
+        station.setWeather("Rainy");
+
+        station.detach(phone1);
+        station.setWeather("Cloudy");
+    }
+}
+✅ Output
+sql
+Copy
+Edit
+Phone 1 received weather update: Sunny
+Phone 2 received weather update: Sunny
+Phone 1 received weather update: Rainy
+Phone 2 received weather update: Rainy
+Phone 2 received weather update: Cloudy
+🧠 Key Points:
+Promotes loose coupling.
+
+Common in event systems, UI toolkits, notifications, etc.
+
+Java has built-in java.util.Observable and Observer (now deprecated) — use custom interfaces or reactive libraries instead.
+
+📌 Real-World Uses:
+UI libraries (JavaFX, Swing)
+
+Messaging systems
+
+Logging and audit systems
+
+Stock market apps
+
+Social media notifications
+
