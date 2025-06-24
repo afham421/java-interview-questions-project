@@ -1,0 +1,121 @@
+🧬 Prototype Design Pattern in Java
+The Prototype Pattern is a creational design pattern that allows you to clone (copy) existing objects without depending on their concrete classes.
+
+🤔 What is a Concrete Class in Java?
+A concrete class is a class that:
+
+✅ Is fully implemented (not abstract)
+✅ Can be instantiated (you can create objects from it)
+✅ Implements all its methods
+
+
+🔍 Definition:
+Create new objects by copying an existing object (prototype), rather than creating from scratch.
+
+✅ When to Use:
+When object creation is costly (e.g., loading, parsing, DB).
+
+When you need many similar objects.
+
+When you want to decouple object creation from the code.
+
+🔨 Real-World Analogy:
+Think of photocopying a document. You don’t rewrite it; you just duplicate it.
+
+📦 Basic Structure:
+Prototype Interface – defines clone().
+
+Concrete Class – implements clone logic.
+
+Client Code – uses .clone() to create objects.
+
+✅ Java Implementation of Prototype Pattern
+1. Prototype Interface
+java
+Copy
+Edit
+public interface Prototype extends Cloneable {
+    Prototype clone();
+}
+2. Concrete Class
+java
+Copy
+Edit
+public class Car implements Prototype {
+    private String model;
+    private int topSpeed;
+
+    public Car(String model, int topSpeed) {
+        this.model = model;
+        this.topSpeed = topSpeed;
+    }
+
+    @Override
+    public Car clone() {
+        return new Car(model, topSpeed);
+    }
+
+    @Override
+    public String toString() {
+        return "Car{model='" + model + "', topSpeed=" + topSpeed + "}";
+    }
+}
+3. Client Code
+java
+Copy
+Edit
+public class PrototypePatternDemo {
+    public static void main(String[] args) {
+        Car originalCar = new Car("Honda Civic", 220);
+        Car clonedCar = originalCar.clone();
+
+        System.out.println("Original: " + originalCar);
+        System.out.println("Cloned  : " + clonedCar);
+        System.out.println("Same object? " + (originalCar == clonedCar)); // false
+    }
+}
+✅ Output
+csharp
+Copy
+Edit
+Original: Car{model='Honda Civic', topSpeed=220}
+Cloned  : Car{model='Honda Civic', topSpeed=220}
+Same object? false
+🔐 Deep vs Shallow Copy
+shallow copy: copies references → nested objects share same memory.
+
+deep copy: duplicates nested objects too.
+
+You can customize the clone() method to control this.
+
+✅ Built-in in Java
+You can also use Object.clone() by implementing Cloneable:
+
+
+class Person implements Cloneable {
+    String name;
+
+    public Person(String name) {
+        this.name = name;
+    }
+
+    @Override
+    protected Person clone() {
+        try {
+            return (Person) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
+🧠 Benefits:
+Avoids the cost of building complex objects from scratch.
+
+Useful when a limited number of objects exist and are reused.
+
+Promotes decoupling (client doesn't need to know exact class).
+
+⚠️ Caution:
+Cloneable in Java is poorly designed (doesn't have clone() method).
+
+Manual cloning gives more control.

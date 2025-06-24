@@ -1,0 +1,124 @@
+🏗️ Builder Design Pattern in Java
+The Builder Pattern is a creational design pattern that is used to construct complex objects step by step.
+It separates the construction of an object from its representation, allowing you to build different types and representations using the same building process.
+
+✅ Why Use Builder Pattern?
+When a class has too many constructor parameters (some optional, some required).
+
+To avoid constructor telescoping (many overloaded constructors).
+
+To improve readability, maintainability, and flexibility of object creation.
+
+🔨 Real-Life Analogy:
+Think of a burger builder. You can add lettuce, cheese, patty, sauce, etc., step by step — but not all burgers have the same ingredients.
+
+📦 Problem Without Builder: Constructor Telescoping
+
+public class User {
+    private String name;
+    private int age;
+    private String email;
+
+    public User(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public User(String name, int age, String email) {
+        this(name, age);
+        this.email = email;
+    }
+
+    // More constructors for more combinations...
+}
+Becomes hard to manage as parameters grow.
+
+✅ Builder Pattern Solution
+1. User Class with Builder
+
+public class User {
+    private final String name;
+    private final int age;
+    private final String email;
+    private final String address;
+
+    // Private constructor
+    private User(UserBuilder builder) {
+        this.name = builder.name;
+        this.age = builder.age;
+        this.email = builder.email;
+        this.address = builder.address;
+    }
+
+    // Builder static inner class
+    public static class UserBuilder {
+        private final String name;
+        private final int age;
+        private String email;
+        private String address;
+
+        public UserBuilder(String name, int age) {
+            this.name = name;
+            this.age = age;
+        }
+
+        public UserBuilder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public UserBuilder address(String address) {
+            this.address = address;
+            return this;
+        }
+
+        public User build() {
+            return new User(this);
+        }
+    }
+
+    // Optional: toString()
+    @Override
+    public String toString() {
+        return "User{name='" + name + "', age=" + age +
+               ", email='" + email + "', address='" + address + "'}";
+    }
+}
+2. Client Code (How to Use Builder)
+
+public class BuilderPatternDemo {
+    public static void main(String[] args) {
+        User user1 = new User.UserBuilder("Ali", 30)
+                            .email("ali@example.com")
+                            .address("Islamabad")
+                            .build();
+
+        User user2 = new User.UserBuilder("Sara", 25)
+                            .build();
+
+        System.out.println(user1);
+        System.out.println(user2);
+    }
+}
+✅ Output
+
+User{name='Ali', age=30, email='ali@example.com', address='Islamabad'}
+User{name='Sara', age=25, email='null', address='null'}
+🧠 Benefits of Builder Pattern
+Improves readability with chained methods.
+
+Helps build immutable objects.
+
+Avoids constructor overloads.
+
+Flexible: only set fields you need.
+
+📌 Used In:
+StringBuilder / StringBuffer
+
+java.lang.ProcessBuilder
+
+Lombok @Builder annotation
+
+JSON builders like Gson / Jackson
+
