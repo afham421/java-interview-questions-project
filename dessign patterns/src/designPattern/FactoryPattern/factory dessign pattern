@@ -1,0 +1,86 @@
+✅ Factory Design Pattern in Java
+The Factory Pattern is a Creational Design Pattern that provides a way to create objects without specifying the exact class of the object that will be created.
+
+📌 Purpose: It encapsulates object creation logic and lets subclasses or factories decide which class to instantiate.
+
+🔧 Real-life Analogy:
+Think of a Vehicle Factory: You ask for a vehicle of a specific type (Car, Bike), and the factory gives you the correct object without you worrying about how it's created.
+
+🔨 Structure:
+Product Interface – defines the contract.
+
+Concrete Products – classes that implement the interface.
+
+Factory Class – returns different product objects based on input.
+
+🧱 Step-by-Step Java Example
+1. Product Interface
+
+public interface Shape {
+    void draw();
+}
+2. Concrete Classes
+
+public class Circle implements Shape {
+    public void draw() {
+        System.out.println("Drawing Circle");
+    }
+}
+
+public class Rectangle implements Shape {
+    public void draw() {
+        System.out.println("Drawing Rectangle");
+    }
+}
+3. Factory Class
+
+public class ShapeFactory {
+    public Shape getShape(String shapeType) {
+        if (shapeType == null) return null;
+        if (shapeType.equalsIgnoreCase("CIRCLE")) return new Circle();
+        if (shapeType.equalsIgnoreCase("RECTANGLE")) return new Rectangle();
+        return null;
+    }
+}
+
+
+4. Client Code (Usage)
+
+public class FactoryPatternDemo {
+    public static void main(String[] args) {
+        ShapeFactory shapeFactory = new ShapeFactory();
+
+        Shape shape1 = shapeFactory.getShape("CIRCLE");
+        shape1.draw();  // Output: Drawing Circle
+
+        Shape shape2 = shapeFactory.getShape("RECTANGLE");
+        shape2.draw();  // Output: Drawing Rectangle
+    }
+}
+
+
+🔍 When to Use Factory Pattern
+✅ When object creation logic is complex
+✅ When the client code should not depend on specific class names
+✅ When objects belong to a common interface or superclass
+✅ When you want to add new types without changing client code
+
+🧠 Advantages
+Loose coupling between client and object creation code
+
+Makes code easier to extend
+
+Improves code organization and maintenance
+
+❌ Disadvantages
+Increases number of classes
+
+Sometimes more complex than needed for simple problems
+
+🔥 Real-World Java Examples
+java.util.Calendar.getInstance()
+
+java.text.NumberFormat.getInstance()
+
+javax.xml.parsers.DocumentBuilderFactory
+

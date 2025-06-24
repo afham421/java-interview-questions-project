@@ -1,0 +1,118 @@
+In Java, the Abstract Factory Design Pattern is a creational pattern that provides an interface for creating families of related or 
+dependent objects without specifying their concrete classes.
+
+🔷 Why Use Abstract Factory Pattern?
+To create related objects without knowing their concrete classes.
+
+Helps in switching between different families of products easily.
+
+🔧 Example Scenario
+Imagine we are building a GUI application that should support two themes:
+
+Light Theme
+
+Dark Theme
+Each theme will have a Button and a Checkbox component.
+
+✅ Step-by-Step Implementation
+1. Abstract Product Interfaces
+
+// Button interface
+interface Button {
+    void paint();
+}
+
+// Checkbox interface
+interface Checkbox {
+    void paint();
+}
+2. Concrete Products
+
+// Light Button
+class LightButton implements Button {
+    public void paint() {
+        System.out.println("Rendering Light Button");
+    }
+}
+
+// Dark Button
+class DarkButton implements Button {
+    public void paint() {
+        System.out.println("Rendering Dark Button");
+    }
+}
+
+// Light Checkbox
+class LightCheckbox implements Checkbox {
+    public void paint() {
+        System.out.println("Rendering Light Checkbox");
+    }
+}
+
+// Dark Checkbox
+class DarkCheckbox implements Checkbox {
+    public void paint() {
+        System.out.println("Rendering Dark Checkbox");
+    }
+}
+3. Abstract Factory Interface
+
+interface GUIFactory {
+    Button createButton();
+    Checkbox createCheckbox();
+}
+4. Concrete Factories
+
+class LightFactory implements GUIFactory {
+    public Button createButton() {
+        return new LightButton();
+    }
+    public Checkbox createCheckbox() {
+        return new LightCheckbox();
+    }
+}
+
+class DarkFactory implements GUIFactory {
+    public Button createButton() {
+        return new DarkButton();
+    }
+    public Checkbox createCheckbox() {
+        return new DarkCheckbox();
+    }
+}
+5. Client Code
+
+public class Application {
+    private Button button;
+    private Checkbox checkbox;
+
+    public Application(GUIFactory factory) {
+        button = factory.createButton();
+        checkbox = factory.createCheckbox();
+    }
+
+    public void renderUI() {
+        button.paint();
+        checkbox.paint();
+    }
+
+    public static void main(String[] args) {
+        // Choose theme dynamically
+        GUIFactory factory = new LightFactory(); // Change to DarkFactory() for dark theme
+        Application app = new Application(factory);
+        app.renderUI();
+    }
+}
+📌 Output (if using LightFactory):
+
+Rendering Light Button
+Rendering Light Checkbox
+
+✅ Summary
+| Component                     | Role                         |
+| ----------------------------- | ---------------------------- |
+| `GUIFactory`                  | Abstract factory interface   |
+| `LightFactory`, `DarkFactory` | Concrete factories           |
+| `Button`, `Checkbox`          | Abstract products            |
+| `LightButton`, `DarkButton`   | Concrete products            |
+| `Application`                 | Client that uses the factory |

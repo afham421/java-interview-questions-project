@@ -1,0 +1,59 @@
+Design patterns in Java are standard solutions to common software design problems. They are templates designed to help write cleaner, more maintainable, and scalable code.
+Java supports all the major Gang of Four (GoF) design patterns, which are categorized into three main types:
+
+🔷 1. Creational Design Patterns
+Focus on object creation mechanisms.
+
+| Pattern              | Description                                        | Example Use                                |
+| -------------------- | -------------------------------------------------- | ------------------------------------------ |
+| **Singleton**        | Ensures only one instance of a class is created    | Logger, Configuration                      |
+| **Factory Method**   | Creates objects without specifying the exact class | `newInstance()` in JDBC                    |
+| **Abstract Factory** | Creates families of related objects                | GUI frameworks (Swing, AWT)                |
+| **Builder**          | Builds complex objects step-by-step                | Creating complex `HTML` or `PDF` documents |
+| **Prototype**        | Clones existing objects                            | Game character cloning                     |
+
+
+🔷 2. Structural Design Patterns
+Deal with object composition and structure.
+| Pattern       | Description                                          | Example Use                         |
+| ------------- | ---------------------------------------------------- | ----------------------------------- |
+| **Adapter**   | Allows incompatible interfaces to work together      | Legacy code integration             |
+| **Decorator** | Adds behavior to objects dynamically                 | Java I/O Streams (`BufferedReader`) |
+| **Proxy**     | Controls access to objects                           | Remote proxy, Lazy loading          |
+| **Facade**    | Provides a simplified interface to a complex system  | Simplified APIs                     |
+| **Bridge**    | Decouples abstraction from implementation            | GUI with different platforms        |
+| **Composite** | Treats individual objects and compositions uniformly | Tree structures like DOM            |
+| **Flyweight** | Shares objects to support large numbers efficiently  | Java `String.intern()`              |
+
+
+🔷 3. Behavioral Design Patterns
+Focus on communication between objects.
+
+| Pattern                     | Description                                                | Example Use                |
+| --------------------------- | ---------------------------------------------------------- | -------------------------- |
+| **Observer**                | One-to-many dependency between objects                     | Event handling in GUI      |
+| **Strategy**                | Selects algorithm at runtime                               | Sorting strategies         |
+| **Command**                 | Encapsulates a command as an object                        | Undo/redo functionality    |
+| **State**                   | Allows object behavior to change with state                | Workflow or state machine  |
+| **Template Method**         | Defines skeleton of algorithm with some steps customizable | `HttpServlet.doGet()`      |
+| **Iterator**                | Sequentially access elements                               | `Iterator`, `ListIterator` |
+| **Mediator**                | Reduces communication complexity                           | Chat applications          |
+| **Memento**                 | Saves and restores object state                            | Save game feature          |
+| **Chain of Responsibility** | Passes request along a chain of handlers                   | Servlet filters            |
+| **Visitor**                 | Adds operations to object structure without modifying it   | Compiler syntax trees      |
+| **Interpreter**             | Implements grammar for a language                          | SQL or expression parser   |
+
+✅ Example: Singleton Pattern in Java
+
+public class Singleton {
+    private static Singleton instance;
+
+    private Singleton() {} // private constructor
+
+    public static Singleton getInstance() {
+        if (instance == null) {
+            instance = new Singleton();
+        }
+        return instance;
+    }
+}
