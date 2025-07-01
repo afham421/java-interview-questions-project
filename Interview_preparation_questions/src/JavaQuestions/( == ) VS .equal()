@@ -1,0 +1,36 @@
+🔁 == Operator vs equals() Method in Java
+| Feature             | `==` Operator                               | `equals()` Method                     |
+| ------------------- | ------------------------------------------- | ------------------------------------- |
+| ✅ Used for          | Comparing **references** (memory locations) | Comparing **values** (actual content) |
+| 📦 Works on         | All data types (primitives + objects)       | Only objects                          |
+| 📍 Reference check? | Yes                                         | No (unless not overridden)            |
+| 🎯 Value check?     | No                                          | Yes (if properly overridden)          |
+
+
+🧪 Example with Strings:
+
+String a = new String("Java");
+String b = new String("Java");
+
+System.out.println(a == b);       // false → different memory locations
+System.out.println(a.equals(b));  // true  → same content
+
+🧪 Example with Primitives:
+
+int x = 5;
+int y = 5;
+
+System.out.println(x == y); // true → compares values directly
+
+💡 Summary:
+Use == when you want to check if two variables point to the same object.
+
+Use equals() when you want to check if two objects have the same content/value.
+
+
+Note:
+
+In the cases where the equals method is not overridden in a class, then the class uses the default implementation of the equals method that is closest to the parent class.
+
+Object class is considered as the parent class of all the java classes. The implementation of the equals method in the Object class uses the == operator to compare two objects.
+This default implementation can be overridden as per the business logic

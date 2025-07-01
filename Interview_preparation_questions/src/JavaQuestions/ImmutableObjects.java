@@ -37,12 +37,12 @@ public class ImmutableObjects {
 
 }
 
-//Declare the class as final:
+//Declare the class as final keyword:
 final class ImmutablePerson {
 
-    //    Make all fields private and final:
+    //    Make all fields private and final keyword:
 //    private ensures that fields cannot be accessed directly from outside the class.
-//    final ensures that the fields can only be assigned once, typically within the constructor.
+//    final keyword ensures that the fields can only be assigned once, typically within the constructor.
     private final String name;
     private final int age;
     private final List<String> hobbies;

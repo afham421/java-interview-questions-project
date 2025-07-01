@@ -1,0 +1,143 @@
+✅ 1. What is Stack Memory in Java?
+📌 Stack Memory:
+Used for method execution
+
+Stores:
+
+Primitive local variables (int, char, boolean, etc.)
+
+Object references (not the object itself)
+
+Method call info (stack frames) //means in first stack for main() and then for internal method like play(String music)
+                                //,inside play() stack created for local variable music then play() end  stack removed and control return to main()
+
+📌 Characteristics:
+Fast access
+
+LIFO (Last In First Out) order // mean internal method first return like play() then main() method
+
+Thread-safe: each thread has its own stack
+
+Automatically freed when method ends
+
+
+
+
+✅ 2. What is Heap Memory in Java?
+📌 Heap Memory:
+Used to store objects and class instances
+
+Shared across all threads
+
+Managed by Garbage Collector
+
+Larger but slower than stack
+
+📌 Subsections of Heap:
+Young Generation: New objects
+
+Old Generation: Long-living objects
+
+Metaspace (in Java 8+): Class metadata
+
+
+
+✅ 3. What is the String Constant Pool?
+A special area inside heap memory for string literals
+
+When you write "hello" — it's stored in the String Pool
+
+If the same string is used again, Java reuses it (saves memory)
+
+
+
+✅ 4. Memory Allocation Examples
+✅ Example 1: Primitive & Reference
+
+public class Example1 {
+    public static void main(String[] args) {
+        int a = 10;                      // primitive -> stack
+        String name = "Afham";          // reference -> stack; "Afham" -> string pool
+    }
+}
+🔍 Memory Breakdown:
+Memory Area	Data
+Stack	a = 10, name → reference
+Heap (SCP)	"Afham"
+
+✅ Example 2: Using new String()
+
+public class Example2 {
+    public static void main(String[] args) {
+        String name = new String("Afham");
+    }
+}
+🔍 What Happens:
+"Afham" goes to String Constant Pool
+
+new String("Afham") creates another object in heap
+
+name refers to that new heap object
+
+Memory Area	Data
+Stack	name (reference)
+Heap (SCP)	"Afham"
+Heap (normal)	New "Afham" object
+
+✅ Example 3: Object with fields
+
+public class User {
+    int id;
+    String name;
+}
+
+public class Example3 {
+    public static void main(String[] args) {
+        User user = new User(); // object in heap
+        user.id = 1;
+        user.name = "Afham";    // "Afham" in string pool
+    }
+}
+Memory Area	Data
+Stack	user (reference)
+Heap	User object (id=1, name → SCP)
+SCP	"Afham"
+
+✅ 5. Key Differences (Table Format)
+| Feature        | Stack                        | Heap                   |
+| -------------- | ---------------------------- | ---------------------- |
+| Usage          | Method execution, local vars | Objects, instance data |
+| Lifetime       | Short (per method)           | Long (until GC)        |
+| Size           | Limited                      | Larger                 |
+| Speed          | Faster                       | Slower                 |
+| Thread Scope   | One stack per thread         | Shared between threads |
+| Managed by     | JVM                          | JVM Garbage Collector  |
+| Overflow Error | StackOverflowError           | OutOfMemoryError       |
+
+
+✅ 6. Bonus: Visual Diagram (Textual)
+pgsql
+Copy
+Edit
+[ Stack Memory ]            [ Heap Memory ]
+-------------------        ------------------------
+| int a = 10;       |       | "Afham" (SCP)        |
+| ref -> User obj   |       | User object {        |
+|                   |------>|   id = 1             |
+-------------------         |   name → "Afham"     |
+                            ------------------------
+✅ 7. Garbage Collection (GC)
+Heap memory is cleaned by the Garbage Collector
+
+GC removes unreachable objects
+
+Stack memory is automatically freed when method ends
+
+🧠 Summary:
+Stack → fast, short-lived, per-thread, for methods and primitives
+
+Heap → shared, long-lived, for objects and classes
+
+String literals are reused in the String Constant Pool inside heap
+
+References are in stack, objects are in heap

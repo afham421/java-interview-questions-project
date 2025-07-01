@@ -1,0 +1,60 @@
+Great question! The keywords final, finally, and finalize look similar, but they have completely different purposes in Java.
+
+✅ 1. final — Used to restrict
+It's a modifier.
+
+Used with variables, methods, and classes.
+
+| Use with         | Meaning                                 |
+| ---------------- | --------------------------------------- |
+| `final` variable | Value cannot be changed after assigned. |
+| `final` method   | Method cannot be overridden.            |
+| `final` class    | Class cannot be extended (inherited).   |
+
+
+
+final int x = 10;
+// x = 20;  ❌ Not allowed
+
+
+
+
+✅ 2. finally — Used with try-catch
+It's a block.
+
+Used to execute code no matter what (whether exception occurs or not).
+
+Often used to close resources like files, DB connections, etc.
+
+
+try {
+    int a = 5 / 0;
+} catch (Exception e) {
+    System.out.println("Exception caught");
+} finally {
+    System.out.println("This will always run");
+}
+
+
+
+✅ 3. finalize() — Used for garbage collection
+It's a method.
+
+Called by the Garbage Collector before destroying an object.
+
+Rarely used now (and deprecated in recent Java versions).
+
+
+protected void finalize() {
+    System.out.println("Object is being destroyed");
+}
+⚠️ Not recommended to use finalize() anymore — better to use try-with-resources or cleaner alternatives.
+
+
+
+🧠 Summary Table:
+| Keyword      | Type     | Purpose                                   |
+| ------------ | -------- | ----------------------------------------- |
+| `final`      | Modifier | Prevent change/inheritance                |
+| `finally`    | Block    | Always executes after try-catch           |
+| `finalize()` | Method   | Called before object is garbage collected |

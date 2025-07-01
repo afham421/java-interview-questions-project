@@ -5,6 +5,10 @@ class Calculator {
         return a + b;
     }
 //here we can use only add() method in different scenarios like for int double float etc. if we use different name for every that difficult to remind but by this code readable
+
+🔹 Why use it?
+To perform similar tasks with different types or numbers of inputs.
+
     public double add(double a, double b) {
         return a + b;
     }
@@ -37,6 +41,10 @@ public class Main {
     public static void main(String[] args) {
         Animal myDog = new Dog();
         Animal myCat = new Cat();
+
+🔹 Why use it?
+To provide a specific implementation of a method that is already defined in the parent class.
+
 
         myDog.sound(); // Output: Dog barks
         myCat.sound(); // Output: Cat meows //if here cate class not override the sound() function then it will call its reference class Animal sound() method

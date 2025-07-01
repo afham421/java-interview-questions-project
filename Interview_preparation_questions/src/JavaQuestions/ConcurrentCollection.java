@@ -53,7 +53,7 @@ public class ConcurrentCollection {
             e.printStackTrace();
         }
 
-        // Print the final list to show that new elements were added
+        // Print the final keyword list to show that new elements were added
         System.out.println("Final list: " + list);
         System.out.println("Both threads have finished. Main thread continues.");
 

@@ -1,0 +1,73 @@
+✅ @Qualifier — What It Does
+When Spring finds more than one bean of the same type, it doesn't know which one to inject. You use @Qualifier to specify the exact bean you want.
+
+🔧 Example: Without @Qualifier — causes ambiguity
+java
+Copy
+Edit
+@Component
+public class Dog implements Animal {
+    public void speak() {
+        System.out.println("Woof");
+    }
+}
+
+@Component
+public class Cat implements Animal {
+    public void speak() {
+        System.out.println("Meow");
+    }
+}
+
+@Component
+public class AnimalService {
+
+    // ❌ Spring will throw an error: NoUniqueBeanDefinitionException
+    @Autowired
+    private Animal animal;
+
+    public void makeAnimalSpeak() {
+        animal.speak();
+    }
+}
+✅ Example: With @Qualifier — resolves ambiguity
+java
+Copy
+Edit
+@Component
+public class Dog implements Animal {
+    public void speak() {
+        System.out.println("Woof");
+    }
+}
+
+@Component
+public class Cat implements Animal {
+    public void speak() {
+        System.out.println("Meow");
+    }
+}
+
+@Component
+public class AnimalService {
+
+    @Autowired
+    @Qualifier("cat") // ✅ tells Spring to inject the 'Cat' bean
+    private Animal animal;
+
+    public void makeAnimalSpeak() {
+        animal.speak();  // Output: Meow
+    }
+}
+📌 Rules
+The string in @Qualifier("...") must match the bean name — usually the class name with lowercase first letter (unless overridden with @Component("name") or @Bean(name = "...")).
+
+You can also use @Qualifier with @Bean methods.
+
+🧠 Summary
+| Annotation   | Purpose                                                   |
+| ------------ | --------------------------------------------------------- |
+| `@Qualifier` | Resolves conflicts when multiple beans of same type exist |
+| Works with   | `@Autowired`, constructor injection, `@Bean` methods      |
+
+

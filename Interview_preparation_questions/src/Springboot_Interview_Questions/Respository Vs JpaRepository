@@ -1,0 +1,59 @@
+✅ 1. Repository Interface (Base Marker Interface)
+It is the root interface in Spring Data JPA.
+
+It's a marker interface, meaning it has no methods.
+
+Used to create custom repository interfaces by extending it.
+
+
+import org.springframework.data.repository.Repository;
+
+public interface MyRepository extends Repository<MyEntity, Long> {
+    // You must define custom methods explicitly
+    MyEntity findByName(String name);
+}
+➕ Pros:
+Gives you full control over what methods to define.
+
+➖ Cons:
+No built-in CRUD methods — you have to define all queries yourself.
+
+✅ 2. JpaRepository Interface (Full-Featured)
+It extends PagingAndSortingRepository, which itself extends CrudRepository, which extends Repository.
+
+Provides all CRUD operations, pagination, and sorting out of the box.
+
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface MyRepository extends JpaRepository<MyEntity, Long> {
+    // Built-in methods: save, findById, findAll, deleteById, etc.
+    // Plus you can add custom query methods
+}
+➕ Pros:
+Rich set of methods like:
+
+save(), findAll(), deleteById(), count()
+
+Pagination: findAll(Pageable pageable)
+
+Less boilerplate, more productivity
+
+➖ Cons:
+You get all methods, even if you don’t use them (not a real issue in most cases)
+
+📊 Summary Table
+| Feature                | `Repository`      | `JpaRepository`                 |
+| ---------------------- | ----------------- | ------------------------------- |
+| Type                   | Marker Interface  | Full-featured Interface         |
+| Extends                | None              | `PagingAndSortingRepository`    |
+| CRUD methods included? | ❌ No              | ✅ Yes (e.g., `save`, `findAll`) |
+| Suitable for           | Custom-only repos | Most use cases                  |
+| Pagination & Sorting   | ❌ No              | ✅ Yes                           |
+
+
+🔧 When to Use Which?
+Use JpaRepository in 95% of use cases (standard CRUD + pagination + sorting).
+
+Use Repository when you want full manual control and define only specific methods.
+

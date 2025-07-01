@@ -1,0 +1,86 @@
+The Adapter Design Pattern is a structural design pattern that allows objects with incompatible interfaces to work together.
+It acts like a bridge between two incompatible interfaces.
+
+🔧 Definition:
+The Adapter pattern converts the interface of a class into another interface that a client expects.
+It lets classes work together that couldn’t otherwise because of incompatible interfaces.
+
+🔸 When to Use:
+You want to use an existing class, but its interface does not match the one you need.
+
+You want to create a reusable class that cooperates with unrelated or unforeseen classes.
+
+🧱 Components:
+Target – the interface the client expects.
+
+Adaptee – the existing class with an incompatible interface.
+
+Adapter – converts the interface of the Adaptee into the Target.
+
+✅ Real-world Example:
+🔌 Power Plug Adapter
+A European plug doesn’t fit into a US socket. A plug adapter allows the European plug to connect to a US power socket.
+
+💻 Java Example:
+Step 1: Target Interface
+java
+Copy
+Edit
+public interface MediaPlayer {
+    void play(String audioType, String fileName);
+}
+Step 2: Adaptee Class (Incompatible interface)
+java
+Copy
+Edit
+public class AdvancedMediaPlayer {
+    public void playVlc(String fileName) {
+        System.out.println("Playing vlc file: " + fileName);
+    }
+
+    public void playMp4(String fileName) {
+        System.out.println("Playing mp4 file: " + fileName);
+    }
+}
+Step 3: Adapter Class
+java
+Copy
+Edit
+public class MediaAdapter implements MediaPlayer {
+    AdvancedMediaPlayer advancedPlayer = new AdvancedMediaPlayer();
+
+    @Override
+    public void play(String audioType, String fileName) {
+        if(audioType.equalsIgnoreCase("vlc")) {
+            advancedPlayer.playVlc(fileName);
+        } else if(audioType.equalsIgnoreCase("mp4")) {
+            advancedPlayer.playMp4(fileName);
+        }
+    }
+}
+Step 4: Client Class
+java
+Copy
+Edit
+public class AudioPlayer implements MediaPlayer {
+    MediaAdapter adapter;
+
+    @Override
+    public void play(String audioType, String fileName) {
+        if(audioType.equalsIgnoreCase("mp3")) {
+            System.out.println("Playing mp3 file: " + fileName);
+        } else if(audioType.equalsIgnoreCase("vlc") || audioType.equalsIgnoreCase("mp4")) {
+            adapter = new MediaAdapter();
+            adapter.play(audioType, fileName);
+        } else {
+            System.out.println("Invalid media. " + audioType + " format not supported.");
+        }
+    }
+}
+🎯 Benefits:
+Reusability of existing code.
+
+Promotes decoupling between client and adaptee.
+
+Improves flexibility and extensibility.
+

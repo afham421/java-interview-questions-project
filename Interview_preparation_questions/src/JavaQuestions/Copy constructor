@@ -1,0 +1,44 @@
+🧱 What is a Copy Constructor in Java?
+A copy constructor in Java is a special constructor used to create a new object by copying the values from an existing object of the same class.
+
+✅ Purpose:
+To clone or duplicate an object with the same values.
+
+🧪 Example:
+
+public class Person {
+    String name;
+    int age;
+
+    // Regular constructor
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    // 🔄 Copy constructor
+    public Person(Person other) {
+        this.name = other.name;
+        this.age = other.age;
+    }
+
+    void display() {
+        System.out.println(name + " - " + age);
+    }
+
+    public static void main(String[] args) {
+        Person p1 = new Person("Ali", 25);
+        Person p2 = new Person(p1);  // Copy constructor used here
+
+        p2.display();  // Output: Ali - 25
+    }
+}
+
+
+🧠 Key Points:
+Java does not provide a default copy constructor, unlike C++.
+
+You must define it manually.
+
+It’s useful when you want to copy objects safely, especially with complex classes.
+

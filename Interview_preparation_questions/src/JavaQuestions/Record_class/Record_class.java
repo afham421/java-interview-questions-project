@@ -16,7 +16,7 @@ public class Record_class {
 
         // Accessing the fields
         System.out.println("X: " + point.x()); //x() are getters
-        System.out.println("Y: " + point.y()); //there is no need for setters because record is immutable and final when you create a new record and pass the values then you don't update.'
+        System.out.println("Y: " + point.y()); //there is no need for setters because record is immutable and final keyword when you create a new record and pass the values then you don't update.'
 
         // Using the toString() method
         System.out.println("JavaQuestions.Record_class.Point: " + point);
@@ -55,7 +55,7 @@ record Point(int x, int y) {
 
 }
 
-//class fdf extends JavaQuestions.Record_class.Point{ // can't extend record class because it final
+//class fdf extends JavaQuestions.Record_class.Point{ // can't extend record class because it final keyword
 //}
 
 record Person1(String name, int age) {

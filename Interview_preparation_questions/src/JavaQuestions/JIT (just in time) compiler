@@ -1,0 +1,35 @@
+
+
+JIT stands for Just-In-Time and it is used for improving the performance during run time.
+It does the task of compiling parts of byte code having similar functionality at the same time thereby reducing the amount of compilation time for the code to run.
+The compiler is nothing but a translator of source code to machine-executable code. But what is special about the JIT compiler? Let us see how it works:
+First, the Java source code (.java) conversion to byte code (.class) occurs with the help of the javac compiler.
+Then, the .class files are loaded at run time by JVM and with the help of an interpreter, these are converted to machine understandable code.
+JIT compiler is a part of JVM. When the JIT compiler is enabled, the JVM analyzes the method calls in the .class files and compiles them to get more efficient and native code.
+ It also ensures that the prioritized method calls are optimized.
+Once the above step is done, the JVM executes the optimized code directly instead of interpreting the code again. This increases the performance and speed of the execution.
+
+
+📌 Example:
+Suppose a loop runs thousands of times:
+for (int i = 0; i < 100000; i++) {
+    doSomething();
+}
+At first, this is interpreted. But after several iterations, the JIT compiles it into native code so it runs much faster.
+
+
+
+Exactly! ✅
+
+Once the JIT compiler converts a part of your code (like a method or loop) into machine code, the JVM doesn’t interpret it again. Instead, it runs the compiled (fast) version directly.
+
+🔁 In short:
+JVM starts by interpreting the bytecode (slow).
+
+JIT sees some code running many times.
+
+JIT compiles that code to machine code.
+
+JVM now runs this compiled code, not the interpreted one. (Fast!)
+
+So yes, JVM skips interpretation for compiled parts — that’s what makes JIT powerful.

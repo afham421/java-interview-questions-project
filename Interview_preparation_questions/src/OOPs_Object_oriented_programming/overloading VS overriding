@@ -1,0 +1,56 @@
+🔁 Why We Use Method Overloading and Overriding in Java
+✅ 1. Method Overloading – Same method name, different parameters (in the same class)
+🔹 Why use it?
+To perform similar tasks with different types or numbers of inputs.
+
+🧪 Example:
+
+class Calculator {
+    int add(int a, int b) {
+        return a + b;
+    }
+
+    double add(double a, double b) {
+        return a + b;
+    }
+
+    int add(int a, int b, int c) {
+        return a + b + c;
+    }
+}
+✅ Benefit:
+Code readability: One method name for similar operations.
+
+Flexibility: Accept different data types or argument counts.
+
+🔄 2. Method Overriding – Same method name and parameters in a subclass
+🔹 Why use it?
+To provide a specific implementation of a method that is already defined in the parent class.
+
+🧪 Example:
+
+class Animal {
+    void sound() {
+        System.out.println("Animal makes a sound");
+    }
+}
+
+class Dog extends Animal {
+    @Override
+    void sound() {
+        System.out.println("Dog barks");
+    }
+}
+✅ Benefit:
+Run-time polymorphism: Decide at runtime which version of the method to call.
+
+Custom behavior: Subclass can have its own way of doing things.
+
+📌 Summary:
+| Feature         | Overloading       | Overriding                  |
+| --------------- | ----------------- | --------------------------- |
+| Location        | Same class        | Parent-child (inheritance)  |
+| Parameters      | Must be different | Must be same                |
+| Return Type     | Can be different  | Should be same (or subtype) |
+| When it happens | Compile time      | Runtime                     |
+| Main purpose    | Code flexibility  | Custom behavior in subclass |

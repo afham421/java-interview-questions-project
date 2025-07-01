@@ -1,0 +1,40 @@
+❓ Why can't constructors be final in Java?
+Because constructors are never inherited by child classes.
+
+🔹 What does that mean?
+When you create a subclass, it does not get the parent class's constructor. Instead, the subclass must define its own constructor, even if it calls the parent’s constructor using super().
+
+So, there's no point in marking a constructor final, because:
+
+final is used to stop something from being overridden.
+
+But constructors can't be overridden anyway — they're not inherited like methods.
+
+🧪 Example:
+
+class Parent {
+    Parent() {
+        System.out.println("Parent constructor");
+    }
+}
+
+class Child extends Parent {
+    Child() {
+        super();  // Calls Parent's constructor, but doesn't override it
+        System.out.println("Child constructor");
+    }
+}
+If you try:
+
+
+final Parent() {  // ❌ ERROR: Illegal modifier for the constructor
+    ...
+}
+Java will show a compile-time error.
+
+✅ Summary:
+final is for stopping inheritance/overriding.
+
+Constructors are not inherited or overridden.
+
+So, marking a constructor as final is not allowed.

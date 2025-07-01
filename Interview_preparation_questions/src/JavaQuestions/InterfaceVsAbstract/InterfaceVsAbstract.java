@@ -38,11 +38,11 @@ public class InterfaceVsAbstract implements MyInterface {
 //Since Java 8, interfaces can have default methods (with a method body) and static methods.Cannot have constructors because you cannot instantiate an interface directly.
 //All methods in an interface are implicitly public and abstract (except default and static methods).
 interface MyInterface {
-    //Can only have public, static, and final fields (constants). They must be initialized at the time of declaration.
-//     Fields in an interface are always public, static, and final.
+    //Can only have public, static, and final keyword fields (constants). They must be initialized at the time of declaration.
+//     Fields in an interface are always public, static, and final keyword.
 //    They must be initialized at the time of declaration, making them constants.
 //    These fields are shared across all classes that implement the interface and cannot be modified.
-    int CONSTANT = 10; // Implicitly public, static, final
+    int CONSTANT = 10; // Implicitly public, static, final keyword
 
     void abstractMethod(); // Abstract method
 

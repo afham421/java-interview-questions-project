@@ -1,0 +1,69 @@
+Use of final keyword in Java
+In Java, the final keyword is a non-access modifier used to restrict changes to variables, methods, and classes.
+
+🔹 1. final variable
+A variable marked as final cannot be reassigned after it's been given a value.
+
+If not assigned during declaration, it must be initialized once, either:
+
+In the constructor (for instance variables), or
+
+In a static block (for static variables).
+
+
+final int MAX_VALUE = 100;  // ✅ Once assigned, cannot be changed
+
+// MAX_VALUE = 200; ❌ Error: cannot assign a value to final variable
+
+
+
+
+🔹 2. final method
+A method declared as final cannot be overridden in a subclass.
+
+This is used to prevent changing the logic of important or sensitive methods.
+
+
+class Parent {
+    final void show() {
+        System.out.println("This is a final method.");
+    }
+}
+
+class Child extends Parent {
+    // void show() ❌ Error: Cannot override the final method from Parent
+}
+🔸 Note: Constructors cannot be final, because they are never inherited, so it doesn't make sense to prevent overriding.
+🔹 What does that mean?
+When you create a subclass, it does not get the parent class's constructor. Instead, the subclass must define its own constructor, even if it calls the parent’s constructor using super().
+
+So, there's no point in marking a constructor final, because:
+
+final is used to stop something from being overridden.
+
+But constructors can't be overridden anyway — they're not inherited like methods.
+
+
+
+
+🔹 3. final class
+A class declared as final cannot be extended/inherited.
+
+This is used to protect the class from modification or subclassing.
+
+
+final class Vehicle {
+    void display() {
+        System.out.println("This is a vehicle.");
+    }
+}
+
+// class Car extends Vehicle ❌ Error: Cannot inherit from final class
+But a final class can extend other (non-final) classes.
+
+🧠 Summary Table:
+| Keyword Usage    | Restriction Applied                      |
+| ---------------- | ---------------------------------------- |
+| `final` variable | Cannot change the value after assignment |
+| `final` method   | Cannot override in a subclass            |
+| `final` class    | Cannot be inherited                      |

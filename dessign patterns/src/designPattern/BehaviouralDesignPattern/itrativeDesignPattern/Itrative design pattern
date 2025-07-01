@@ -1,0 +1,139 @@
+🔁 Iterator Design Pattern in Java
+The Iterator Pattern is a behavioral design pattern that provides a way to access elements of a collection sequentially without exposing the collection's internal structure.
+
+🧠 Definition:
+Allows traversing elements of a collection one-by-one using a common interface.
+
+📦 Real-Life Analogy:
+Think of a TV remote. It lets you go to the next or previous channel without opening the TV’s internal circuit.
+
+✅ When to Use:
+When you want to traverse a custom data structure.
+
+When you want a uniform way to iterate through multiple types of collections.
+
+To promote encapsulation (internal details of collection hidden).
+
+🏗️ Structure:
+
+[Iterator] (interface)
+  + hasNext()
+  + next()
+
+[Aggregate] (interface)
+  + createIterator()
+
+[ConcreteIterator]
+  + currentIndex
+  + hasNext(), next()
+
+[ConcreteAggregate]
+  + collection (like list/array)
+  + createIterator()
+✅ Java Custom Implementation Example
+Let’s build a custom collection of books and iterate over them.
+
+1. Book Class
+
+public class Book {
+    private String title;
+    public Book(String title) {
+        this.title = title;
+    }
+    public String getTitle() {
+        return title;
+    }
+}
+2. Iterator Interface
+
+public interface Iterator {
+    boolean hasNext();
+    Object next();
+}
+3. Aggregate Interface
+
+public interface BookCollection {
+    Iterator createIterator();
+}
+4. Concrete Collection + Iterator
+
+public class BookShelf implements BookCollection {
+    private Book[] books;
+    private int index = 0;
+
+    public BookShelf(int size) {
+        books = new Book[size];
+    }
+
+    public void addBook(Book book) {
+        if (index < books.length) {
+            books[index++] = book;
+        }
+    }
+
+    public Iterator createIterator() {
+        return new BookShelfIterator(books);
+    }
+}
+
+public class BookShelfIterator implements Iterator {
+    private Book[] books;
+    private int position = 0;
+
+    public BookShelfIterator(Book[] books) {
+        this.books = books;
+    }
+
+    public boolean hasNext() {
+        return position < books.length && books[position] != null;
+    }
+
+    public Object next() {
+        return books[position++];
+    }
+}
+5. Client Code (Demo)
+
+public class IteratorPatternDemo {
+    public static void main(String[] args) {
+        BookShelf shelf = new BookShelf(3);
+        shelf.addBook(new Book("Design Patterns"));
+        shelf.addBook(new Book("Clean Code"));
+        shelf.addBook(new Book("Refactoring"));
+
+        Iterator iterator = shelf.createIterator();
+        while (iterator.hasNext()) {
+            Book book = (Book) iterator.next();
+            System.out.println("Book: " + book.getTitle());
+        }
+    }
+}
+✅ Output
+
+Book: Design Patterns
+Book: Clean Code
+Book: Refactoring
+🧠 Key Benefits:
+| Feature           | Benefit                                |
+| ----------------- | -------------------------------------- |
+| Encapsulation     | Client doesn’t know internal structure |
+| Uniform interface | Works for arrays, lists, sets, etc.    |
+| Flexibility       | Multiple iterators for same collection |
+
+
+🔄 Java Built-In Iterators
+Java provides Iterator<E> interface:
+
+
+List<String> list = List.of("A", "B", "C");
+Iterator<String> it = list.iterator();
+
+while (it.hasNext()) {
+    System.out.println(it.next());
+}
+Or enhanced for-each loop (uses Iterator internally):
+
+
+for (String s : list) {
+    System.out.println(s);
+}
