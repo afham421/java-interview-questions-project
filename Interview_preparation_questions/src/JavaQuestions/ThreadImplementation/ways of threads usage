@@ -1,0 +1,63 @@
+✅ Different Ways to Use Threads in Java:
+1. Extending the Thread class
+
+class MyThread extends Thread {
+    public void run() {
+        System.out.println("Thread running using Thread class");
+    }
+}
+Usage:
+
+
+MyThread t = new MyThread();
+t.start(); // starts a new thread
+2. Implementing the Runnable interface
+
+class MyRunnable implements Runnable {
+    public void run() {
+        System.out.println("Thread running using Runnable");
+    }
+}
+Usage:
+
+
+Thread t = new Thread(new MyRunnable());
+t.start();
+🔸 More flexible than extending Thread (since you can extend another class).
+
+3. Using Lambda Expression (Java 8+)
+
+Thread t = new Thread(() -> {
+    System.out.println("Thread using lambda");
+});
+t.start();
+✅ Clean and concise way to implement threads.
+
+4. Using ExecutorService (Thread Pooling)
+
+ExecutorService executor = Executors.newFixedThreadPool(3);
+executor.submit(() -> {
+    System.out.println("Thread using ExecutorService");
+});
+executor.shutdown();
+✅ Best for handling multiple tasks efficiently (used in production-level apps).
+
+5. Using Callable with Future (if return value is needed)
+
+ExecutorService executor = Executors.newSingleThreadExecutor();
+Callable<String> task = () -> "Task Completed!";
+Future<String> result = executor.submit(task);
+
+System.out.println(result.get()); // waits and prints: Task Completed!
+executor.shutdown();
+✅ Use this when your thread needs to return a result or throw an exception.
+
+✅ Summary Table:
+| Method                | Can return result?       | Allows exception? | Flexible? | Common Usage             |
+| --------------------- | ------------------------ | ----------------- | --------- | ------------------------ |
+| `Thread` class        | ❌ No                     | ❌ No              | ❌ Less    | Simple threaded logic    |
+| `Runnable` interface  | ❌ No                     | ❌ No              | ✅ Yes     | Lightweight tasks        |
+| `Lambda` expression   | ❌ No                     | ❌ No              | ✅ Yes     | Short tasks, readability |
+| `ExecutorService`     | ❌ (or ✅ with `Callable`) | ✅ Yes             | ✅ Very    | Thread pool tasks        |
+| `Callable` + `Future` | ✅ Yes                    | ✅ Yes             | ✅ Yes     | When result is needed    |
+

@@ -1,0 +1,9 @@
+✅ What is a ClassLoader in Java?
+A ClassLoader in Java is a part of the Java Runtime Environment (JRE) that loads .class files into memory when a Java program runs.
+
+In simple terms:
+It loads Java classes into the JVM when needed.
+
+📦 Why is it needed?
+Java uses dynamic class loading, meaning classes are loaded into memory only when required, not all at once.
+The ClassLoader handles this process automatically behind the scenes.

@@ -1,0 +1,40 @@
+✅ throw vs throws in Java
+| Feature                   | `throw`                                 | `throws`                                            |
+| ------------------------- | --------------------------------------- | --------------------------------------------------- |
+| **Purpose**               | Used to **manually throw** an exception | Declares that a method **might throw** an exception |
+| **Usage**                 | Inside the method body                  | In the method declaration (signature)               |
+| **Followed by**           | An **exception object** (e.g., `new`)   | One or more **exception classes** (no `new`)        |
+| **Throws when?**          | Immediately at runtime                  | Tells the caller to handle or declare it            |
+| **Example**               | `throw new IOException("File error");`  | `public void readFile() throws IOException`         |
+| **Checked or Unchecked?** | Used for both                           | Only used for **checked exceptions**                |
+
+
+🧠 Examples:
+✅ throw – used to actually throw an exception:
+
+public void validateAge(int age) {
+    if (age < 18) {
+        throw new IllegalArgumentException("Age must be 18 or above");
+    }
+}
+✅ throws – used to declare an exception in method signature:
+
+public void readFile(String file) throws IOException {
+    FileReader fr = new FileReader(file);
+    // Might throw IOException
+}
+✅ When to Use:
+Use throw when you want to raise an exception manually.
+
+Use throws when a method might throw a checked exception and you want the caller to handle it.
+
+🔁 Combined Usage:
+
+public void myMethod() throws IOException {
+    throw new IOException("Something went wrong");
+}
+🔍 Summary:
+| Keyword  | Meaning                            | Where it's used     |
+| -------- | ---------------------------------- | ------------------- |
+| `throw`  | Actually throws an exception       | Inside method body  |
+| `throws` | Declares that a method might throw | In method signature |

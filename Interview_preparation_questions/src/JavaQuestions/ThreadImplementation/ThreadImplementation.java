@@ -56,6 +56,16 @@ public class ThreadImplementation {
         ExecutorService executor = Executors.newFixedThreadPool(2);
         executor.execute(new MyRunnable());
         executor.shutdown();
+
+        //16. What are the different types of Thread Priorities in Java? And what is the default priority of a thread assigned by JVM?
+        //There are a total of 3 different types of priority available in Java.
+        //
+        //MIN_PRIORITY: It has an integer value assigned with 1.
+        //MAX_PRIORITY: It has an integer value assigned with 10.
+        //NORM_PRIORITY: It has an integer value assigned with 5.
+        //
+        //In Java, Thread with MAX_PRIORITY gets the first chance to execute. But the default priority for any thread is NORM_PRIORITY assigned by JVM
+
 //        or
         ExecutorService executor1 = Executors.newSingleThreadExecutor();
         executor1.submit(() -> {

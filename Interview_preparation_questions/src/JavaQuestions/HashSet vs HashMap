@@ -1,0 +1,41 @@
+✅ HashMap vs HashSet
+| Feature              | **HashMap**                                                | **HashSet**                                   |
+| -------------------- | ---------------------------------------------------------- | --------------------------------------------- |
+| **Stores**           | Key–Value pairs (e.g., `Map<K, V>`)                        | Only **unique values**                        |
+| **Implements**       | `Map` interface                                            | `Set` interface                               |
+| **Duplicates**       | ❌ Keys must be unique, values can repeat                   | ❌ No duplicate elements                       |
+| **Null values**      | ✅ One null key, multiple null values                       | ✅ One null element allowed                    |
+| **Use case**         | When you need to store **mapping** between keys and values | When you need **a unique set of elements**    |
+| **Internal working** | Uses **hashing** via `HashMap` structure                   | Internally uses **HashMap** to store elements |
+
+
+🔧 How they work internally:
+HashSet is actually backed by a HashMap:
+
+
+private transient HashMap<E,Object> map;
+Each value you add in HashSet is stored as a key in a HashMap with a dummy value.
+
+🧠 Code Examples:
+✅ HashMap:
+
+Map<Integer, String> map = new HashMap<>();
+map.put(1, "Apple");
+map.put(2, "Banana");
+map.put(1, "Orange"); // Overwrites "Apple"
+
+System.out.println(map); // {1=Orange, 2=Banana}
+✅ HashSet:
+
+Set<String> set = new HashSet<>();
+set.add("Apple");
+set.add("Banana");
+set.add("Apple"); // Ignored
+
+System.out.println(set); // [Apple, Banana]
+
+
+✅ Summary:
+Use HashMap when you want to associate keys with values.
+
+Use HashSet when you only care about unique values, not key-value relationships.

@@ -1,0 +1,33 @@
+🔍 What is Reflection in Java?
+Reflection is a feature in Java that allows a program to examine or modify the runtime behavior of classes, methods, fields, and constructors, even if they are private.
+
+It belongs to the java.lang.reflect package.
+
+✅ Importance of Reflection in Java
+| Purpose                           | Description                                                                                              |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **1. Inspect Classes at Runtime** | You can examine class metadata: name, methods, fields, constructors, annotations.                        |
+| **2. Dynamic Method Invocation**  | You can call methods or access fields dynamically (even private ones).                                   |
+| **3. Create Objects Dynamically** | Instantiate objects of classes even if you don't know their names at compile time.                       |
+| **4. Framework Development**      | Core to frameworks like **Spring**, **Hibernate**, **JUnit** for dependency injection, ORM, and testing. |
+| **5. IDEs, Debuggers, Tools**     | Used in tools like Eclipse, IntelliJ, and debuggers for inspecting code behavior.                        |
+
+
+🧠 Example:
+
+Class<?> clazz = Class.forName("java.util.ArrayList");
+Method method = clazz.getMethod("size");
+System.out.println("Method name: " + method.getName());
+You didn’t write ArrayList directly in your code — but reflection let you inspect and use it anyway.
+
+⚠️ Caution:
+Slower performance than regular code (due to runtime inspection)
+
+Breaks encapsulation (you can access private fields/methods)
+
+Should be used carefully, mostly in frameworks or libraries
+
+✅ Summary Answer for Interview:
+"Reflection in Java allows runtime inspection and manipulation of classes, methods, and fields. It's powerful for developing frameworks, tools,
+and performing dynamic operations — such as creating objects or invoking methods without knowing their names at compile time.
+It's widely used in libraries like Spring and Hibernate, but should be used cautiously due to performance and security considerations."

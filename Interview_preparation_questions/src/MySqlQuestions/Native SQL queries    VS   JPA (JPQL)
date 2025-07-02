@@ -1,0 +1,57 @@
+⚡️ Answer in Short:
+Native SQL queries are generally faster than JPA (JPQL) queries when fetching very large amounts of data, like millions of records.
+
+📊 Why Native Queries Are Faster:
+| Feature                | Native Query                          | JPA (JPQL) Query                         |
+| ---------------------- | ------------------------------------- | ---------------------------------------- |
+| **Execution**          | Runs directly on the DB               | Converts to SQL, adds ORM logic          |
+| **Overhead**           | Minimal                               | Higher (adds mapping, tracking, caching) |
+| **Control**            | Full control of joins, indexes, hints | Limited to JPA syntax                    |
+| **Speed (large data)** | 🔥 Faster                             | 🐢 Slower due to extra processing        |
+
+
+🧠 Real Reason:
+When you run a JPQL query, JPA:
+
+Converts it into SQL
+
+Maps each row to an entity object
+
+Adds persistence context (1st-level cache)
+
+May fetch unnecessary relationships (unless @BatchSize, fetch = FetchType.LAZY is used)
+
+This adds memory and CPU overhead.
+
+✅ Best Practice for Huge Data Fetch:
+Use Native Query for speed:
+
+
+@Query(value = "SELECT * FROM large_table WHERE condition = ?", nativeQuery = true)
+List<Object[]> fetchLargeData(String condition);
+Use DTO projection instead of full Entity:
+
+
+@Query(value = "SELECT id, name FROM large_table", nativeQuery = true)
+List<MyDTO> fetchLightweightData();
+Stream results if needed:
+
+
+@Query("SELECT e FROM Entity e")
+Stream<Entity> streamAll();
+Use Pagination / Limit
+Don’t load everything at once unless absolutely needed.
+
+🚨 Warning:
+If you load millions of rows into memory with JPA, it may cause:
+
+High GC activity
+
+OutOfMemoryError
+
+Slowness due to object mapping
+
+🔍 Conclusion:
+For small/medium data: JPA is fine
+
+For millions of records: Native query + lightweight DTO or streaming is best

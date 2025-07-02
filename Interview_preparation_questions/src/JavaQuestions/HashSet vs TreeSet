@@ -1,0 +1,32 @@
+✅ HashSet vs TreeSet:
+| Feature                  | **HashSet**                        | **TreeSet**                                               |
+| ------------------------ | ---------------------------------- | --------------------------------------------------------- |
+| **Ordering**             | ❌ No guaranteed order              | ✅ Sorted in **natural order** or with a comparator        |
+| **Performance**          | ✅ Faster (O(1) for basic ops)      | ❗ Slower (O(log n) for basic ops)                         |
+| **Underlying structure** | Uses a **HashMap** internally      | Uses a **Red-Black Tree** internally                      |
+| **Null elements**        | ✅ Allows **one** null element      | ❌ Does **not** allow null (throws `NullPointerException`) |
+| **Implements**           | `Set`, `Cloneable`, `Serializable` | `NavigableSet`, `SortedSet`, `Set`, etc.                  |
+| **Use case**             | When you need **fast access**      | When you need **sorted elements**                         |
+
+
+🧠 Simple Example:
+✅ HashSet:
+
+Set<String> hashSet = new HashSet<>();
+hashSet.add("Banana");
+hashSet.add("Apple");
+hashSet.add("Orange");
+
+System.out.println(hashSet); // Output order is unpredictable
+✅ TreeSet:
+
+Set<String> treeSet = new TreeSet<>();
+treeSet.add("Banana");
+treeSet.add("Apple");
+treeSet.add("Orange");
+
+System.out.println(treeSet); // Output: [Apple, Banana, Orange]
+✅ Summary:
+Use HashSet if you don’t care about order and want fast operations.
+
+Use TreeSet if you need elements in sorted order.

@@ -1,0 +1,81 @@
+✅ 1. Static Variables (Class Variables)
+📌 Definition:
+A static variable belongs to the class rather than any instance. All instances of the class share the same copy.
+
+➕ Usage:
+For constants or shared data across all instances.
+
+🧪 Example:
+java
+Copy
+Edit
+public class Counter {
+    static int count = 0; // static variable
+
+    Counter() {
+        count++;
+    }
+}
+📤 Output:
+java
+Copy
+Edit
+Counter c1 = new Counter();
+Counter c2 = new Counter();
+System.out.println(Counter.count); // ➝ 2 (shared)
+✅ 2. Static Methods
+📌 Definition:
+A static method belongs to the class, not an instance. It can be called without creating an object.
+
+🔒 Restrictions:
+Cannot access non-static (instance) variables or methods.
+
+Can only directly call other static methods or access static data.
+
+🧪 Example:
+java
+Copy
+Edit
+public class MathUtils {
+    public static int square(int x) {
+        return x * x;
+    }
+}
+📤 Usage:
+java
+Copy
+Edit
+int result = MathUtils.square(5); // ➝ 25
+✅ 3. Static Classes (Nested Static Classes)
+📌 Definition:
+Java does not allow top-level classes to be static, but you can declare a nested static class.
+
+➕ When to Use:
+When the nested class does not require access to outer class's instance.
+
+For better encapsulation or utility-style helper classes.
+
+🧪 Example:
+java
+Copy
+Edit
+public class Outer {
+    static class Inner {
+        void show() {
+            System.out.println("Static Inner Class");
+        }
+    }
+}
+📤 Usage:
+java
+Copy
+Edit
+Outer.Inner inner = new Outer.Inner();
+inner.show(); // ➝ Static Inner Class
+✅ Summary Table
+| Feature         | Belongs To  | Accessed With            | Can Use Instance Data? | Example Use Case      |
+| --------------- | ----------- | ------------------------ | ---------------------- | --------------------- |
+| Static Variable | Class       | `ClassName.var`          | ❌                      | Shared counter        |
+| Static Method   | Class       | `ClassName.method()`     | ❌                      | Utility functions     |
+| Static Class    | Outer Class | `Outer.Inner inner =...` | ❌                      | Nested helper classes |
+

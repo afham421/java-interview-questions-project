@@ -1,0 +1,14 @@
+ What is the main objective of garbage collection in Java?
+The main objective of garbage collection in Java is to automatically manage memory by:
+
+Freeing up memory used by objects that are no longer reachable or needed by the program.
+
+🔍 Why is this important?
+It prevents memory leaks
+
+Improves application performance
+
+Helps developers avoid manual memory management, unlike languages like C/C++
+
+✅ In simple words:
+Garbage collection helps Java programs clean up unused objects so that the application doesn’t run out of memory and can continue running smoothly.

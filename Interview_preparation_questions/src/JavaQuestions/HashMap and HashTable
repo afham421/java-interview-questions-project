@@ -1,0 +1,47 @@
+✅ HashMap vs Hashtable in Java
+| Feature              | **HashMap**                                                                         | **Hashtable**                                       |
+| -------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------- |
+| **Thread Safety**    | ❌ Not thread-safe (needs manual sync)                                               | ✅ Thread-safe (methods are synchronized)            |
+| **Performance**      | ✅ Faster (no synchronization overhead)                                              | ❌ Slower due to method-level synchronization        |
+| **Null keys/values** | ✅ Allows **1 null key** and **multiple null values**                                | ❌ **Does not allow** any null key or value          |
+| **Introduced in**    | Java 1.2 (part of the Collections Framework)                                        | Java 1.0 (legacy class)                             |
+| **Use case**         | For **single-threaded** or manually synchronized apps                               | For **legacy multithreaded** applications           |
+| **Iterator type**    | **Fail-fast** – throws `ConcurrentModificationException` on concurrent modification | **Fail-safe** – no exception (but weak consistency) |
+| **Extends**          | `AbstractMap`                                                                       | `Dictionary` (old abstract class)                   |
+
+
+🔍 Example:
+✅ HashMap:
+Map<String, String> map = new HashMap<>();
+map.put(null, "value");       // ✔ Allowed
+map.put("key", null);         // ✔ Allowed
+
+✅ Correct version:
+"Insertion order can be preserved by using LinkedHashMap, which is a subclass of HashMap."
+
+🧠 Explanation:
+HashMap itself does not maintain insertion order.
+
+But its subclass LinkedHashMap adds a doubly linked list to maintain the order in which entries were inserted.
+
+So if you want the features of a HashMap + insertion order, use LinkedHashMap.
+
+
+❌ Hashtable:
+Map<String, String> table = new Hashtable<>();
+table.put(null, "value");     // ❌ Throws NullPointerException
+
+🔐 When to use what?
+| Scenario                              | Recommendation                                 |
+| ------------------------------------- | ---------------------------------------------- |
+| Multithreaded application             | ✅ Use `ConcurrentHashMap` instead of Hashtable |
+| General-purpose use (single-threaded) | ✅ Use `HashMap`                                |
+| Legacy code compatibility             | Use `Hashtable` only if required               |
+
+
+✅ Summary:
+Use HashMap in most modern Java applications.
+
+Avoid Hashtable unless you're maintaining very old code.
+
+For thread safety, use ConcurrentHashMap instead — it's more efficient and modern.

@@ -1,0 +1,36 @@
+✅ Why is a char[] preferred over a String for storing confidential data like passwords?
+🔐 Main Reason: String is immutable, but char[] is not
+
+📌 1. Immutability of String
+In Java, String is immutable, meaning:
+
+Once created, it cannot be changed.
+
+Even if you assign a new value, the old one stays in memory until garbage collected.
+
+🔴 Risk: If a password is stored as a String, it might remain in memory for a long time — and could be retrieved from memory dumps or hacked.
+
+
+String password = "mySecret123"; // stays in memory
+✅ 2. char[] can be wiped
+With a char[] (character array), you can manually overwrite the contents after you're done using the password.
+
+
+char[] password = {'m', 'y', '1', '2', '3'};
+// After use
+Arrays.fill(password, '\0'); // overwrite memory
+This reduces the window during which sensitive data is stored in memory.
+
+✅ Summary Table:
+| Aspect                        | `String`                               | `char[]`                      |
+| ----------------------------- | -------------------------------------- | ----------------------------- |
+| **Mutable**                   | ❌ No                                   | ✅ Yes                         |
+| **Can be cleared**            | ❌ No                                   | ✅ Yes (e.g., `Arrays.fill()`) |
+| **Memory risk**               | 🔴 High (stored in string pool/memory) | ✅ Low (can be overwritten)    |
+| **Secure for sensitive data** | ❌ Not preferred                        | ✅ Recommended                 |
+
+
+
+🧠 In interview terms:
+"We prefer char[] over String for sensitive information like passwords because String is immutable and may stay in memory longer, posing a security risk.
+With a char[], we can explicitly clear the contents from memory, which improves security."

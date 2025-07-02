@@ -1,4 +1,4 @@
-package JavaQuestions.InterfaceVsAbstract;
+package OOPs_Object_oriented_programming.InterfaceVsAbstract;
 
 public class InterfaceVsAbstract implements MyInterface {
 

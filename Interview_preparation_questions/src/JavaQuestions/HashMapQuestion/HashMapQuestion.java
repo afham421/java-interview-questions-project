@@ -66,6 +66,19 @@ public class HashMapQuestion {
                 System.out.println("Key: " + key + ", Value: " + map.get(key));
             }
         }
+//⚠️ Important Notes:
+//You must call iterator.next() before iterator.remove().
+//
+//You should not call map.remove() inside iterator loop — it's like pulling the rug out from under the loop.
+
+        //✅ Simple Analogy:
+        //Think of a classroom roll call:
+        //
+        //🔁 for-each loop is like a teacher reading names off a list.
+        //You can’t erase names while reading — it confuses the teacher.
+        //
+        //✅ Iterator is like a teacher checking each student and crossing out names safely as they go.
+
 
         // Iterate over entries
         for (Map.Entry<Integer, String> entry : map.entrySet()) {

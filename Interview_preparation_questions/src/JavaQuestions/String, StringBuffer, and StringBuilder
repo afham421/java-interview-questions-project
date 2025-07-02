@@ -1,0 +1,59 @@
+✅ Difference Between String, StringBuffer, and StringBuilder in Java
+| Feature           | `String`                  | `StringBuffer`                   | `StringBuilder`                   |
+| ----------------- | ------------------------- | -------------------------------- | --------------------------------- |
+| **Mutability**    | ❌ Immutable               | ✅ Mutable                        | ✅ Mutable                         |
+| **Thread-Safe**   | ❌ No                      | ✅ Yes (synchronized)             | ❌ No                              |
+| **Performance**   | ❌ Slow for many edits     | ⚠️ Slower (due to sync)          | ✅ Fast (no sync overhead)         |
+| **Use Case**      | When value doesn't change | When used in multi-threaded apps | When used in single-threaded apps |
+| **Introduced In** | Java 1.0                  | Java 1.0                         | Java 1.5                          |
+
+
+🔍 1. String (Immutable)
+
+String s = "Hello";
+s = s + " World";  // Creates a new string object
+Every modification creates a new object.
+
+Safe, but not memory efficient for frequent edits.
+
+🔧 2. StringBuffer (Mutable + Thread-Safe)
+
+StringBuffer sb = new StringBuffer("Hello");
+sb.append(" World");  // Modifies same object
+Thread-safe due to synchronized methods.
+
+Slightly slower than StringBuilder.
+
+⚡ 3. StringBuilder (Mutable + Fast, Not Thread-Safe)
+
+StringBuilder sb = new StringBuilder("Hello");
+sb.append(" World");  // Modifies same object
+Same API as StringBuffer.
+
+Faster and more efficient in single-threaded environments.
+
+Not synchronized — not safe for multi-threading.
+
+🧪 Example Comparison:
+
+public class Main {
+    public static void main(String[] args) {
+        String s = "Java";
+        s += " Programming"; // New object created
+
+        StringBuffer sbf = new StringBuffer("Java");
+        sbf.append(" Programming"); // Same object
+
+        StringBuilder sbd = new StringBuilder("Java");
+        sbd.append(" Programming"); // Same object
+    }
+}
+
+✅ When to Use What?
+| Scenario                       | Best Choice     |
+| ------------------------------ | --------------- |
+| Fixed text / few modifications | `String`        |
+| Many changes + multi-threaded  | `StringBuffer`  |
+| Many changes + single-threaded | `StringBuilder` |
+
+

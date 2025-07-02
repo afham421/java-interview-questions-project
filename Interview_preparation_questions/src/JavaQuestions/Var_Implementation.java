@@ -6,7 +6,7 @@ public class Var_Implementation {
 
     //    In Java, var is a feature introduced in Java 10 that allows for local variable type inference. When you declare a variable using var,
 //    the compiler automatically infers the variable's type based on the value it's initialized with. This feature can make your code more concise and readable,
-//    especially in situations where the type is evident from the context.
+//    especially in situations where the type is evident(clear) from the context.
 //
 //    Key Points About var:
 //    Local Variable Type Inference: var can only be used for local variables, such as those inside a method, for loop, or a block.
@@ -27,7 +27,7 @@ public class Var_Implementation {
         System.out.println(list);
     }
     // This is not allowed. `var` cannot be used in method signatures.
-//    public var countElements(var items) {
+//    Public var countElements(var items) {
 //        return items.size();
 //    }
 }

@@ -1,0 +1,141 @@
+✅ What is a Singleton Class in Java?
+A singleton class in Java is a class that allows only one instance to be created during the entire lifetime of the application.
+
+📌 Why Use Singleton?
+To share global access to one object (e.g. database connection, config loader, logger)
+
+To conserve memory
+
+To ensure consistency (same state across usage)
+
+🛠 How to Implement a Singleton Class
+There are multiple ways. Here are the most common and recommended ones:
+
+🔹 1. Eager Initialization (Thread-safe)
+
+public class Singleton {
+    private static final Singleton instance = new Singleton();
+
+    private Singleton() {}  // private constructor
+
+    public static Singleton getInstance() {
+        return instance;
+    }
+}
+✅ Pros: Simple and thread-safe
+❌ Cons: Instance is created even if not used (wastes memory)
+
+🔹 2. Lazy Initialization (Not thread-safe)
+
+public class Singleton {
+    private static Singleton instance;
+
+    private Singleton() {}
+
+    public static Singleton getInstance() {
+        if (instance == null) {
+            instance = new Singleton();
+        }
+        return instance;
+    }
+}
+✅ Pros: Instance created only when needed
+❌ Cons: Not thread-safe in multi-threaded apps
+
+🔹 3. Thread-Safe Singleton (Synchronized)
+
+public class Singleton {
+    private static Singleton instance;
+
+    private Singleton() {}
+
+    public static synchronized Singleton getInstance() {
+        if (instance == null) {
+            instance = new Singleton();
+        }
+        return instance;
+    }
+}
+✅ Pros: Thread-safe
+❌ Cons: Synchronization is expensive (performance hit)
+
+🔹 4. Bill Pugh Singleton (Best Practice)
+
+public class Singleton {
+
+    private Singleton() {}
+
+    private static class Holder {
+        private static final Singleton INSTANCE = new Singleton();
+    }
+
+    public static Singleton getInstance() {
+        return Holder.INSTANCE;
+    }
+}
+✅ Pros:
+
+Thread-safe
+
+Lazy initialization
+
+No performance hit
+
+🧪 Example Use:
+
+Singleton s1 = Singleton.getInstance();
+Singleton s2 = Singleton.getInstance();
+
+System.out.println(s1 == s2); // true
+
+
+
+✅ Why Enum Singleton?
+Thread-safe by design
+
+Serialization-safe (prevents creating new instances during deserialization)
+
+Reflection-safe (prevents reflection attacks that can break other singleton implementations)
+
+🔧 Enum Singleton Example:
+
+public enum Singleton {
+    INSTANCE;
+
+    public void showMessage() {
+        System.out.println("Hello from Singleton!");
+    }
+}
+✅ Usage:
+
+public class Main {
+    public static void main(String[] args) {
+        Singleton singleton = Singleton.INSTANCE;
+        singleton.showMessage();
+    }
+}
+🧠 Behind the Scenes:
+Java ensures only one instance of the enum is ever created.
+
+This makes it bulletproof against:
+
+Multiple threads
+
+Serialization/deserialization
+
+Reflection
+
+
+
+
+
+
+✅ Summary
+| Method        | Thread-Safe | Lazy | Recommended     |
+| ------------- | ----------- | ---- | --------------- |
+| Eager Init    | ✅           | ❌    | For simple apps |
+| Lazy Init     | ❌           | ✅    | ❌ Not safe      |
+| Synchronized  | ✅           | ✅    | ⚠️ Slow         |
+| **Bill Pugh** | ✅           | ✅    | ✅ Best Choice   |
+
+

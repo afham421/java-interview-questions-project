@@ -1,0 +1,37 @@
+❓ Why is the main method static in Java?
+
+public static void main(String[] args)
+The main method is static because it needs to be called by the Java Virtual Machine (JVM) before any objects are created.
+
+✅ Reasons:
+1. JVM needs to call it without creating an object
+When your program starts, no object exists.
+
+If main() were non-static, the JVM would need to create an object first — but how would it know which constructor to use?
+
+Making main() static lets the JVM run the method directly using the class name.
+
+2. Saves memory
+No need to create an object just to start the program.
+
+3. Acts as the program’s entry point
+Java looks for this specific method signature to start execution:
+
+
+public static void main(String[] args)
+🔁 What if you remove static?
+
+public void main(String[] args) {
+    System.out.println("Hello");
+}
+✅ It compiles,
+❌ But JVM won’t run it — it will give an error like:
+
+
+Error: Main method not found in class...
+🧠 Summary:
+| Reason                            | Explanation                            |
+| --------------------------------- | -------------------------------------- |
+| No object exists at startup       | JVM must call `main` without an object |
+| Static methods belong to class    | So JVM can call `ClassName.main()`     |
+| Saves memory and avoids confusion | No constructor or object needed first  |
