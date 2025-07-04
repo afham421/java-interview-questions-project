@@ -1,0 +1,38 @@
+✅ You can call one constructor from another constructor within the same class in Java using the keyword **this()**.
+🔍 This is called Constructor Chaining.
+It helps avoid code duplication and reuse initialization logic across multiple constructors.
+
+🔧 Example:
+
+public class Student {
+    String name;
+    int age;
+
+    // Constructor 1
+    public Student() {
+        this("Unknown", 0); // Calls Constructor 2
+        System.out.println("Default constructor called");
+    }
+
+    // Constructor 2
+    public Student(String name, int age) {
+        this.name = name;
+        this.age = age;
+        System.out.println("Parameterized constructor called");
+    }
+}
+🔁 Output:
+
+Parameterized constructor called
+Default constructor called
+
+⚠️ Rules:
+this() must be the first statement in the constructor.
+
+You can’t call more than one constructor directly using this() in the same constructor.
+
+Constructor chaining helps keep your code clean and DRY (Don't Repeat Yourself).
+
+✅ Summary:
+"Yes, in Java, you can call one constructor from another in the same class using this(). This is useful for constructor chaining and code reuse.
+The call to this() must be the first statement in the constructor."

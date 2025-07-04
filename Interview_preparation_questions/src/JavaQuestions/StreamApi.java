@@ -73,6 +73,11 @@ public class StreamApi {
         Integer i = list.stream().max((a, b) -> a.compareTo(b)).get();
         System.out.println(i);
 
+        int max = list.stream()
+                .max(Integer::compare)
+                .orElseThrow(); // or use .orElse(0)
+        System.out.println("Max Number: " + max);
+
 
 
     }

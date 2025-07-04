@@ -19,7 +19,9 @@ public class Jar_Hell {
 //Inconsistent Behavior: When an application behaves differently depending on the order of JARs in the classpath or the environment.
 
 //Strategies to Avoid JAR Hell
-//Dependency Management: Use dependency management tools like Maven or Gradle. These tools handle transitive dependencies and ensure that the correct versions of libraries are used. They also avoid including multiple versions of the same library.
+//Dependency Management: Use dependency management tools like Maven or Gradle. These tools handle transitive dependencies and ensure that the correct versions of libraries are used.
+// They also avoid including multiple versions of the same library.
+
 //ClassLoader Isolation: Use separate class loaders to isolate different parts of an application, especially in complex environments like application servers or OSGi containers.
 //Modularization: Break down large applications into smaller modules to reduce the complexity of the classpath and make it easier to manage dependencies.
 //Fat JARs: Package dependencies into a single JAR file (often called a "fat JAR" or "uber JAR") to avoid classpath issues, though this can be problematic if not managed carefully.

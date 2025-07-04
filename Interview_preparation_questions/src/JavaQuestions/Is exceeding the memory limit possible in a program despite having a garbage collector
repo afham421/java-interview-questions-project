@@ -1,0 +1,37 @@
+Yes, absolutely. Even though Java has a Garbage Collector (GC) to manage memory automatically, it is still possible to exceed the memory limit and run into an OutOfMemoryError.
+
+✅ Why Can Memory Be Exceeded Even With GC?
+🔹 1. Memory Leaks
+If objects are still referenced, GC won’t collect them, even if they're no longer needed.
+
+This causes memory to fill up over time.
+
+🔹 2. Too Much Data Loaded
+If your program tries to load/process very large files, collections, or data from a DB, you might exceed the heap space.
+
+🔹 3. Infinite Object Creation
+Poorly written code (e.g., creating objects in a loop without releasing them) can quickly exhaust memory.
+
+🔹 4. Incorrect JVM Settings
+If heap size (-Xmx, -Xms) is set too low, the app may run out of memory even if GC is working.
+
+🔹 5. GC Can't Keep Up
+If your app creates objects faster than GC can collect them, memory fills up eventually.
+
+🧠 Example:
+java
+Copy
+Edit
+List<int[]> memoryLeak = new ArrayList<>();
+while (true) {
+    memoryLeak.add(new int[1000000]); // Keep allocating
+}
+This will eventually throw:
+
+makefile
+Copy
+Edit
+java.lang.OutOfMemoryError: Java heap space
+✅ Summary:
+"Yes, exceeding memory is possible even with a garbage collector. GC only reclaims memory from unreachable objects.
+If your program holds references too long or allocates more than GC can clean, memory will eventually run out."

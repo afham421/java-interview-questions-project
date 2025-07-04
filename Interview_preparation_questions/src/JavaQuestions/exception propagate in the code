@@ -1,0 +1,62 @@
+✅ What is Exception Propagation in Java?
+Exception propagation refers to how an exception is passed up the call stack from one method to another until it's either handled or the program terminates.
+
+🔄 How does it work?
+When an exception occurs in a method:
+
+If try-catch is present in the method, it is caught and handled.
+
+If not, the exception is passed (propagated) to the caller method.
+
+This continues up the call stack until:
+
+It is caught, or
+
+It reaches the main() method — and if still unhandled, the program crashes.
+
+🧠 Example:
+
+public class Test {
+    public static void main(String[] args) {
+        method1();
+    }
+
+    static void method1() {
+        method2();  // exception propagates from method2 to method1
+    }
+
+    static void method2() {
+        int a = 5 / 0;  // ArithmeticException occurs here
+    }
+}
+Output:
+
+Exception in thread "main" java.lang.ArithmeticException: / by zero
+➡️ The exception is not handled, so it goes up from method2() → method1() → main() → then crashes.
+
+✅ Now let's handle it:
+
+static void method1() {
+    try {
+        method2();  // Exception caught here
+    } catch (ArithmeticException e) {
+        System.out.println("Exception caught in method1");
+    }
+}
+Output:
+
+Exception caught in method1
+✅ Now the exception is caught during propagation, and the program continues safely.
+
+✅ Summary:
+| Step | Description                                      |
+| ---- | ------------------------------------------------ |
+| 1    | Exception occurs in a method                     |
+| 2    | If not caught there, it propagates to the caller |
+| 3    | Continues up the call stack until it's handled   |
+| 4    | If not handled, program terminates with an error |
+
+
+📌 Interview Tip:
+"In Java, exceptions propagate up the call stack if not handled in the current method.
+ The Java runtime searches each method in the call chain until it finds a matching catch block — otherwise, the program crashes."

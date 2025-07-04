@@ -1,0 +1,45 @@
+✅ What is JRE (Java Runtime Environment)?
+JRE stands for Java Runtime Environment. It provides everything needed to run Java programs — but not develop them.
+
+🔹 Key Points:
+JRE = JVM + Core Java Libraries
+
+It does not include tools like javac, javadoc, etc.
+
+It’s mainly used by end-users or environments where you only need to run Java apps (not compile).
+
+📦 JRE Contains:
+| Component                                | Purpose                                                            |
+| ---------------------------------------- | ------------------------------------------------------------------ |
+| **JVM (Java Virtual Machine)**           | Executes `.class` files (Java bytecode)                            |
+| **Core Libraries** (`rt.jar` or modules) | Provides essential Java APIs (like `java.lang`, `java.util`, etc.) |
+| **Deployment Libraries**                 | For running applets, Java Web Start (older)                        |
+| **Property Files & Configs**             | Timezones, security policies, etc.                                 |
+
+
+🧠 How JRE Works:
+text
+Copy
+Edit
+Java Bytecode (.class)
+         ↓
+       JRE
+   ↙           ↘
+JVM        Core Libraries
+         ↓
+    Program Runs
+⚠️ Difference Between JDK and JRE:
+| Feature            | **JDK**                | **JRE**            |
+| ------------------ | ---------------------- | ------------------ |
+| For                | Develop + Run          | Only Run           |
+| Includes           | JRE + Compiler + Tools | JVM + Libraries    |
+| Tools like `javac` | ✅ Yes                  | ❌ No               |
+| Used By            | Developers             | End-users, servers |
+
+
+✅ Real-World Use:
+You install JDK to develop apps.
+
+Your users install JRE (or it’s bundled in the app) to run those apps.
+
+☑️ Since Java 11, Oracle no longer distributes a separate JRE — everything is part of the JDK.

@@ -29,6 +29,8 @@ class Team {
 }
 🔸 Represented by a hollow diamond in UML.
 
+
+
 3. Composition – “has-a” (strong ownership)
 Stronger form of Aggregation.
 
@@ -40,7 +42,7 @@ Example: A House has Rooms, and if the House is destroyed, Rooms are too.
 class Room { }
 
 class House {
-    private Room room = new Room(); // Composition
+    private Room room = new Room(); // Composition                   ////because of private it cannot be access outside the class
 }
 🔸 Represented by a filled diamond in UML.
 

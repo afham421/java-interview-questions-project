@@ -1,0 +1,41 @@
+✅ ArrayList vs LinkedList in Java
+| Feature                  | `ArrayList`                             | `LinkedList`                                   |
+| ------------------------ | --------------------------------------- | ---------------------------------------------- |
+| **Underlying Structure** | Dynamic **array**                       | Doubly **linked list**                         |
+| **Access Time (get)**    | ✅ Fast (O(1)) — direct indexing         | ❌ Slower (O(n)) — needs traversal              |
+| **Insertion (middle)**   | ❌ Slower — requires shifting elements   | ✅ Faster — just link/unlink nodes              |
+| **Deletion (middle)**    | ❌ Slower — needs shifting               | ✅ Faster — unlinking nodes is quick            |
+| **Memory Usage**         | Uses less memory                        | Uses more memory (due to node pointers)        |
+| **Iteration**            | ✅ Faster (better cache performance)     | ❌ Slower due to non-contiguous storage         |
+| **Use Case**             | Best for **frequent access** operations | Best for **frequent insert/delete** operations |
+| **Implements**           | `List`, `RandomAccess`                  | `List`, `Deque`, `Queue`                       |
+
+
+🔍 Code Example:
+
+List<String> arrayList = new ArrayList<>();
+List<String> linkedList = new LinkedList<>();
+
+arrayList.add("A");
+linkedList.add("A");
+Both behave the same from the outside, but their internal performance and structure differ.
+
+⚠️ Note:
+Accessing by get(index) in LinkedList is O(n) (slower than ArrayList) because it has to traverse from the beginning to the index.
+
+
+🧠 When to Use What?
+✅ Use ArrayList if:
+
+You need fast random access (get(i))
+
+Most operations are read-heavy
+
+✅ Use LinkedList if:
+
+You do lots of insertions/deletions in the middle or beginning
+
+You need a queue or stack behavior (addFirst(), removeLast())
+
+✅ Summary:
+"ArrayList is backed by a resizable array and is best for fast access, while LinkedList uses nodes and is better for insertions and deletions. Choose based on your performance needs."

@@ -1,0 +1,42 @@
+The ... in Java code is called varargs (short for variable-length arguments), and it's used to pass a variable number of arguments to a method.
+
+✅ Syntax:
+
+void myMethod(String... args) {
+    for (String arg : args) {
+        System.out.println(arg);
+    }
+}
+🔍 Example Use:
+
+public class Example {
+    public static void printNumbers(int... nums) {
+        for (int num : nums) {
+            System.out.println(num);
+        }
+    }
+
+    public static void main(String[] args) {
+        printNumbers(1, 2, 3);       // 3 arguments
+        printNumbers(10);            // 1 argument
+        printNumbers();              // No argument
+    }
+}
+Output:
+
+1
+2
+3
+10
+✅ Key Points:
+Varargs must be the last parameter in the method.
+
+You can pass zero or more arguments of the specified type.
+
+Internally, the ... is treated as an array.
+
+❌ Invalid:
+
+void wrongMethod(String... args, int num) { } // ❌ varargs must be last
+✅ Summary:
+"... in Java is used to declare varargs, allowing methods to accept a variable number of arguments. It's useful when the exact number of inputs is not known at compile time."

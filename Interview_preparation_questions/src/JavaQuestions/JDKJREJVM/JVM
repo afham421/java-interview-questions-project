@@ -1,0 +1,66 @@
+✅ What is JVM (Java Virtual Machine)?
+The JVM is the engine that runs Java bytecode.
+It’s part of the JRE and is responsible for executing .class files created by the Java compiler.
+
+🔹 Key Responsibilities of JVM:
+Loads compiled .class files
+
+Verifies bytecode (security check)
+
+Executes bytecode (interprets or JIT compiles)
+
+Manages memory (heap, stack, GC)
+
+Handles exceptions, threads, synchronization
+
+🧠 JVM Architecture (Components)
+| Component                  | Description                                   |
+| -------------------------- | --------------------------------------------- |
+| **Class Loader**           | Loads `.class` files into memory              |
+| **Bytecode Verifier**      | Ensures code safety & validity                |
+| **Runtime Data Areas**     | JVM memory (Heap, Stack, Method Area, etc.)   |
+| **Execution Engine**       | Runs the code (via interpreter or JIT)        |
+| **Garbage Collector**      | Frees unused memory from the heap             |
+| **Native Interface (JNI)** | Interacts with native libraries (e.g., C/C++) |
+
+
+📦 JVM Memory Areas
+| Area                    | Description                                          |
+| ----------------------- | ---------------------------------------------------- |
+| **Heap**                | Stores objects (shared)                              |
+| **Stack**               | Stores method calls and local variables (per thread) |
+| **Method Area**         | Stores class metadata, static variables              |
+| **PC Register**         | Current instruction pointer (per thread)             |
+| **Native Method Stack** | For native (non-Java) method calls                   |
+
+
+🔁 JVM Execution Flow
+text
+Copy
+Edit
+Java Source Code (.java)
+        ↓
+Compiler (javac)
+        ↓
+Bytecode (.class)
+        ↓
+JVM
+   ↓   ↓   ↓
+ClassLoader → Execution Engine → Output
+              ↓
+        JIT Compiler (optional)
+🆚 Difference: JVM vs JRE vs JDK
+| Feature      | JVM           | JRE             | JDK                    |
+| ------------ | ------------- | --------------- | ---------------------- |
+| Purpose      | Runs bytecode | Runs Java apps  | Develop + Run apps     |
+| Contains     | Core executor | JVM + libraries | JRE + compiler + tools |
+| Can Compile? | ❌ No          | ❌ No            | ✅ Yes                  |
+
+
+🧠 Interview Tips:
+JVM is platform-dependent, but bytecode is platform-independent.
+
+It provides security, portability, and performance.
+
+JIT (Just-In-Time Compiler) in JVM boosts performance by converting bytecode into native machine code at runtime.
+

@@ -1,0 +1,36 @@
+✅ List vs ArrayList in Java
+| Feature                  | `List` (Interface)                                | `ArrayList` (Class)                                               |
+| ------------------------ | ------------------------------------------------- | ----------------------------------------------------------------- |
+| **Type**                 | Interface                                         | Concrete class                                                    |
+| **Can be instantiated?** | ❌ No (it's an interface)                          | ✅ Yes                                                             |
+| **Implements**           | N/A                                               | Implements the `List` interface                                   |
+| **Usage**                | Defines behavior (methods)                        | Provides actual implementation                                    |
+| **Flexibility**          | More flexible (can use any `List` implementation) | Specific to array-backed implementation                           |
+| **Performance**          | Depends on implementation                         | Good for **fast random access**, slower at insert/delete (middle) |
+| **Example**              | `List<String> list = new ArrayList<>();`          | `ArrayList<String> list = new ArrayList<>();`                     |
+
+
+🔍 Example:
+
+import java.util.List;
+import java.util.ArrayList;
+
+public class Example {
+    public static void main(String[] args) {
+        // Preferred: using List interface for flexibility
+        List<String> names = new ArrayList<>();
+        names.add("Ali");
+        names.add("Sara");
+
+        System.out.println(names); // [Ali, Sara]
+    }
+}
+🧠 Why use List instead of ArrayList?
+
+List<String> list = new ArrayList<>();
+This makes your code more flexible. You can later change it to LinkedList or Vector without changing much:
+
+list = new LinkedList<>();
+✅ Summary:
+"List is an interface that defines a collection of ordered elements, while ArrayList is a resizable array implementation of that interface.
+ You usually declare variables as List and instantiate with ArrayList to keep code flexible."

@@ -1,0 +1,51 @@
+✅ @Controller vs @RestController in Spring
+🔸 1. @Controller
+Used in traditional Spring MVC applications.
+
+Returns views (like JSP, Thymeleaf).
+
+Usually used when building web pages (HTML).
+
+🔧 Example:
+java
+Copy
+Edit
+@Controller
+public class HomeController {
+
+    @GetMapping("/home")
+    public String home(Model model) {
+        model.addAttribute("message", "Hello from Controller");
+        return "home"; // returns view name (e.g. home.html or home.jsp)
+    }
+}
+🔸 2. @RestController
+Added in Spring 4 for RESTful APIs.
+
+Combines @Controller + @ResponseBody.
+
+Returns JSON or XML directly in the response.
+
+🔧 Example:
+java
+Copy
+Edit
+@RestController
+public class ApiController {
+
+    @GetMapping("/api/message")
+    public String message() {
+        return "Hello from REST Controller"; // returns as plain text or JSON
+    }
+}
+🔍 Key Differences
+| Feature                | `@Controller`         | `@RestController`          |
+| ---------------------- | --------------------- | -------------------------- |
+| Use Case               | Web pages (HTML, JSP) | REST APIs (JSON, XML)      |
+| View Resolver          | Yes                   | No                         |
+| Default Return Type    | View (template name)  | Response body              |
+| Needs `@ResponseBody`? | Yes (for JSON)        | No (it's already included) |
+
+
+✅ Summary:
+"@Controller is for rendering HTML views, while @RestController is used for building RESTful APIs that return JSON or other data directly."

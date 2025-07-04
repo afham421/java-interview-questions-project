@@ -1,0 +1,114 @@
+✅ What Is JDK?
+JDK (Java Development Kit) is a software development environment used to build Java applications. It includes tools for compiling, debugging, running, and monitoring Java programs.
+
+📌 Without JDK, you cannot develop Java programs.
+
+🧠 How JDK Works (Conceptual Flow):
+text
+Copy
+Edit
+Java Source Code (.java)
+        ↓
+javac (Compiler)
+        ↓
+Bytecode (.class)
+        ↓
+java (JVM Launcher)
+        ↓
+JVM (Java Virtual Machine)
+        ↓
+Execution
+📦 JDK = JRE + Development Tools
+🔹 1. JRE (Java Runtime Environment)
+JRE allows you to run Java applications.
+
+Contains:
+
+JVM (Java Virtual Machine)
+
+Core Java libraries (rt.jar, etc.)
+
+JDK includes JRE, so when you install JDK, you also get JRE.
+
+🛠 JDK Internal Tools & Utilities
+| Tool        | Purpose                                      |
+| ----------- | -------------------------------------------- |
+| `javac`     | Java compiler (compiles `.java` to `.class`) |
+| `java`      | Launches JVM to run `.class` files           |
+| `javadoc`   | Generates HTML documentation from comments   |
+| `jar`       | Creates/extracts JAR files                   |
+| `jdb`       | Java debugger                                |
+| `jshell`    | REPL introduced in Java 9                    |
+| `javap`     | Disassembles `.class` files (shows bytecode) |
+| `jdeps`     | Analyzes module dependencies                 |
+| `jconsole`  | GUI tool for JVM performance monitoring      |
+| `jvisualvm` | Visual performance and memory profiler       |
+
+
+🧰 JDK Folder Structure (on disk)
+| Folder/File | Description                                                  |
+| ----------- | ------------------------------------------------------------ |
+| `bin/`      | Executables like `javac`, `java`, `javadoc`, etc.            |
+| `lib/`      | Core Java class libraries and tools                          |
+| `include/`  | Header files for native code integration (JNI)               |
+| `jmods/`    | Contains `.jmod` files (Java 9+ modules)                     |
+| `src.zip`   | Source code of Java classes (helpful for learning/debugging) |
+
+
+🔁 Lifecycle of a Java Program (How JDK Is Used)
+Write Code:
+File: Hello.java
+
+Compile:
+
+bash
+Copy
+Edit
+javac Hello.java
+Output: Hello.class (bytecode)
+
+Run:
+
+bash
+Copy
+Edit
+java Hello
+JVM loads and runs the bytecode.
+
+💬 Common Interview Questions on JDK
+🔹 Q1: What's the difference between JDK, JRE, and JVM?
+JDK: Develop + Run
+
+JRE: Only Run
+
+JVM: Only Execute bytecode
+
+🔹 Q2: What happens when you compile and run a Java program?
+.java → compiled to .class via javac
+
+java command loads class into JVM
+
+JVM interprets or compiles it (JIT) and executes
+
+🔹 Q3: Can we run Java code without JDK?
+You can run with JRE (if you already have .class file).
+
+You cannot compile without JDK.
+
+🔍 Important Notes for Interviews
+Since Java 9, JDK supports modules (JPMS).
+
+JDK versions now follow 6-month release cycle (Java 17 & 21 are LTS).
+
+OpenJDK is the free open-source version of JDK.
+
+You can have multiple JDKs on the same system — control via JAVA_HOME.
+
+📌 Summary for Interviews
+JDK is a full toolkit for Java development.
+
+It contains JRE + Compiler + Tools.
+
+It compiles (javac) source code into bytecode and runs it using JVM (java).
+
+JDK is essential for building Java apps — not just running them.

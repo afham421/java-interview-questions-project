@@ -1,0 +1,33 @@
+✅ Why is it said that String.length() may not return accurate results?
+The length() method in Java returns the number of char units in a String, not necessarily the number of visible characters (user-perceived characters).
+
+🔍 Reason: Unicode and UTF-16 Encoding
+Java String uses UTF-16 encoding, where:
+
+Most characters = 1 char (2 bytes)
+
+But some special characters (like emojis, accented characters, or rare scripts) = 2 char values, called surrogate pairs
+
+⚠️ Example:
+java
+Copy
+Edit
+String str = "😊"; // emoji
+System.out.println(str.length()); // Output: 2
+Even though "😊" looks like 1 character, length() returns 2 because it's encoded as two char values.
+
+✅ So when is it “inaccurate”?
+length() = number of char code units
+
+❌ Not always equal to the number of visible characters (aka grapheme count)
+
+✅ Solution for Accurate Character Count:
+If you want the actual number of characters, use:
+
+java
+Copy
+Edit
+int count = str.codePointCount(0, str.length());
+System.out.println(count); // Output: 1 for "😊"
+✅ Summary:
+"String.length() returns the number of 16-bit char units, not true visible characters. Due to Unicode surrogate pairs, some characters (like emojis) take 2 units, making the result seem inaccurate."

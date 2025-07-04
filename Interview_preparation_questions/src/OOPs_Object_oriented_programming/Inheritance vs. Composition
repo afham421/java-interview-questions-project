@@ -1,0 +1,57 @@
+✅ Inheritance vs. Composition — Why Composition is Preferred
+🔷 1. Inheritance (IS-A relationship)
+A child class inherits properties and behaviors from a parent class.
+
+Example:
+
+
+class Dog extends Animal {}
+🔷 2. Composition (HAS-A relationship)
+A class contains an instance of another class and uses it to achieve functionality.
+
+Example:
+
+
+class Engine {}
+class Car {
+    Engine engine = new Engine(); // Composition
+}
+🔍 Why composition is often better than inheritance:
+| Reason                              | Inheritance                                | Composition                            |
+| ----------------------------------- | ------------------------------------------ | -------------------------------------- |
+| 🔒 **Tight coupling**               | Yes — child is tightly bound to parent     | No — more flexible and loosely coupled |
+| 🔁 **Flexibility**                  | Difficult to change parent-child structure | You can easily swap out components     |
+| 🧪 **Testing**                      | Harder to test in isolation                | Easier to mock and test                |
+| 🔄 **Runtime Behavior**             | Fixed at compile time                      | Can change behavior at runtime         |
+| 🧬 **Reusability**                  | Inherits everything (even if not needed)   | Uses only what it needs                |
+| ⚠️ **Fragile Base Class Problem**   | Changes in parent can break child          | Less risk, as components are separate  |
+| 🔄 **Multiple Inheritance Support** | Not allowed in Java (classes)              | Easily done with multiple fields       |
+
+🔧 Real-life Example:
+🔹 Inheritance:
+
+class Printer {
+    void print() { ... }
+}
+class SmartPrinter extends Printer {
+    void scan() { ... }
+}
+Problem: SmartPrinter is forced to inherit everything from Printer, even things it doesn't need.
+
+🔹 Composition:
+
+class Printer {
+    void print() { ... }
+}
+class Scanner {
+    void scan() { ... }
+}
+class SmartPrinter {
+    Printer printer = new Printer();
+    Scanner scanner = new Scanner();
+}
+✅ Now SmartPrinter has only what it needs, and you can easily replace components if needed.
+
+✅ Summary (Interview Answer):
+"While inheritance promotes code reuse, it leads to tight coupling and fragile designs. Composition offers greater flexibility, better encapsulation,
+and easier testing by allowing classes to use only what they need. That’s why modern design principles like SOLID favor composition over inheritance."

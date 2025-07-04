@@ -1,0 +1,41 @@
+✅ Difference Between new and newInstance() in Java
+| Feature                | `new` Operator                        | `newInstance()` Method                                                         |
+| ---------------------- | ------------------------------------- | ------------------------------------------------------------------------------ |
+| **Used for**           | Creating object at compile time       | Creating object **dynamically** at runtime                                     |
+| **Syntax**             | `MyClass obj = new MyClass();`        | `MyClass obj = MyClass.class.newInstance();` *(or via reflection)*             |
+| **Type Checking**      | Done at compile-time                  | Done at runtime (can lead to exceptions)                                       |
+| **Constructor Call**   | Directly calls a specific constructor | Requires a **public no-arg constructor**                                       |
+| **Exception Handling** | No need for checked exceptions        | Must handle exceptions like `InstantiationException`, `IllegalAccessException` |
+| **Performance**        | Slightly faster                       | Slightly slower due to reflection                                              |
+
+
+Both ‘new’ and ‘newInstance()’ operators are used to creating objects. The difference is- that when we already know the class name for which we have to create the object then we use a new operator.
+But suppose we don’t know the class name for which we need to create the object, Or we get the class name from the command line argument, or the database, or the file.
+Then in that case we use the ‘newInstance()’ operator.
+
+🔧 1. Using new Keyword (Normal Way)
+
+MyClass obj = new MyClass(); // compile-time, type-safe
+Simple and direct.
+
+The compiler knows the type and checks everything.
+
+Used most of the time.
+
+🔧 2. Using newInstance() (Reflection-based Way)
+
+MyClass obj = MyClass.class.newInstance();
+⚠️ This requires:
+
+A public no-argument constructor in the class.
+
+Exception handling (try-catch block).
+
+🧠 When is newInstance() Useful?
+Dynamic object creation when you don’t know the class at compile time.
+
+Example: reading class names from a config file, loading plugins, or frameworks like Spring and Hibernate.
+
+✅ Summary:
+"new is used for normal object creation at compile time, while newInstance() is used for dynamic object creation at runtime using reflection.
+ newInstance() is more flexible but requires a no-arg constructor and exception handling."
