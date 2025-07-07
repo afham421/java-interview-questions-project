@@ -1,0 +1,71 @@
+✅ What Are Date-Time APIs in Java?
+Date-Time APIs in Java are classes and methods provided by the Java language to handle:
+
+Dates (like 2025-07-06)
+
+Times (like 14:30:00)
+
+Date-times (like 2025-07-06T14:30:00)
+
+Time zones
+
+Formatting and parsing
+
+Arithmetic (add/subtract days, hours, etc.)
+
+🔹 Two Main Date-Time APIs in Java
+| API                                    | Description                                      |
+| -------------------------------------- | ------------------------------------------------ |
+| `java.util.Date`, `java.util.Calendar` | **Old**, error-prone API (pre-Java 8)            |
+| `java.time.*` (Java 8+)                | **Modern**, powerful, thread-safe, and preferred |
+
+
+🔸 1. Old API (Before Java 8)
+java.util.Date
+
+java.util.Calendar
+
+java.text.SimpleDateFormat
+
+❌ These are mutable and not thread-safe, and are not recommended for new applications.
+
+🔸 2. New API: java.time Package (Java 8+)
+Introduced in Java 8 as part of JSR-310, inspired by Joda-Time, and now the standard.
+
+✅ Key Classes:
+| Class               | Purpose                                   |
+| ------------------- | ----------------------------------------- |
+| `LocalDate`         | Date only (no time)                       |
+| `LocalTime`         | Time only (no date)                       |
+| `LocalDateTime`     | Both date and time (no time zone)         |
+| `ZonedDateTime`     | Date-time with time zone                  |
+| `Instant`           | Machine timestamp                         |
+| `Duration`          | Time-based amount (seconds, millis, etc.) |
+| `Period`            | Date-based amount (years, months, days)   |
+| `DateTimeFormatter` | Formatting and parsing                    |
+
+
+🧪 Examples
+✅ LocalDate (just date)
+
+LocalDate today = LocalDate.now();
+LocalDate birthday = LocalDate.of(1995, 5, 23);
+✅ LocalTime (just time)
+
+LocalTime now = LocalTime.now();
+✅ LocalDateTime (date + time)
+
+LocalDateTime current = LocalDateTime.now();
+✅ ZonedDateTime (date + time + time zone)
+
+ZonedDateTime zdt = ZonedDateTime.now(ZoneId.of("Asia/Karachi"));
+✅ Formatting Date
+
+DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+String formatted = LocalDate.now().format(formatter);
+🆚 Why Prefer java.time API?
+| Old API (`Date`, `Calendar`) | New API (`java.time`)    |
+| ---------------------------- | ------------------------ |
+| Not thread-safe              | Thread-safe              |
+| Hard to read/write/format    | Clean and fluent         |
+| Legacy and confusing         | Modern and well-designed |

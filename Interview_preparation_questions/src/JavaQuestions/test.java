@@ -7,11 +7,12 @@ public class test {
 
 
 
-    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException {
-        Class<?> clazz = Class.forName("java.util.ArrayList");
-        Method method = clazz.getMethod("size");
-        System.out.println("Method name: " + method.getName());
+    public static void main(String[] args) {
 
+        Integer i = 128;
+        Integer j = 128;
+
+        System.out.println(i == j);
 
     }
 }

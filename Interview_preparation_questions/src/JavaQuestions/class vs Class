@@ -1,0 +1,63 @@
+In Java, class (lowercase) and Class (uppercase) refer to two very different concepts:
+
+🔹 1. class (lowercase) — Keyword
+This is a reserved keyword used to define a class in Java.
+
+It tells the compiler you're about to declare a class.
+
+✅ Example:
+
+public class Car {
+    String model;
+}
+In this example, class is a keyword used to define the class named Car.
+
+🔹 2. Class (uppercase) — Class in java.lang package
+Class is a built-in final class in java.lang.
+
+It represents the metadata of a Java class (i.e., runtime representation).
+
+It’s part of Java Reflection API and allows you to inspect or manipulate class details at runtime.
+
+✅ Example:
+
+public class Car {
+    String model;
+}
+
+public class Test {
+    public static void main(String[] args) {
+        Car car = new Car();
+
+        // Getting class metadata using getClass()
+        Class<?> clazz = car.getClass();
+
+        System.out.println("Class Name: " + clazz.getName());
+    }
+}
+Output:
+
+
+Class Name: Car
+🔍 Key Differences:
+| Feature | `class`             | `Class`                                        |
+| ------- | ------------------- | ---------------------------------------------- |
+| Type    | Keyword             | Java class (`java.lang.Class`)                 |
+| Purpose | Defines a new class | Represents the structure of a class at runtime |
+| Usage   | `class MyClass {}`  | `Class<?> clazz = obj.getClass();`             |
+| Used in | Code declaration    | Reflection & metadata inspection               |
+
+
+💡 Bonus:
+To get the Class object:
+
+
+Class<?> clazz = String.class;
+Class<?> clazz2 = obj.getClass();
+You can then use methods like:
+
+clazz.getName()
+
+clazz.getMethods()
+
+clazz.newInstance()

@@ -1,0 +1,27 @@
+🔍 Explanation:
+Java caches Integer values from -128 to 127.
+
+When you write:
+
+
+Integer i = 127;
+Integer j = 127;
+System.out.println(i == j);  // true ✅
+Java reuses the same Integer object from its internal cache, so i == j is true.
+
+But when you go beyond the cache range:
+
+
+Integer i = 128;
+Integer j = 128;
+System.out.println(i == j);  // false ❌
+Each 128 creates a new Integer object, so i == j compares references, not values — hence it's false.
+
+✅ Correct Way to Compare Integer Values
+Use .equals() instead of == for object comparison:
+
+
+System.out.println(i.equals(j));  // true for 128
+🔧 Why Java Does This
+To save memory and improve performance, Java caches Integer values from -128 to 127 in the IntegerCache class.
+

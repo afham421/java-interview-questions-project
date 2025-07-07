@@ -38,20 +38,27 @@ public class javaTrickyQuestion {
         // Question 4: What will be the output of the following code?
 
 
-
-
-            //“bit” would have been the result printed if the letters were used in double-quotes (or the string literals). But the question has the character literals (single quotes) being used which is why concatenation wouldn't occur. The corresponding ASCII values of each character would be added and the result of that sum would be printed.
+        //“bit” would have been the result printed if the letters were used in double-quotes (or the string literals). But the question has the character literals (single quotes) being used which is why concatenation wouldn't occur. The corresponding ASCII values of each character would be added and the result of that sum would be printed.
         //The ASCII values of ‘b’, ‘i’, ‘t’ are:
         //
         //‘b’ = 98
         //‘i’ = 105
         //‘t’ = 116
         //98 + 105 + 116 = 319
-                System.out.println('b' + 'i' + 't');
+        System.out.println('b' + 'i' + 't');
 
 
+        Integer ii = 127;
+        Integer jj = 127;
+        System.out.println(ii == jj);  // true ✅
+        // Java reuses the same Integer object from its internal cache, so i == j is true.
 
-
+        Integer k = 128;
+        Integer l = 128;
+        System.out.println(k == l);  // false ❌
+        //Each 128 creates a new Integer object, so i == j compares references, not values — hence it's false.
+//🔍 Explanation:
+//        Java caches Integer values from -128 to 127.
 
 
 

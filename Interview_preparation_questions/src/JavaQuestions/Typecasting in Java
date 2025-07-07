@@ -1,0 +1,52 @@
+🔄 Typecasting in Java
+Typecasting in Java means converting a variable from one data type to another. It is mainly of two types:
+
+✅ 1. Widening (Implicit) Typecasting
+Smaller type → larger type
+
+Done automatically by the compiler
+
+No data loss
+
+🔸 Example:
+
+int a = 10;
+double b = a;  // int to double (automatic)
+System.out.println(b);  // Output: 10.0
+| From  | To     |
+| ----- | ------ |
+| byte  | short  |
+| short | int    |
+| int   | long   |
+| long  | float  |
+| float | double |
+
+
+⚠️ 2. Narrowing (Explicit) Typecasting
+Larger type → smaller type
+
+You must cast manually
+
+Risk of data loss
+
+🔸 Example:
+
+double a = 10.99;
+int b = (int) a;  // double to int
+System.out.println(b);  // Output: 10
+💡 Why Use Typecasting?
+When you're working with mixed data types (e.g., int + float)
+
+When converting object types (upcasting/downcasting)
+
+For performance optimizations (in low-level programming)
+
+🎯 Bonus: Typecasting in Objects (OOP)
+🔹 Upcasting (Superclass ← Subclass)
+
+Dog d = new Dog();
+Animal a = d;  // upcasting (automatic)
+🔹 Downcasting (Subclass ← Superclass)
+
+Animal a = new Dog();
+Dog d = (Dog) a;  // downcasting (manual)

@@ -1,0 +1,38 @@
+The Java Virtual Machine (JVM) itself is not platform-independent, but Java programs running on the JVM are.
+
+💡 Here's the difference:
+| Term                  | Platform Independence                                       |
+| --------------------- | ----------------------------------------------------------- |
+| **Java Code (.java)** | ✅ Yes — platform-independent (write once, run anywhere)     |
+| **Bytecode (.class)** | ✅ Yes — same on all platforms                               |
+| **JVM**               | ❌ No — platform-dependent (specific to OS and architecture) |
+
+
+✅ Why Java Is Called Platform-Independent
+You write your code once in Java
+
+The Java compiler (javac) converts it into bytecode
+
+This bytecode is interpreted/run by the JVM
+
+Since every OS has its own platform-specific JVM, the same bytecode can run on any machine with a compatible JVM
+
+🔁 Example:
+You compile a .java file into .class on Windows
+
+You take that .class file and run it on:
+
+Linux JVM
+
+macOS JVM
+
+Android JVM
+
+It works the same, because each OS has its own JVM implementation
+
+🔍 Conclusion
+JVM = platform-dependent
+
+Java (via JVM) = platform-independent
+
+So Java's "Write Once, Run Anywhere" magic comes from its bytecode + JVM combination.

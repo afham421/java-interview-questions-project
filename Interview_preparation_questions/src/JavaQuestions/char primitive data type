@@ -1,0 +1,54 @@
+✅ char Primitive Data Type in Java
+In Java, char is one of the 8 primitive data types and is used to store a single 16-bit Unicode character.
+
+means 2 byte unicode that support 65535 characters, but other languages that are using 1 byte they uses ASCII that only support 256 characters
+
+🔹 Syntax
+
+char letter = 'A';
+🔹 Key Features
+| Feature       | Value                                        |
+| ------------- | -------------------------------------------- |
+| Size          | 2 bytes (16 bits)                            |
+| Default value | `\u0000` (null character)                    |
+| Range         | `\u0000` (0) to `\uffff` (65,535)            |
+| Type          | Unsigned                                     |
+| Uses          | Represents characters, digits, symbols, etc. |
+
+
+🔹 Examples
+
+public class CharExample {
+    public static void main(String[] args) {
+        char letter = 'A';
+        char numberChar = '7';
+        char unicodeChar = '\u0905'; // Unicode for Hindi letter अ
+        char symbol = '#';
+
+        System.out.println("Letter: " + letter);
+        System.out.println("Number Char: " + numberChar);
+        System.out.println("Unicode Char: " + unicodeChar);
+        System.out.println("Symbol: " + symbol);
+    }
+}
+🔹 char vs int
+You can typecast between char and int:
+
+char c = 'A';
+int ascii = (int) c; // 65
+
+int num = 66;
+char ch = (char) num; // 'B'
+🔹 Unicode Support
+Since Java uses Unicode, char can represent non-English characters, like:
+
+
+char urdu = '\u0627'; // ا
+char chinese = '\u4E2D'; // 中
+
+✅ Summary
+char is a primitive data type that holds a single character.
+
+It supports Unicode, allowing storage of global language symbols.
+
+It is not the same as a String, which holds multiple characters.

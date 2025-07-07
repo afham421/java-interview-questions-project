@@ -1,0 +1,85 @@
+✅ Java switch Statement: Old vs New (Java 8 vs Java 14+)
+Java has improved the switch statement significantly in newer versions (Java 14+), making it more concise, flexible, and expression-oriented.
+
+🔶 1. Old switch Syntax (Java 7 and earlier)
+
+String day = "MONDAY";
+String type;
+
+switch (day) {
+    case "MONDAY":
+    case "TUESDAY":
+    case "WEDNESDAY":
+    case "THURSDAY":
+    case "FRIDAY":
+        type = "Weekday";
+        break;
+    case "SATURDAY":
+    case "SUNDAY":
+        type = "Weekend";
+        break;
+    default:
+        type = "Invalid";
+}
+System.out.println(type);
+🔸 Drawbacks:
+
+Requires break to prevent fall-through
+
+Verbose
+
+Cannot return a value directly (used for side effects)
+
+✅ 2. Enhanced switch Expression (Java 14+)
+
+String day = "MONDAY";
+
+String type = switch (day) {
+    case "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY" -> "Weekday";
+    case "SATURDAY", "SUNDAY" -> "Weekend";
+    default -> "Invalid";
+};
+
+System.out.println(type);
+🔸 Benefits:
+
+switch becomes an expression (can return a value directly)
+
+No break needed
+
+Use of -> arrow syntax
+
+Safer and cleaner
+
+Can use yield for multiline blocks
+
+🧪 3. Multiline Case Blocks with yield
+
+String result = switch (score) {
+    case 10, 9 -> "Excellent";
+    case 8, 7 -> {
+        System.out.println("Good but can improve");
+        yield "Good";
+    }
+    default -> "Average";
+};
+🔄 Summary Comparison
+| Feature                   | Old Switch                      | New Switch (Java 14+) |
+| ------------------------- | ------------------------------- | --------------------- |
+| Syntax                    | `case ...: break;`              | `case ... ->`         |
+| Multiple labels per case  | ✅ (repeated cases)              | ✅ (comma-separated)   |
+| Need `break`              | ✅ Yes                           | ❌ No                  |
+| Used as expression        | ❌ No                            | ✅ Yes                 |
+| `yield` for block returns | ❌ No                            | ✅ Yes                 |
+| Null-safe                 | ❌ Throws `NullPointerException` | ❌ Still throws NPE    |
+
+
+✅ When to Use New Switch
+Use the enhanced switch:
+
+When assigning values based on cases
+
+To improve readability
+
+When you want to avoid accidental fall-through bugs
+

@@ -18,9 +18,7 @@ It’s mainly used by end-users or environments where you only need to run Java 
 
 
 🧠 How JRE Works:
-text
-Copy
-Edit
+
 Java Bytecode (.class)
          ↓
        JRE

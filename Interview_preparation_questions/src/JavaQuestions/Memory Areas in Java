@@ -1,0 +1,152 @@
+🔍 Memory Areas in Java
+Java memory is divided mainly into five memory areas managed by the JVM:
+
+| # | Memory Area                       | Description                                                                                |
+| - | --------------------------------- | ------------------------------------------------------------------------------------------ |
+| 1 | **Heap**                          | Stores all **objects**, arrays, and instance variables. Shared across threads.             |
+| 2 | **Stack**                         | Stores **method call frames**, **local variables**, and **references**. One per thread.    |
+| 3 | **Method Area (MetaSpace)**       | Stores **class-level metadata** like class definitions, static variables, and method code. |
+| 4 | **Program Counter Register (PC)** | Keeps track of the **next instruction address** to be executed in a thread.                |
+| 5 | **Native Method Stack**           | Used when Java interacts with **native code** (e.g., C/C++ via JNI).                       |
+
+
+🔎 1. Heap Memory
+The largest memory area.
+
+Used for:
+
+All Java objects
+
+Arrays
+
+Class-level instance variables
+
+🔸 Example:
+
+
+String name = new String("Afham"); // Stored in heap
+✅ Garbage Collected: JVM automatically removes unused objects from the heap.
+
+🔎 2. Stack Memory
+Each thread gets its own stack.
+
+Stores:
+
+Method calls
+
+Local variables
+
+Primitive values
+
+References to objects (the objects themselves go to the heap)
+
+🔸 Example:
+
+
+int x = 10;        // primitive on stack
+User user = new User(); // reference on stack, object in heap
+⚠️ Stack memory is short-lived. When a method finishes execution, its stack frame is popped.
+
+🔎 3. Method Area (MetaSpace in Java 8+)
+Stores:
+
+Class metadata (info about class, methods, fields)
+
+Static variables
+
+Method bytecode
+
+🔸 Example:
+
+
+public static String companyName = "Evamp"; // stored here
+In Java 8+, this was moved to native memory and renamed MetaSpace (replacing PermGen).
+
+🔎 4. Program Counter (PC) Register
+A tiny memory area.
+
+Each thread has its own PC.
+
+It stores the address of the JVM instruction being executed.
+
+Useful for JVM to switch between threads.
+
+🔎 5. Native Method Stack
+Supports native (non-Java) method execution, usually written in C or C++.
+
+Uses Java Native Interface (JNI).
+
+Not used unless your app calls native code.
+
+📌 Summary Table
+| Memory Area             | Stores                                      | Thread-safe  |
+| ----------------------- | ------------------------------------------- | ------------ |
+| **Heap**                | Objects, arrays, instance fields            | ✅ Shared     |
+| **Stack**               | Method calls, local variables, references   | ❌ Per thread |
+| **Method Area**         | Class info, static vars, method definitions | ✅ Shared     |
+| **PC Register**         | Address of current JVM instruction          | ❌ Per thread |
+| **Native Method Stack** | Native code execution support               | ❌ Per thread |
+
+
+🔍 Example Java Code
+
+public class MemoryExample {
+
+    static String staticMessage = "I am static"; // stored in Method Area before java 8, and now
+
+    public static void main(String[] args) {
+        int number = 100;                          // stored in Stack
+        String name = "Afham";                    // "Afham" is in String Pool (Heap), reference in Stack
+        Person person = new Person("Ali", 25);    // Object in Heap, reference in Stack
+
+        System.out.println(staticMessage);        // static variable from Method Area
+        System.out.println(number);               // primitive from Stack
+        System.out.println(name);                 // String from Heap via reference
+        System.out.println(person.name);          // Object field from Heap
+    }
+}
+
+class Person {
+    String name;
+    int age;
+
+    Person(String name, int age) {
+        this.name = name;  // stored in Heap
+        this.age = age;    // stored in Heap
+    }
+}
+
+
+
+
+🧠 Clarification:
+🔸 Before Java 8:
+The Method Area was part of the Heap-like memory called PermGen (Permanent Generation).
+
+Static variables, class metadata, and method bytecode were stored here.
+
+🔸 Since Java 8:
+PermGen was removed.
+
+Replaced by MetaSpace, which is allocated in native memory, not the Java Heap.
+
+So:
+
+static fields
+
+method code
+
+class metadata
+→ are still not stored in the Java Heap, but in MetaSpace.
+
+🔍 What is Stored in the Heap?
+Objects created via new
+
+Instance variables (inside objects)
+
+Arrays
+
+Runtime string literals (outside the pool)
+
+
+
