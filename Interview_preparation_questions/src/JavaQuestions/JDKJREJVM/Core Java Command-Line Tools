@@ -1,0 +1,70 @@
+🧰 Core Java Command-Line Tools
+
+These tools — like javac, javap, jar, javadoc, jdb, etc. — are part of the:
+
+✅ JDK (Java Development Kit)
+
+
+
+1. 🛠️ javac — Java Compiler
+Usage: Compiles .java files to .class bytecode.
+
+Example:
+
+
+javac HelloWorld.java
+Output: HelloWorld.class
+
+2. 🔎 javap — Java Class File Disassembler
+Usage: Displays bytecode-level method signatures and other class details.
+
+Example:
+
+
+javap HelloWorld
+or to see method internals:
+
+
+javap -c HelloWorld
+Use case: Debugging compiled code, checking bytecode, reverse-engineering classes
+
+3. 🧪 java — Java Runtime Launcher
+Usage: Runs a compiled .class file or JAR.
+
+Example:
+
+
+java HelloWorld
+4. 📦 jar — Java Archive Tool
+Usage: Creates and manages .jar files (Java archives).
+
+Example:
+
+
+jar cf app.jar *.class
+cf = create, file name
+
+5. 🧬 javadoc — Documentation Generator
+Usage: Generates HTML documentation from Javadoc comments.
+
+Example:
+
+
+javadoc MyClass.java
+6. 🕵️‍♂️ jdb — Java Debugger
+Usage: Command-line debugger for Java programs.
+
+Example:
+
+
+jdb HelloWorld
+7. 📈 jconsole, jvisualvm, jstat, jmap, jstack
+These tools are for monitoring, profiling, and debugging running Java applications:
+
+| Tool        | Purpose                              |
+| ----------- | ------------------------------------ |
+| `jconsole`  | GUI monitoring (heap, threads, etc.) |
+| `jvisualvm` | Advanced profiling & monitoring      |
+| `jstack`    | Prints thread dump                   |
+| `jmap`      | Prints memory map (heap info)        |
+| `jstat`     | JVM statistics (GC, class loading)   |

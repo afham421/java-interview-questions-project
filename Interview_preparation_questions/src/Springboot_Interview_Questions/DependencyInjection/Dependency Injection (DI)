@@ -1,0 +1,131 @@
+🎯 What is Dependency Injection (DI)?
+Dependency Injection is a creational design pattern that allows you to remove hard-coded dependencies and make your code more flexible, reusable, and testable.
+
+It is a way to inject dependencies (objects) into a class instead of the class creating them itself.
+
+🧱 Pattern Type
+| Pattern Category   | Type                           |
+| ------------------ | ------------------------------ |
+| **Design Pattern** | **Creational**                 |
+| **Principle**      | **Inversion of Control (IoC)** |
+
+
+📌 Intent
+To decouple objects from their dependencies and let external code or a framework inject those dependencies.
+
+🔁 Real-Life Analogy
+Imagine you're a car manufacturer.
+You don't build the engine yourself inside the car; you get it from an external engine supplier.
+
+This is Dependency Injection.
+
+🧰 Types of DI
+Constructor Injection – dependencies are provided via constructor
+
+Setter Injection – dependencies are set via public setters
+
+Field Injection – dependencies are injected directly into fields (not recommended for testability)
+
+📦 UML Class Diagram
+lua
+Copy
+Edit
++----------------+         +---------------------+
+|   ClientClass  |<--------|   DependencyClass   |
++----------------+         +---------------------+
+| - dependency   |         |
+| + ClientClass(dep)       |
+| + doWork()      |        |
++----------------+         +
+✅ Java Code Example – Without and With DI
+❌ Without DI (Tightly Coupled)
+java
+Copy
+Edit
+class Engine {
+    public void start() {
+        System.out.println("Engine started");
+    }
+}
+
+class Car {
+    private Engine engine = new Engine(); // hardcoded dependency
+
+    public void drive() {
+        engine.start();
+        System.out.println("Car is running");
+    }
+}
+Problem: Car creates Engine, so it's tightly coupled and hard to test/mock.
+
+✅ With DI (Loosely Coupled)
+java
+Copy
+Edit
+class Engine {
+    public void start() {
+        System.out.println("Engine started");
+    }
+}
+
+// Constructor Injection
+class Car {
+    private final Engine engine;
+
+    public Car(Engine engine) { // Dependency injected
+        this.engine = engine;
+    }
+
+    public void drive() {
+        engine.start();
+        System.out.println("Car is running");
+    }
+}
+And in a main method or framework:
+
+java
+Copy
+Edit
+public class Main {
+    public static void main(String[] args) {
+        Engine engine = new Engine();
+        Car car = new Car(engine); // injecting dependency
+        car.drive();
+    }
+}
+🔧 Spring Boot Example Using DI
+java
+Copy
+Edit
+@Component
+class Engine {
+    public void start() {
+        System.out.println("Engine started");
+    }
+}
+
+@Service
+class Car {
+    private final Engine engine;
+
+    @Autowired
+    public Car(Engine engine) {
+        this.engine = engine;
+    }
+
+    public void drive() {
+        engine.start();
+        System.out.println("Car is driving...");
+    }
+}
+Spring automatically injects the Engine into the Car.
+
+🧠 Interview-Ready Summary
+| Question                              | Answer                                                                                        |
+| ------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **What is DI?**                       | A creational pattern where dependencies are passed into an object, rather than created by it. |
+| **What design pattern is DI?**        | It's part of **Creational Design Patterns**.                                                  |
+| **What principle does it implement?** | **Inversion of Control (IoC)**.                                                               |
+| **Benefits?**                         | Loose coupling, testability, reusability, flexibility.                                        |
+| **Types?**                            | Constructor, Setter, Field injection.                                                         |
+| **Used in?**                          | Spring, Angular, .NET, and many frameworks.                                                   |

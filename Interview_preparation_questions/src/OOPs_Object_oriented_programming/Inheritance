@@ -1,0 +1,78 @@
+🧬 What is Inheritance?
+Inheritance is the mechanism in OOP that allows a class to acquire the properties and behaviors (methods) of another class.
+
+📖 In simple terms:
+"Child class inherits from Parent class"
+
+🔑 Why Use Inheritance?
+✅ Reusability of code
+
+✅ Reduces redundancy
+
+✅ Enables polymorphism
+
+✅ Organizes classes hierarchically (IS-A relationship)
+
+🧱 Types of Inheritance in Java
+| Type             | Supported in Java? | Example                        |
+| ---------------- | ------------------ | ------------------------------ |
+| **Single**       | ✅ Yes              | One class inherits another     |
+| **Multilevel**   | ✅ Yes              | Class A → Class B → Class C    |
+| **Hierarchical** | ✅ Yes              | One class → many child classes |
+| **Multiple**     | ❌ Not with classes | Supported via **interfaces**   |
+
+
+📦 Java Syntax
+java
+Copy
+Edit
+class Animal {
+    void eat() {
+        System.out.println("Eating...");
+    }
+}
+
+class Dog extends Animal {
+    void bark() {
+        System.out.println("Barking...");
+    }
+}
+Usage:
+java
+Copy
+Edit
+public class Test {
+    public static void main(String[] args) {
+        Dog d = new Dog();
+        d.eat();   // from Animal
+        d.bark();  // from Dog
+    }
+}
+➡️ Dog is a child of Animal
+➡️ Dog inherits the eat() method from Animal
+
+📘 Real-World Analogy
+Imagine:
+
+Vehicle is a parent class
+
+Car, Bike, Bus are child classes
+They all share common features (like speed), but have their own specific behaviors.
+
+🧠 Important Notes
+Use extends keyword for class inheritance
+
+Constructors are not inherited, but can be called using super()
+
+Java does not support multiple inheritance with classes (to avoid diamond problem)
+
+But you can implement multiple interfaces
+
+✅ Interview-Ready Summary
+| Question                                | Answer                                                           |
+| --------------------------------------- | ---------------------------------------------------------------- |
+| What is inheritance?                    | Mechanism where one class inherits properties/methods of another |
+| Keyword used?                           | `extends`                                                        |
+| Does Java support multiple inheritance? | ❌ Not with classes, ✅ with interfaces                            |
+| What is "super"?                        | Used to call parent class constructor or methods                 |
+| What is IS-A relationship?              | `Dog` IS-A `Animal` — classic inheritance relationship           |

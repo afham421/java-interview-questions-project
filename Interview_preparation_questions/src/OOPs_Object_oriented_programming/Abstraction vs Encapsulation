@@ -1,0 +1,48 @@
+🔍 Abstraction vs Encapsulation
+| Concept                | Abstraction 🧠                                                             | Encapsulation 🔐                                                         |
+| ---------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| **Definition**         | Hiding **implementation details**, showing only the **essential features** | Hiding **internal state/data** and **restricting access** to it          |
+| **Purpose**            | Focus on **what** an object does                                           | Control **how** data is accessed/modified                                |
+| **Achieved by**        | Abstract classes, interfaces                                               | `private`, `protected` fields + getters/setters                          |
+| **Used for**           | Designing the **architecture** or blueprint                                | **Securing and protecting** object’s data                                |
+| **Example in Java**    | Interface with `send()` method but no implementation                       | Private fields in a class with public getters/setters                    |
+| **Real-World Analogy** | You **drive a car** without knowing how the engine works                   | You **can’t directly open the engine**, only use buttons/controls safely |
+
+
+✅ Examples
+🔷 Abstraction (focus on what)
+java
+Copy
+Edit
+interface Payment {
+    void pay(double amount); // Abstract method (no implementation)
+}
+
+class CreditCard implements Payment {
+    public void pay(double amount) {
+        System.out.println("Paid " + amount + " using credit card");
+    }
+}
+You know how to use pay(), but not how it's implemented.
+
+🔐 Encapsulation (focus on data protection)
+java
+Copy
+Edit
+class BankAccount {
+    private double balance; // Internal data is hidden
+
+    public void deposit(double amount) {
+        if (amount > 0) balance += amount;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+}
+balance is protected. You can't directly access it, only through methods.
+
+🧠 In One Line:
+Abstraction is about hiding complexity,
+Encapsulation is about hiding data.
+

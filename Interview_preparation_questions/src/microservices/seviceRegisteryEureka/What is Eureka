@@ -1,0 +1,150 @@
+🔷 What is Eureka?
+Eureka is a Service Registry developed by Netflix, and it's part of the Spring Cloud Netflix project.
+
+🚀 Purpose of Eureka
+In microservices architecture, services need to find and communicate with each other. Eureka enables this by:
+
+Registering microservices
+
+Letting services discover each other dynamically (Service Discovery)
+
+🧱 Core Components
+| Component         | Role                                                                                     |
+| ----------------- | ---------------------------------------------------------------------------------------- |
+| **Eureka Server** | Acts as the **registry** (like a directory) where services register themselves           |
+| **Eureka Client** | Each microservice is a client that registers with Eureka and can discover other services |
+
+
+⚙️ How It Works (Step-by-Step)
+1. Eureka Server Setup
+Central service registry
+
+Keeps a list of all running services and their instances
+
+2. Eureka Client Setup
+Services register themselves to the Eureka server using @EnableEurekaClient
+
+Periodically send heartbeat (default: every 30 seconds) to remain registered
+
+Clients discover other services using the Eureka server
+
+3. Service Discovery
+Clients use the Eureka REST API or Spring Cloud LoadBalancer to discover service instances
+
+Enables load balancing, resilience, and dynamic routing
+
+📦 Key Annotations
+| Annotation            | Purpose                                                       |
+| --------------------- | ------------------------------------------------------------- |
+| `@EnableEurekaServer` | Marks the application as a Eureka Server                      |
+| `@EnableEurekaClient` | Marks the app as a Eureka Client                              |
+| `@LoadBalanced`       | Used with `RestTemplate` to enable client-side load balancing |
+
+
+📁 Example: Configuration
+🖥️ application.yml for Eureka Server
+yaml
+Copy
+Edit
+server:
+  port: 8761
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+🖥️ application.yml for Eureka Client
+yaml
+Copy
+Edit
+spring:
+  application:
+    name: user-service
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+✅ Eureka Client Discovery Example
+java
+Copy
+Edit
+@LoadBalanced
+@Bean
+public RestTemplate restTemplate() {
+    return new RestTemplate();
+}
+java
+Copy
+Edit
+String url = "http://order-service/api/orders";
+ResponseEntity<Order[]> response = restTemplate.getForEntity(url, Order[].class);
+Here, order-service is resolved by Eureka, not DNS.
+
+🔁 Self-Preservation Mode (Important for Interviews)
+When Eureka server stops receiving heartbeats, it doesn't immediately remove services.
+
+This protects against network partitions — called Self-Preservation Mode
+
+Can be disabled in test environments with:
+
+yaml
+Copy
+Edit
+eureka:
+  server:
+    enable-self-preservation: false
+📉 Eureka vs Consul vs Zookeeper
+| Feature              | Eureka      | Consul      | Zookeeper   |
+| -------------------- | ----------- | ----------- | ----------- |
+| Developed By         | Netflix     | HashiCorp   | Apache      |
+| Service Discovery    | ✅           | ✅           | ✅           |
+| Health Check         | Client-side | Server-side | Server-side |
+| Built-in UI          | ✅           | ✅           | ❌           |
+| Spring Cloud Support | ✅           | ✅           | Partial     |
+
+
+❓ Interview Questions & Answers
+Q1: What is Eureka in Spring Cloud?
+A: Eureka is a service discovery tool where microservices can register and discover each other without hardcoding network addresses.
+
+Q2: How does Eureka handle failures?
+A: Through self-preservation mode, Eureka avoids removing services from the registry during temporary network issues.
+
+Q3: What's the difference between Eureka Server and Eureka Client?
+A: Server holds the registry; clients register themselves and discover others.
+
+Q4: What is the default port for Eureka Server?
+A: 8761
+
+Q5: Can Eureka work in a production-ready cluster?
+A: Yes, Eureka servers can be set up in a peer-to-peer cluster (high availability).
+
+📺 Diagram: Simple Eureka Flow
+puml
+Copy
+Edit
+@startuml
+actor User
+participant "API Gateway" as G
+participant "Eureka Server" as E
+participant "User Service" as U
+participant "Order Service" as O
+
+U -> E: Register
+O -> E: Register
+G -> E: Discover U, O
+G -> U: Forward request
+U -> O: Call Order Service
+@enduml
+
+✅ Summary
+| Feature            | Eureka                             |
+| ------------------ | ---------------------------------- |
+| Type               | Service Registry                   |
+| Use                | Service registration and discovery |
+| Components         | Eureka Server, Eureka Client       |
+| Spring Integration | Excellent                          |
+| Alternatives       | Consul, Zookeeper, Kubernetes DNS  |
+
+

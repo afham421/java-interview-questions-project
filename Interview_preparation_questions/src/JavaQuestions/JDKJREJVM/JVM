@@ -37,9 +37,9 @@ Handles exceptions, threads, synchronization
 | ----------------------- | ---------------------------------------------------- |
 | **Heap**                | Stores objects (shared)                              |
 | **Stack**               | Stores method calls and local variables (per thread) |
-| **Method Area**         | Stores class metadata, static variables              |
+| **Method Area**         | Stores class metadata, static variables              | mean everything in class and method is class metadata and method metadata and annotation metadata
 | **PC Register**         | Current instruction pointer (per thread)             |
-| **Native Method Stack** | For native (non-Java) method calls                   |
+| **Native Method Stack** | For native (non-Java) method calls                   | it is also called JNI
 
 
 
@@ -121,3 +121,36 @@ JIT (Just-In-Time Compiler) in JVM boosts performance by converting bytecode int
 
 
 
+🔄 Types of Class Loaders in Java
+1. Bootstrap ClassLoader
+Loads: Core Java classes (java.lang.*, java.util.*, etc.) from the $JAVA_HOME/jre/lib directory.
+
+Part of JVM and written in native code (not Java).
+
+Parent of all other class loaders.
+
+2. Extension ClassLoader (Platform ClassLoader in Java 9+)
+Loads: Classes from the $JAVA_HOME/lib/ext/ directory or specified by the java.ext.dirs system property.
+
+Child of Bootstrap ClassLoader.
+
+From Java 9 onward, replaced by Platform ClassLoader, which loads classes from platform modules. like java.sql , java.Desktop etc
+
+3. System ClassLoader (Application ClassLoader)
+Loads: Classes from the classpath, typically the -cp or CLASSPATH environment variable.
+
+Child of Extension/Platform ClassLoader.
+
+Most of your application classes are loaded by this loader.
+
+🧰 Custom Class Loaders
+4. User-defined (Custom) ClassLoader
+Created by extending java.lang.ClassLoader.
+
+Used for:
+
+Custom class loading policies
+
+Loading encrypted or remote classes
+
+Dynamic reloading in frameworks (e.g., OSGi, Tomcat, Spring Boot DevTools)

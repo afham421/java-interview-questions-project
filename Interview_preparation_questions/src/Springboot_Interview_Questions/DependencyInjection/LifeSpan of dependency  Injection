@@ -1,0 +1,107 @@
+🧬 What is the "Lifespan" of a Dependency?
+It refers to how long an object (bean/dependency) stays alive — from when it is created to when it is destroyed.
+
+📦 In Spring (most common in Java), dependencies (beans) have scopes, which define their lifespan.
+🔑 Common Spring Bean Scopes (Lifespans):
+| Scope                 | Lifespan                             | Description                                           |
+| --------------------- | ------------------------------------ | ----------------------------------------------------- |
+| `singleton` (default) | Created once per Spring container    | All requests share the **same instance**              |
+| `prototype`           | New object every time it's requested | A **new instance** is created each time it's injected |
+| `request`             | One per HTTP request (Web only)      | New instance per **HTTP request**                     |
+| `session`             | One per HTTP session (Web only)      | New instance per **user session**                     |
+| `application`         | One per `ServletContext`             | Shared across the whole app                           |
+| `websocket`           | One per WebSocket session            | For WebSocket apps                                    |
+
+
+🧪 Example: Singleton vs Prototype
+java
+Copy
+Edit
+@Component
+@Scope("singleton") // default
+class MySingletonBean { }
+
+@Component
+@Scope("prototype")
+class MyPrototypeBean { }
+Usage:
+java
+Copy
+Edit
+@Autowired
+MySingletonBean a1;
+@Autowired
+MySingletonBean a2;
+
+// a1 == a2 → true (same instance)
+
+@Autowired
+MyPrototypeBean p1;
+@Autowired
+MyPrototypeBean p2;
+
+// p1 == p2 → false (different instances)
+🧠 Summary Table
+| Scope       | Managed By                      | Lifetime                                   |
+| ----------- | ------------------------------- | ------------------------------------------ |
+| Singleton   | Spring Container                | From startup to shutdown                   |
+| Prototype   | Your code (Spring just creates) | Until no longer used or manually destroyed |
+| Request     | Spring Web Context              | One HTTP request                           |
+| Session     | Spring Web Context              | One user session                           |
+| Application | Servlet Context                 | Until app stops                            |
+| WebSocket   | WebSocket Context               | One WebSocket session                      |
+
+
+🔍 In Short
+The life span of a dependency depends on its scope — how it is defined in the framework (like Spring) and how long it is supposed to live in memory.
+
+
+👉 @Scope is used at the class level, not method level.
+
+🔍 What does @Scope do?
+The @Scope annotation in Spring tells the container how long the bean should live, and how it should be created or reused.
+
+✅ Correct usage (on a class):
+java
+Copy
+Edit
+@Component
+@Scope("prototype")
+public class MyBean {
+    public MyBean() {
+        System.out.println("New instance created!");
+    }
+}
+Every time this bean is injected or requested — a new instance will be created because it's prototype.
+
+❌ Invalid usage (on a method):
+java
+Copy
+Edit
+public class MyConfig {
+    @Scope("prototype") // ❌ This has no effect here
+    public MyBean myBean() {
+        return new MyBean();
+    }
+}
+The above won’t work unless you use @Bean along with @Scope in a configuration class:
+
+✅ Valid usage with @Bean (in config class):
+java
+Copy
+Edit
+@Configuration
+public class MyConfig {
+
+    @Bean
+    @Scope("prototype") // ✅ Valid on @Bean methods
+    public MyBean myBean() {
+        return new MyBean();
+    }
+}
+✅ Summary
+| Where to Use `@Scope`    | Valid? | Notes                                     |
+| ------------------------ | ------ | ----------------------------------------- |
+| On a `@Component` class  | ✅      | Common usage                              |
+| On a method with `@Bean` | ✅      | Valid when used in `@Configuration` class |
+| On a regular method      | ❌      | Has no effect                             |

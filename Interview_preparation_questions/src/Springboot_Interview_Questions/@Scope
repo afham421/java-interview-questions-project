@@ -17,3 +17,93 @@ Request (@Scope("request")): A new instance is created for each HTTP request. Ty
 Session (@Scope("session")): A new instance is created for each HTTP session. Used in web applications.
 Application (@Scope("application")): A single instance is created for the entire lifecycle of a ServletContext.
 WebSocket (@Scope("websocket")): A single instance is created for the lifecycle of a WebSocket.
+
+
+👉 @Scope is used at the class level, not method level.but on @Been
+
+🔍 What does @Scope do?
+The @Scope annotation in Spring tells the container how long the bean should live, and how it should be created or reused.
+
+✅ Correct usage (on a class):
+java
+Copy
+Edit
+@Component
+@Scope("prototype")
+public class MyBean {
+    public MyBean() {
+        System.out.println("New instance created!");
+    }
+}
+Every time this bean is injected or requested — a new instance will be created because it's prototype.
+
+❌ Invalid usage (on a method):
+java
+Copy
+Edit
+public class MyConfig {
+    @Scope("prototype") // ❌ This has no effect here
+    public MyBean myBean() {
+        return new MyBean();
+    }
+}
+The above won’t work unless you use @Bean along with @Scope in a configuration class:
+
+✅ Valid usage with @Bean (in config class):
+java
+Copy
+Edit
+@Configuration
+public class MyConfig {
+
+    @Bean
+    @Scope("prototype") // ✅ Valid on @Bean methods
+    public MyBean myBean() {
+        return new MyBean();
+    }
+}
+✅ Summary
+| Where to Use `@Scope`    | Valid? | Notes                                     |
+| ------------------------ | ------ | ----------------------------------------- |
+| On a `@Component` class  | ✅      | Common usage                              |
+| On a method with `@Bean` | ✅      | Valid when used in `@Configuration` class |
+| On a regular method      | ❌      | Has no effect                             |
+
+
+
+
+
+🔍 Example: Singleton vs Prototype
+
+@Component
+@Scope("singleton") // default
+public class MyService {
+    // lives as long as the app context lives
+}
+
+@Component
+@Scope("prototype")
+public class MyService {
+    // a new instance created every time it’s injected
+}
+
+
+🔁 Lifespan Summary:
+| Scope         | Created When?           | Lives Until?                |
+| ------------- | ----------------------- | --------------------------- |
+| `singleton`   | App context starts      | App context ends            |
+| `prototype`   | Every injection/request | Garbage collected after use |
+| `request`     | On each HTTP request    | When request ends           |
+| `session`     | When session starts     | When session ends           |
+| `application` | App context starts      | App context ends            |
+| `websocket`   | WebSocket session opens | WebSocket session closes    |
+
+
+💡 Best Practices:
+Use singleton for stateless services (most common).
+
+Use prototype for stateful or expensive objects.
+
+Use request/session only in web layers, and avoid them in service/repo layers.
+
+Don’t mix scopes without caution—injecting a prototype into a singleton may not work as expected unless you handle it properly (e.g., with ObjectFactory or Provider).
