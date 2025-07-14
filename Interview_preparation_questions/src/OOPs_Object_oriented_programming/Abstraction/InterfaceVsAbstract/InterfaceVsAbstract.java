@@ -1,4 +1,4 @@
-package OOPs_Object_oriented_programming.InterfaceVsAbstract;
+package OOPs_Object_oriented_programming.Abstraction.InterfaceVsAbstract;
 
 public class InterfaceVsAbstract implements MyInterface {
 

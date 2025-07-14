@@ -1,0 +1,53 @@
+🧱 Core Components of Eureka (Simple Explanation)
+Eureka has two main parts:
+
+1. Eureka Server 🖥️
+Think of this as a "phone book" or directory service in your application.
+
+It keeps a list of all microservices running in your system.
+
+Services can register themselves here.
+
+Other services can ask it: “Where can I find service X?”
+
+📌 Imagine you're building a food delivery app:
+
+Your User Service, Order Service, and Restaurant Service all register themselves with the Eureka Server.
+
+Eureka Server keeps track:
+“Order Service is running at IP A”
+“User Service is running at IP B” and so on.
+
+2. Eureka Client 📱
+This is every microservice in your app.
+
+Each service is a client of Eureka.
+
+When a service starts, it says:
+
+"Hey Eureka, I'm the User Service — here's where I live!"
+
+Also, when one service wants to talk to another, it asks Eureka:
+
+“Where is Order Service?”
+
+📌 Example:
+
+User Service wants to call Order Service.
+
+Instead of hardcoding the IP or URL, it asks Eureka:
+“Give me an instance of Order Service.”
+
+Eureka replies:
+“Order Service is running at http://10.0.0.2:8080.”
+
+🔄 Why this is useful?
+No need to hardcode URLs/IPs of other services
+
+Services can scale (e.g., 3 instances of the same service) — Eureka will return one randomly (load balancing)
+
+Dynamic communication between services
+
+🔁 Summary in 1 Line:
+Eureka Server is the registry, and Eureka Clients are your microservices that register and discover each other through the server.
+

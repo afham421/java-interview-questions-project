@@ -1,0 +1,58 @@
+🧠 What is Abstraction in Java?
+Abstraction is one of the four core OOP concepts (others: Encapsulation, Inheritance, Polymorphism).
+It means hiding complex internal implementation details and showing only the essential features of an object.
+
+🎯 Simple Definition:
+Abstraction lets you focus on what an object does, not how it does it.
+
+📦 Real-Life Example:
+A car has methods like start(), drive(), stop().
+You don't care how the engine starts — you just use start().
+
+🧱 In Java, Abstraction is achieved using:
+1. Abstract Classes
+Can have abstract (unimplemented) and concrete (implemented) methods.
+
+Cannot be instantiated.
+
+java
+Copy
+Edit
+abstract class Animal {
+    abstract void makeSound(); // abstract method
+
+    void eat() {
+        System.out.println("Animal is eating"); // concrete method
+    }
+}
+
+class Dog extends Animal {
+    void makeSound() {
+        System.out.println("Bark");
+    }
+}
+2. Interfaces
+Fully abstract (Java 7)
+
+Can have default, static, and private methods (Java 8+)
+
+java
+Copy
+Edit
+interface Vehicle {
+    void drive(); // abstract by default
+}
+
+class Car implements Vehicle {
+    public void drive() {
+        System.out.println("Car is driving");
+    }
+}
+✅ Benefits of Abstraction:
+Hides implementation logic
+
+Improves code readability and reusability
+
+Helps in achieving loose coupling
+
+Encourages design flexibility (plug-and-play implementation)

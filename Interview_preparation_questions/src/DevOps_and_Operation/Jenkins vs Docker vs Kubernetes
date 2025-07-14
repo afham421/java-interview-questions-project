@@ -1,0 +1,14 @@
+✅ Jenkins vs Docker vs Kubernetes
+| Tool           | **Purpose**                                                             | **Role in DevOps**                                                           | **Think of it as…**                                         |
+| -------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| **Jenkins**    | Automation tool for building, testing, and deploying code (CI/CD).      | Helps automate the **CI/CD pipeline** – from code integration to deployment. | A **factory** that builds and ships your app.               |
+| **Docker**     | Containerization platform. Packages applications with all dependencies. | Creates **lightweight, portable containers** for consistent environments.    | A **box** that holds and runs your app anywhere.            |
+| **Kubernetes** | Orchestration platform for managing multiple containers.                | Manages **scaling, networking, and health** of Docker containers.            | A **manager** that supervises many app boxes in production. |
+
+
+🔁 Real-life analogy:
+Jenkins is the automation robot that builds and packages your Spring Boot app.
+
+Docker wraps that app into a container.
+
+Kubernetes then deploys, scales, and monitors that container across many servers.

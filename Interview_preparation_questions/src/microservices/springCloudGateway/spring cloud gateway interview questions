@@ -1,6 +1,7 @@
 🔰 1. What is Spring Cloud Gateway?
 Explanation:
-Spring Cloud Gateway is an API Gateway built on top of Spring WebFlux. It acts as a single entry point for all your backend services (microservices), and can handle routing, security, monitoring, and traffic control (like rate limiting).
+Spring Cloud Gateway is an API Gateway built on top of Spring WebFlux. 
+It acts as a single entry point for all your backend services (microservices), and can handle routing, security, monitoring, and traffic control (like rate limiting).
 
 Think of it like a traffic cop—directing incoming client requests to the right backend service, possibly transforming or filtering those requests/responses.
 
@@ -47,6 +48,8 @@ spring:
           uri: http://localhost:8081
           predicates:
             - Path=/api/users/**
+            
+            
 🔰 4. What are Predicates in Spring Cloud Gateway?
 Explanation:
 Predicates are conditions that are used to match incoming requests. Only if the predicate evaluates to true, the request is routed.
