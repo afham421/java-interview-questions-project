@@ -2,6 +2,7 @@
 | Feature              | **HashMap**                                                | **HashSet**                                   |
 | -------------------- | ---------------------------------------------------------- | --------------------------------------------- |
 | **Stores**           | Key–Value pairs (e.g., `Map<K, V>`)                        | Only **unique values**                        |
+| **insertion order**  | NO                                                         | No                             |// because both take hash of value and then decide the index of key
 | **Implements**       | `Map` interface                                            | `Set` interface                               |
 | **Duplicates**       | ❌ Keys must be unique, values can repeat                   | ❌ No duplicate elements                       |
 | **Null values**      | ✅ One null key, multiple null values                       | ✅ One null element allowed                    |
@@ -39,3 +40,16 @@ System.out.println(set); // [Apple, Banana]
 Use HashMap when you want to associate keys with values.
 
 Use HashSet when you only care about unique values, not key-value relationships.
+
+✅ Want insertion order?
+Use these alternatives:
+| Interface | Preserves Insertion Order | Class to Use    |
+| --------- | ------------------------- | --------------- |
+| `Map`     | ✅ Yes                     | `LinkedHashMap` |
+| `Set`     | ✅ Yes                     | `LinkedHashSet` |
+
+🧠 Summary
+| Collection | Maintains Insertion Order? | Use Instead       |
+| ---------- | -------------------------- | ----------------- |
+| `HashMap`  | ❌ No                       | `LinkedHashMap` ✅ |
+| `HashSet`  | ❌ No                       | `LinkedHashSet` ✅ |

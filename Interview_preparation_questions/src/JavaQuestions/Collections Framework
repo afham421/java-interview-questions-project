@@ -1,0 +1,102 @@
+📦 What is Java Collections Framework?
+Java Collections are data structures used to store, manipulate, and retrieve groups of objects efficiently.
+
+It includes interfaces and classes for:
+
+Lists
+
+Sets
+
+Maps
+
+Queues
+
+Stacks
+
+And more...
+
+All classes are part of java.util package.
+
+🧩 Core Interfaces in Collections
+| Interface | Description                           | Common Implementations                             |
+| --------- | ------------------------------------- | -------------------------------------------------- |
+| **List**  | Ordered collection, allows duplicates | `ArrayList`, `LinkedList`, `Vector`                |
+| **Set**   | No duplicates allowed                 | `HashSet`, `LinkedHashSet`, `TreeSet`              |
+| **Queue** | Follows FIFO, ordered processing      | `PriorityQueue`, `ArrayDeque`                      |
+| **Map**   | Key-value pairs, no duplicate keys    | `HashMap`, `LinkedHashMap`, `TreeMap`, `Hashtable` |
+
+
+📘 Common Classes and Usage
+✅ List
+java
+Copy
+Edit
+List<String> names = new ArrayList<>();
+names.add("Ali");
+names.add("Ahmed");
+System.out.println(names.get(0)); // Ali
+✅ Set
+java
+Copy
+Edit
+Set<Integer> numbers = new HashSet<>();
+numbers.add(10);
+numbers.add(10); // Duplicate, ignored
+System.out.println(numbers.size()); // 1
+✅ Map
+java
+Copy
+Edit
+Map<String, Integer> ages = new HashMap<>();
+ages.put("Ali", 25);
+System.out.println(ages.get("Ali")); // 25
+✅ Queue
+java
+Copy
+Edit
+Queue<String> queue = new LinkedList<>();
+queue.add("Task1");
+queue.add("Task2");
+System.out.println(queue.poll()); // Task1
+📊 Differences at a Glance
+| Feature    | **List**        | **Set**                         | **Map**                       |
+| ---------- | --------------- | ------------------------------- | ----------------------------- |
+| Order      | Maintains order | No order (except LinkedHashSet) | Key-based, not index-based    |
+| Duplicates | Allowed         | Not allowed                     | Keys not allowed to duplicate |
+| Access     | By index        | By iterator                     | By key                        |
+
+
+📌 Specialized Collections
+| Collection        | Feature                                     |
+| ----------------- | ------------------------------------------- |
+| **ArrayList**     | Fast random access, slower inserts/removals |
+| **LinkedList**    | Fast inserts/deletes, slower access         |
+| **HashSet**       | No order, fast lookup                       |
+| **TreeSet**       | Sorted order                                |
+| **HashMap**       | Fast key-based access                       |
+| **TreeMap**       | Sorted by keys                              |
+| **PriorityQueue** | Elements sorted by priority                 |
+
+
+🔁 Utility Class: Collections
+Java provides a helper class: java.util.Collections with methods like:
+
+java
+Copy
+Edit
+Collections.sort(list);
+Collections.reverse(list);
+Collections.shuffle(list);
+
+
+
+✅ Summary
+| Component           | Purpose                                      |
+| ------------------- | -------------------------------------------- |
+| `List`              | Ordered, duplicates allowed                  |
+| `Set`               | Unique elements                              |
+| `Map`               | Key-value pairs                              |
+| `Queue`             | Ordered processing (FIFO/LIFO)               |
+| `Collections` class | Utility methods for sorting, reversing, etc. |
+
+

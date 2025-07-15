@@ -31,6 +31,9 @@ try {
 } finally {
     executor.shutdown();
 }
+
+
+
 2. CompletableFuture in Java
 CompletableFuture was introduced in Java 8 as an enhancement over Future. It is part of the java.util.concurrent package and
 provides a more flexible and powerful API for asynchronous programming, including non-blocking operations, chaining tasks, and combining multiple futures.
@@ -59,6 +62,9 @@ future.thenAccept(result -> {
     System.out.println("Something went wrong: " + ex.getMessage());
     return null;
 });
+
+
+
 Key Methods of CompletableFuture:
 supplyAsync(): Asynchronously starts a computation.
 thenApply(): Applies a function to the result of a computation when it's done.

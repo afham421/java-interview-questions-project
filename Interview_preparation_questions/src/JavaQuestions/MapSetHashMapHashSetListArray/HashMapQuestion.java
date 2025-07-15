@@ -1,4 +1,4 @@
-package JavaQuestions.HashMapQuestion;
+package JavaQuestions.MapSetHashMapHashSetListArray;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -164,7 +164,7 @@ class Emp {
 
     @Override
     public String toString() {
-        return "JavaQuestions.HashMapQuestion.Emp{" +
+        return "JavaQuestions.MapSetHashMapHashSetListArray.Emp{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 '}';
