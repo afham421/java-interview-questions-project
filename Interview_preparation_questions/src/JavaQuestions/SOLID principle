@@ -1,0 +1,212 @@
+✅ What is SOLID?
+SOLID is an acronym that stands for:
+
+S – Single Responsibility Principle (SRP)
+
+O – Open/Closed Principle (OCP)
+
+L – Liskov Substitution Principle (LSP)
+
+I – Interface Segregation Principle (ISP)
+
+D – Dependency Inversion Principle (DIP)
+
+
+
+Let’s go one by one with Java examples.
+
+🔹 1. Single Responsibility Principle (SRP)
+A class should have only one reason to change.
+
+Each class should do only one job.
+
+❌ Bad Example:
+
+java
+Copy
+Edit
+class UserService {
+    public void registerUser() { }
+    public void sendEmail() { } // Not the responsibility of UserService
+}
+✅ Good Example:
+
+java
+Copy
+Edit
+class UserService {
+    public void registerUser() { }
+}
+
+class EmailService {
+    public void sendEmail() { }
+}
+
+
+
+🔹 2. Open/Closed Principle (OCP)
+Software entities should be open for extension, but closed for modification.
+
+You should be able to add new behavior without changing existing code.
+
+✅ Example using interfaces:
+
+java
+Copy
+Edit
+interface Notification {
+    void send(String message);
+}
+
+class EmailNotification implements Notification {
+    public void send(String message) {
+        System.out.println("Email: " + message);
+    }
+}
+
+class SMSNotification implements Notification {
+    public void send(String message) {
+        System.out.println("SMS: " + message);
+    }
+}
+
+class NotificationService {
+    public void notifyUser(Notification notification, String message) {
+        notification.send(message);
+    }
+}
+➡ You can add PushNotification, SlackNotification, etc., without modifying NotificationService.
+
+
+
+
+🔹 3. Liskov Substitution Principle (LSP)
+Subtypes must be substitutable for their base types.
+
+A subclass should not break the behavior of the parent class.
+
+❌ Bad Example:
+
+java
+Copy
+Edit
+class Bird {
+    void fly() {}
+}
+
+class Ostrich extends Bird {
+    void fly() {
+        throw new UnsupportedOperationException("Ostrich can't fly!");
+    }
+}
+✅ Good Example:
+
+java
+Copy
+Edit
+interface Bird { void eat(); }
+
+interface FlyingBird extends Bird { void fly(); }
+
+class Parrot implements FlyingBird {
+    public void fly() { }
+    public void eat() { }
+}
+
+class Ostrich implements Bird {
+    public void eat() { }
+}
+
+
+
+🔹 4. Interface Segregation Principle (ISP)
+Don't force a class to implement more than it needs.
+
+❌ Bad Example:
+
+java
+Copy
+Edit
+interface Worker {
+    void work();
+    void eat();
+}
+
+class Robot implements Worker {
+    public void work() {}
+    public void eat() {} // Robots don't eat!
+}
+✅ Good Example:
+
+java
+Copy
+Edit
+interface Workable {
+    void work();
+}
+
+interface Eatable {
+    void eat();
+}
+
+class Human implements Workable, Eatable {
+    public void work() {}
+    public void eat() {}
+}
+
+class Robot implements Workable {
+    public void work() {}
+}
+
+
+
+
+🔹 5. Dependency Inversion Principle (DIP)
+Depend on abstractions, not on concrete implementations.
+
+❌ Bad Example:
+
+java
+Copy
+Edit
+class MySQLDatabase {
+    public void connect() {}
+}
+
+class Application {
+    private MySQLDatabase db = new MySQLDatabase();
+}
+✅ Good Example:
+
+java
+Copy
+Edit
+interface Database {
+    void connect();
+}
+
+class MySQLDatabase implements Database {
+    public void connect() {}
+}
+
+class Application {
+    private Database db;
+
+    public Application(Database db) {
+        this.db = db;
+    }
+}
+
+
+➡ Now you can inject PostgresDatabase or OracleDatabase without changing Application.
+
+🧠 Summary Table
+| Principle | Meaning                                 |
+| --------- | --------------------------------------- |
+| **S**     | One class = One responsibility          |
+| **O**     | Extend code without modifying it        |
+| **L**     | Subclass should behave like parent      |
+| **I**     | Keep interfaces focused                 |
+| **D**     | Rely on interfaces, not implementations |
+
+

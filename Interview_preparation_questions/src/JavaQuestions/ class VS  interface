@@ -1,0 +1,45 @@
+🔷 What is a Class in Java?
+A class is a blueprint used to create objects.
+It contains:
+
+Data (fields/variables)
+
+Behavior (methods)
+
+✅ Example:
+java
+Copy
+Edit
+class Car {
+    String color;
+
+    void drive() {
+        System.out.println("Car is driving");
+    }
+}
+🔷 What is an Interface in Java?
+An interface defines a contract (what a class must do, but not how).
+It only contains method signatures (not actual code), unless using default or static methods.
+
+✅ Example:
+java
+Copy
+Edit
+interface Vehicle {
+    void drive();
+}
+🔍 Key Differences: Class vs Interface
+| Feature                   | **Class**                         | **Interface**                            |
+| ------------------------- | --------------------------------- | ---------------------------------------- |
+| What it is                | Blueprint to create objects       | Contract that defines behavior           |
+| Contains                  | Variables + methods (with code)   | Only method signatures (no code)         |
+| Can you create an object? | ✅ Yes (via `new`)                 | ❌ No                                     |
+| Inheritance               | Single inheritance                | Multiple interfaces can be implemented   |
+| Access modifiers          | public, private, protected        | Methods are `public abstract` by default |
+| Implements or extends?    | A class **extends** another class | A class **implements** an interface      |
+
+
+🧠 In One Line:
+A class defines what an object is and does.
+
+An interface defines what an object should be able to do.

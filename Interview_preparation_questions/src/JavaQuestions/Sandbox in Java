@@ -1,0 +1,60 @@
+🛡️ What is a Sandbox in Java?
+➤ Definition:
+A sandbox in Java refers to a restricted environment in which untrusted or potentially dangerous code (like Java applets or downloaded code) is run in isolation — with limited access to system resources (like files, network, or OS).
+
+🎯 Purpose of Sandbox
+Prevents malicious code from harming the host system.
+
+Ensures security when running untrusted Java code, like:
+
+Java applets in a browser
+
+Code downloaded over the internet
+
+Mobile/embedded Java applications
+
+🧱 How It Works
+Java uses several mechanisms to enforce sandboxing:
+
+| Mechanism             | Purpose                                                            |
+| --------------------- | ------------------------------------------------------------------ |
+| **ClassLoader**       | Controls what classes get loaded and from where                    |
+| **SecurityManager**   | Checks what actions code is allowed to perform (e.g., file access) |
+| **Bytecode Verifier** | Ensures that loaded bytecode is safe and conforms to Java rules    |
+
+
+Example: A sandboxed app can compute math, but cannot delete files or open network ports, unless explicitly allowed.
+
+📦 Example Use Case
+Imagine a Java applet from the internet:
+
+java
+Copy
+Edit
+public class DangerousApp {
+    public void deleteSystemFiles() {
+        File file = new File("C:/Windows/System32");
+        file.delete();  // Not allowed in sandbox!
+    }
+}
+If run in a sandbox, this code will fail due to the SecurityManager rejecting the file delete operation.
+
+🔐 Modern Use
+Applets are deprecated, but the concept of sandboxing is still relevant in:
+
+JVM-based web servers
+
+Cloud-based execution environments
+
+Java-based plugin systems
+
+Spring Security and containers like Docker also apply sandboxing in broader forms.
+
+✅ Summary
+| Feature          | Sandbox in Java                                 |
+| ---------------- | ----------------------------------------------- |
+| Goal             | Run code safely with restrictions               |
+| Used for         | Untrusted / downloaded code                     |
+| Tools used       | ClassLoader, SecurityManager, Verifier          |
+| Blocks access to | File system, network, OS APIs                   |
+| Still useful?    | Yes, in secure platforms and cloud environments |

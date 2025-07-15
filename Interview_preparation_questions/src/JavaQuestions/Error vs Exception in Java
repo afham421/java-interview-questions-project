@@ -1,0 +1,67 @@
+Error vs Exception in Java
+| Feature            | **Error**                                                 | **Exception**                                                  |
+| ------------------ | --------------------------------------------------------- | -------------------------------------------------------------- |
+| **Type**           | Serious issue in the **JVM or system**                    | Problem in **program logic** or **code**                       |
+| **Can be Caught?** | ❌ Usually **cannot** be caught or handled                 | ✅ Can (and should) be **caught and handled** using `try-catch` |
+| **Examples**       | `OutOfMemoryError`, `StackOverflowError`, `InternalError` | `NullPointerException`, `IOException`, `ArithmeticException`   |
+| **When to Use**    | You typically **don’t handle errors** in your code        | You **handle exceptions** to recover from failure              |
+| **Hierarchy**      | `java.lang.Error`                                         | `java.lang.Exception`                                          |
+| **Subtypes**       | LinkageError, VirtualMachineError                         | RuntimeException, Checked Exceptions                           |
+
+
+📂 Java Exception Hierarchy
+text
+Copy
+Edit
+Throwable
+├── Error (serious problems - do NOT catch)
+│   ├── OutOfMemoryError
+│   └── StackOverflowError
+│
+└── Exception (recoverable problems)
+    ├── CheckedException (e.g., IOException)
+    └── RuntimeException (e.g., NullPointerException)
+
+
+🧪 Example of an Error
+java
+Copy
+Edit
+public class ErrorDemo {
+    public static void main(String[] args) {
+        causeError();
+    }
+
+    public static void causeError() {
+        causeError(); // Causes StackOverflowError
+    }
+}
+🔥 This causes a StackOverflowError — and you should NOT catch it.
+
+
+
+✅ Example of an Exception
+java
+Copy
+Edit
+public class ExceptionDemo {
+    public static void main(String[] args) {
+        try {
+            int result = 10 / 0; // ArithmeticException
+        } catch (ArithmeticException e) {
+            System.out.println("Cannot divide by zero.");
+        }
+    }
+}
+🧯 This causes an exception and you can handle it gracefully.
+
+✅ Summary
+| Criteria                     | Error              | Exception                     |
+| ---------------------------- | ------------------ | ----------------------------- |
+| Recoverable?                 | ❌ No               | ✅ Yes                         |
+| Catchable?                   | ❌ Not usually      | ✅ Yes                         |
+| Programmer's responsibility? | ❌ No               | ✅ Yes                         |
+| Example                      | `OutOfMemoryError` | `IOException`                 |
+| Best Practice                | Let JVM handle     | Catch and recover if possible |
+
+

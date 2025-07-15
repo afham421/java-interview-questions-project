@@ -1,0 +1,13 @@
+
+>>>>>>>>>>>>>>>>>>>>>>>>>
+
+1. go to inspect element
+
+2. now go to console tab
+
+3. write  >>>>>>>>>>>   document.body.contentEditable = true
+
+4. now you can edit email or any page on web
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>
