@@ -3,7 +3,38 @@ package JavaQuestions;
 import java.util.function.Function;
 
 public class HigherOrderFunctions {
+
+//    🔁 What is a Higher-Order Function in Java?
+//    A higher-order function is a function that:
+//
+//    Takes another function as an argument, or
+//
+//    Returns a function as a result.
+//
+//    This is common in functional programming, and Java supports it starting from Java 8, using lambda expressions and the java.util.function package.
+
+
+    public static Function<Integer, Integer> multiplier(int factor) {
+        return n -> n * factor;
+    }
+
+
+    public static void applyFunction(int x, Function<Integer, Integer> func) {
+        System.out.println(func.apply(x));
+    }
+
+
     public static void main(String[] args) {
+
+        // Usage
+        applyFunction(5, n -> n * n);  // Output: 25
+
+
+        Function<Integer, Integer> times3 = multiplier(3);
+        System.out.println(times3.apply(5));  // Output: 15
+
+
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         // Define two operations using lambda expressions
         Function<Integer, Integer> addTen = x -> x + 10;
         Function<Integer, Integer> multiplyByTwo = x -> x * 2;
@@ -38,6 +69,11 @@ public class HigherOrderFunctions {
     public static int applyOperation(int number, Function<Integer, Integer> operation) {
         return operation.apply(number);
     }
+
+
+
+
+
 }
 
 class Sarkar{
