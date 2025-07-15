@@ -1,0 +1,58 @@
+🔐 What Are Synchronized Collections?
+Synchronized collections are Java collections that are safe to use in multi-threaded environments because only one thread can access the collection at a time.
+
+They prevent concurrent modification issues, such as:
+
+Data corruption
+
+ConcurrentModificationException
+
+🧰 How to Get a Synchronized Collection?
+Java provides utility methods in the Collections class:
+
+java
+Copy
+Edit
+List<String> syncList = Collections.synchronizedList(new ArrayList<>());
+Set<String> syncSet = Collections.synchronizedSet(new HashSet<>());
+Map<String, String> syncMap = Collections.synchronizedMap(new HashMap<>());
+🧪 Example:
+java
+Copy
+Edit
+List<String> list = Collections.synchronizedList(new ArrayList<>());
+
+synchronized (list) {  // Manual synchronization during iteration
+    for (String item : list) {
+        System.out.println(item);
+    }
+}
+🔸 Always use synchronized block when iterating, to avoid concurrency issues.
+
+🧩 Common Synchronized Collections in Java
+| Type        | Synchronized Version                |
+| ----------- | ----------------------------------- |
+| `List`      | `Collections.synchronizedList(...)` |
+| `Set`       | `Collections.synchronizedSet(...)`  |
+| `Map`       | `Collections.synchronizedMap(...)`  |
+| `Vector`    | Already synchronized                |
+| `Hashtable` | Already synchronized                |
+
+
+⚠️ Limitation
+Not scalable for high-concurrency applications.
+
+Use Concurrent collections instead for better performance:
+
+ConcurrentHashMap
+
+CopyOnWriteArrayList
+
+🧠 Summary
+| Feature       | Synchronized Collections                    |
+| ------------- | ------------------------------------------- |
+| Thread safety | ✅ Yes                                       |
+| Performance   | ⏳ Slower (locks entire collection)          |
+| Iteration     | Requires **manual sync block**              |
+| Alternatives  | `ConcurrentHashMap`, `CopyOnWriteArrayList` |
+

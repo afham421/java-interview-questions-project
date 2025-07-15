@@ -1,0 +1,61 @@
+🔄 What are Iterators?
+Iterators in Java are used to traverse (loop through) collections like List, Set, Map, etc.
+
+🚨 Fail-Fast Iterator
+Throws ConcurrentModificationException if the collection is modified structurally while iterating (except via iterator itself).
+
+Detects changes using a modCount (modification count).
+
+Not thread-safe.
+
+✅ Example (Fail-Fast — ArrayList, HashMap, etc.)
+java
+Copy
+Edit
+List<String> list = new ArrayList<>();
+list.add("A");
+list.add("B");
+
+for (String item : list) {
+    list.remove(0);  // 🔥 Throws ConcurrentModificationException
+}
+🛡️ Fail-Safe Iterator
+Does not throw exception if the collection is modified during iteration.
+
+Works on a cloned copy of the collection (snapshot).
+
+Thread-safe, but changes during iteration may not be visible.
+
+✅ Example (Fail-Safe — CopyOnWriteArrayList, ConcurrentHashMap)
+java
+Copy
+Edit
+CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<>();
+list.add("A");
+list.add("B");
+
+for (String item : list) {
+    list.remove(item);  // ✅ No exception, safe to modify
+}
+🧩 Key Differences: Fail-Fast vs Fail-Safe
+| Feature                     | **Fail-Fast**                             | **Fail-Safe**                               |
+| --------------------------- | ----------------------------------------- | ------------------------------------------- |
+| Throws exception on modify? | ✅ Yes (`ConcurrentModificationException`) | ❌ No                                        |
+| Works on live collection?   | ✅ Yes                                     | ❌ Works on a **copy**                       |
+| Thread-safe?                | ❌ No                                      | ✅ Yes                                       |
+| Performance                 | ✅ Faster                                  | ❌ Slower (copies the collection)            |
+| Examples                    | `ArrayList`, `HashMap`, `HashSet`         | `CopyOnWriteArrayList`, `ConcurrentHashMap` |
+
+
+🧠 Summary
+Use Fail-Fast when:
+
+You want to catch concurrent modifications during iteration.
+
+You’re working in a single-threaded environment.
+
+Use Fail-Safe when:
+
+You need thread-safe iteration.
+
+You’re okay with a slight performance trade-off.

@@ -1,0 +1,60 @@
+🔁 Overview
+| Feature       | `Collections.synchronizedMap`                 | `ConcurrentHashMap`                                    |
+| ------------- | --------------------------------------------- | ------------------------------------------------------ |
+| Thread Safety | ✅ Yes (synchronized)                          | ✅ Yes (internally concurrent)                          |
+| Performance   | ❌ Slower (locks entire map)                   | ✅ Faster (locks only portions)                         |
+| Locking       | Locks the **entire map**                      | Uses **segment-level locking** or fine-grained locking |
+| Iteration     | Must **manually synchronize**                 | Safe iteration **without extra sync**                  |
+| Null Support  | ✅ Allows **one null key** and **null values** | ❌ **Does not allow** null keys or null values          |
+| Introduced In | Java 1.2 (`Collections`)                      | Java 5 (`java.util.concurrent`)                        |
+| Best For      | Simple, low-concurrency apps                  | High-concurrency, performance-critical apps            |
+
+
+🔧 1. Collections.synchronizedMap Example
+java
+Copy
+Edit
+Map<String, String> map = Collections.synchronizedMap(new HashMap<>());
+
+synchronized (map) { // manual sync required for iteration
+    for (String key : map.keySet()) {
+        System.out.println(key + " = " + map.get(key));
+    }
+}
+🚀 2. ConcurrentHashMap Example
+java
+Copy
+Edit
+Map<String, String> map = new ConcurrentHashMap<>();
+
+// No manual sync needed
+for (String key : map.keySet()) {
+    System.out.println(key + " = " + map.get(key));
+}
+🔍 Internal Working
+| Feature     | `synchronizedMap`          | `ConcurrentHashMap`                   |
+| ----------- | -------------------------- | ------------------------------------- |
+| Locking     | One lock for entire map    | Locks **only buckets (segments)**     |
+| Scalability | Poor under high threads    | Excellent under high threads          |
+| Blocking    | All threads block on write | Threads block only on affected bucket |
+
+
+⚠️ Null Handling
+| Map Type            | Null Key | Null Value |
+| ------------------- | -------- | ---------- |
+| `HashMap`           | ✅ Yes    | ✅ Yes      |
+| `synchronizedMap`   | ✅ Yes    | ✅ Yes      |
+| `ConcurrentHashMap` | ❌ No     | ❌ No       |
+
+
+Trying to insert null into ConcurrentHashMap will throw NullPointerException.
+
+✅ Summary: When to Use What?
+| Scenario                                            | Use This                       |
+| --------------------------------------------------- | ------------------------------ |
+| Simple app, low concurrency                         | `Collections.synchronizedMap`  |
+| High-concurrency app (e.g. web server, thread pool) | `ConcurrentHashMap`            |
+| You need null keys/values                           | `HashMap` or `synchronizedMap` |
+| You need high throughput under heavy load           | `ConcurrentHashMap`            |
+
+
