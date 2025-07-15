@@ -1,0 +1,56 @@
+🌳 TreeMap vs HashMap in Java (Focus: Ordering)
+
+| Feature                  | **HashMap**                                             | **TreeMap**                                    |
+| ------------------------ | ------------------------------------------------------- | ---------------------------------------------- |
+| **Ordering**             | ❌ **No ordering** — keys are **unsorted** and unordered | ✅ **Sorted by keys** (natural or custom order) |
+| **Underlying Structure** | Hash table (buckets via hashCode)                       | Red-Black Tree (balanced BST)                  |
+| **Null Keys**            | ✅ Allows **one null key**                               | ❌ Does **not allow null keys**                 |
+| **Performance**          | 🔁 Faster (`O(1)` for get/put)                          | ⏳ Slower (`O(log n)` for get/put)              |
+| **Use Case**             | When order doesn’t matter, and speed is priority        | When **sorted key order** is required          |
+| **Thread-safe?**         | ❌ No                                                    | ❌ No                                           |
+| **Implements**           | `Map` interface                                         | `NavigableMap` (extends `SortedMap`)           |
+
+
+✅ Example: HashMap (No Order)
+java
+Copy
+Edit
+Map<String, Integer> hashMap = new HashMap<>();
+hashMap.put("Banana", 1);
+hashMap.put("Apple", 2);
+hashMap.put("Mango", 3);
+
+System.out.println(hashMap);
+// Output: Random order like {Mango=3, Apple=2, Banana=1}
+✅ Example: TreeMap (Sorted by Keys)
+java
+Copy
+Edit
+Map<String, Integer> treeMap = new TreeMap<>();
+treeMap.put("Banana", 1);
+treeMap.put("Apple", 2);
+treeMap.put("Mango", 3);
+
+System.out.println(treeMap);
+// Output: Sorted by key: {Apple=2, Banana=1, Mango=3}
+🧠 Key Point:
+Use HashMap for fast access, no need for order.
+
+Use TreeMap when you need sorted keys or range-based operations (e.g., subMap, headMap, tailMap).
+
+⚠️ Important Notes:
+TreeMap can use a custom Comparator for sorting.
+
+TreeMap is useful when implementing navigation-based maps like:
+
+java
+Copy
+Edit
+treeMap.lowerKey("Mango");  // Gives the key just less than Mango
+
+🎯 Summary
+| Use **HashMap** When...        | Use **TreeMap** When...                  |
+| ------------------------------ | ---------------------------------------- |
+| You need **fast performance**  | You need **sorted keys**                 |
+| You don’t care about key order | You want keys in natural or custom order |
+| Null keys are acceptable       | Null keys must be avoided                |

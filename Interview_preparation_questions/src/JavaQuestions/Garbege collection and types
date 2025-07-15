@@ -1,0 +1,82 @@
+♻️ What is Garbage Collection in Java?
+Java uses automatic garbage collection to manage memory.
+It frees up memory by removing objects that are no longer reachable or used by the application.
+
+✅ You don’t need to manually delete objects — Java does it for you!
+but you can also do manually by         ************   System.gc() ya Runtime.getRuntime().gc()   ******************
+
+🔧 How Garbage Collection Works
+The JVM tracks objects in heap memory.
+
+If no references point to an object, it becomes eligible for GC.
+
+The Garbage Collector runs in the background and cleans up unused objects.
+
+🧩 Why is Garbage Collection important?
+Prevents memory leaks
+
+Ensures better performance
+
+Reduces risk of OutOfMemoryError
+
+🚀 Types of Garbage Collectors in Java (JVM)
+| Collector                                    | Description                                           | Best For                                        |
+| -------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------- |
+| **Serial GC**                                | Uses a **single thread** to collect garbage           | Small apps or single-core systems               |
+| **Parallel GC** (aka Throughput Collector)   | Uses **multiple threads** for GC                      | Applications that need **high throughput**      |
+| **CMS (Concurrent Mark Sweep)** ❌ Deprecated | Reduces pause time by doing GC work **concurrently**  | Apps needing **low-latency** (like web servers) |
+| **G1 GC (Garbage First)**                    | Splits heap into **regions** and collects in parallel | Large heaps, balances throughput + pause time   |
+| **ZGC (Z Garbage Collector)**                | Low-pause GC for **very large heaps** (multi-GB)      | Apps with strict latency needs                  |
+| **Shenandoah**                               | Similar to ZGC, developed by Red Hat                  | Ultra-low pause for large heaps                 |
+
+
+🧪 Quick Comparison
+| GC Type    | Multithreaded | Pause Time | Heap Size Support     | Use Case             |
+| ---------- | ------------- | ---------- | --------------------- | -------------------- |
+| Serial     | ❌             | High       | Small                 | Small apps           |
+| Parallel   | ✅             | Medium     | Medium to Large       | Background jobs      |
+| G1         | ✅             | Low        | Large                 | General-purpose apps |
+| ZGC        | ✅             | Very Low   | Very Large (multi-GB) | Real-time systems    |
+| Shenandoah | ✅             | Very Low   | Large                 | Enterprise apps      |
+
+
+🔁 GC Phases (High-Level)
+Mark – Identify live (reachable) objects.
+
+Sweep – Remove unreachable (dead) objects.
+
+Compact – Rearrange remaining objects to reduce fragmentation (in some GCs).
+
+📦 Example: Make Object Eligible for GC
+java
+Copy
+Edit
+public class Test {
+    public static void main(String[] args) {
+        String s = new String("Hello");
+        s = null; // Now eligible for GC
+    }
+}
+🔍 How to Check Current GC in JVM?
+Run with:
+
+bash
+Copy
+Edit
+java -XX:+PrintCommandLineFlags -version
+Or specify a GC manually:
+
+bash
+Copy
+Edit
+java -XX:+UseG1GC YourApp
+✅ Summary
+| Concept     | Description                                 |
+| ----------- | ------------------------------------------- |
+| GC          | Automatically cleans unused memory          |
+| Trigger     | Unreferenced objects                        |
+| Benefits    | Prevents memory leaks, improves performance |
+| Popular GC  | G1 GC (default in most recent JVMs)         |
+| Advanced GC | ZGC, Shenandoah for ultra-low pause         |
+
+

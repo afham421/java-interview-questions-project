@@ -1,0 +1,32 @@
+❓ Why doesn't HashSet allow duplicates in Java?
+➤ Because HashSet is designed to store only unique elements.
+🧠 How does it work internally?
+HashSet uses a HashMap internally to store elements.
+Every element you add to a HashSet is stored as a key in that HashMap.
+
+✅ Keys in a HashMap are always unique, so:
+When you try to add a duplicate element,
+
+Java calls hashCode() and equals() methods,
+
+If an equal key already exists, the new one is ignored (not added again).
+
+🔁 Example:
+java
+Copy
+Edit
+Set<String> names = new HashSet<>();
+names.add("Ali");
+names.add("Ali");  // Duplicate
+
+System.out.println(names);  // Output: [Ali]
+Here, Ali is added only once because:
+
+Ali.hashCode() and Ali.equals() matched the first entry.
+
+🔐 Summary:
+| Reason                           | Explanation                                |
+| -------------------------------- | ------------------------------------------ |
+| Backed by `HashMap`              | And `HashMap` doesn't allow duplicate keys |
+| Uses `hashCode()` and `equals()` | To check for duplicates                    |
+| Set contract                     | `Set` interface **guarantees uniqueness**  |

@@ -1,11 +1,11 @@
 ✅ ArrayList vs LinkedList in Java
 | Feature                  | `ArrayList`                             | `LinkedList`                                   |
 | ------------------------ | --------------------------------------- | ---------------------------------------------- |
-| **Underlying Structure** | Dynamic **array**                       | Doubly **linked list**                         |
+| **Underlying Structure** | Dynamic **array**    resizable array     | Doubly **linked list**                         |
 | **Access Time (get)**    | ✅ Fast (O(1)) — direct indexing         | ❌ Slower (O(n)) — needs traversal              |
 | **Insertion (middle)**   | ❌ Slower — requires shifting elements   | ✅ Faster — just link/unlink nodes              |
 | **Deletion (middle)**    | ❌ Slower — needs shifting               | ✅ Faster — unlinking nodes is quick            |
-| **Memory Usage**         | Uses less memory                        | Uses more memory (due to node pointers)        |
+| **Memory Usage**         | Uses less memory (just data)             | Uses more memory (due to node pointers) (data + 2 pointers per node)        |
 | **Iteration**            | ✅ Faster (better cache performance)     | ❌ Slower due to non-contiguous storage         |
 | **Use Case**             | Best for **frequent access** operations | Best for **frequent insert/delete** operations |
 | **Implements**           | `List`, `RandomAccess`                  | `List`, `Deque`, `Queue`                       |

@@ -1,0 +1,70 @@
+🧩 What is a Set?
+A collection of unique elements (no duplicates).
+
+Does not store key-value pairs.
+
+Elements are stored like: [A, B, C]
+
+✅ Example:
+java
+Copy
+Edit
+Set<String> fruits = new HashSet<>();
+fruits.add("Apple");
+fruits.add("Banana");
+fruits.add("Apple"); // Duplicate, ignored
+
+System.out.println(fruits); // Output: [Apple, Banana]
+🧩 What is a Map?
+A collection of key-value pairs.
+
+Each key is unique, but values can be duplicated.
+
+Stored like: {A=1, B=2}
+
+✅ Example:
+java
+Copy
+Edit
+Map<String, Integer> scores = new HashMap<>();
+scores.put("Ali", 90);
+scores.put("Sara", 85);
+scores.put("Ali", 95); // Replaces previous value for key "Ali"
+
+System.out.println(scores); // Output: {Ali=95, Sara=85}
+
+
+🔍 Map vs Set – Key Differences
+| Feature       | **Set**                               | **Map**                                          |
+| ------------- | ------------------------------------- | ------------------------------------------------ |
+| Stores        | **Only values**                       | **Key-value pairs**                              |
+| Duplicates    | ❌ Not allowed                         | ✅ Values can repeat, keys can't                  |
+| Access        | Only via iteration                    | Access via key (`map.get(key)`)                  |
+| Example Class | `HashSet`, `LinkedHashSet`, `TreeSet` | `HashMap`, `LinkedHashMap`, `TreeMap`            |
+| Null Handling | Allows one `null` value               | Allows one `null` key and multiple `null` values |
+
+
+✅ Summary
+| Type  | Purpose                                            |
+| ----- | -------------------------------------------------- |
+| `Set` | Collection of **unique values**                    |
+| `Map` | Collection of **unique keys** mapped to **values** |
+
+
+
+////if you want insertion order then use linkedHashMap or linkedHashSet
+Map<String, Integer> map = new LinkedHashMap<>();
+Set<String> set = new LinkedHashSet<>();
+
+✅ Want insertion order?
+Use these alternatives:
+| Interface | Preserves Insertion Order | Class to Use    |
+| --------- | ------------------------- | --------------- |
+| `Map`     | ✅ Yes                     | `LinkedHashMap` |
+| `Set`     | ✅ Yes                     | `LinkedHashSet` |
+
+🧠 Summary
+| Collection | Maintains Insertion Order? | Use Instead       |
+| ---------- | -------------------------- | ----------------- |
+| `HashMap`  | ❌ No                       | `LinkedHashMap` ✅ |
+| `HashSet`  | ❌ No                       | `LinkedHashSet` ✅ |

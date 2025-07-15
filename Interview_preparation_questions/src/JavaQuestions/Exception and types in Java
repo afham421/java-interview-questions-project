@@ -1,0 +1,113 @@
+🚨 What is an Exception in Java?
+An exception is an event that disrupts the normal flow of a program.
+It occurs during runtime and can be caught and handled to prevent crashes.
+
+✅ Why use Exception Handling?
+To gracefully handle errors (e.g., file not found, divide by zero)
+
+To prevent program crashes
+
+To debug and log problems
+
+To separate error-handling logic from business logic
+
+🧩 Types of Exceptions in Java
+Java exceptions fall under the Throwable class:
+
+php
+Copy
+Edit
+Throwable
+├── Error (serious issues, not handled)
+└── Exception
+    ├── Checked Exception
+    └── Unchecked Exception (RuntimeException)
+1️⃣ Checked Exceptions (Compile-Time)
+Checked by the compiler — must be declared with throws or handled with try-catch.
+
+Typically for external issues like I/O, database, or network.
+
+✅ Examples:
+
+java
+Copy
+Edit
+FileReader file = new FileReader("abc.txt"); // FileNotFoundException
+Thread.sleep(1000); // InterruptedException
+Common Checked Exceptions:
+
+IOException
+
+SQLException
+
+FileNotFoundException
+
+ClassNotFoundException
+
+InterruptedException
+
+2️⃣ Unchecked Exceptions (Runtime)
+Subclass of RuntimeException
+
+Not checked at compile time — developer’s responsibility to handle.
+
+Usually caused by bad code or logic errors.
+
+✅ Examples:
+
+java
+Copy
+Edit
+int x = 10 / 0;                  // ArithmeticException
+String s = null; s.length();     // NullPointerException
+int[] a = new int[2]; a[5] = 99; // ArrayIndexOutOfBoundsException
+Common Unchecked Exceptions:
+
+NullPointerException
+
+ArithmeticException
+
+ArrayIndexOutOfBoundsException
+
+IllegalArgumentException
+
+ClassCastException
+
+🔁 Other Types
+3️⃣ Custom Exceptions
+You can create your own exception class:
+
+java
+Copy
+Edit
+class MyException extends Exception {
+    public MyException(String message) {
+        super(message);
+    }
+}
+4️⃣ Errors
+Serious issues like memory errors or JVM crashes.
+
+Should not be handled by application code.
+
+Examples:
+
+OutOfMemoryError
+
+StackOverflowError
+
+🧪 Example: Handling Exception
+java
+Copy
+Edit
+try {
+    int result = 10 / 0;
+} catch (ArithmeticException e) {
+    System.out.println("Cannot divide by zero");
+}
+📋 Summary Table
+| Type            | Checked                       | Unchecked                                     | Error                                    |
+| --------------- | ----------------------------- | --------------------------------------------- | ---------------------------------------- |
+| When Occurs     | Compile-time                  | Runtime                                       | JVM/System level                         |
+| Handle Required | ✅ Yes                         | ❌ No (optional)                               | ❌ No                                     |
+| Examples        | `IOException`, `SQLException` | `NullPointerException`, `ArithmeticException` | `OutOfMemoryError`, `StackOverflowError` |
