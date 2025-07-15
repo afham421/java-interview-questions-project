@@ -1,0 +1,98 @@
+🧩 Delegate vs Interface in Java
+| Concept             | **Delegate**                                                                                        | **Interface**                                                                        |
+| ------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| **Definition**      | Delegation is a design pattern where one object **hands off (assign)** a task to another object. | Interface defines a **contract** (methods) that a class must implement.              |
+| **Purpose**         | **Behavior reuse** – reuse functionality by **delegating** to another object.                       | **Abstraction** – define a common **set of behaviors** multiple classes must follow. |
+| **Main Use**        | Code reuse without inheritance                                                                      | Polymorphism, loose coupling, testability                                            |
+| **How it works**    | One class **uses another class** internally to perform a task.                                      | Class must **implement all methods** of the interface.                               |
+| **Example in Java** | `LoggerService` delegates logging to a `FileLogger`.                                                | A `Vehicle` interface implemented by `Car`, `Bike`.                                  |
+
+
+🔁 Simple Example: Delegate Pattern
+java
+Copy
+Edit
+class Printer {
+    void print(String text) {
+        System.out.println("Printing: " + text);
+    }
+}
+
+class Document {
+    private final Printer printer = new Printer(); // Delegation
+
+    void printDocument() {
+        printer.print("Hello from Document!");
+    }
+}
+➡️ Document doesn't implement printing itself. It delegates to Printer.
+
+🔁 Simple Example: Interface
+java
+Copy
+Edit
+interface Printer {
+    void print(String text);
+}
+
+class FilePrinter implements Printer {
+    public void print(String text) {
+        System.out.println("File Print: " + text);
+    }
+}
+
+class ScreenPrinter implements Printer {
+    public void print(String text) {
+        System.out.println("Screen Print: " + text);
+    }
+}
+➡️ Now any class that needs a Printer can use the interface, not the actual class.
+
+✅ When to Use
+| Scenario                                                     | Use                                      |
+| ------------------------------------------------------------ | ---------------------------------------- |
+| You want **code reuse without inheritance**                  | Use **Delegation**                       |
+| You want to **define shared behavior** for different classes | Use **Interfaces**                       |
+| You want to **implement a pattern like Strategy**            | Use **Interfaces + Delegation** together |
+| You want to **swap behaviors at runtime**                    | Use **Delegation** with **interfaces**   |
+
+
+🎯 Bonus: Can You Use Both Together?
+Absolutely!
+
+java
+Copy
+Edit
+interface PaymentProcessor {
+    void process(double amount);
+}
+
+class PayPalProcessor implements PaymentProcessor {
+    public void process(double amount) {
+        System.out.println("Processing with PayPal: $" + amount);
+    }
+}
+
+class PaymentService {
+    private final PaymentProcessor processor;
+
+    public PaymentService(PaymentProcessor processor) {
+        this.processor = processor; // Delegation
+    }
+
+    public void pay(double amount) {
+        processor.process(amount);
+    }
+}
+➡️ Here:
+
+PaymentProcessor is an interface
+
+PaymentService delegates the work to the processor
+
+✅ Summary
+| Feature            | Delegate                        | Interface                             |
+| ------------------ | ------------------------------- | ------------------------------------- |
+| Concept            | One object uses another         | Class agrees to a contract            |
+| Goal               | Reuse, avoid inheritance        | Define structure, enable polymorphism |
+| Real-world Analogy | Manager gives task to assistant | Job description everyone must follow  |
