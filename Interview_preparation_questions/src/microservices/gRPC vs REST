@@ -1,0 +1,65 @@
+⚙️ What is gRPC?
+gRPC (Google Remote Procedure Call) is a high-performance, open-source framework developed by Google that allows services to communicate with each other.
+
+It’s often used instead of REST for faster, more efficient communication between microservices — especially in high-scale systems.
+
+🔍 gRPC vs REST (Why Use gRPC?)
+| Feature            | **gRPC**                               | **REST**                        |
+| ------------------ | -------------------------------------- | ------------------------------- |
+| 📝 Protocol        | HTTP/2 + **Protocol Buffers** (binary) | HTTP/1.1 + JSON (text)          |
+| 📦 Payload size    | **Small** (compressed binary)          | Larger (JSON is text-based)     |
+| 🚀 Speed           | **Very fast**                          | Slower due to JSON parsing      |
+| 🔄 Streaming       | ✅ Supports bidirectional streaming     | ❌ Limited (manual hacks needed) |
+| 🛠 Code generation | ✅ Auto-generates client/server code    | ❌ Manual                        |
+| 🌐 Browser support | ❌ Not directly (need proxy)            | ✅ Native                        |
+
+
+✅ When is gRPC used in Microservices?
+When services need high performance (low latency, high throughput)
+
+For internal communication between microservices (within your backend)
+
+For real-time data exchange (like live chat, video calls)
+
+In systems with polyglot architecture (e.g., Java <--> Go <--> Python)
+
+📘 Example Use Case
+Let’s say you have these services:
+
+AuthService (Java)
+
+UserService (Python)
+
+NotificationService (Go)
+
+Using gRPC, they can talk to each other seamlessly using Protocol Buffers with generated clients, without worrying about manual REST API integration.
+
+🧪 Bonus: Sample .proto file
+proto
+Copy
+Edit
+syntax = "proto3";
+
+service UserService {
+  rpc GetUser(UserRequest) returns (UserResponse);
+}
+
+message UserRequest {
+  string userId = 1;
+}
+
+message UserResponse {
+  string name = 1;
+  string email = 2;
+}
+From this, gRPC can auto-generate Java, Go, Python, or C# code.
+
+✅ Summary
+| Concept               | gRPC                                          |
+| --------------------- | --------------------------------------------- |
+| Type                  | Remote procedure call                         |
+| Used for              | Fast, efficient microservice communication    |
+| Language support      | Multi-language (Java, Go, Python, etc.)       |
+| Better than REST when | You need performance and streaming            |
+| Not ideal for         | Browser-based or public APIs (REST is better) |
+

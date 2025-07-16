@@ -1,0 +1,60 @@
+✅ 1. == (Reference Comparison)
+Compares object references (memory addresses), not actual content.
+
+Returns true only if both references point to the exact same object.
+
+🔍 Example:
+java
+Copy
+Edit
+String a = new String("hello");
+String b = new String("hello");
+
+System.out.println(a == b); // false — different objects
+✅ 2. .equals() (Content Comparison)
+Defined in the Object class, and overridden by many classes (like String, List, etc.).
+
+Compares actual content (values) of objects.
+
+🔍 Example:
+java
+Copy
+Edit
+System.out.println(a.equals(b)); // true — both strings contain "hello"
+⚠️ If not overridden, .equals() behaves like ==.
+
+✅ 3. .compareTo() (Sorting / Comparison)
+Comes from the Comparable interface.
+
+Returns:
+
+0 → if objects are equal
+
+< 0 → if the calling object is less than the argument
+
+> 0 → if the calling object is greater
+
+Used for sorting and ordering.
+
+🔍 Example:
+java
+Copy
+Edit
+String a = "apple";
+String b = "banana";
+
+System.out.println(a.compareTo(b)); // negative (a < b)
+🧠 Summary Table
+| Operation      | Type               | Purpose                                  | Return Type       |
+| -------------- | ------------------ | ---------------------------------------- | ----------------- |
+| `==`           | Reference check    | Checks if both objects are same instance | `boolean`         |
+| `.equals()`    | Value check        | Compares object content                  | `boolean`         |
+| `.compareTo()` | Sorting/comparison | Orders objects (Comparable)              | `int` (0, <0, >0) |
+
+
+✅ When to Use What?
+| Use Case                                         | Use This       |
+| ------------------------------------------------ | -------------- |
+| Check if two references point to the same object | `==`           |
+| Check if two objects have the same content       | `.equals()`    |
+| Sort or compare two values for ordering          | `.compareTo()` |

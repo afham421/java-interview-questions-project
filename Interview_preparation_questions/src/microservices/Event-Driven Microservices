@@ -1,4 +1,5 @@
-Event-Driven Microservices is an architectural style where services communicate by producing and consuming events, instead of directly calling each other via HTTP or REST. This approach helps in building loosely coupled, scalable, and resilient systems.
+Event-Driven Microservices is an architectural style where services communicate by producing and consuming events, instead of directly calling each other via HTTP or REST.
+ This approach helps in building loosely coupled, scalable, and resilient systems.
 
 🔧 Key Concepts
 Event: A message indicating that something happened (e.g., UserRegistered, OrderPlaced, PaymentReceived).
