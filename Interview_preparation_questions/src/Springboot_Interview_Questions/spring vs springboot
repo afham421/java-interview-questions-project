@@ -1,0 +1,67 @@
+✅ 1. Definition
+| Feature     | **Spring**                                     | **Spring Boot**                                                          |
+| ----------- | ---------------------------------------------- | ------------------------------------------------------------------------ |
+| What is it? | A **framework** for building Java applications | A **framework built on top of Spring** to simplify setup and development |
+| Use Case    | Gives flexibility but requires more setup      | Rapid development with less configuration                                |
+
+
+✅ 2. Setup and Configuration
+| Feature       | **Spring**                                 | **Spring Boot**                                       |
+| ------------- | ------------------------------------------ | ----------------------------------------------------- |
+| Configuration | Manual XML or Java-based configuration     | **Auto-configuration** using `@SpringBootApplication` |
+| Web Server    | Needs to be set up manually (e.g., Tomcat) | Comes with **embedded servers** (Tomcat, Jetty)       |
+
+
+✅ 3. Project Structure
+| Feature          | **Spring**                                    | **Spring Boot**                           |
+| ---------------- | --------------------------------------------- | ----------------------------------------- |
+| Boilerplate Code | Requires more code and structure upfront      | Minimal boilerplate with defaults         |
+| Dependencies     | Need to define versions manually in `pom.xml` | Uses **Spring Boot Starter** dependencies |
+
+
+✅ 4. Development Speed
+| Feature | **Spring**            | **Spring Boot**                               |
+| ------- | --------------------- | --------------------------------------------- |
+| Speed   | Slower to get started | Much faster to start and develop applications |
+
+
+✅ 5. Key Annotations
+| Purpose              | **Spring**                       | **Spring Boot**                        |
+| -------------------- | -------------------------------- | -------------------------------------- |
+| Main Entry           | Not defined                      | `@SpringBootApplication` (entry point) |
+| REST API             | `@Controller`, `@RequestMapping` | Same, but works out-of-the-box  | //It means that in Spring Boot, you don’t have to configure anything manually for those annotations to function.
+| Dependency Injection | `@Autowired`                     | Same                                   |
+
+
+✅ 6. Build Tools
+| Feature | **Spring**     | **Spring Boot**                                     |
+| ------- | -------------- | --------------------------------------------------- |
+| Tools   | Maven / Gradle | Maven / Gradle (with **Spring Initializr** support) |
+
+
+✅ 7. Use Cases
+| Use Case              | **Spring**                        | **Spring Boot**                               |
+| --------------------- | --------------------------------- | --------------------------------------------- |
+| Large enterprise apps | Yes (when full control is needed) | Yes (but better for microservices, REST APIs) |
+| Quick prototyping     | Less suitable                     | Perfect for quick development                 |
+
+
+🎯 Summary
+| Feature        | Spring   | Spring Boot |
+| -------------- | -------- | ----------- |
+| Configuration  | Manual   | Auto        |
+| Web Server     | External | Embedded    |
+| Learning Curve | Steeper  | Easier      |
+| Speed          | Slower   | Faster      |
+
+
+🔧 Real Example:
+To start a REST API:
+
+Spring:
+
+Set up XML/Java config, create DispatcherServlet, define beans
+
+Spring Boot:
+
+Just add @RestController and run main() – everything else is auto-configured.

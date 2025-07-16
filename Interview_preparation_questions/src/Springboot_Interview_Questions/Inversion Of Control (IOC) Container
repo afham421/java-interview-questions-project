@@ -5,6 +5,27 @@ In Spring Boot, Inversion of Control (IoC) is a fundamental concept that underpi
 IoC is a design principle where the control of creating objects, configuring them, and managing their dependencies is transferred from the developer to the Spring framework.
 for example : in old way we create a new object to get other class data now in springboot we get with Autowire or constructor or setter methods
 
+Types of IOC container:
+
+✅ 1. BeanFactory (Lightweight Container)
+Interface: org.springframework.beans.factory.BeanFactory
+Lazy initialization – Beans are created only when requested.
+Used when: Memory is limited, or application is small/simple.
+Less commonly used in modern Spring apps.
+
+✅ 2. ApplicationContext (Advanced Container)
+Interface: org.springframework.context.ApplicationContext
+Eager initialization – Beans are created at startup (by default).
+Feature-rich compared to BeanFactory.
+
+Key features:
+Internationalization support
+Event propagation
+Declarative bean creation
+AOP support
+Annotation-based configuration
+
+
 How IoC Works in Spring Boot
 
 Dependency Injection (DI):
@@ -29,3 +50,14 @@ Component Scanning:
 Spring Boot uses component scanning to automatically detect and register beans in the application context. By default,
  it scans the package where the main application class resides and its sub-packages.
 You can customize the scan using @ComponentScan.
+
+🎯 Summary
+| Feature                  | BeanFactory     | ApplicationContext            |
+| ------------------------ | --------------- | ----------------------------- |
+| Type                     | Basic container | Advanced container            |
+| Bean Initialization      | Lazy            | Eager                         |
+| AOP Support              | No              | Yes                           |
+| Event Handling           | No              | Yes                           |
+| Web Support              | No              | Yes (`WebApplicationContext`) |
+| Preferred in modern apps | ❌               | ✅                             |
+
