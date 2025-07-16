@@ -1,0 +1,68 @@
+🔹 What Are Default Methods in Interfaces?
+A default method is a method with a body in an interface.
+
+Used to provide a default implementation, so implementing classes don't have to override it.
+
+✅ Example:
+java
+Copy
+Edit
+interface Vehicle {
+    default void start() {
+        System.out.println("Vehicle is starting");
+    }
+}
+➤ Usage in a class:
+java
+Copy
+Edit
+class Car implements Vehicle {
+    // inherits start() without overriding
+}
+✅ Why Use Default Methods?
+Backward compatibility — You can add new methods to interfaces without breaking existing code. // mean if we want default implementation then fine else we override it with new implementation
+
+Enables shared behavior across multiple implementing classes.
+
+🔸 What Are Static Methods in Interfaces?
+A static method in an interface belongs to the interface itself, not to instances.
+
+You cannot override it.
+
+Called using the interface name.
+
+✅ Example:
+java
+Copy
+Edit
+interface Utils {
+    static void printMessage() {
+        System.out.println("Hello from interface static method");
+    }
+}
+➤ Usage:
+java
+Copy
+Edit
+Utils.printMessage(); // ✅ Correct
+⚠️ Key Differences: default vs static
+| Feature           | `default` method      | `static` method                     |
+| ----------------- | --------------------- | ----------------------------------- |
+| Can be overridden | ✅ Yes                 | ❌ No                                |
+| Called via object | ✅ Yes                 | ❌ No (must be called via interface) |
+| Purpose           | Shared implementation | Utility/helper methods              |
+| Available since   | Java 8                | Java 8                              |
+
+
+🚫 Rules & Restrictions
+You cannot create abstract + default/static together.
+
+default methods can't be static, and static methods can't be default.
+
+If two interfaces provide the same default method, the class must override it to resolve ambiguity.
+
+🧠 Summary
+| Type      | Inherited? | Overridable? | Called via     |
+| --------- | ---------- | ------------ | -------------- |
+| `default` | ✅ Yes      | ✅ Yes        | Object         |
+| `static`  | ❌ No       | ❌ No         | Interface name |

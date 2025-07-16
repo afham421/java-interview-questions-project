@@ -1,0 +1,88 @@
+📦 What is Optional?
+Optional<T> is a container object which may or may not contain a non-null value.
+
+Think of it like a box:
+
+If the value is present → do something
+
+If not → handle the absence safely
+
+✅ Why use Optional?
+Avoid null checks
+
+Prevent NullPointerException
+
+Promote functional-style code
+
+Improve readability and null safety
+
+🔧 Creating an Optional
+| Method                       | Description                                                           |
+| ---------------------------- | --------------------------------------------------------------------- |
+| `Optional.of(value)`         | Creates Optional with **non-null value**. Throws exception if `null`. |
+| `Optional.ofNullable(value)` | Allows `null` value. Returns `Optional.empty()` if `null`.            |
+| `Optional.empty()`           | Creates an **empty** Optional                                         |
+
+
+java
+Copy
+Edit
+Optional<String> name1 = Optional.of("Ali");           // ✅ OK
+Optional<String> name2 = Optional.ofNullable(null);    // ✅ OK
+Optional<String> name3 = Optional.empty();             // ✅ Empty optional
+
+🛠️ Accessing Values
+| Method                | Description                                      |
+| --------------------- | ------------------------------------------------ |
+| `get()`               | Returns the value (⚠️ throws exception if empty) |
+| `isPresent()`         | Checks if value exists                           |
+| `ifPresent(Consumer)` | Runs code only if value exists                   |
+| `orElse(default)`     | Returns value or default                         |
+| `orElseGet(Supplier)` | Returns value or lazily supplies default         |
+| `orElseThrow()`       | Throws exception if value is missing             |
+
+
+✅ Example:
+java
+Copy
+Edit
+Optional<String> name = Optional.of("Sara");
+
+// Safe access
+name.ifPresent(n -> System.out.println(n)); // Output: Sara
+
+// Default fallback
+String result = name.orElse("No Name"); // Output: Sara
+
+// Empty fallback
+Optional<String> empty = Optional.empty();
+String result2 = empty.orElse("Anonymous"); // Output: Anonymous
+🔄 Chaining with map() and filter()
+java
+Copy
+Edit
+Optional<String> name = Optional.of("Afham");
+
+String upper = name
+    .filter(n -> n.length() > 3)
+    .map(String::toUpperCase)
+    .orElse("DEFAULT");
+
+System.out.println(upper);  // Output: AFHAM
+⚠️ When NOT to use Optional:
+As method parameters → prefer regular null check or overloads
+
+In performance-critical loops
+
+Inside entities or POJOs (can bloat memory)
+
+✅ Summary
+| Concept                       | Description                |
+| ----------------------------- | -------------------------- |
+| `Optional.of()`               | Non-null required          |
+| `Optional.ofNullable()`       | Accepts null               |
+| `isPresent()` / `ifPresent()` | Check existence            |
+| `orElse()` / `orElseGet()`    | Provide fallback           |
+| `map()` / `filter()`          | Functional transformations |
+
+

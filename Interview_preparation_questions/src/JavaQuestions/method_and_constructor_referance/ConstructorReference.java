@@ -1,7 +1,5 @@
 package JavaQuestions.method_and_constructor_referance;
 
-
-
 public class ConstructorReference {
     //    Reference to a Constructor
 //    Syntax: ClassName::new
@@ -9,7 +7,6 @@ public class ConstructorReference {
 //    Supplier<List<String>> lambda = () -> new ArrayList<>();
     // Constructor reference
 //    Supplier<List<String>> constructorRef = ArrayList::new;
-
 
     public static void main(String[] args) {
 //        When to Use Method and Constructor References
@@ -38,10 +35,62 @@ public class ConstructorReference {
 
     }
 }
-interface Provider{
+//✅ Types of Method References
+//| Type                                        | Syntax                      | Equivalent Lambda                         |
+//| ------------------------------------------- | --------------------------- | ----------------------------------------- |
+//| 1. **Static method**                        | `ClassName::staticMethod`   | `(args) -> ClassName.staticMethod(args)`  |
+//| 2. **Instance method of an object**         | `object::instanceMethod`    | `(args) -> object.instanceMethod(args)`   |
+//| 3. **Instance method of a class (unbound)** | `ClassName::instanceMethod` | `(obj, args) -> obj.instanceMethod(args)` |
+//| 4. **Constructor reference**                | `ClassName::new`            | `() -> new ClassName()`                   |
+//
+//📘 Examples
+//1️⃣ Static Method Reference
+
+//class Util {
+//    public static void print(String msg) {
+//        System.out.println(msg);
+//    }
+//}
+//
+//Consumer<String> printer = Util::print;  // instead of msg -> Util.print(msg)
+//printer.accept("Hello");  // Output: Hello
+
+//2️⃣ Instance Method of an Object
+
+//List<String> list = Arrays.asList("a", "b", "c");
+//list.forEach(System.out::println);  // instead of s -> System.out.println(s)
+
+//3️⃣ Instance Method of a Class (Unbound)
+
+//Function<String, Integer> strLength = String::length;  // str -> str.length()
+//System.out.println(strLength.apply("Java")); // Output: 4
+
+//4️⃣ Constructor Reference
+
+//Supplier<List<String>> listSupplier = ArrayList::new;  // () -> new ArrayList<>()
+//List<String> list = listSupplier.get();  // creates a new ArrayList
+
+//✅ Benefits
+//Cleaner, more concise than lambda expressions
+
+//Improves readability
+
+//Useful when the lambda just calls a method
+
+//
+//✅ Summary
+//| You Use                  | When...                                                         |
+//| ------------------------ | --------------------------------------------------------------- |
+//| `Class::staticMethod`    | You want to refer to a static method                            |
+//| `object::instanceMethod` | You already have an object and want to call its method          |
+//| `Class::instanceMethod`  | You want to call an instance method on any object of that class |
+//| `Class::new`             | You want to create a new object (constructor reference)         |
+
+interface Provider {
     Person getPerson();
 
 }
+
 // Define a custom functional interface with a single abstract method that takes a String and returns a Person
 @FunctionalInterface
 interface PersonFactory {
@@ -51,13 +100,16 @@ interface PersonFactory {
 
 class Person {
     private String name;
+
     public Person() {
         this.name = "John Doe";
     }
+
     public Person(String name) {
         this.name = name;
     }
-    String displayName(){
+
+    String displayName() {
         return "i am a person";
     }
 

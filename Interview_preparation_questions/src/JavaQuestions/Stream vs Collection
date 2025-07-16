@@ -1,0 +1,55 @@
+⚖️ Stream vs Collection in Java
+| Feature                | **Collection**                          | **Stream**                                 |
+| ---------------------- | --------------------------------------- | ------------------------------------------ |
+| 💾 **Stores data?**    | ✅ Yes (e.g., `List`, `Set`)             | ❌ No (used to **process** data)            |
+| 🔄 **Usage**           | Used to **store and retrieve** elements | Used to **process and transform** elements |
+| 🔁 **Reusability**     | ✅ Can iterate multiple times            | ❌ One-time use only                        |
+| 🧠 **Eager vs Lazy**   | **Eager**: loads everything             | **Lazy**: processes when needed            |
+| 🧰 **Operations type** | Structural (add, remove, get)           | Functional (map, filter, reduce)           |
+| 🧵 **Parallelism**     | Manual (need threads)                   | ✅ Easy with `parallelStream()`             |
+| 🔗 **API Style**       | Imperative                              | Declarative (functional-style)             |
+| 🎯 **Modification**    | Can add/remove elements                 | Cannot modify source collection            |
+| 📦 **Result**          | Stores objects                          | Returns result or new collection           |
+
+
+✅ Example: Collection
+java
+Copy
+Edit
+List<String> names = new ArrayList<>();
+names.add("Ali");
+names.add("Ahmed");
+
+for (String name : names) {
+    System.out.println(name);
+}
+✅ Example: Stream
+java
+Copy
+Edit
+List<String> names = Arrays.asList("Ali", "Ahmed", "Sara");
+
+names.stream()
+    .filter(name -> name.startsWith("A"))
+    .map(String::toUpperCase)
+    .forEach(System.out::println);  // ALI, AHMED
+📌 Use Cases
+| Scenario                                      | Use          |
+| --------------------------------------------- | ------------ |
+| Need to **store and update** data             | `Collection` |
+| Need to **process or transform** data         | `Stream`     |
+| Want to use **functional programming**        | `Stream`     |
+| Working with traditional loops and structures | `Collection` |
+
+
+✅ Summary Table
+| Aspect                      | Collection | Stream                             |
+| --------------------------- | ---------- | ---------------------------------- |
+| Stores data                 | ✅ Yes      | ❌ No                               |
+| Supports iteration          | ✅ Yes      | ✅ Yes (but once only)              |
+| Supports add/remove         | ✅ Yes      | ❌ No                               |
+| Functional methods          | ❌ No       | ✅ Yes                              |
+| Lazy evaluation             | ❌ No       | ✅ Yes                              |
+| Supports parallel execution | ❌ Manual   | ✅ Built-in with `parallelStream()` |
+
+

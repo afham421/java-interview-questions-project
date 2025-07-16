@@ -1,3 +1,83 @@
+🔧 What Are Functional Interfaces?
+A functional interface has only one abstract method, and can be used with lambda expressions or method references.
+
+📦 Located in java.util.function package.
+
+Java functional interfaces like Function, Consumer, Predicate, and Supplier.these are the building blocks of functional programming in Java 8 and above.
+
+📘 Common Built-in Functional Interfaces
+| Interface        | Takes           | Returns          | Use Case                       |
+| ---------------- | --------------- | ---------------- | ------------------------------ |
+| `Function<T, R>` | One input (`T`) | One output (`R`) | Transform a value              |
+| `Consumer<T>`    | One input (`T`) | `void`           | Use a value (e.g., print, log) |
+| `Supplier<T>`    | No input        | One output (`T`) | Provide/generate a value       |
+| `Predicate<T>`   | One input (`T`) | `boolean`        | Test a condition               |
+
+
+
+1️⃣ Function<T, R>
+Takes one input and returns one result.
+In Java, the Function<T, R> interface from java.util.function represents a function that accepts one argument of type T and returns a result of type R.
+>>>> Detailed example is at the end >>>>>>>>>>
+Use when you need to transform data.
+
+java
+Copy
+Edit
+Function<String, Integer> lengthFunc = str -> str.length();
+System.out.println(lengthFunc.apply("Java")); // Output: 4
+
+2️⃣ Consumer<T>
+Takes one input and returns nothing (void).
+
+Use when you need to perform an action (like printing or saving).
+
+java
+Copy
+Edit
+Consumer<String> printer = msg -> System.out.println("Hello " + msg);
+printer.accept("World");  // Output: Hello World
+
+3️⃣ Supplier<T>
+Takes no input and returns a value.
+
+Use when you need to generate or supply a value.
+
+java
+Copy
+Edit
+Supplier<Double> randomSupplier = () -> Math.random();
+System.out.println(randomSupplier.get());  // Output: (some random number)
+
+4️⃣ Predicate<T>
+Takes one input and returns a boolean.
+
+Used for filtering or conditions.
+
+java
+Copy
+Edit
+Predicate<Integer> isEven = num -> num % 2 == 0;
+System.out.println(isEven.test(4));  // true
+
+💡 Bonus: Bi-Variants
+| Interface             | Description                          |
+| --------------------- | ------------------------------------ |
+| `BiFunction<T, U, R>` | Takes two inputs, returns one output |
+| `BiConsumer<T, U>`    | Takes two inputs, returns nothing    |
+| `BiPredicate<T, U>`   | Takes two inputs, returns boolean    |
+
+✅ Summary Table
+| Interface       | Input   | Output   | Example Usage            |
+| --------------- | ------- | -------- | ------------------------ |
+| `Function<T,R>` | 1 input | 1 output | Mapping, transformations |
+| `Consumer<T>`   | 1 input | void     | Printing, logging        |
+| `Supplier<T>`   | none    | 1 output | Random values, factories |
+| `Predicate<T>`  | 1 input | boolean  | Filtering, conditions    |
+
+
+>>>>>>>>>>>>>>> Detail >>>>>>>>>>>>>>>
+
 In Java, the Function<T, R> interface from java.util.function represents a function that accepts one argument of type T and returns a result of type R.
 
 Understanding Function<Claim, T>
@@ -49,6 +129,8 @@ Claim myClaim = new Claim("C56789", 10000.0);
 double amount = extractClaimAmount.apply(myClaim);
 
 System.out.println("Claim Amount: " + amount);  // Output: Claim Amount: 10000.0
+
+
 3. Function Chaining with andThen() and compose()
 You can chain functions using andThen() or compose().
 

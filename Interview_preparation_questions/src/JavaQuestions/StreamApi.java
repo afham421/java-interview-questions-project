@@ -6,17 +6,31 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+//🚀 What is the Stream API?
+//The Stream API lets you process collections (like Lists, Sets) in a declarative, pipeline-style — meaning what you want to do, not how to do it.
+//✅ Key Features
+//No storage: Stream doesn't store elements, it processes them.
+//
+//Functional: Uses lambdas and functional interfaces.
+//
+//Lazy evaluation: Operations run only when needed.
+//
+//Efficient: Can work in parallel (via parallelStream()).
+
 public class StreamApi {
-//    Types of Stream Operations
-//    Stream operations are divided into two main categories:
-//    Intermediate Operations:
+
+//    Stream operations are divided into three main categories:
+//    1.Source:
+//    Collection, array, or generator
+//    2.Intermediate Operations:
 //    Return another stream, allowing multiple operations to be chained together.
 //            Examples: filter, map, sorted, distinct, limit, skip.
-//    Terminal Operations:
+//    3.Terminal Operations:
 //    Produce a result or a side effect and terminate the stream pipeline.
 //    Examples: forEach, collect, reduce, count, findFirst, findAny, allMatch, anyMatch, noneMatch.
+
     public static void main(String[] args) {
-//Simple method to create list of integers
+//Simple method to create a list of integers
         List<Integer> list = new ArrayList<Integer>();// mutable list of integers
         list.add(1);
         list.add(2);
@@ -44,7 +58,7 @@ public class StreamApi {
         }
         System.out.println(list3);
 
-        // using stream Api //The stream itself is immutable
+        // Using stream Api //The stream itself is immutable
 //        Intermediate and Terminal Operations:
 //        Intermediate operations (e.g., filter, map, sorted) return a new stream and are typically used to transform the stream or filter elements.
 //        Terminal operations (e.g., collect, forEach, reduce) trigger the processing of the stream and produce a result or side effect.
