@@ -46,7 +46,7 @@ Each one is a separate Spring Boot application, deployed individually.
 🔄 Microservice Communication  >>>>>>>>>>>>> look bellow
 Synchronous → via REST APIs (UserService --> OrderService)    mean one thread
 
-Asynchronous → via Message Brokers like RabbitMQ, Kafka       mean multiple thread 
+Asynchronous → via Message Brokers like RabbitMQ, Kafka       mean multiple thread
 
 ⚠️ Challenges with Microservices
 | Issue                       | Solution                                                       |

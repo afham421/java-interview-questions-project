@@ -1,0 +1,73 @@
+Here’s a clear comparison of DELETE, DROP, and TRUNCATE in SQL:
+
+🔸 DELETE
+Used to: Remove specific rows from a table.
+
+WHERE clause: ✅ Yes, can use it.
+
+Rollback (Undo): ✅ Yes (if in a transaction).
+
+Triggers: ✅ Fires triggers.
+
+Performance: Slower for large data.
+
+Table structure: Remains intact.
+
+sql
+Copy
+Edit
+DELETE FROM employees WHERE department = 'HR';
+
+
+
+
+🔸 TRUNCATE
+Used to: Remove all rows from a table quickly.
+
+WHERE clause: ❌ Not allowed.
+
+Rollback (Undo): ✅ Depends on DB (rollback possible in some RDBMS).
+
+Triggers: ❌ Does not fire triggers (in most databases).
+
+Performance: Faster than DELETE.
+
+Table structure: Remains intact.
+
+sql
+Copy
+Edit
+TRUNCATE TABLE employees;
+
+
+
+🔸 DROP
+Used to: Completely delete the table (structure + data).
+
+WHERE clause: ❌ Not applicable.
+
+Rollback (Undo): ❌ No, permanent (unless wrapped in transaction-supported RDBMS).
+
+Triggers: ❌ Not applicable.
+
+Performance: Fast.
+
+Table structure: ❌ Removed.
+
+sql
+Copy
+Edit
+DROP TABLE employees;
+
+
+🧠 Summary Table:
+| Feature        | DELETE    | TRUNCATE       | DROP              |
+| -------------- | --------- | -------------- | ----------------- |
+| Removes data?  | ✅ Yes     | ✅ Yes          | ✅ Yes (and table) |
+| WHERE allowed? | ✅ Yes     | ❌ No           | ❌ No              |
+| Rollback?      | ✅ Yes     | ⚠️ DB-specific | ❌ No              |
+| Triggers fire? | ✅ Yes     | ❌ No           | ❌ No              |
+| Keeps schema?  | ✅ Yes     | ✅ Yes          | ❌ No              |
+| Speed          | 🐢 Slower | 🚀 Faster      | 🚀 Fastest        |
+
+

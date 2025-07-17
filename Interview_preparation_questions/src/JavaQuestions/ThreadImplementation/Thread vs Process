@@ -1,0 +1,39 @@
+🔹 Process
+Definition: An independent program in execution.
+
+Memory: Has its own memory and resources.
+
+Isolation: Processes are isolated from each other.
+
+Creation: More resource-intensive (takes more time and memory).
+
+Communication: Needs Inter-Process Communication (IPC) like sockets, files.
+
+Crash Impact: One process crash does not affect others.
+
+Example: Running Chrome and Word are two separate processes.
+
+🔸 Thread
+Definition: A smaller unit of a process, used for multitasking within a process.
+
+Memory: Shares memory with other threads in the same process.
+
+Isolation: Not isolated; can affect each other.
+
+Creation: Lightweight and faster to create.
+
+Communication: Easier (since memory is shared).
+
+Crash Impact: If one thread crashes, it can affect the whole process.
+
+Example: In Chrome, one tab is a thread within the browser process.
+
+🔁 Summary Table:
+| Feature       | Process                 | Thread                           |
+| ------------- | ----------------------- | -------------------------------- |
+| Memory        | Own memory              | Shared memory with other threads |
+| Creation      | Slow and resource-heavy | Fast and lightweight             |
+| Communication | Complex (IPC)           | Easy (shared memory)             |
+| Isolation     | Fully isolated          | Not isolated                     |
+| Crash Impact  | Safer                   | Risk of process crash            |
+| Use Case      | Running different apps  | Doing multiple tasks in one app  |

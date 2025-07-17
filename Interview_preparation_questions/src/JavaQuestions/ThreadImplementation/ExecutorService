@@ -1,0 +1,68 @@
+✅ What is ExecutorService in Java?
+ExecutorService is an interface in Java’s java.util.concurrent package that provides a higher-level replacement for managing threads manually.
+Instead of creating and managing threads yourself (new Thread()), ExecutorService helps you efficiently manage thread pools and run tasks concurrently.
+
+ExecutorService is used to manage threads and Using Callable with Future when your thread needs to return a result or throw an exception.
+
+
+🔹 Why use ExecutorService?
+Avoid manual thread creation and management.
+
+Reuse a pool of threads → better performance.
+
+Control over task execution (timeout, cancel, shutdown).
+
+Scales better for large/multiple tasks.
+
+🔸 Basic Example:
+java
+Copy
+Edit
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+public class ExecutorExample {
+    public static void main(String[] args) {
+        ExecutorService executor = Executors.newFixedThreadPool(2); // 2 threads in pool
+
+        executor.submit(() -> System.out.println("Task 1 by " + Thread.currentThread().getName()));
+        executor.submit(() -> System.out.println("Task 2 by " + Thread.currentThread().getName()));  /// here it will execute thread if you want result in return the you would use callable and future
+
+
+ExecutorService executor = Executors.newSingleThreadExecutor(); // here it will execute thread if you want result in return the you would use callable and future
+Callable<String> task = () -> "Task Completed!";
+Future<String> result = executor.submit(task);
+
+
+        executor.shutdown(); // Always shutdown after use
+    }
+}
+
+
+🔹 Common Factory Methods (from Executors class):
+| Method                      | Description                             |
+| --------------------------- | --------------------------------------- |
+| `newFixedThreadPool(int n)` | Fixed number of threads                 |
+| `newCachedThreadPool()`     | Creates new threads as needed           |
+| `newSingleThreadExecutor()` | Single thread executor                  |
+| `newScheduledThreadPool(n)` | Run tasks after a delay or periodically |
+
+
+🔸 Important Methods in ExecutorService:
+| Method               | Description                                   |
+| -------------------- | --------------------------------------------- |
+| `submit(Runnable)`   | Submits a task for execution                  |
+| `shutdown()`         | Initiates orderly shutdown                    |
+| `shutdownNow()`      | Attempts to stop all actively executing tasks |
+| `awaitTermination()` | Waits for termination of all tasks            |
+
+🔹 Real-world Usage
+Used in:
+
+Web servers (handling requests)
+
+Scheduled tasks
+
+Background job processing
+
+APIs with concurrent data fetches

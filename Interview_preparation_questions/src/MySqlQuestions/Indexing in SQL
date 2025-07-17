@@ -1,0 +1,39 @@
+🔍 What is Indexing in SQL?  it is also called non cluster index
+Indexing is a database optimization technique used to speed up the retrieval of records from a table.
+
+📘 Simple Definition:
+Index is like a book index – it helps the database find data faster, without scanning the whole table.
+
+🔧 How It Works:
+When you create an index on a column (e.g., name), the database creates a separate structure that holds the values of that column in sorted order, along with pointers to the actual rows.
+
+So when you run a SELECT query with WHERE name = 'John', the database looks in the index first.
+
+🛠️ Example:
+sql
+Copy
+Edit
+CREATE INDEX idx_employee_name ON employees(name);
+This will create an index on the name column in the employees table.
+
+✅ Benefits of Indexing:
+Faster SELECT queries
+
+Improves performance on WHERE, JOIN, ORDER BY, and GROUP BY
+
+⚠️ Downsides:
+Slows down INSERT, UPDATE, DELETE (because index must also be updated)
+
+Takes extra storage space
+
+Too many indexes can reduce performance
+
+📚 Types of Indexes:
+| Type              | Description                                     |
+| ----------------- | ----------------------------------------------- |
+| **Single-column** | Index on one column                             |
+| **Composite**     | Index on multiple columns                       |
+| **Unique**        | Prevents duplicate values                       |
+| **Full-text**     | For searching text fields                       |
+| **Clustered**     | Sorts the actual data rows (only one per table) |
+| **Non-clustered** | Separate from data, points to rows              |

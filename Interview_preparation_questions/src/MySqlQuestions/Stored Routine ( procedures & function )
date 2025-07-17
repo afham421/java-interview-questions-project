@@ -1,7 +1,9 @@
-In MySQL, stored routines include stored procedures and stored functions. They are a way to encapsulate SQL code in a reusable form, allowing for more complex operations and logic to be executed on the database server.
+In MySQL, stored routines include stored procedures and stored functions.
+They are a way to encapsulate SQL code in a reusable form, allowing for more complex operations and logic to be executed on the database server.
 
 Types of Stored Routines
-Stored Procedure: A stored procedure is a collection of SQL statements that can be executed as a single unit. It does not return a value directly but can return results through output parameters or by manipulating data in tables.
+Stored Procedure: A stored procedure is a collection of SQL statements that can be executed as a single unit.
+ It does not return a value directly but can return results through output parameters or by manipulating data in tables.
 
 Stored Function: A stored function is similar to a stored procedure, but it returns a single value. It can be used in SQL statements wherever an expression is valid.
 
@@ -118,14 +120,15 @@ Usage:
 
 CALL UpdateSalaryAfterTax(1);
 Managing Stored Routines
-Viewing Stored Routines:
 
+Viewing Stored Routines:
 To list all stored procedures: SHOW PROCEDURE STATUS;
 To list all stored functions: SHOW FUNCTION STATUS;
-Dropping a Stored Routine:
 
+Dropping a Stored Routine:
 Dropping a stored procedure: DROP PROCEDURE IF EXISTS procedure_name;
 Dropping a stored function: DROP FUNCTION IF EXISTS function_name;
+
 Benefits of Stored Routines
 Performance: Stored routines are precompiled, so they often execute faster than sending multiple SQL statements from the client to the server.
 Reusability: Stored routines can be reused across different applications and scripts, reducing code duplication.

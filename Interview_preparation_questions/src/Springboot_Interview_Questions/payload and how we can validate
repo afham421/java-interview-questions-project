@@ -1,0 +1,86 @@
+✅ What is a Payload in Java (especially in APIs)?
+A payload refers to the body/data sent in an HTTP request or response — usually in JSON format — when working with REST APIs.
+
+For example:
+
+json
+Copy
+Edit
+{
+  "username": "afham",
+  "password": "secret123"
+}
+This is the payload sent to the server in a POST request.
+
+✅ Validating Payload in Java (Spring Boot)
+In Spring Boot, you typically use:
+
+🔹 Step 1: Create a DTO (Data Transfer Object) with validation annotations
+java
+Copy
+Edit
+import jakarta.validation.constraints.*;
+
+public class LoginRequest {
+
+    @NotBlank(message = "Username is required")
+    private String username;
+
+    @NotBlank(message = "Password is required")
+    private String password;
+
+    // Getters & Setters
+}
+🔹 Step 2: Validate in Controller using @Valid
+java
+Copy
+Edit
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api")
+public class AuthController {
+
+    @PostMapping("/login")
+    public String login(@RequestBody @Valid LoginRequest request) {
+        return "Login successful";
+    }
+}
+🔹 Step 3: Handle Validation Errors
+Spring will automatically return 400 Bad Request with error details if validation fails.
+You can also customize this with @ControllerAdvice:
+
+java
+Copy
+Edit
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleValidation(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+            errors.put(error.getField(), error.getDefaultMessage())
+        );
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+}
+🔸 Common Validation Annotations
+| Annotation        | Purpose                           |
+| ----------------- | --------------------------------- |
+| `@NotNull`        | Field must not be `null`          |
+| `@NotBlank`       | Field must not be `null` or empty |
+| `@Size(min, max)` | Check string/collection size      |
+| `@Email`          | Must be a valid email             |
+| `@Min/@Max`       | Minimum/maximum number constraint |
+| `@Pattern(regex)` | Must match the given regex        |
+
+
+✅ Summary
+
+Payload = data sent in request body.
+
+Validate using @Valid and annotations from jakarta.validation.
+
+Handle validation failures with @ControllerAdvice.

@@ -1,9 +1,47 @@
 Differences Between Multithreading and Multiprocessing:
 
-Feature	                    Multithreading                                                                           	Multiprocessing
-Memory Sharing	                    Shared memory space among threads                                           	Separate memory space for each process
-Communication	                    Easier communication between threads                                 	Requires inter-process communication (IPC) mechanisms
-Overhead	                    Lower overhead, more lightweight	                                     Higher overhead, heavier due to separate memory allocation
-Context                     Switching	Faster context switching	                                              Slower context switching
-Suitability	                    I/O-bound tasks	                                                                          CPU-bound tasks
-Risk of Deadlock                    	Higher risk of deadlock due to shared memory                                            	Lower risk of deadlock
+
+🔄 Multithreading
+Definition: Multiple threads run within a single process.
+
+Memory: Threads share the same memory space.
+
+Communication: Easier and faster (since memory is shared).
+
+Performance: Better for I/O-bound or lightweight tasks.
+
+Overhead: Less memory usage; lower overhead.
+
+Crash Impact: One thread crash may affect other threads (since same process).
+
+Java Support: Native support using Thread, Runnable, ExecutorService.
+
+
+
+🧠 Multiprocessing
+Definition: Multiple independent processes run simultaneously.
+
+Memory: Each process has its own memory space.
+
+Communication: More complex (uses Inter-Process Communication like sockets or files).
+
+Performance: Better for CPU-bound tasks; avoids GIL in some languages like Python.
+
+Overhead: More memory usage and overhead.
+
+Crash Impact: One process crash doesn’t affect others.
+
+Java Support: Achievable using multiple JVMs or ProcessBuilder.
+
+
+🔁 Summary Table:
+| Feature         | Multithreading               | Multiprocessing        |
+| --------------- | ---------------------------- | ---------------------- |
+| Process Count   | Single process               | Multiple processes     |
+| Memory Usage    | Shared memory                | Separate memory        |
+| Communication   | Easy and fast                | Slower and complex     |
+| Overhead        | Low                          | High                   |
+| Use Case        | Lightweight, concurrent apps | Heavy computation apps |
+| Fault Isolation | Poor                         | Strong                 |
+
+

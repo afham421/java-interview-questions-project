@@ -1,0 +1,55 @@
+✅ @ControllerAdvice in Spring Boot
+@ControllerAdvice is a specialized annotation in Spring used to handle exceptions and global behaviors (like model attributes or data binding) across all controllers — kind of like a global try-catch for your REST API.
+
+🔹 Use Case: Global Exception Handling
+Instead of writing try-catch in every controller, you define a centralized class to handle exceptions.
+
+✅ Example: Global Validation Error Handling
+java
+Copy
+Edit
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@ControllerAdvice
+public class GlobalExceptionHandler {
+
+    // This handles validation errors from @Valid
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidationErrors(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+            errors.put(error.getField(), error.getDefaultMessage())
+        );
+
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+
+    // Generic exception handler (optional)
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleAllOtherErrors(Exception ex) {
+        return new ResponseEntity<>("Something went wrong: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
+🔹 How It Works:
+You annotate the class with @ControllerAdvice
+
+Then annotate methods with @ExceptionHandler
+
+Spring will route all matching exceptions to these methods
+
+✅ Benefits:
+Centralized error handling
+
+Cleaner controller code
+
+Custom error responses
+
+Easily log and track exceptions

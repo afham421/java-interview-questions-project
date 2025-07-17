@@ -11,6 +11,8 @@ Usage:
 
 MyThread t = new MyThread();
 t.start(); // starts a new thread
+
+
 2. Implementing the Runnable interface
 
 class MyRunnable implements Runnable {
@@ -25,6 +27,8 @@ Thread t = new Thread(new MyRunnable());
 t.start();
 🔸 More flexible than extending Thread (since you can extend another class).
 
+
+
 3. Using Lambda Expression (Java 8+)
 
 Thread t = new Thread(() -> {
@@ -32,6 +36,8 @@ Thread t = new Thread(() -> {
 });
 t.start();
 ✅ Clean and concise way to implement threads.
+
+
 
 4. Using ExecutorService (Thread Pooling)
 
@@ -41,6 +47,8 @@ executor.submit(() -> {
 });
 executor.shutdown();
 ✅ Best for handling multiple tasks efficiently (used in production-level apps).
+
+
 
 5. Using Callable with Future (if return value is needed)
 

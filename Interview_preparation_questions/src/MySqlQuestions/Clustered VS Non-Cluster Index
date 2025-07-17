@@ -1,0 +1,63 @@
+🗂️ What is Clustered Index in MySQL (and SQL in general)?
+A clustered index determines the physical order of data in a table — the rows are stored on disk in the same order as the index.
+
+📌 Key Points:
+Each table can have only one clustered index.
+
+In MySQL InnoDB, the primary key is the clustered index by default.
+
+If no primary key exists, InnoDB uses the first unique NOT NULL index as clustered.
+
+If no such index exists, it creates a hidden 6-byte row ID.
+
+🧱 Example:
+sql
+Copy
+Edit
+CREATE TABLE users (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100)
+);
+➡️ Here, id is the clustered index.
+The table's rows are physically stored sorted by id.
+
+🧠 How It Works Internally:
+In InnoDB:
+
+The data itself is stored in a B+Tree structure
+
+Leaf nodes of the clustered index contain entire rows
+
+Secondary indexes only contain the indexed column + a pointer to the clustered index key
+
+🔍 Clustered vs Non-Clustered Index
+| Feature         | **Clustered Index**                | **Non-Clustered Index**                  |
+| --------------- | ---------------------------------- | ---------------------------------------- |
+| Data Storage    | **Sorted and stored** as per index | Index points to row location             |
+| Index Count     | Only **one per table**             | Can have **many** non-clustered indexes  |
+| Performance     | **Faster for range queries**       | Slightly slower due to extra lookup step |
+| In MySQL InnoDB | Defaults to **PRIMARY KEY**        | Created using `CREATE INDEX`             |
+
+📊 Real Example – Range Query
+sql
+Copy
+Edit
+SELECT * FROM users WHERE id BETWEEN 100 AND 200;
+If id is clustered, data is physically adjacent on disk — fast retrieval.
+
+🚨 Things to Remember
+Updating a clustered index (like id) is expensive — it may move the row physically.
+
+Avoid large/variable-length fields (e.g., TEXT, BLOB) as part of clustered index — it bloats the structure.
+
+Secondary indexes lookup cost = index search + clustered key lookup
+
+✅ Summary
+| Feature             | Value                       |
+| ------------------- | --------------------------- |
+| Only one per table? | ✅ Yes                       |
+| Orders data?        | ✅ Yes (physically)          |
+| Default in InnoDB   | ✅ Primary Key               |
+| Good for            | Range scans, sorted queries |
+| Bad for             | Frequent key updates        |

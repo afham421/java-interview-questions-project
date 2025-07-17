@@ -42,7 +42,7 @@ It's a method.
 
 Called by the Garbage Collector before destroying an object.
 
-Rarely used now (and deprecated in recent Java versions).
+Rarely used now (and deprecated in recent Java versions).Deprecated in Java 9+ due to unpredictability.
 
 
 protected void finalize() {
