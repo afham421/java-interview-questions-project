@@ -5,7 +5,6 @@ Breakdown of @SpringBootApplication
 The @SpringBootApplication annotation is a composite of the following annotations:
 
 @Configuration:
-
 Indicates that the class provides Spring configuration. It tells Spring that this class can define beans using methods annotated with @Bean.
 
 @EnableAutoConfiguration:

@@ -1,0 +1,36 @@
+✅ What is JPA?
+JPA (Java Persistence API) is a standard specification in Java that defines how Java objects (entities) should be stored and retrieved from a relational database.
+
+➡️ JPA is not a framework, it's just a set of interfaces and annotations.
+➡️ You need an implementation of JPA to use it — like Hibernate, EclipseLink, etc.
+
+🔸 JPA vs Hibernate:
+| Feature  | JPA                     | Hibernate             |
+| -------- | ----------------------- | --------------------- |
+| Type     | Specification/API       | Implementation of JPA |
+| Use      | Common interface        | Actual ORM framework  |
+| Provider | Requires implementation | Is an implementation  |
+
+
+🔧 Why JPA?
+You deal with Java objects, not SQL directly.
+
+It abstracts JDBC boilerplate code.
+
+Easy to map relationships (@OneToMany, etc.).
+
+Integrated well with Spring Boot (via Spring Data JPA).
+
+✅ Key JPA Annotations
+| Annotation        | Purpose                            |
+| ----------------- | ---------------------------------- |
+| `@Entity`         | Marks a class as a DB table        |
+| `@Id`             | Marks the primary key              |
+| `@GeneratedValue` | Auto-generates PK                  |
+| `@Column`         | Maps field to DB column (optional) |
+| `@Table`          | Set table name                     |
+| `@OneToMany`      | One-to-many relationship           |
+| `@ManyToOne`      | Many-to-one relationship           |
+| `@JoinColumn`     | Defines FK column                  |
+
+

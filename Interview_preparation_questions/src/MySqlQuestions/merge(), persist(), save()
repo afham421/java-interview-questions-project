@@ -1,0 +1,97 @@
+✅ 1. persist()
+Belongs to: JPA
+
+Provided by: EntityManager
+
+Usage: To insert a new entity into the database.
+
+It only works for new (transient) objects.
+
+java
+Copy
+Edit
+User user = new User();  // transient
+user.setName("Ali");
+entityManager.persist(user);  // now managed and inserted
+Key Points:
+
+Adds the entity to the persistence context
+
+Entity becomes managed
+
+Does not return anything
+
+If the entity already exists → ❌ throws an error
+
+✅ 2. merge()
+Belongs to: JPA
+
+Provided by: EntityManager
+
+Usage: To insert or update an entity (commonly for detached objects).
+
+java
+Copy
+Edit
+User detachedUser = new User();  // detached object
+detachedUser.setId(1L);          // existing ID
+detachedUser.setName("Updated Name");
+
+User managedUser = entityManager.merge(detachedUser);
+Key Points:
+
+Can be used for existing or detached objects
+
+Returns a managed copy
+
+Original object stays detached
+
+If entity doesn’t exist → it creates new (INSERT)
+
+✅ 3. save()
+Belongs to: Spring Data JPA
+
+Provided by: JpaRepository
+
+Internally uses: persist() or merge() based on entity state
+
+java
+Copy
+Edit
+User user = new User();
+user.setName("Awais");
+userRepository.save(user);  // Spring will call persist or merge
+Key Points:
+
+Simplifies the code in Spring Boot
+
+Handles both new and existing entities
+
+Automatically chooses between persist() and merge()
+
+Returns the saved (managed) entity
+
+🔁 Summary Table
+| Method      | From                  | Works on                      | Return Value   | Purpose               |
+| ----------- | --------------------- | ----------------------------- | -------------- | --------------------- |
+| `persist()` | JPA (`EntityManager`) | New (transient) entities      | `void`         | INSERT new record     |
+| `merge()`   | JPA (`EntityManager`) | Detached or existing entities | Managed entity | UPDATE or INSERT      |
+| `save()`    | Spring Data JPA       | Any (new or existing)         | Saved entity   | Handles persist/merge |
+
+
+⚠️ Example Use Case
+Use persist() when:
+
+You're working directly with EntityManager
+
+You're sure it's a new record
+
+Use merge() when:
+
+You're re-attaching a modified, detached entity
+
+Use save() when:
+
+You're using Spring Boot + Spring Data JPA
+
+You want simple code for both insert/update

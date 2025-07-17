@@ -1,0 +1,113 @@
+
+In Spring and Spring Boot, there are four main ways to put configuration, depending on what you're configuring — for example, beans, properties, or environment-specific settings.
+
+✅ 1. Java-Based Configuration
+Uses @Configuration and @Bean annotations.
+
+Fully type-safe and purely in Java.
+
+Example:
+
+java
+Copy
+Edit
+@Configuration
+public class AppConfig {
+    @Bean
+    public MyService myService() {
+        return new MyServiceImpl();
+    }
+}
+
+
+✅ 2. Annotation-Based Configuration
+Uses annotations like @Component, @Service, @Repository, and @Autowired.
+
+Beans are auto-scanned using @ComponentScan.
+
+Example:
+
+java
+Copy
+Edit
+@Component
+public class MyComponent {}
+
+@Service
+public class MyService {
+    @Autowired
+    private MyRepository repo;
+}
+
+
+✅ 3. XML-Based Configuration (Old Style)
+Uses XML files like beans.xml or applicationContext.xml.
+
+Mostly used in legacy Spring apps.
+
+Example:
+
+xml
+Copy
+Edit
+<bean id="myService" class="com.example.MyServiceImpl"/>
+
+
+✅ 4. Property/Configuration Files
+In Spring Boot, configuration is usually placed in:
+
+application.properties or
+
+application.yml
+
+You can define:
+
+Database properties
+
+Server port
+
+Logging levels
+
+Custom app config
+
+Example – application.properties:
+
+properties
+Copy
+Edit
+server.port=8081
+spring.datasource.url=jdbc:mysql://localhost:3306/mydb
+myapp.title=My Spring Boot App
+You can access them using @Value or @ConfigurationProperties:
+
+java
+Copy
+Edit
+@Value("${myapp.title}")
+private String title;
+
+
+✅ Bonus: Environment Variables and Command-Line Args
+Spring Boot supports overriding configuration via:
+
+Environment variables
+
+--command-line-args
+
+Example:
+
+bash
+Copy
+Edit
+java -jar myapp.jar --server.port=9090
+
+
+🧠 Summary Table
+| Method                     | Used For                       | Common In      |
+| -------------------------- | ------------------------------ | -------------- |
+| Java Config (`@Bean`)      | Defining beans                 | All apps       |
+| Annotations (`@Component`) | Auto-detect and wire beans     | Spring Boot    |
+| XML Config                 | Manual bean config             | Legacy apps    |
+| `.properties` / `.yml`     | App-level settings             | Spring Boot    |
+| Env Vars / CLI Args        | Overriding settings at runtime | DevOps, Docker |
+

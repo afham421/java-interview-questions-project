@@ -1,0 +1,34 @@
+✅ What is Hibernate?
+Hibernate is the most widely used ORM (Object Relational Mapping) framework for Java.
+It is the implementation of the JPA (Java Persistence API) specification — meaning:
+➡️ You write code using JPA annotations, and Hibernate handles the actual work behind the scenes.
+
+🔍 Hibernate vs JPA
+| Feature           | JPA                               | Hibernate                              |
+| ----------------- | --------------------------------- | -------------------------------------- |
+| What is it?       | Specification (just an interface) | Implementation (a real framework)      |
+| Who provides it?  | Jakarta EE                        | Hibernate.org                          |
+| Can use alone?    | No                                | Yes (but usually with JPA annotations) |
+| Used with Spring? | Yes                               | Yes, very commonly via Spring Data JPA |
+
+🔸 JPA vs Hibernate:
+| Feature  | JPA                     | Hibernate             |
+| -------- | ----------------------- | --------------------- |
+| Type     | Specification/API       | Implementation of JPA |
+| Use      | Common interface        | Actual ORM framework  |
+| Provider | Requires implementation | Is an implementation  |
+
+
+✅ Hibernate Features
+Maps Java objects to database tables
+
+Automatically generates SQL queries
+
+Manages caching
+
+Handles transactions
+
+Lazy/Eager loading of relationships
+
+HQL (Hibernate Query Language)
+

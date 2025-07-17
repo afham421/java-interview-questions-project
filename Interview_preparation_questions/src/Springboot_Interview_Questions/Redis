@@ -1,0 +1,133 @@
+✅ What is Redis?
+Redis (Remote Dictionary Server) is an in-memory data store used as:
+
+A cache
+
+A database
+
+A message broker
+
+It’s known for being extremely fast because it stores all data in RAM, not on disk.
+
+🔥 Why Use Redis?
+💨 Super fast (microseconds latency)
+
+🧠 Stores data in memory
+
+📦 Supports complex data types: strings, lists, sets, hashes, sorted sets
+
+🔁 Persistence available (optional)
+
+👥 Supports Pub/Sub and Streams (messaging)
+
+🧰 Built-in eviction policies (great for caching)
+
+📌 Common Use Cases
+| Use Case           | Description                                |
+| ------------------ | ------------------------------------------ |
+| Caching            | Cache DB results, session data, etc.       |
+| Leaderboards       | Sorted sets for top rankings               |
+| Rate Limiting      | Track API request counts                   |
+| Distributed Locks  | To avoid race conditions                   |
+| Message Queues     | Using Redis Pub/Sub or Streams             |
+| Session Management | Especially in Spring Boot, Express.js apps |
+
+
+🔧 Redis Data Types
+| Type       | Example Use                     |
+| ---------- | ------------------------------- |
+| String     | Cache page HTML or tokens       |
+| List       | Message queues                  |
+| Set        | Unique items like tags          |
+| Sorted Set | Leaderboards with scores        |
+| Hash       | User objects or key-value pairs |
+
+
+✅ Redis with Spring Boot
+1. Dependency (in pom.xml)
+xml
+Copy
+Edit
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-redis</artifactId>
+</dependency>
+2. application.yml
+yaml
+Copy
+Edit
+spring:
+  redis:
+    host: localhost
+    port: 6379
+3. Service Example
+java
+Copy
+Edit
+@Service
+public class RedisService {
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
+    public void save(String key, String value) {
+        redisTemplate.opsForValue().set(key, value);
+    }
+
+    public String get(String key) {
+        return redisTemplate.opsForValue().get(key);
+    }
+}
+🧠 Advanced Use: Caching with Annotations
+Add cache dependency:
+
+xml
+Copy
+Edit
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-cache</artifactId>
+</dependency>
+
+
+Enable caching:
+
+java
+Copy
+Edit
+@SpringBootApplication
+@EnableCaching
+public class App {}
+Use caching in service:
+
+java
+Copy
+Edit
+@Cacheable(value = "users", key = "#id")
+public User getUserById(Long id) {
+    // only runs if not in cache
+    return userRepository.findById(id).orElse(null);
+}
+
+🧪 Redis CLI Examples
+bash
+Copy
+Edit
+SET name "Ali"
+GET name
+
+HSET user:1 name "Ali" age "25"
+HGETALL user:1
+
+LPUSH queue "task1"
+LRANGE queue 0 -1
+
+✅ Summary
+| Feature       | Redis Does It? |
+| ------------- | -------------- |
+| Caching       | ✅ Yes          |
+| Pub/Sub       | ✅ Yes          |
+| Streams       | ✅ Yes          |
+| Persisted DB  | ✅ Optional     |
+| Fast access   | ✅ In-memory    |
+| Complex types | ✅ Yes          |

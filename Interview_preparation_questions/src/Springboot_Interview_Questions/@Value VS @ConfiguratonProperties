@@ -1,0 +1,217 @@
+✅ 1. @Value
+✅ 2. @ConfigurationProperties
+✅ 1. @Value Annotation (for individual values)
+Used to inject single values from properties/yml file into fields.
+
+📁 application.properties
+properties
+Copy
+Edit
+myapp.name=ChatGPT
+myapp.version=1.0
+📦 Java Class using @Value
+java
+Copy
+Edit
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Component
+public class AppInfo {
+
+    @Value("${myapp.name}")
+    private String name;
+
+    @Value("${myapp.version}")
+    private String version;
+
+    public void printInfo() {
+        System.out.println("App: " + name + " | Version: " + version);
+    }
+}
+✅ Pros:
+Simple for injecting a few properties
+
+Good for constants
+
+❌ Cons:
+Not suitable for grouped or nested config
+
+No auto-binding of complex types like lists/maps
+
+✅ 2. @ConfigurationProperties (for groups of values)
+Used to bind a group of related configuration values to a Java class.
+
+📁 application.yml
+yaml
+Copy
+Edit
+myapp:
+  name: ChatGPT
+  version: 1.0
+  features:
+    enabled: true
+    max-users: 100
+📦 Java Class using @ConfigurationProperties
+java
+Copy
+Edit
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+@Component
+@ConfigurationProperties(prefix = "myapp")
+public class MyAppConfig {
+
+    private String name;
+    private String version;
+    private Features features;
+
+    public static class Features {
+        private boolean enabled;
+        private int maxUsers;
+
+        // getters and setters
+        public boolean isEnabled() { return enabled; }
+        public void setEnabled(boolean enabled) { this.enabled = enabled; }
+
+        public int getMaxUsers() { return maxUsers; }
+        public void setMaxUsers(int maxUsers) { this.maxUsers = maxUsers; }
+    }
+
+    // getters and setters
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getVersion() { return version; }
+    public void setVersion(String version) { this.version = version; }
+
+    public Features getFeatures() { return features; }
+    public void setFeatures(Features features) { this.features = features; }
+}
+✅ Usage in any service:
+java
+Copy
+Edit
+@Autowired
+private MyAppConfig config;
+
+public void printConfig() {
+    System.out.println(config.getName());
+    System.out.println(config.getFeatures().getMaxUsers());
+}
+✅ Pros:
+Great for grouped/nested config
+
+Auto-binds lists, maps, complex objects
+
+Clean separation of config
+
+❌ Cons:
+Requires getters/setters
+
+Requires @EnableConfigurationProperties in some cases (not needed with @Component in Spring Boot)
+
+🎯 When to Use What?
+| Situation                            | Use                        |
+| ------------------------------------ | -------------------------- |
+| Just 1–2 simple values               | `@Value`                   |
+| Many related settings or nested data | `@ConfigurationProperties` |
+
+
+Let me know if you want to see how to inject lists or maps from application.yml.
+
+
+Perfect! Here's how you can inject lists and maps from application.yml using @ConfigurationProperties in Spring Boot.
+
+✅ Injecting a List from application.yml
+📁 application.yml
+yaml
+Copy
+Edit
+myapp:
+  supported-languages:
+    - Java
+    - Python
+    - Go
+📦 Java Class
+java
+Copy
+Edit
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+import java.util.List;
+
+@Component
+@ConfigurationProperties(prefix = "myapp")
+public class MyAppConfig {
+
+    private List<String> supportedLanguages;
+
+    public List<String> getSupportedLanguages() {
+        return supportedLanguages;
+    }
+
+    public void setSupportedLanguages(List<String> supportedLanguages) {
+        this.supportedLanguages = supportedLanguages;
+    }
+}
+✅ Usage
+java
+Copy
+Edit
+@Autowired
+private MyAppConfig config;
+
+public void showLanguages() {
+    config.getSupportedLanguages().forEach(System.out::println);
+}
+✅ Injecting a Map from application.yml
+📁 application.yml
+yaml
+Copy
+Edit
+myapp:
+  error-messages:
+    404: "Not Found"
+    500: "Server Error"
+    403: "Forbidden"
+📦 Java Class
+java
+Copy
+Edit
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+import java.util.Map;
+
+@Component
+@ConfigurationProperties(prefix = "myapp")
+public class MyAppConfig {
+
+    private Map<String, String> errorMessages;
+
+    public Map<String, String> getErrorMessages() {
+        return errorMessages;
+    }
+
+    public void setErrorMessages(Map<String, String> errorMessages) {
+        this.errorMessages = errorMessages;
+    }
+}
+✅ Usage
+java
+Copy
+Edit
+@Autowired
+private MyAppConfig config;
+
+public void showErrors() {
+    config.getErrorMessages().forEach((code, msg) ->
+        System.out.println(code + " => " + msg));
+}
+
+🎯 Summary
+| Type | YAML Format  | Java Type             |
+| ---- | ------------ | --------------------- |
+| List | `- item`     | `List<String>`        |
+| Map  | `key: value` | `Map<String, String>` |

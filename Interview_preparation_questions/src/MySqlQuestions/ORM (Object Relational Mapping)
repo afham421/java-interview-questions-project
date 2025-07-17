@@ -1,5 +1,6 @@
 🔍 What is ORM?
-ORM stands for Object-Relational Mapping. It's a programming technique that allows developers to interact with a database using objects in their programming language instead of writing raw SQL queries.
+ORM stands for Object-Relational Mapping.
+It's a programming technique that allows developers to interact with a database using objects in their programming language instead of writing raw SQL queries.
 
 ORM maps Java classes (or other language classes) to database tables, and class fields to table columns.
 
@@ -10,25 +11,28 @@ ORM maps Java classes (or other language classes) to database tables, and class 
 | `user.getName()`     | `SELECT name FROM users`     |
 | `user.setEmail("x")` | `UPDATE users SET email='x'` |
 
+🔧 Why Use ORM?
+Without ORM:
+You manually write SQL (SELECT, INSERT, JOIN, etc.)
+Manually map result sets to Java classes
+
+With ORM:
+You use Java classes as entities, and ORM handles SQL automatically
+It saves, fetches, updates, and deletes data using Java methods
+
 
 💡 Benefits of Using ORM
 🚫 No SQL needed (or minimal SQL).
-
 🧠 Object-oriented thinking.
-
 🛠 Helps avoid boilerplate CRUD code.
-
 🔒 Protection against SQL injection.
-
 🌍 Portable across different DBMS (MySQL, PostgreSQL, etc.)
+
 
 🧰 Popular Java ORM Tools
 Hibernate (most popular)
-
 JPA (Java Persistence API — standard, with Hibernate as implementation)
-
 Spring Data JPA (abstraction layer over JPA)
-
 MyBatis (hybrid: supports SQL + mapping)
 
 ✅ Example using Spring Boot + Spring Data JPA
@@ -88,6 +92,8 @@ class User {
   String name;
   String email;
 }
+
+
 ❗ ORM Gotchas to Avoid
 Lazy loading issues (@OneToMany etc.)
 

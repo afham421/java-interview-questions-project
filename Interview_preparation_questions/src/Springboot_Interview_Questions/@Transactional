@@ -1,0 +1,169 @@
+✅ @Transactional in Spring – Complete Explanation with Example
+@Transactional is an annotation in Spring used to manage database transactions.
+
+It ensures that:
+
+All operations within a method run in a single transaction
+
+If any part fails or throws an exception, all changes are rolled back
+
+If everything succeeds, the transaction is committed
+
+🔍 Where is @Transactional Used?
+On service layer methods (recommended)
+
+Can also be applied on class level (all methods inside will be transactional)
+
+✅ Common Use Case
+java
+Copy
+Edit
+@Service
+public class UserService {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private AccountRepository accountRepository;
+
+    @Transactional
+    public void registerUser(User user, Account account) {
+        userRepository.save(user);            // Step 1
+        accountRepository.save(account);      // Step 2
+
+        // If any exception is thrown here, both save operations are rolled back
+    }
+}
+⚠ Without @Transactional
+If Step 1 succeeds and Step 2 fails, Step 1 remains committed, causing data inconsistency.
+
+🧠 What Happens Behind the Scenes?
+Spring opens a transaction before method runs.
+
+Executes method logic.
+
+If everything is OK → COMMIT.
+
+If an exception occurs → ROLLBACK.
+
+✅ Key Options of @Transactional
+| Attribute     | Description                                                     |
+| ------------- | --------------------------------------------------------------- |
+| `readOnly`    | Optimize for read-only queries (no write allowed)               |
+| `rollbackFor` | Define which exceptions should trigger rollback                 |
+| `propagation` | Defines transaction behavior when already in a transaction      |
+| `isolation`   | Controls how transaction handles concurrency (read/write locks) |
+| `timeout`     | Transaction time limit (in seconds)                             |
+
+
+✅ Example with Attributes
+java
+Copy
+Edit
+@Transactional(
+    readOnly = false,
+    rollbackFor = Exception.class,
+    propagation = Propagation.REQUIRED,
+    isolation = Isolation.READ_COMMITTED,
+    timeout = 30
+)
+public void updateData() {
+    // your transactional logic
+}
+✅ Propagation Types (Important in Microservices & Nested Calls)
+| Type           | Meaning                                                                |
+| -------------- | ---------------------------------------------------------------------- |
+| `REQUIRED`     | Default. Join existing transaction or create a new one if none exists. |
+| `REQUIRES_NEW` | Always create a new transaction, suspend existing.                     |
+| `NESTED`       | Start nested transaction within current one (requires special setup).  |
+| `SUPPORTS`     | Join existing transaction if available.                                |
+
+
+✅ Best Practices
+Use on service methods, not on DAOs or controllers.
+
+Avoid placing it on private methods (proxy-based AOP won't work).
+
+Avoid using it on interfaces if using Spring’s proxy approach.
+
+🧪 Testing @Transactional
+If you annotate a test with @Transactional, Spring will roll back all changes made during the test after it finishes.
+
+java
+Copy
+Edit
+@SpringBootTest
+@Transactional
+public class MyServiceTest {
+    @Test
+    public void testSomething() {
+        // will rollback after test
+    }
+}
+
+
+🔍 @Transactional: jakarta.transaction vs javax.transaction
+
+✅ Short Answer:
+| Old (Pre Java EE 9 / Spring Boot < 3) | New (Spring Boot 3+ / Jakarta EE 9+) |
+| ------------------------------------- | ------------------------------------ |
+| `javax.transaction.Transactional`     | `jakarta.transaction.Transactional`  |
+
+
+✅ Why the Change?
+In Spring Boot 3 and Jakarta EE 9, all Java EE packages were migrated from javax.* to jakarta.*.
+
+This change was made because Oracle transferred the Java EE namespace to the Eclipse Foundation (Jakarta EE), and due to licensing, the package names had to change.
+
+✅ Imports Based on Version:
+| Scenario                       | You Import From                                                          |
+| ------------------------------ | ------------------------------------------------------------------------ |
+| Spring Boot **2.x**            | `javax.transaction.Transactional`                                        |
+| Spring Boot **3.x+**           | `jakarta.transaction.Transactional`                                      |
+| Using **Spring’s own** version | `org.springframework.transaction.annotation.Transactional` ✅ RECOMMENDED |
+
+
+✅ Which One Should You Use?
+✔️ Always prefer:
+
+java
+Copy
+Edit
+import org.springframework.transaction.annotation.Transactional;
+Because:
+
+It works across all versions
+
+It supports Spring-specific features like rollbackFor, propagation, etc.
+
+It’s more commonly used in Spring Boot apps
+
+✅ Comparison
+| Feature              | `jakarta.transaction.Transactional` | `org.springframework.transaction.annotation.Transactional` |
+| -------------------- | ----------------------------------- | ---------------------------------------------------------- |
+| Comes from           | Jakarta EE                          | Spring Framework                                           |
+| Attributes supported | Limited                             | Full support (rollbackFor, propagation, isolation, etc.)   |
+| Version flexibility  | Jakarta EE only                     | Spring-specific, very flexible                             |
+
+
+✅ Example (Recommended for Spring Boot)
+java
+Copy
+Edit
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+public class UserService {
+
+    @Transactional
+    public void registerUser(User user) {
+        // Transactional code here
+    }
+}
+✅ In Summary:
+| Use Case                        | Recommended Import                                           |
+| ------------------------------- | ------------------------------------------------------------ |
+| Using **Spring Boot**           | `org.springframework.transaction.annotation.Transactional` ✅ |
+| Strict **Jakarta EE** only      | `jakarta.transaction.Transactional`                          |
+| Using **older Spring Boot 2.x** | `javax.transaction.Transactional`                            |
