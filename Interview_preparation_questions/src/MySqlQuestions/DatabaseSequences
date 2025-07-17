@@ -12,7 +12,7 @@ START WITH 1
 INCREMENT BY 1
 minvalue 1
 maxvalue 100  // max value where it will end and throw an error
-cycle;//mean 1 to 100 then again 1 to 100 like loop and if nocycle then it will not start loop
+cycle;        //mean 1 to 100 then again 1 to 100 like loop and if nocycle then it will not start loop
 //we can use cache also but we should use cache 20 at least or greater than 20
 
 Use Cases:

@@ -1,0 +1,227 @@
+🔄 Saga Pattern — Managing Distributed Transactions in Microservices
+The Saga Pattern is a microservices design pattern used to manage data consistency across multiple services without using a distributed transaction.
+
+It breaks a large transaction into a sequence of smaller local transactions, each handled by one microservice, and uses compensating actions to handle failures.
+
+🧠 Why Saga Pattern?
+In microservices:
+
+Each service has its own database
+
+Distributed transactions (like 2PC) are hard to scale and maintain
+
+🎯 Saga pattern ensures consistency in long-running business processes without locking resources.
+
+🧱 How It Works
+A saga is a sequence of local transactions.
+
+Each local transaction updates its own DB and triggers the next via an event or command.
+
+If one transaction fails, the saga triggers compensating transactions to undo changes made so far.
+
+🧭 Saga Flow Example: Order Service
+Let's say you place an order:
+
+| Step | Service           | Action                                |
+| ---- | ----------------- | ------------------------------------- |
+| 1    | Order Service     | Creates Order → Status: `PENDING`     |
+| 2    | Payment Service   | Charges card                          |
+| 3    | Inventory Service | Reduces stock                         |
+| 4    | Shipping Service  | Arranges delivery                     |
+| ❌    | If step fails     | Saga triggers compensation in reverse |
+
+
+🔁 Two Saga Implementation Styles
+| Style             | Description                                       |
+| ----------------- | ------------------------------------------------- |
+| **Choreography**  | Services listen to events and react automatically |
+| **Orchestration** | A central service controls the saga steps         |
+
+🎭 1. Choreography Saga (Event-based)
+Each service emits events and listens to others.
+
+No central coordinator.
+
+text
+Copy
+Edit
+OrderPlaced → PaymentReceived → StockReserved → OrderShipped
+🔁 If StockReserved fails, it emits StockFailed, and PaymentService listens to that to refund.
+
+🎮 2. Orchestration Saga (Command-based)
+A Saga orchestrator tells each service what to do.
+
+java
+Copy
+Edit
+// Pseudo flow
+orchestrator.createOrder()
+orchestrator.makePayment()
+orchestrator.reserveStock()
+orchestrator.shipOrder()
+🔁 On failure: orchestrator.compensate()
+
+⚖️ Saga vs 2PC (Two-Phase Commit)
+| Feature          | Saga Pattern              | 2PC                          |
+| ---------------- | ------------------------- | ---------------------------- |
+| Type             | Eventually consistent     | Strongly consistent          |
+| Performance      | ✅ Fast, scalable          | ❌ Slower, blocking           |
+| Coordination     | App-level                 | XA transaction manager       |
+| Rollback         | Manual compensation logic | Automatic rollback           |
+| Failure handling | Compensating transactions | Retry or failure propagation |
+
+
+✅ Pros of Saga Pattern
+Works well with microservices
+
+No global lock or coordinator
+
+Scalable and asynchronous
+
+Good for long-running transactions
+
+❌ Challenges
+Compensating actions can be complex
+
+More effort to handle failure scenarios
+
+Debugging is harder due to async nature
+
+Requires idempotency and retry logic
+
+🧪 Tools Supporting Saga Pattern
+| Tool/Framework  | Usage                            |
+| --------------- | -------------------------------- |
+| Axon Framework  | Saga orchestration + events      |
+| Camunda / Zeebe | BPMN-based Saga orchestration    |
+| Eventuate       | Saga pattern for Spring Boot     |
+| Temporal.io     | Durable orchestrations (popular) |
+| Kafka           | Saga event choreography          |
+
+
+✅ Summary
+| Aspect            | Description                                                    |
+| ----------------- | -------------------------------------------------------------- |
+| Goal              | Maintain data consistency across services                      |
+| Style             | Choreography (event-driven) or Orchestration (central control) |
+| Rollback strategy | Compensating transactions                                      |
+| Best for          | Distributed microservice architectures                         |
+
+
+
+🔧 Use Case: E-commerce Order Placement
+We'll simulate 3 microservices communicating via Kafka topics:
+
+Order Service
+
+Payment Service
+
+Inventory Service
+
+🧭 Saga Flow Overview (Choreography)
+text
+Copy
+Edit
+Order Service → Payment Service → Inventory Service
+
+➡ Events:
+1. OrderCreatedEvent
+2. PaymentCompletedEvent
+3. InventoryReservedEvent
+⬅ Or Compensation:
+4. PaymentFailedEvent
+5. InventoryFailedEvent
+🔨 Kafka Topics
+order-topic
+
+payment-topic
+
+inventory-topic
+
+🧱 1. Order Service (Publisher of OrderCreatedEvent)
+java
+Copy
+Edit
+@Service
+public class OrderService {
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
+
+    public void createOrder(Order order) {
+        // Save order in DB
+        // Send event to payment service
+        kafkaTemplate.send("payment-topic", new ObjectMapper().writeValueAsString(order));
+    }
+}
+🧱 2. Payment Service (Listener & Publisher)
+java
+Copy
+Edit
+@Component
+public class PaymentConsumer {
+
+    @KafkaListener(topics = "payment-topic", groupId = "saga")
+    public void handlePayment(String message) throws JsonProcessingException {
+        Order order = new ObjectMapper().readValue(message, Order.class);
+
+        // Simulate payment success
+        boolean paymentSuccess = true;
+
+        if (paymentSuccess) {
+            kafkaTemplate.send("inventory-topic", message); // Forward to Inventory
+        } else {
+            kafkaTemplate.send("order-topic", "PAYMENT_FAILED for order: " + order.getId());
+        }
+    }
+}
+🧱 3. Inventory Service
+java
+Copy
+Edit
+@Component
+public class InventoryConsumer {
+
+    @KafkaListener(topics = "inventory-topic", groupId = "saga")
+    public void handleInventory(String message) throws JsonProcessingException {
+        Order order = new ObjectMapper().readValue(message, Order.class);
+
+        // Check inventory
+        boolean inStock = true;
+
+        if (inStock) {
+            System.out.println("Inventory reserved for Order ID: " + order.getId());
+            kafkaTemplate.send("order-topic", "ORDER_COMPLETED for order: " + order.getId());
+        } else {
+            kafkaTemplate.send("order-topic", "INVENTORY_FAILED for order: " + order.getId());
+        }
+    }
+}
+🔄 Compensation Logic in Order Service (If Any Step Fails)
+java
+Copy
+Edit
+@KafkaListener(topics = "order-topic", groupId = "saga")
+public void handleSagaResponse(String event) {
+    if (event.contains("FAILED")) {
+        System.out.println("Compensating: Canceling order...");
+        // rollback: maybe update status to CANCELED in DB
+    } else if (event.contains("COMPLETED")) {
+        System.out.println("Order completed successfully!");
+    }
+}
+✅ Summary
+Each microservice reacts to events (Choreography).
+
+No central coordinator.
+
+Rollbacks are handled using compensation events.
+
+🔐 Key Considerations
+Idempotency is critical in case of retries.
+
+Use transactional Kafka if needed for reliability.
+
+Add timeouts and retry handling for real-world scenarios.
+
+
+

@@ -1,0 +1,76 @@
+🔍 What is DISTINCT in SQL?
+The DISTINCT keyword in SQL is used to remove duplicate rows from the result set and return only unique values.
+
+✅ Syntax
+sql
+Copy
+Edit
+SELECT DISTINCT column1, column2, ...
+FROM table_name;
+🧱 Example Table: users
+| id | name  | city      |
+| -- | ----- | --------- |
+| 1  | Afham | Lahore    |
+| 2  | Ali   | Karachi   |
+| 3  | Afham | Lahore    |
+| 4  | Sara  | Islamabad |
+
+
+🔹 Example 1: Distinct One Column
+sql
+Copy
+Edit
+SELECT DISTINCT city FROM users;
+
+Result:
+
+city
+Lahore
+Karachi
+Islamabad
+
+➡️ Duplicates are removed — "Lahore" appears only once.
+
+🔹 Example 2: Distinct Multiple Columns
+sql
+Copy
+Edit
+SELECT DISTINCT name, city FROM users;
+Result:
+
+| name  | city      |
+| ----- | --------- |
+| Afham | Lahore    |
+| Ali   | Karachi   |
+| Sara  | Islamabad |
+
+
+➡️ Removes duplicates based on the combination of name + city.
+
+⚠️ Things to Note
+| Feature                | Behavior                                    |
+| ---------------------- | ------------------------------------------- |
+| Case-sensitive?        | Depends on collation (usually not in MySQL) |
+| Affects performance?   | Yes — may slow down queries on large data   |
+| Works with `ORDER BY`? | ✅ Yes                                       |
+
+🧠 Real-World Uses
+Get a list of unique cities, user roles, product categories, etc.
+
+Prevent duplicate data in reporting
+
+Combine with COUNT to count unique values:
+
+sql
+Copy
+Edit
+SELECT COUNT(DISTINCT city) FROM users;
+
+✅ Summary
+| Keyword    | Purpose                    |
+| ---------- | -------------------------- |
+| `DISTINCT` | Removes duplicate rows     |
+| Used With  | `SELECT` statement         |
+| Works On   | Single or multiple columns |
+
+
