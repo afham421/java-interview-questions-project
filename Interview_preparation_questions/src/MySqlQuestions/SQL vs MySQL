@@ -1,0 +1,31 @@
+✅ SQL (Structured Query Language):
+What it is: A language used to manage and query relational databases.
+
+Purpose: Allows you to create, read, update, and delete (CRUD) data.
+
+Standard: Used by many database systems (MySQL, PostgreSQL, SQL Server, etc.)
+
+Example:
+
+sql
+Copy
+Edit
+SELECT * FROM users WHERE age > 25;
+✅ MySQL:
+What it is: A relational database management system (RDBMS).
+
+Based on: Uses SQL as its query language.
+
+Purpose: Stores and manages data in relational tables.
+
+Developed by: Originally by MySQL AB, now owned by Oracle.
+
+Example use: You write SQL queries inside MySQL to interact with your data.
+
+⚖️ Summary:
+| Feature      | SQL                          | MySQL                                   |
+| ------------ | ---------------------------- | --------------------------------------- |
+| **Type**     | Language                     | Database software                       |
+| **Function** | Query & manage data          | Store and manage data using SQL         |
+| **Scope**    | General standard             | Specific implementation of RDBMS        |
+| **Examples** | `SELECT`, `INSERT`, `UPDATE` | MySQL server running and processing SQL |

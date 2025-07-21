@@ -1,32 +1,37 @@
 In SQL, HAVING and WHERE are both used to filter records, but they serve different purposes.
+
 we can use the both in one query
 
-WHERE:
-Filters rows before any grouping takes place.
+🔍 1. WHERE Clause
+Rows ko filter karta hai GROUP BY se pehle
+Jo simple condition ho (e.g. age > 18), wo WHERE mein hoti hai
 Used with individual rows.
 
-SELECT column1, column2
-FROM table
-WHERE condition;
 
-HAVING:
-Filters rows after the GROUP BY clause.
+🔍 2. HAVING Clause
+Groups ko filter karta hai GROUP BY ke baad
+Jab aap aggregate functions use karte ho (COUNT, SUM, AVG), tab HAVING use hota hai
 Used to filter grouped rows (aggregated data).
 
-SELECT column1, COUNT(*)
-FROM table
-GROUP BY column1
-HAVING condition;
+
+🔁 Difference Table – Roman Urdu Mein:
+| Feature   | WHERE             | HAVING                                   |
+| --------- | ----------------- | ---------------------------------------- |
+| Filtering | Individual rows   | Groups (after GROUP BY)                  |
+| Aggregate | Use nahi karta    | Aggregate functions ke sath use hota hai |
+| Timing    | GROUP BY se pehle | GROUP BY ke baad                         |
+
+
 Example:
 To filter by age before grouping:
-
 
 SELECT name, COUNT(*)
 FROM users
 WHERE age > 30
 GROUP BY name;
-To filter by grouped data:
 
+
+To filter by grouped data:
 
 SELECT name, COUNT(*)
 FROM users
@@ -34,3 +39,7 @@ GROUP BY name
 HAVING COUNT(*) > 1;
 
 In summary, use WHERE to filter rows before grouping and HAVING to filter after aggregation.
+✅ Summary (Roman Urdu):
+WHERE rows ko filter karta hai (normal conditions)
+
+HAVING groups ko filter karta hai (aggregate conditions)

@@ -1,0 +1,43 @@
+✅ MySQL:
+Developer: Originally MySQL AB, now owned by Oracle Corporation.
+
+License: Open-source + proprietary (dual licensing).
+
+Updates: Slower, controlled by Oracle.
+
+Community: Limited community involvement due to corporate ownership.
+
+Performance: Solid and reliable, especially for enterprise use.
+
+Features: May lag behind in newer features compared to MariaDB.
+
+Compatibility: Industry standard; widely used and supported.
+
+✅ MariaDB:
+Developer: Fork of MySQL by the original creators.
+
+License: Fully open-source (GPL).
+
+Updates: Faster release cycles, frequent feature updates.
+
+Community: Strong community-driven development.
+
+Performance: Often faster due to optimizations and new engines.
+
+Features: Includes additional storage engines and advanced features not in MySQL.
+
+Compatibility: Drop-in replacement for MySQL (same commands, clients, libraries).
+
+⚖️ Summary Table:
+| Feature              | MySQL                    | MariaDB                        |
+| -------------------- | ------------------------ | ------------------------------ |
+| **Owner**            | Oracle Corporation       | MariaDB Foundation             |
+| **License**          | Open-source + Commercial | Fully open-source (GPL)        |
+| **Speed of Updates** | Slower                   | Faster and more frequent       |
+| **New Features**     | Conservative             | More aggressive & innovative   |
+| **Storage Engines**  | Fewer                    | More (Aria, ColumnStore, etc.) |
+| **Compatibility**    | Industry standard        | MySQL-compatible (mostly)      |
+
+
+💡 Note: If you're building enterprise apps and require Oracle support — MySQL might be preferred.
+If you want full open-source control with faster innovation — MariaDB is a strong choice.
