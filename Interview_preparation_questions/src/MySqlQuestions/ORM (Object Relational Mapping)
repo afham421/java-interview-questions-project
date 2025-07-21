@@ -11,6 +11,11 @@ ORM maps Java classes (or other language classes) to database tables, and class 
 | `user.getName()`     | `SELECT name FROM users`     |
 | `user.setEmail("x")` | `UPDATE users SET email='x'` |
 
+ ORM Kya Karta Hai?
+Java class ⇔ DB table
+Java object ⇔ DB row
+Java field ⇔ DB column
+
 🔧 Why Use ORM?
 Without ORM:
 You manually write SQL (SELECT, INSERT, JOIN, etc.)

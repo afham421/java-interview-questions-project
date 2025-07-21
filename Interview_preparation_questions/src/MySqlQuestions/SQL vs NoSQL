@@ -1,0 +1,38 @@
+✅ SQL (Relational Databases):
+Structure: Table-based (rows & columns)
+
+Schema: Fixed schema (predefined structure)
+
+ACID Compliance: Strong (ensures data integrity)
+
+Examples: MySQL, PostgreSQL, Oracle, SQL Server
+
+Best For: Structured data, complex queries, multi-row transactions
+
+
+
+
+✅ NoSQL (Non-Relational Databases):
+Structure: Document, Key-Value, Column, or Graph based
+
+Schema: Dynamic schema (flexible structure)
+
+CAP Theorem: Prioritizes availability and partition tolerance
+
+Examples: MongoDB, Cassandra, Redis, Neo4j, DynamoDB
+
+Best For: Unstructured/ semi-structured data, high scalability, large data volumes
+
+
+
+⚖️ Summary:
+| Feature            | SQL                    | NoSQL                         |
+| ------------------ | ---------------------- | ----------------------------- |
+| **Data Format**    | Tables                 | JSON, key-value, graph, etc.  |
+| **Schema**         | Rigid                  | Flexible                      |
+| **Scalability**    | Vertical               | Horizontal                    |
+| **Transactions**   | Strong (ACID)          | Weaker (eventual consistency) |
+| **Query Language** | SQL                    | Varies (Mongo Query, etc.)    |
+| **Use Case**       | Financial systems, ERP | Big data, real-time analytics |
+
+

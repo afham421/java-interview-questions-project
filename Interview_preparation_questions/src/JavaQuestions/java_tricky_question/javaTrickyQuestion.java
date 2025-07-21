@@ -1,6 +1,19 @@
 package JavaQuestions.java_tricky_question;
 
 public class javaTrickyQuestion {
+
+    public static void staticMethod() {
+        System.out.println("Static method called.");
+    }
+
+    int test() {//➡️ Return value will be: 2
+        try {
+            return 1;
+        } finally {
+            return 2;
+        }
+    }
+
     public static void main(String[] args) {
 
         // Question 1: What will be the output of the following code?
@@ -59,6 +72,29 @@ public class javaTrickyQuestion {
         //Each 128 creates a new Integer object, so i == j compares references, not values — hence it's false.
 //🔍 Explanation:
 //        Java caches Integer values from -128 to 127.
+
+
+
+
+
+
+        javaTrickyQuestion obj = new javaTrickyQuestion();
+            obj.staticMethod();  // This works!
+
+        //❓ Why does obj.staticMethod() work?
+        //Even though staticMethod() is a static method (meaning it belongs to the class, not the object), Java allows you to call a static method using an object reference.
+        //However, it’s not recommended. You should call it using the class name:
+
+        obj.test(); //➡️ Return value will be: 2
+        System.out.println(obj.test());
+//✅ Why?
+//Even though try block has return 1;,
+//The finally block always executes, even after a return statement.
+//So, return 2; in finally overrides the return 1; from try.
+
+
+
+
 
 
 

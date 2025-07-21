@@ -1,0 +1,47 @@
+✅ What is instanceof in Java?
+The instanceof keyword is used to check whether an object is an instance of a specific class or implements a specific interface — including marker interfaces (interfaces with no methods).
+
+🧪 Syntax:
+java
+Copy
+Edit
+object instanceof ClassName
+Returns:
+
+true → if object is an instance of ClassName or a subclass.
+
+false → otherwise.
+
+
+✅ instanceof works for both:
+1. Classes
+You can use instanceof to check if an object is an instance of a specific class or its subclass.
+
+java
+Copy
+Edit
+class Animal {}
+class Dog extends Animal {}
+
+Animal a = new Dog();
+
+System.out.println(a instanceof Dog);    // true
+System.out.println(a instanceof Animal); // true
+2. Interfaces
+It also works to check if an object implements an interface, including marker interfaces.
+
+java
+Copy
+Edit
+interface Pet {}
+class Cat implements Pet {}
+
+Pet p = new Cat();
+
+System.out.println(p instanceof Cat); // true
+System.out.println(p instanceof Pet); // true
+
+❗️Note:
+instanceof returns false if the reference is null.
+
+It checks actual object type, not the reference type.

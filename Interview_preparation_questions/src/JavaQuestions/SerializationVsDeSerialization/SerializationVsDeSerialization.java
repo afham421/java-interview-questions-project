@@ -50,6 +50,9 @@ class Testing implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L; //The serialVersionUID is used to ensure that the same class (or a compatible version) is being used during deserialization.
     // If the serialVersionUID does not match, an InvalidClassException will be thrown.
+    //⚠️ What If You Don’t Define It?
+    //JVM will auto-generate one at runtime.
+    //If you change the class later (add/remove fields), a different serialVersionUID is generated → ❌ breaks deserialization.
     public String name; //transient Keyword: Fields marked as transient will not be serialized.This is useful for sensitive data or fields that do not need to be persisted.
     public int age;
     private transient String password; // This field will not be serialized

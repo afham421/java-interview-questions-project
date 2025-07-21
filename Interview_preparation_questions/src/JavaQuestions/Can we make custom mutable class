@@ -1,0 +1,42 @@
+✅ Yes, you can definitely create a custom mutable class in Java.
+Mutable means you can change the internal state (fields) of the object after it's created — just like StringBuilder.
+
+📦 Example: Custom Mutable Class
+java
+Copy
+Edit
+public class Person {
+    private String name;
+
+    public Person(String name) {
+        this.name = name;
+    }
+
+    // Setter (allows change)
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    // Getter
+    public String getName() {
+        return name;
+    }
+}
+✅ Usage:
+java
+Copy
+Edit
+Person p = new Person("Talha");
+System.out.println(p.getName());  // Output: Talha
+
+p.setName("Ahmed");
+System.out.println(p.getName());  // Output: Ahmed
+🔐 To Make a Class Immutable Instead:
+Make fields private final
+
+No setters
+
+Only getters
+
+Initialize fields via constructor only
+

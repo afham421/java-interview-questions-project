@@ -5,6 +5,18 @@ In Spring Boot, Inversion of Control (IoC) is a fundamental concept that underpi
 IoC is a design principle where the control of creating objects, configuring them, and managing their dependencies is transferred from the developer to the Spring framework.
 for example : in old way we create a new object to get other class data now in springboot we get with Autowire or constructor or setter methods
 
+🧠 Real World Example:
+Jese ek chef khud saari cheeze arrange kare (Without IoC)
+vs
+Ek waiter ko order de aur sab kuch kitchen handle kare (With IoC)
+
+🔧 Spring IoC Container:
+Spring IoC container ye kaam karta hai:
+Objects banata hai
+Dependencies inject karta hai
+Lifecycle manage karta hai
+
+
 Types of IOC container:
 
 ✅ 1. BeanFactory (Lightweight Container)

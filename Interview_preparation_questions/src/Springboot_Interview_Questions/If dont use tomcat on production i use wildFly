@@ -1,0 +1,77 @@
+If you’re not using Tomcat and want to use WildFly (a Java EE / Jakarta EE application server) for production, your Spring Boot setup will be a bit different because:
+
+🔧 By default:
+Spring Boot apps are self-contained JARs that come with an embedded Tomcat (or optionally Jetty/Undertow).
+
+But WildFly expects a WAR file and manages the server lifecycle separately.
+
+✅ To deploy Spring Boot to WildFly:
+Here’s how you can prepare your Spring Boot app:
+
+1. Change packaging from JAR to WAR
+In pom.xml:
+
+xml
+Copy
+Edit
+<packaging>war</packaging>
+2. Exclude embedded Tomcat
+xml
+Copy
+Edit
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+    <exclusions>
+        <exclusion>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+And add:
+
+xml
+Copy
+Edit
+<dependency>
+    <groupId>javax.servlet</groupId>
+    <artifactId>javax.servlet-api</artifactId>
+    <scope>provided</scope>
+</dependency>
+3. Extend SpringBootServletInitializer
+In your main application class:
+
+java
+Copy
+Edit
+@SpringBootApplication
+public class MyApp extends SpringBootServletInitializer {
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(MyApp.class);
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(MyApp.class, args);
+    }
+}
+4. Build WAR and deploy
+Run:
+
+bash
+Copy
+Edit
+mvn clean install
+Then deploy the generated target/*.war file to WildFly using its admin console or CLI.
+
+Summary:
+| Feature           | Embedded Tomcat         | WildFly Deployment          |
+| ----------------- | ----------------------- | --------------------------- |
+| Packaging         | JAR                     | WAR                         |
+| Deployment style  | Standalone app          | Application server-managed  |
+| Startup command   | `java -jar`             | Deploy to WildFly via admin |
+| Servlet container | Embedded (Tomcat/Jetty) | Provided by WildFly         |
+
+
