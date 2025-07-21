@@ -38,6 +38,8 @@ services:
 
 volumes:
   mysql-data:
+
+  
 🧪 Breakdown
 services: Each service is a container (like app, db)
 
