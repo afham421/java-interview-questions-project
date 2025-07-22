@@ -52,6 +52,7 @@ Both annotations are scanned during component scanning and are registered as bea
 Readability and Maintenance:
 
 Using @Service improves code readability and helps in better maintenance by clearly indicating that the annotated class is meant to provide business services.
+
 Conclusion
 In summary, while @Component and @Service are functionally similar in Spring, their usage is guided by the context in which they are applied.
  @Component is a general-purpose annotation, whereas @Service explicitly indicates that the class is a service in the application's service layer.

@@ -23,6 +23,8 @@ Edit
 Counter c1 = new Counter();
 Counter c2 = new Counter();
 System.out.println(Counter.count); // ➝ 2 (shared)
+
+
 ✅ 2. Static Methods
 📌 Definition:
 A static method belongs to the class, not an instance. It can be called without creating an object.

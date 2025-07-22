@@ -29,6 +29,8 @@ Edit
 interface MyFunctionalInterface {
     void performAction();
 }
+
+
 🔹 3. Normal Interface
 Definition: Interfaces with one or more abstract methods (non-functional).
 
@@ -41,10 +43,14 @@ interface Vehicle {
     void start();
     void stop();
 }
+
+
 🔹 4. Tagging Interface (Same as Marker Interface)
 No methods; acts as a tag.
 
 Used for identifying or enabling capabilities via type-checking.
+
+
 
 🔹 5. Nested Interfaces
 Interface declared within a class or interface.
@@ -63,6 +69,8 @@ class Outer {
         void display();
     }
 }
+
+
 🔹 6. Remote Interface
 Used in RMI (Remote Method Invocation).
 
@@ -79,6 +87,8 @@ import java.rmi.RemoteException;
 public interface MyRemoteService extends Remote {
     String sayHello() throws RemoteException;
 }
+
+
 🔹 7. Functional Interface from Java 8 API
 Built-in interfaces under java.util.function:
 
