@@ -1,0 +1,57 @@
+The N+1 problem is a common performance issue in applications that use ORM (Object-Relational Mapping) frameworks like Hibernate or JPA.
+
+Let me explain it in simple terms with a real-world example.
+
+👨‍🏫 What is the N+1 Problem?
+Imagine you want to fetch a list of students and each student’s courses.
+
+You write a query like:
+
+java
+Copy
+Edit
+List<Student> students = studentRepository.findAll();
+Now, when you try to get each student’s courses:
+
+java
+Copy
+Edit
+for (Student student : students) {
+    System.out.println(student.getCourses());
+}
+Here’s what happens under the hood:
+
+The first query (findAll) fetches all students → ✅ 1 query
+
+But then, for each student, another query is executed to fetch their courses → ❌ N additional queries
+
+So total:
+👉 1 (initial query) + N (individual queries) = N+1 queries
+
+If you have 100 students, you'll run 101 queries — this is slow and inefficient.
+
+🔥 Why It’s Bad?
+Poor performance
+
+High database load
+
+Slows down as the data grows
+
+🛠 How to Fix It?
+Use eager fetching or JOIN FETCH to load related data in one go:
+
+✅ Example with JPQL:
+
+java
+Copy
+Edit
+@Query("SELECT s FROM Student s JOIN FETCH s.courses")
+List<Student> findAllWithCourses();
+Now you get all students and their courses in just 1 query.
+
+✅ Summary (Roman Urdu):
+N+1 problem tab hota hai jab aap ek parent table load karte ho aur har row ke liye related table se alag query fire hoti hai.
+
+Isse performance slow hoti hai.
+
+Solution: JOIN FETCH ya EntityGraph use karo taake related data ek hi query mein aa jaye.

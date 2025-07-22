@@ -1,0 +1,44 @@
+✅ What is ACID in Databases?
+ACID is an acronym that stands for:
+
+A: Atomicity
+
+C: Consistency
+
+I: Isolation
+
+D: Durability
+
+These are the key properties that ensure reliable processing of database transactions.
+
+🔹 1. Atomicity
+Atomicity means that a transaction is treated as a single unit.
+→ Either all the operations within the transaction happen, or none of them do.
+
+📌 Example: If you transfer money from Account A to Account B, both the debit and credit operations must succeed. If one fails, the entire transaction is rolled back.
+
+🔹 2. Consistency
+Consistency ensures that the database always stays in a valid state.
+→ Any transaction will take the database from one valid state to another.
+
+📌 Example: If a table has a rule that "balance cannot be negative," the transaction must not violate that rule.
+
+🔹 3. Isolation
+Isolation means that the operations of one transaction are invisible to other transactions until they are complete.
+→ Multiple transactions can occur at the same time without interfering with each other.
+
+📌 Example: If two users are booking the same seat at the same time, isolation ensures only one succeeds.
+
+🔹 4. Durability
+Durability guarantees that once a transaction is committed, it will remain so—even in the case of a power failure, crash, or error.
+→ Committed data is permanently saved.
+
+📌 Example: After your bank transfer is completed, it will not be lost even if the server crashes right afterward.
+
+✅ Summary Table:
+| Property    | What it Ensures                                     |
+| ----------- | --------------------------------------------------- |
+| Atomicity   | All or nothing execution of a transaction           |
+| Consistency | Data remains valid before and after the transaction |
+| Isolation   | Transactions do not interfere with each other       |
+| Durability  | Committed data is permanently stored                |
