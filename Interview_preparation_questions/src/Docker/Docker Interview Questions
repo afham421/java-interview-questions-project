@@ -37,6 +37,7 @@ Edit
 FROM openjdk:17-jdk-alpine
 COPY target/myapp.jar /app.jar
 ENTRYPOINT ["java", "-jar", "/app.jar"]
+
 ✅ Intermediate-Level Questions
 4. What is a Dockerfile and what are common instructions used in it?
 Answer Tip:
@@ -72,6 +73,7 @@ services:
     image: mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
+
 6. How do you persist data in Docker containers?
 Answer Tip:
 Using volumes:
@@ -96,6 +98,8 @@ Copy
 Edit
 ENTRYPOINT ["java", "-jar", "/app.jar"]
 CMD ["--spring.profiles.active=dev"]
+
+
 8. How do you debug a Java application inside a container?
 Answer Tip:
 

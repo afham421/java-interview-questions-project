@@ -1,0 +1,48 @@
+
+🔄 Hazelcast vs Redis
+
+| Feature / Aspect            | **Hazelcast**                                                     | **Redis**                                                                |
+| --------------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| **Language Base**           | Java-based                                                        | C-based                                                                  |
+| **Integration with Java**   | Native and seamless                                               | Good, but via external clients                                           |
+| **Data Storage Type**       | In-memory **data grid**                                           | In-memory **key-value store**                                            |
+| **Data Structures**         | Maps, Queues, Sets, Lists (Java-style)                            | Strings, Lists, Sets, Hashes, Sorted Sets, Streams, Bitmaps, HyperLogLog |
+| **SQL Queries**             | ✅ Yes (Hazelcast SQL for querying maps)                           | ⚠️ Limited support via Redis Stack                                       |
+| **Cluster Discovery**       | ✅ Built-in automatic node discovery (no setup required)           | ⚠️ Manual setup for Redis Cluster or Sentinel                            |
+| **Persistence (Disk)**      | Optional, not core focus                                          | ✅ Yes (AOF, RDB) for durability                                          |
+| **Pub/Sub Support**         | ✅ Yes                                                             | ✅ Yes                                                                    |
+| **Spring Boot Integration** | ✅ Strong, with `hazelcast-spring` and native support              | ✅ Strong, with `spring-data-redis`                                       |
+| **Use in Caching**          | ✅ Good for distributed, cluster-aware caching                     | ✅ Good for centralized or small-cluster caching                          |
+| **Session Replication**     | ✅ Common in web apps for sticky sessions                          | ⚠️ Less common; requires setup                                           |
+| **Performance**             | Fast, but slightly slower than Redis in basic key-value ops       | Extremely fast in basic caching (pure key-value)                         |
+| **Scalability**             | Horizontal scaling with partitioned data grid                     | Horizontal scaling with sharding or Redis Cluster                        |
+| **Best Use Cases**          | Java apps, distributed caching, clustering, session state sharing | Caching, messaging, leaderboard, queues, real-time analytics             |
+
+
+🧠 Summary:
+✅ Use Hazelcast if:
+
+You're working in Java/Spring Boot
+
+You want distributed cache, clustered architecture, or in-memory computing
+
+You need SQL querying over in-memory objects
+
+✅ Use Redis if:
+
+You need ultra-fast caching, pub/sub, or temporary storage
+
+Your application is language-agnostic
+
+You require persistence/durability
+
+You need advanced data structures (like sorted sets, streams)
+
+🔧 Example Use Case Scenarios:
+| Scenario                                              | Recommended Tool |
+| ----------------------------------------------------- | ---------------- |
+| Java app caching and cluster replication              | Hazelcast        |
+| OTP storage or token expiry                           | Redis            |
+| Leaderboard in gaming app                             | Redis            |
+| Large enterprise Java system with shared memory state | Hazelcast        |
+| Microservices event pub/sub                           | Both (depends)   |

@@ -1,0 +1,128 @@
+:
+🔹 Candidate Key in DBMS:
+A candidate key is a column (or set of columns) in a table that can uniquely identify each record. Every candidate key is eligible to become a primary key, but only one is chosen as the primary key.
+
+✅ Key Features:
+Must be unique across all records.
+
+Must not contain NULLs.
+
+Can be more than one in a table.
+
+Primary key is selected from the candidate keys.
+
+🔸 Types of Keys (Related to Candidate Keys):
+| Key Type          | Description                                                                  |
+| ----------------- | ---------------------------------------------------------------------------- |
+| **Primary Key**   | A chosen candidate key to uniquely identify rows in a table.                 |
+| **Alternate Key** | Candidate keys **not chosen** as the primary key.                            |
+| **Composite Key** | A candidate key made up of **two or more columns**.                          |
+| **Super Key**     | A set of columns that **includes a candidate key** (can have extra columns). |
+
+
+🧠 Example:
+sql
+Copy
+Edit
+CREATE TABLE Users (
+    user_id INT,         -- Unique
+    email VARCHAR(100),  -- Unique
+    phone VARCHAR(20),   -- Unique
+    name VARCHAR(100)
+);
+Candidate Keys: user_id, email, phone
+
+You can choose any of them as the Primary Key.
+
+The others become Alternate Keys.
+
+
+🔹 1. Candidate Key
+A candidate key is any column or group of columns that can uniquely identify a row in a table.
+
+A table can have multiple candidate keys, but only one of them is chosen as the primary key.
+
+Example:
+
+sql
+Copy
+Edit
+CREATE TABLE Employee (
+    emp_id INT,
+    email VARCHAR(100),
+    phone VARCHAR(20),
+    name VARCHAR(50)
+);
+If emp_id, email, and phone are all unique — they are candidate keys.
+
+🔹 2. Primary Key
+One of the candidate keys is chosen to be the primary key.
+
+It uniquely identifies each row.
+
+It cannot be NULL and must be unique.
+
+Example:
+
+sql
+Copy
+Edit
+PRIMARY KEY (emp_id)
+Here, emp_id is selected as the primary key.
+
+🔹 3. Alternate Key
+The remaining candidate keys that were not chosen as the primary key.
+
+They are still unique and could have been the primary key.
+
+Example:
+If emp_id is the primary key, then email and phone are alternate keys.
+
+You can enforce uniqueness like:
+
+sql
+Copy
+Edit
+UNIQUE (email),
+UNIQUE (phone)
+🔹 4. Composite Key
+A composite key is a candidate key formed by combining two or more columns.
+
+It is used when a single column is not sufficient to uniquely identify a row.
+
+Example:
+
+sql
+Copy
+Edit
+CREATE TABLE CourseRegistration (
+    student_id INT,
+    course_id INT,
+    registration_date DATE,
+    PRIMARY KEY (student_id, course_id)
+);
+Here, student_id and course_id together form the composite primary key.
+
+🔹 5. Super Key
+A super key is any combination of columns that uniquely identifies a row.
+
+It can contain extra columns and still be unique.
+
+All candidate keys are super keys, but not all super keys are candidate keys (because candidate keys are minimal).
+
+Example:
+In the Employee table:
+
+emp_id → candidate key & super key
+
+(emp_id, name) → super key (but not candidate key because name is extra)
+
+🔁 Summary Table
+| Key Type          | Description                                                             |
+| ----------------- | ----------------------------------------------------------------------- |
+| **Candidate Key** | Uniquely identifies rows; multiple allowed.                             |
+| **Primary Key**   | Selected candidate key; only one per table.                             |
+| **Alternate Key** | Other candidate keys not chosen as primary.                             |
+| **Composite Key** | Candidate key formed from multiple columns.                             |
+| **Super Key**     | Any key (with or without extra columns) that uniquely identifies a row. |
+

@@ -17,3 +17,57 @@ Referential Integrity: A foreign key ensures that relationships between tables r
 that value must exist in the parent table’s primary key.
 Allows Duplicates: Unlike a primary key, a foreign key can contain duplicate values because multiple records in the child table can refer to the same record in the parent table.
 Can Be Null: A foreign key can have NULL values, which indicates that a record does not currently have a corresponding record in the related table.
+
+
+✅ Summary Table:
+| Feature         | Primary Key               | Foreign Key                             |
+| --------------- | ------------------------- | --------------------------------------- |
+| Purpose         | Uniquely identifies a row | References primary key in another table |
+| Uniqueness      | Must be unique            | Can have duplicates                     |
+| Nullability     | Cannot be null            | Can be null (by default)                |
+| Relation        | Internal to the table     | Creates link between two tables         |
+| Count per Table | Only one                  | Can have many                           |
+
+🔹 Primary Key
+✅ Uniquely identifies each row in a table.
+
+❌ Cannot be null.
+
+💡 Only one primary key per table (can be composite).
+
+🔒 Enforces entity integrity.
+
+Example:
+
+sql
+Copy
+Edit
+CREATE TABLE Students (
+    student_id INT PRIMARY KEY,
+    name VARCHAR(100)
+);
+
+
+
+🔹 Foreign Key
+🔗 Creates a relationship between two tables.
+
+✅ Can be null (unless constrained).
+
+🔁 Can have multiple foreign keys in a table.
+
+💡 Enforces referential integrity — value must exist in the referenced table.
+
+Example:
+
+sql
+Copy
+Edit
+CREATE TABLE Enrollments (
+    id INT PRIMARY KEY,
+    student_id INT,
+    FOREIGN KEY (student_id) REFERENCES Students(student_id)
+);
+
+
+

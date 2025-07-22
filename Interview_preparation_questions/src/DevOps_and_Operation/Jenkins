@@ -76,7 +76,7 @@ View build logs
 
 Trigger manual or automatic builds
 
-Configure pipelines with GUI or Jenkinsfile (code)
+Configure pipelines with GUI or Jenkins file (code)
 
 Summary
 | Feature    | Jenkins Role                      |
@@ -84,6 +84,6 @@ Summary
 | CI/CD      | Automates build, test, deploy     |
 | Language   | Any (Java, Python, Node.js, etc.) |
 | Extensible | Via plugins                       |
-| Platform   | Web UI + Jenkinsfile (scriptable) |
+| Platform   | Web UI + Jenkins file (scriptable) |
 
 

@@ -24,12 +24,15 @@ Use it for most local development and single-host setups.
 1. List Docker networks
 
 docker network ls
+
 2. Inspect a network
 
 docker network inspect bridge
+
 3. Create a custom bridge network
 
 docker network create my-network
+
 4. Run a container on a specific network
 
 docker run -d --name app1 --network my-network nginx
@@ -39,6 +42,7 @@ Now app1 and app2 can talk to each other using their container names.
 5. Connect an existing container to a network
 
 docker network connect my-network app1
+
 🌐 Example in Microservices
 Imagine:
 

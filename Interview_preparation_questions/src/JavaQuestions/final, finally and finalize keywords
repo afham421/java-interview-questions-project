@@ -37,7 +37,7 @@ try {
 
 
 
-✅ 3. finalize() — Used for garbage collection
+✅ 3. finalize() — Used for garbage collection or closing resources
 It's a method.
 
 Called by the Garbage Collector before destroying an object.

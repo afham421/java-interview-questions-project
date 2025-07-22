@@ -15,6 +15,7 @@ It's read-only and used to build containers.
 
 🧠 Think of it like a class in Java — it defines what the container will be, but it doesn't "run" by itself.
 
+
 Example:
 An image might contain:
 
@@ -29,9 +30,9 @@ You build or pull it using:
 
 docker build -t myapp-image .
 or
-
-
 docker pull openjdk:21
+
+
 📦 Docker Container
 A Docker container is a running instance of a Docker image. It:
 

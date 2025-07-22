@@ -28,7 +28,7 @@ Let's say you place an order:
 | 2    | Payment Service   | Charges card                          |
 | 3    | Inventory Service | Reduces stock                         |
 | 4    | Shipping Service  | Arranges delivery                     |
-| ❌    | If step fails     | Saga triggers compensation in reverse |
+| ❌   | If step fails     | Saga triggers compensation in reverse |
 
 
 🔁 Two Saga Implementation Styles

@@ -1,0 +1,41 @@
+🔑 Types of Keys in SQL
+| Key Type             | Description                                                                                   | Example Column              |
+| -------------------- | --------------------------------------------------------------------------------------------- | --------------------------- |
+| **1. Primary Key**   | Uniquely identifies each row in a table. Cannot be null or duplicate.                         | `id`, `user_id`             |
+| **2. Foreign Key**   | A field that refers to the **primary key** in another table (creates relation).               | `user_id` in `orders` table |
+| **3. Unique Key**    | Ensures all values in a column are unique, but **can be null** once.                          | `email`, `phone_number`     |
+| **4. Composite Key** | A **combination of two or more columns** used as a primary key.                               | (`student_id`, `course_id`) |
+| **5. Candidate Key** | A column (or set) that can qualify as a primary key. One becomes primary, rest are candidate. | `ssn`, `email`              |
+| **6. Alternate Key** | The **candidate keys** that are **not chosen** as the primary key.                            | If `email` not chosen       |
+| **7. Super Key**     | A set of one or more columns (including candidate keys) that can uniquely identify a row.     | `id`, or (`email`, `id`)    |
+| **8. Surrogate Key** | A **system-generated unique identifier**, usually an auto-increment column.                   | `id SERIAL` in PostgreSQL   |
+| **9. Natural Key**   | A key that has real-world meaning (e.g., `email`, `ssn`).                                     | `passport_no`, `email`      |
+| **10. Compound Key** | Similar to composite key, often used interchangeably (combining columns).                     | (`order_id`, `product_id`)  |
+
+
+🔁 Summary Table:
+| Key Type      | Unique | Nullable | Purpose                                  |
+| ------------- | ------ | -------- | ---------------------------------------- |
+| Primary Key   | ✅      | ❌        | Row identity                             |
+| Foreign Key   | ❌      | ✅        | Table relation enforcement               |
+| Unique Key    | ✅      | ✅ (once) | Ensure no duplicates                     |
+| Composite Key | ✅      | ❌        | Multiple columns as PK                   |
+| Candidate Key | ✅      | ❌        | Eligible to be PK                        |
+| Alternate Key | ✅      | ❌        | Not chosen PK                            |
+| Super Key     | ✅      | ❌        | Any combination that uniquely identifies |
+| Surrogate Key | ✅      | ❌        | Auto-generated key                       |
+| Natural Key   | ✅      | ❌        | Real-world identity (like email/SSN)     |
+| Compound Key  | ✅      | ❌        | Multiple columns used to identify rows   |
+
+
+🔧 SQL Example:
+sql
+Copy
+Edit
+CREATE TABLE users (
+    user_id INT PRIMARY KEY,
+    email VARCHAR(100) UNIQUE,
+    phone VARCHAR(20),
+    country_code VARCHAR(10),
+    UNIQUE (phone, country_code) -- composite unique key
+);

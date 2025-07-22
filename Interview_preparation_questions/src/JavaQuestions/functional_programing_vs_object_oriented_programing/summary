@@ -4,3 +4,54 @@ Main unit                           Object	                                    F
 State	                            Mutable	                                    Immutable
 Concurrency	                        Harder (shared state)	                    Easier (no shared state)
 Use in Java	                        Classes, inheritance, interfaces	        Lambdas, streams, Optional, method refs
+
+
+| Paradigm     | Functional Programming           | Object-Oriented Programming        |
+| ------------ | -------------------------------- | ---------------------------------- |
+| Emphasizes   | Functions and immutability       | Objects, encapsulation, reuse      |
+| Java support | Since Java 8+ (lambdas, streams) | Native since beginning             |
+| Best for     | Data processing, stateless ops   | Complex systems, real-world models |
+
+
+🧠 1. Concept
+| Aspect             | Functional Programming (FP)          | Object-Oriented Programming (OOP)          |
+| ------------------ | ------------------------------------ | ------------------------------------------ |
+| **Focus**          | *What to do* — behavior/functions    | *Who is doing it* — objects/entities       |
+| **Building Block** | Functions                            | Classes and Objects                        |
+| **Goal**           | Avoid side-effects, write pure logic | Model real-world entities and interactions |
+
+
+🔄 2. State & Mutability
+| Aspect           | FP                       | OOP                  |
+| ---------------- | ------------------------ | -------------------- |
+| **State**        | Immutable (unchangeable) | Mutable (changeable) |
+| **Side Effects** | Avoided                  | Allowed              |
+
+
+
+💻 3. Code Style Example (in Java)
+✅ Functional Style (Using Java Streams):
+java
+Copy
+Edit
+List<Integer> nums = Arrays.asList(1, 2, 3, 4);
+List<Integer> evenSquares = nums.stream()
+    .filter(n -> n % 2 == 0)
+    .map(n -> n * n)
+    .collect(Collectors.toList());
+
+
+
+✅ Object-Oriented Style:
+java
+Copy
+Edit
+class NumberProcessor {
+    public List<Integer> getEvenSquares(List<Integer> nums) {
+        List<Integer> result = new ArrayList<>();
+        for (int n : nums) {
+            if (n % 2 == 0) result.add(n * n);
+        }
+        return result;
+    }
+}

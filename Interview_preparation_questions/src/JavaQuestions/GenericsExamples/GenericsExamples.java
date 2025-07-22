@@ -58,7 +58,7 @@ public class GenericsExamples {
 //
 //    Unbounded Wildcard: <?>
 //    Upper-Bounded Wildcard: <? extends T>
-//    Lower-Bounded Wildcard: <? super T>
+//    Lower-Bounded Wildcard: <? super T>       //////read below
 //    Example of an upper-bounded wildcard:
 
     public static void printNumbers(List<? extends Number> list) {
@@ -98,3 +98,96 @@ public class GenericsExamples {
     public V getValue() { return value; }
 }
 
+
+//✅ Upper-Bounded Wildcard: <? extends T>
+//Meaning: Accepts any type that is T or a subclass of T.
+//
+//It is used when you want to read data from a generic structure.
+//
+//You cannot add elements, because the exact type is unknown — only reading is safe.
+//
+//📦 Example Use Case: Reading a List of Numbers
+//java
+//Copy
+//Edit
+//public class WildcardExample {
+//    public static void printNumbers(List<? extends Number> list) {
+//        for (Number num : list) {
+//            System.out.println(num);
+//        }
+//    }
+//
+//    public static void main(String[] args) {
+//        List<Integer> intList = Arrays.asList(1, 2, 3);
+//        List<Double> doubleList = Arrays.asList(1.1, 2.2, 3.3);
+//
+//        printNumbers(intList);     // ✅ Allowed (Integer extends Number)
+//        printNumbers(doubleList);  // ✅ Allowed (Double extends Number)
+//    }
+//}
+//⚠️ Important Notes:
+//You can read elements as type Number.
+//
+//You cannot add elements to the list — because the exact subtype is unknown.
+//
+//java
+//Copy
+//Edit
+//list.add(5);       // ❌ Compilation error
+//list.add(null);    // ✅ Allowed
+//📌 When to use <? extends T>?
+//When you need to consume (read) data from a collection.
+//
+//You don’t need to write/add data to it.
+//
+//You want to ensure the items are at least of type T.
+
+
+
+
+
+
+
+//✅ Lower-Bounded Wildcard: <? super T>
+//Meaning: Accepts any type that is T or a superclass of T.
+//
+//It is used when you want to write (add) data into a generic structure.
+//
+//You cannot safely read specific types, except Object.
+//
+//📦 Example Use Case: Adding Integers to a List
+//java
+//Copy
+//Edit
+//public class LowerBoundExample {
+//    public static void addNumbers(List<? super Integer> list) {
+//        list.add(10);      // ✅ Allowed
+//        list.add(20);      // ✅ Allowed
+//        // list.add(2.5);  // ❌ Not allowed, 2.5 is Double
+//
+//        // Reading elements - only as Object
+//        for (Object obj : list) {
+//            System.out.println(obj);
+//        }
+//    }
+//
+//    public static void main(String[] args) {
+//        List<Object> objList = new ArrayList<>();
+//        List<Number> numList = new ArrayList<>();
+//
+//        addNumbers(objList);  // ✅ Object is a super of Integer
+//        addNumbers(numList);  // ✅ Number is a super of Integer
+//    }
+//}
+//⚠️ Key Rules:
+//You can add Integer or its subclasses into the list.
+//
+//You can only read as Object — not as Integer or Number.
+//
+//🔁 Summary: PECS Principle
+//PECS: Producer Extends, Consumer Super
+//
+//| Wildcard        | Usage    | Add Elements?        | Read Elements?           |
+//| --------------- | -------- | -------------------- | ------------------------ |
+//| `<? extends T>` | Producer | ❌ No                 | ✅ Yes (as `T`)           |
+//| `<? super T>`   | Consumer | ✅ Yes (T or subtype) | ✅ Yes (only as `Object`) |
