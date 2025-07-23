@@ -1,0 +1,41 @@
+Round Robin is a scheduling algorithm used in operating systems, networking, and load balancing. It ensures fair and equal time allocation by processing tasks in a circular order.
+
+🔁 In Simple Words:
+Each task gets a fixed time slice (called a quantum).
+If it doesn’t finish in that time, it goes to the back of the queue, and the next task is served.
+This continues in a loop until all tasks are completed.
+
+🔹 Where It's Used:
+| Area               | Round Robin Used For                           |
+| ------------------ | ---------------------------------------------- |
+| **CPU Scheduling** | Switching between processes in multitasking OS |
+| **Networking**     | Distributing packets across servers            |
+| **Load Balancing** | Sending user requests to servers one by one    |
+| **Call Centers**   | Routing calls to agents in turn                |
+
+
+🧠 Example:
+Let’s say you have 3 tasks: A, B, C
+With a time slice of 2 seconds:
+
+Run A for 2 sec → not done → goes to end
+
+Run B for 2 sec → done
+
+Run C for 2 sec → not done → goes to end
+
+Run A for 2 sec again
+
+Run C for 2 sec again
+
+✅ Advantages:
+Fair to all tasks
+
+Simple to implement
+
+Prevents starvation
+
+⚠️ Disadvantages:
+Can cause overhead due to frequent context switching
+
+Time slice choice is critical (too small = slow, too big = unfair)

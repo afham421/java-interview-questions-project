@@ -35,6 +35,7 @@ Durability guarantees that once a transaction is committed, it will remain so—
 
 📌 Example: After your bank transfer is completed, it will not be lost even if the server crashes right afterward.
 
+
 ✅ Summary Table:
 | Property    | What it Ensures                                     |
 | ----------- | --------------------------------------------------- |
