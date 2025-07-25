@@ -61,6 +61,51 @@ final class Vehicle {
 // class Car extends Vehicle ❌ Error: Cannot inherit from final class
 But a final class can extend other (non-final) classes.
 
+
+Yes, you can create an object of a final class in Java.
+
+✅ What does final mean for a class?
+When a class is declared as final, it cannot be subclassed (i.e., no class can extend it).
+
+But you can still create instances (objects) of it.
+
+🔸 Example:
+java
+Copy
+Edit
+final class Car {
+    void drive() {
+        System.out.println("Driving...");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Car myCar = new Car();  // ✅ Object creation is allowed
+        myCar.drive();
+    }
+}
+✅ Output:
+
+Copy
+Edit
+Driving...
+❌ What is not allowed?
+java
+Copy
+Edit
+class SportsCar extends Car { // ❌ Error: Cannot subclass final class
+}
+📌 Summary:
+| Action                       | Allowed? |
+| ---------------------------- | -------- |
+| Create object of final class | ✅ Yes    |
+| Extend a final class         | ❌ No     |
+
+
+
+
+
 🧠 Summary Table:
 | Keyword Usage    | Restriction Applied                      |
 | ---------------- | ---------------------------------------- |

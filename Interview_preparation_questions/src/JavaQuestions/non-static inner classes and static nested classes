@@ -1,0 +1,111 @@
+🔹 1. Non-Static Inner Class (Member Inner Class)
+✅ Definition:
+A class defined inside another class without the static keyword.
+
+✅ Characteristics:
+Has access to all members (even private) of the outer class.
+
+Must be instantiated using an object of the outer class.
+
+✅ Use Case:
+Used when the inner class logically belongs to the outer class and needs access to its instance members.
+
+▶️ Example:
+java
+Copy
+Edit
+public class OuterClass {
+    private String message = "Hello from Outer";
+
+    // Non-static inner class
+    class InnerClass {
+        void printMessage() {
+            System.out.println("Message: " + message);
+        }
+    }
+
+    public static void main(String[] args) {
+        OuterClass outer = new OuterClass();
+        OuterClass.InnerClass inner = outer.new InnerClass();
+        inner.printMessage();
+    }
+}
+🧾 Output:
+sql
+Copy
+Edit
+Message: Hello from Outer
+🔹 2. Static Nested Class
+✅ Definition:
+A class defined inside another class with the static keyword.
+
+✅ Characteristics:
+Can only access static members of the outer class directly.
+
+Can be instantiated without an instance of the outer class.
+
+✅ Use Case:
+Used for grouping classes that are only used in one place and don't need access to instance-level members.
+
+▶️ Example:
+java
+Copy
+Edit
+public class OuterClass {
+    private static String staticMessage = "Hello from static";
+
+    // Static nested class
+    static class StaticNestedClass {
+        void printMessage() {
+            System.out.println("Message: " + staticMessage);
+        }
+    }
+
+    public static void main(String[] args) {
+        OuterClass.StaticNestedClass nested = new OuterClass.StaticNestedClass();
+        nested.printMessage();
+    }
+}
+🧾 Output:
+vbnet
+Copy
+Edit
+Message: Hello from static
+🔍 Comparison Summary:
+| Feature                        | Non-Static Inner Class       | Static Nested Class        |
+| ------------------------------ | ---------------------------- | -------------------------- |
+| Belongs to                     | Instance of outer class      | Class itself               |
+| Can access outer instance vars | ✅ Yes                        | ❌ No (only static members) |
+| Requires outer class instance  | ✅ Yes                        | ❌ No                       |
+| Use case                       | When inner class needs outer | Utility/helper classes     |
+
+
+🧠 Real-World Use Cases:
+Non-Static Inner Class:
+java
+Copy
+Edit
+class Car {
+    private String engineType = "V8";
+
+    class Engine {
+        void showEngine() {
+            System.out.println("Engine: " + engineType);
+        }
+    }
+}
+Used when the inner object (Engine) is tightly coupled with outer object (Car).
+
+Static Nested Class:
+java
+Copy
+Edit
+class Utility {
+    static class StringUtils {
+        static String toUpper(String s) {
+            return s.toUpperCase();
+        }
+    }
+}
+Used when you just need a helper class with static methods.
+

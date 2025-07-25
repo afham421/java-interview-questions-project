@@ -1,0 +1,37 @@
+Yes, you can create a constructor in an abstract class in Java!
+
+🔹 Why?
+Even though you can’t create objects of an abstract class, its constructor is still called when a subclass object is created — to initialize the abstract class’s fields.
+
+✅ Example:
+java
+Copy
+Edit
+abstract class Animal {
+    Animal() {
+        System.out.println("Animal constructor called");
+    }
+}
+
+class Dog extends Animal {
+    Dog() {
+        System.out.println("Dog constructor called");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Dog d = new Dog();  // Output:
+                            // Animal constructor called
+                            // Dog constructor called
+    }
+}
+
+
+
+✅ Summary:
+Yes, abstract classes can have constructors.
+
+They are used to initialize common fields or logic.
+
+Constructors of abstract classes are called before subclass constructors.

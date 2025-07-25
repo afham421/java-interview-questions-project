@@ -1,0 +1,66 @@
+✅ static Keyword in Java
+The static keyword in Java means that the member belongs to the class rather than to any specific object. It can be used with:
+
+Variables
+
+Methods
+
+Blocks
+
+Nested classes
+
+🔹 1. Static Variable
+Shared by all objects of the class (only one copy).
+
+java
+Copy
+Edit
+class Student {
+    static String school = "ABC School";
+}
+🔹 2. Static Method
+Can be called without creating an object.
+
+Can't access non-static variables directly.
+
+java
+Copy
+Edit
+class Demo {
+    static void greet() {
+        System.out.println("Hello from static method");
+    }
+}
+Usage:
+
+java
+Copy
+Edit
+Demo.greet(); // No object needed
+🔹 3. Static Block
+Runs once when the class is loaded.
+
+java
+Copy
+Edit
+class Example {
+    static {
+        System.out.println("Static block called");
+    }
+}
+🔹 4. Static Class (Nested only)
+Can be created inside another class (as a static nested class).
+
+java
+Copy
+Edit
+class Outer {
+    static class Inner {
+        void show() { System.out.println("Static inner class"); }
+    }
+}
+⚠️ Important Notes:
+static methods can't use this keyword.
+
+You can call static members using ClassName.member.
+
