@@ -1,0 +1,35 @@
+🔁 abstract vs final Class in Java
+| Feature              | `abstract` class                            | `final` class                         |
+| -------------------- | ------------------------------------------- | ------------------------------------- |
+| **Purpose**          | To provide a base class for inheritance     | To prevent inheritance                |
+| **Inheritance**      | Must be inherited                           | Cannot be inherited                   |
+| **Object Creation**  | ❌ Cannot create object directly             | ✅ Can create object                   |
+| **Abstract Methods** | Can have abstract and non-abstract methods  | ❌ Cannot have abstract methods        |
+| **Usage Scenario**   | Common behavior with partial implementation | Security, utility, or immutable class |
+| **Keyword**          | `abstract class ClassName {}`               | `final class ClassName {}`            |
+| **Example**          | `abstract class Animal {}`                  | `final class MathUtils {}`            |
+
+
+✅ Example of abstract Class:
+java
+Copy
+Edit
+abstract class Animal {
+    abstract void sound(); // abstract method
+    void eat() {
+        System.out.println("Eating...");
+    }
+}
+✅ Example of final Class:
+java
+Copy
+Edit
+final class MathUtils {
+    static int square(int x) {
+        return x * x;
+    }
+}
+🔑 Summary:
+Use **abstract** when you want other classes to extend and implement behavior.
+
+Use **final** when you want to prevent extension and keep behavior unchanged.

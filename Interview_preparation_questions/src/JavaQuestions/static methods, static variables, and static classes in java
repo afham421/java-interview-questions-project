@@ -48,6 +48,19 @@ java
 Copy
 Edit
 int result = MathUtils.square(5); // ➝ 25
+
+
+
+That statement is about method overriding vs. method hiding in Java.
+
+✅ What it means:
+Instance methods (non-static) can be overridden in subclasses.
+Static methods cannot be overridden.
+If a subclass defines a static method with the same signature, it hides the parent’s static method instead of overriding it.
+The method that gets called depends on the reference type, not the object type.
+
+
+
 ✅ 3. Static Classes (Nested Static Classes)
 📌 Definition:
 Java does not allow top-level classes to be static, but you can declare a nested static class.
@@ -56,6 +69,10 @@ Java does not allow top-level classes to be static, but you can declare a nested
 When the nested class does not require access to outer class's instance.
 
 For better encapsulation or utility-style helper classes.
+
+// ❌ Invalid: Top-level class cannot be static
+static class MyClass {
+}
 
 🧪 Example:
 java
