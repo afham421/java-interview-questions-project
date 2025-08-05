@@ -1,0 +1,41 @@
+Great question! When a class implements multiple interfaces that contain default methods with the same signature,
+Java requires the class to override the conflicting method to resolve the ambiguity. This avoids confusion about which method to use.
+
+✅ Correct way to resolve the conflict:
+You must override the display() method in MyClass and explicitly choose which interface's default method to call (if desired).
+
+✅ Example: Explicitly calling a specific interface's method
+java
+Copy
+Edit
+interface A {
+    default void display() {
+        System.out.println("Display from A");
+    }
+}
+
+interface B {
+    default void display() {
+        System.out.println("Display from B");
+    }
+}
+
+class MyClass implements A, B {
+    @Override
+    public void display() {
+        // Option 1: Choose one interface to call
+        A.super.display();  // or B.super.display();
+
+        // Option 2: Add custom logic
+        System.out.println("MyClass resolving display");
+    }
+
+    public static void main(String[] args) {
+        MyClass obj = new MyClass();
+        obj.display();
+    }
+}
+🔑 Notes:
+A.super.display() means: Call the default method from interface A.
+
+You can only use InterfaceName.super.method() syntax inside the implementing class, not from outside.

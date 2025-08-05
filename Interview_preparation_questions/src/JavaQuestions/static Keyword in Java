@@ -12,12 +12,37 @@ Nested classes
 🔹 1. Static Variable
 Shared by all objects of the class (only one copy).
 
-java
-Copy
-Edit
 class Student {
     static String school = "ABC School";
 }
+
+If the final variable is static, it must be initialized at the time of declaration or inside a static block, because it's associated with the class, not with any instance.
+
+✅ Example 1: Initialize at declaration
+class Student {
+    static final int ID = 101; // Must be initialized here or in static block
+}
+✅ Example 2: Initialize in static block
+class Student {
+    static final int ID;
+
+    static {
+        ID = 101; // Allowed only once
+    }
+}
+❌ Not allowed:
+class Student {
+    static final int ID;
+
+    Student() {
+        ID = 101; // ❌ Compilation error: Cannot assign a value to final variable ID
+    }
+}
+
+
+
+
+
 🔹 2. Static Method
 Can be called without creating an object.
 

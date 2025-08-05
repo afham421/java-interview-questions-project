@@ -1,0 +1,36 @@
+Great question! If two interfaces have the same method signature (e.g., display()), and a class implements both interfaces,
+there’s no conflict as long as the class provides its own implementation of the method.
+
+✅ Example:
+java
+Copy
+Edit
+interface A {
+    void display();
+}
+
+interface B {
+    void display();
+}
+
+class MyClass implements A, B {
+    public void display() {
+        System.out.println("Display from MyClass");
+    }
+}
+👇 Usage:
+java
+Copy
+Edit
+public class Main {
+    public static void main(String[] args) {
+        MyClass obj = new MyClass();
+        obj.display();  // Output: Display from MyClass
+    }
+}
+✅ Only one method is implemented in the class, and it satisfies both interfaces.
+
+🧠 Why No Conflict?
+Interfaces only declare methods (no body).
+
+So, as long as the class implements display() once, it's valid for both.

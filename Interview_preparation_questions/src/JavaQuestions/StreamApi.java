@@ -93,6 +93,44 @@ public class StreamApi {
         System.out.println("Max Number: " + max);
 
 
+        ///  ///////// flatMap() >>>>>>>>>>>>>>>>>>>
+        //🔸 Basic Concept:
+        //map() → transforms each element 1-to-1
+        //
+        //flatMap() → transforms and flattens the result 1-to-many
+        //
+        //🔹 Syntax:
+        //java
+        //Copy
+        //Edit
+        //stream.flatMap(element -> Stream.of(...))
+        //🔹 Example 1: Flattening a list of lists
+        //java
+        //Copy
+        //Edit
+        List<List<String>> nestedList = Arrays.asList(
+            Arrays.asList("A", "B"),
+            Arrays.asList("C", "D")
+        );
+
+        List<String> flatList = nestedList.stream()
+            .flatMap(List::stream)
+            .collect(Collectors.toList());
+
+        System.out.println(flatList); // Output: [A, B, C, D]
+        //🔹 Example 2: Splitting strings into words
+        //java
+        //Copy
+        //Edit
+        List<String> lines = Arrays.asList("hello world", "java stream");
+
+        List<String> words = lines.stream()
+            .flatMap(line -> Arrays.stream(line.split(" ")))
+            .collect(Collectors.toList());
+
+        System.out.println(words); // Output: [hello, world, java, stream]
+        //🔹 When to Use flatMap
+        //Use flatMap() when your mapping function returns a stream, collection, or array — and you want to flatten it into a single stream.
 
     }
 
@@ -108,5 +146,8 @@ public class StreamApi {
         Stream<Integer> stream = integerList.stream();
 
     }
+
+
+
 
 }
