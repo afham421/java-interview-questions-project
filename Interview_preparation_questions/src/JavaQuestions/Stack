@@ -1,0 +1,46 @@
+In Java, Stack is a Last-In-First-Out (LIFO) data structure — the last element added is the first one removed.
+
+✅ Stack Class (from java.util)
+java
+Copy
+Edit
+Stack<String> stack = new Stack<>();
+
+Commonly Used Methods
+| Method         | Description                                  |
+| -------------- | -------------------------------------------- |
+| `push(E item)` | Adds an item to the **top** of the stack     |
+| `pop()`        | Removes and returns the **top** item         |
+| `peek()`       | Returns the **top** item without removing it |
+| `empty()`      | Returns `true` if the stack is empty         |
+| `search(E o)`  | Returns the 1-based position from the top    |
+
+
+✅ Example:
+java
+Copy
+Edit
+import java.util.Stack;
+
+public class StackExample {
+    public static void main(String[] args) {
+        Stack<String> stack = new Stack<>();
+
+        stack.push("A");
+        stack.push("B");
+        stack.push("C");
+
+        System.out.println("Top element (peek): " + stack.peek()); // C
+        System.out.println("Removed element (pop): " + stack.pop()); // C
+        System.out.println("Top element now: " + stack.peek()); // B
+        System.out.println("Is stack empty? " + stack.empty()); // false
+        System.out.println("Position of A: " + stack.search("A")); // 2 (from top)
+    }
+}
+🔁 Stack vs Queue
+| Feature | Stack (LIFO)       | Queue (FIFO)        |
+| ------- | ------------------ | ------------------- |
+| Add     | `push()`           | `offer()`           |
+| Remove  | `pop()`            | `poll()`            |
+| Peek    | `peek()`           | `peek()`            |
+| Order   | Last in, first out | First in, first out |

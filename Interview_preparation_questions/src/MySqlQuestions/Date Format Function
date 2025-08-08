@@ -1,4 +1,5 @@
-In MySQL, the DATE_FORMAT function is used to format a date value according to a specified format. This function is particularly useful when you want to display dates in a specific format or convert them to strings.
+In MySQL, the DATE_FORMAT function is used to format a date value according to a specified format.
+This function is particularly useful when you want to display dates in a specific format or convert them to strings.
 
 Syntax
 

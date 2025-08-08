@@ -1,0 +1,65 @@
+In Java, the Queue interface provides several methods to work with elements in a First-In-First-Out (FIFO) order. The commonly used methods include:
+
+✅ offer(E e)
+Adds an element to the end of the queue.
+
+Returns true if the element was added successfully, or false if the queue is full (in bounded queues).
+
+java
+Copy
+Edit
+Queue<String> queue = new LinkedList<>();
+queue.offer("A"); // returns true
+queue.offer("B");
+
+
+✅ poll()
+Retrieves and removes the head of the queue.
+
+Returns null if the queue is empty (safe alternative to remove()).
+
+java
+Copy
+Edit
+String item = queue.poll(); // returns "A" and removes it
+
+
+✅ peek()
+Retrieves but does not remove the head of the queue.
+
+Returns null if the queue is empty.
+
+java
+Copy
+Edit
+String head = queue.peek(); // returns "B" but keeps it in the queue
+
+
+📌 Comparison Table
+| Method  | Description                       | Removes Element | Returns `null` on empty?   |
+| ------- | --------------------------------- | --------------- | -------------------------- |
+| `offer` | Inserts element                   | No              | ❌ (returns false if fails) |
+| `poll`  | Retrieves and removes head        | ✅               | ✅                          |
+| `peek`  | Retrieves but doesn't remove head | ❌               | ✅                          |
+
+
+💡 Example:
+java
+Copy
+Edit
+import java.util.*;
+
+public class QueueExample {
+    public static void main(String[] args) {
+        Queue<String> queue = new LinkedList<>();
+
+        queue.offer("One");
+        queue.offer("Two");
+        queue.offer("Three");
+
+        System.out.println("Peek: " + queue.peek());  // One
+        System.out.println("Poll: " + queue.poll());  // One
+        System.out.println("Poll: " + queue.poll());  // Two
+        System.out.println("Peek: " + queue.peek());  // Three
+    }
+}

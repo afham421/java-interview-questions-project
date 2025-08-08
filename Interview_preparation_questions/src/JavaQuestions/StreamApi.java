@@ -17,6 +17,10 @@ import java.util.stream.Stream;
 //
 //Efficient: Can work in parallel (via parallelStream()).
 
+//If you don't pass a terminal operation (like collect(), forEach(), count() etc.) in a stream pipeline, then:
+//
+//⚠️ Nothing will happen.
+//Because streams are lazy — intermediate operations (like map(), filter()) are not executed until a terminal operation is called.
 public class StreamApi {
 
 //    Stream operations are divided into three main categories:

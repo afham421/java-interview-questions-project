@@ -1,5 +1,6 @@
 
-Triggers in a relational database are special kinds of stored procedures that are automatically executed (or "triggered") in response to certain events on a particular table or view.
+Triggers in a relational database are special kinds of stored procedures that are automatically executed (or "triggered") in response to certain events
+on a particular table or view.
 Triggers are typically used to enforce business rules, validate data, maintain audit trails, and synchronize tables.
 
 Types of Triggers
