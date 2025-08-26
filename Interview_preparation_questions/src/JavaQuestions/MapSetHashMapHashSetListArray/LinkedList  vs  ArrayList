@@ -10,6 +10,18 @@
 | **Use Case**             | Best for **frequent access** operations | Best for **frequent insert/delete** operations |
 | **Implements**           | `List`, `RandomAccess`                  | `List`, `Deque`, `Queue`                       |
 
+🔁 ArrayList vs LinkedList
+| Feature                     | `ArrayList`                            | `LinkedList`                              |
+| --------------------------- | -------------------------------------- | ----------------------------------------- |
+| **Data Structure**          | Dynamic array (resizable array)        | Doubly linked list                        |
+| **Access time**             | **Fast** (O(1) for `get(index)`)       | **Slow** (O(n) for `get(index)`)          |
+| **Insert/Delete at end**    | Fast (amortized O(1))                  | Fast (O(1))                               |
+| **Insert/Delete in middle** | Slow (O(n) – due to shifting)          | Fast (O(1) – just pointer change)         |
+| **Memory usage**            | Less memory (stores data only)         | More memory (stores data + 2 pointers)    |
+| **Iteration performance**   | Faster iteration (cache-friendly)      | Slower iteration (poor cache performance) |
+| **Random access**           | Supported (uses index)                 | Not supported efficiently                 |
+| **Thread-safe?**            | No                                     | No                                        |
+| **Preferred when**          | You need **fast read/access by index** | You need **lots of insertions/deletions** |
 
 🔍 Code Example:
 

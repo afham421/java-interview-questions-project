@@ -1,7 +1,7 @@
-package JavaQuestions.Record_class;
+package JavaQuestions.Java_17_features;
 
 public class Record_class {
-    // Records were introduced as a preview feature in Java 14 and became a standard feature in Java 16. They provide a new, compact way to declare classes
+    // Records were introduced as a preview feature in Java 14 and became a standard feature in Java 16 and stable in java 17. They provide a new, compact way to declare classes
 // that are primarily used to store data. By using records, you can avoid the boilerplate code typically associated with data classes,
 // such as defining constructors, equals(), hashCode(), and toString() methods.
 //Benefits of Using Records
@@ -19,7 +19,7 @@ public class Record_class {
         System.out.println("Y: " + point.y()); //there is no need for setters because record is immutable and final keyword when you create a new record and pass the values then you don't update.'
 
         // Using the toString() method
-        System.out.println("JavaQuestions.Record_class.Point: " + point);
+        System.out.println("JavaQuestions.Java_17_features.Point: " + point);
 
         // Comparing records
         Point anotherPoint = new Point(10, 20);
@@ -55,13 +55,13 @@ record Point(int x, int y) {
 
 }
 
-//class fdf extends JavaQuestions.Record_class.Point{ // can't extend record class because it final keyword
+//class fdf extends JavaQuestions.Java_17_features.Point{ // can't extend record class because it final keyword
 //}
 
 record Person1(String name, int age) {
 
     // Canonical constructor (automatically generated, shown here for clarity)
-//    public JavaQuestions.Record_class.Person1(String name, int age) {
+//    public JavaQuestions.Java_17_features.Person1(String name, int age) {
 //        this.name = name;
 //        this.age = age;
 //    }

@@ -1,0 +1,151 @@
+🔹 What is volatile in Java?
+
+In Java, the volatile keyword is used with variables to tell the Java Virtual Machine (JVM) and the compiler that:
+
+Always read/write the variable directly from main memory (not from a CPU cache or thread-local cache).
+
+Guarantee visibility of changes across threads.
+
+🔹 Why do we need volatile?
+
+Normally in multithreading:
+
+Each thread may cache a variable’s value locally.
+
+If one thread updates it, others may not see the change immediately.
+
+👉 Using volatile ensures all threads see the most updated value immediately.
+
+🔹 Example without volatile
+class SharedData {
+    boolean running = true;
+
+    public void runTask() {
+        while (running) {
+            // do something
+        }
+    }
+}
+
+
+If running is updated by another thread (e.g., set to false), the loop may never stop because one thread could be reading the cached value.
+
+🔹 Example with volatile
+class SharedData {
+    volatile boolean running = true;
+
+    public void runTask() {
+        while (running) {
+            // do something
+        }
+                System.out.println("Thread stopped.");
+    }
+      public void stop() {
+            running = false;
+        }
+}
+
+With volatile, when stop() sets running = false, the thread running runTask() will see it and exit the loop.
+Here, as soon as another thread updates running = false;,
+all threads immediately see the update and stop.
+
+🔹 Important Points about volatile
+
+Visibility guarantee ✅
+All threads see the latest value.
+
+Does NOT provide atomicity ❌
+
+volatile int count; is not safe for count++ (increment is not atomic).
+
+For atomic operations, use synchronized or AtomicInteger.
+
+Lightweight compared to synchronized
+
+Good for simple flags, status variables, configuration values.
+
+🔹 When to Use volatile
+
+When you need to share a simple flag or status variable across threads.
+
+Example: stopRequested, shutdown, configReloaded.
+
+NOT for compound operations like i++, list.add(), etc.
+
+✅ Summary:
+volatile ensures that changes to a variable are immediately visible across threads, but it doesn’t make compound operations atomic.
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.
+
+Perfect 🙂 Let’s compare volatile vs synchronized with real-world scenarios:
+
+🔹 volatile
+
+Purpose: Ensures visibility of a variable across threads.
+
+Does not lock → multiple threads can read/write, but no atomicity for compound actions.
+
+Use case: When only one thread writes and others read, or when you need a flag.
+
+Example (stop flag):
+
+class Task implements Runnable {
+    private volatile boolean running = true;
+
+    public void stop() {
+        running = false;
+    }
+
+    @Override
+    public void run() {
+        while (running) {
+            // keep working until stopped
+        }
+    }
+}
+
+
+Here volatile is enough because only one thread updates running, and others just read it.
+
+🔹 synchronized
+
+Purpose: Ensures both visibility and atomicity.
+
+Provides a lock → only one thread at a time executes the critical section.
+
+Heavier than volatile (because of locking overhead).
+
+Use case: When multiple threads update a shared resource.
+
+Example (counter):
+
+class Counter {
+    private int count = 0;
+
+    public synchronized void increment() {
+        count++; // atomic because synchronized
+    }
+
+    public synchronized int getCount() {
+        return count;
+    }
+}
+
+
+If we only used volatile int count;, count++ would still be unsafe (read-modify-write is not atomic). synchronized fixes that.
+
+🔹 Real-world Analogy
+
+volatile = Like a whiteboard in the office.
+Everyone sees the latest value immediately when someone writes on it.
+But if two people try to update it at the same time, it can cause conflicts.
+
+synchronized = Like a meeting room with a key.
+Only one person can enter (update the variable) at a time. Others wait outside.
+No conflicts, but slower since threads must wait.
+
+✅ Rule of Thumb
+
+Use volatile → For simple status flags or configuration switches.
+
+Use synchronized → For compound operations (increment counters, updating shared objects, multiple steps).

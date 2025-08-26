@@ -1,0 +1,78 @@
+In Java 15 (preview) → Java 17 (standard), the concept of sealed classes was introduced.
+
+🔹 What is a Sealed Class?
+A sealed class lets you restrict which classes can extend or implement it.
+
+Normally, any class can extend another class (if not final).
+
+With sealed, you explicitly list the allowed subclasses.
+
+This gives you controlled inheritance.
+
+🔹 Syntax
+java
+Copy
+Edit
+public sealed class Shape permits Circle, Rectangle, Square {
+    // common fields & methods
+}
+
+final class Circle extends Shape {
+    // Only final - cannot be extended further
+}
+
+final class Rectangle extends Shape {
+    // Only final - cannot be extended further
+}
+
+non-sealed class Square extends Shape {
+    // non-sealed - can be extended by others
+}
+
+
+🔹 Rules
+A sealed class must declare its permitted subclasses using permits.
+
+All subclasses must be in the same module (or package if no modules).
+
+Each subclass must declare itself as either:
+
+final → cannot be extended further.
+
+sealed → further restrict inheritance.
+
+non-sealed → open it up again.
+
+🔹 Example with Interfaces
+java
+Copy
+Edit
+public sealed interface Vehicle permits Car, Bike {}
+
+final class Car implements Vehicle {}
+final class Bike implements Vehicle {}
+🔹 Why use Sealed Classes?
+✔ Helps enforce domain modeling (only valid subtypes exist).
+✔ Makes switch expressions exhaustive (compiler knows all possible subtypes).
+✔ Improves code safety and readability.
+
+🔹 Example: Pattern Matching
+java
+Copy
+Edit
+static String getShapeType(Shape shape) {
+    return switch (shape) {
+        case Circle c -> "It's a Circle";
+        case Rectangle r -> "It's a Rectangle";
+        case Square s -> "It's a Square";
+    };
+}
+👉 No default case needed, because compiler knows all Shape types.
+
+⚡ So:
+
+sealed → restricts inheritance.
+
+final → closes inheritance.
+
+non-sealed → re-opens inheritance.

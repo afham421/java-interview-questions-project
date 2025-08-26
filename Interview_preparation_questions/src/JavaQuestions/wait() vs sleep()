@@ -1,0 +1,93 @@
+📌 Real-life Analogy:
+
+sleep(): Aap ne alarm lagaya aur so gaye — kisi ko bataya nahi.
+
+wait(): Aap kehte ho: "Mujhe uthana jab kaam ho jaye" — aur aap tab tak soye rehte ho jab tak koi aapko notify na kare.
+
+
+🔹 Thread.sleep(ms)
+
+Defined in: java.lang.Thread class.
+
+What it does:
+
+Puts the current thread to sleep for the given time (ms).
+
+The thread retains the lock/monitor if it holds one.
+
+After the sleep duration, it becomes Runnable again.
+
+Usage:
+
+Thread.sleep(2000); // Sleep for 2 seconds
+
+
+Checked Exception: Throws InterruptedException.
+
+👉 Use when you just want to pause execution for a specific time.
+
+🔹 Object.wait(ms)
+
+Defined in: java.lang.Object class (not Thread).
+
+What it does:
+
+Used in synchronization (multithreading).
+
+Causes the current thread to wait until:
+
+another thread calls notify() / notifyAll() on the same object,
+
+or the optional timeout (ms) expires.
+
+The thread releases the monitor/lock it holds on that object.
+
+Usage (must be in a synchronized block):
+
+synchronized (lock) {
+    lock.wait();   // Current thread waits until notified
+}
+
+
+Checked Exception: Throws InterruptedException.
+
+👉 Use when you want thread communication (e.g., producer-consumer problem).
+
+🔑 Main Differences
+| Feature                    | `sleep()`                 | `wait()`                                   |
+| -------------------------- | ------------------------- | ------------------------------------------ |
+| Belongs to                 | `Thread` class            | `Object` class                             |
+| Lock behavior              | Does **not** release lock | Releases lock                              |
+| Usage                      | Pause execution           | Thread communication                       |
+| Call inside `synchronized` | Not required              | **Required**                               |
+| Wakes up by                | Time expires or interrupt | `notify()`, `notifyAll()`, or time expires |
+
+Example (Producer-Consumer with wait() / notify())
+class Shared {
+    private boolean available = false;
+
+    public synchronized void produce() throws InterruptedException {
+        while (available) {
+            wait(); // wait until consumed
+        }
+        System.out.println("Produced");
+        available = true;
+        notify(); // notify consumer
+    }
+
+    public synchronized void consume() throws InterruptedException {
+        while (!available) {
+            wait(); // wait until produced
+        }
+        System.out.println("Consumed");
+        available = false;
+        notify(); // notify producer
+    }
+}
+
+
+✅ In short:
+
+Use sleep() to just delay execution.
+
+Use wait() when you need inter-thread communication with synchronization.

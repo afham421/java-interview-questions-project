@@ -1,0 +1,108 @@
+Got it 👍 You’re asking about Pattern Matching in Java.
+This is tightly connected to sealed classes and newer Java features (Java 16+).
+
+Pattern Matching for Switch (Preview)
+Switch statements mein pattern matching introduce kiya gaya.
+Pehle sirf int, enum ya String type use hoti thi, ab objects ka bhi direct use ho sakta hai.
+
+
+
+🔹 What is Pattern Matching?
+Pattern Matching makes it easier to check an object’s type and extract values in a single step — instead of writing boilerplate instanceof and casting code.
+
+🔹 Old Way (Before Java 14)
+java
+Copy
+Edit
+if (obj instanceof String) {
+    String s = (String) obj;  // manual cast
+    System.out.println(s.toUpperCase());
+}
+🔹 New Way (Pattern Matching for instanceof)
+java
+Copy
+Edit
+if (obj instanceof String s) {
+    // 's' is already casted
+    System.out.println(s.toUpperCase());
+}
+✅ No explicit cast needed.
+✅ Variable s is scoped only inside the if.
+
+
+
+🔹 Pattern Matching + Sealed Classes + switch
+Here’s where sealed classes shine:
+
+java
+Copy
+Edit
+sealed interface Shape permits Circle, Rectangle, Square {}
+
+final class Circle implements Shape {
+    double radius;
+    Circle(double r) { this.radius = r; }
+}
+
+final class Rectangle implements Shape {
+    double length, width;
+    Rectangle(double l, double w) { this.length = l; this.width = w; }
+}
+
+final class Square implements Shape {
+    double side;
+    Square(double s) { this.side = s; }
+}
+Now use Pattern Matching in a switch:
+
+java
+Copy
+Edit
+static double area(Shape shape) {
+    return switch (shape) {
+        case Circle c    -> Math.PI * c.radius * c.radius;
+        case Rectangle r -> r.length * r.width;
+        case Square s    -> s.side * s.side;
+    };
+}
+
+
+
+⚡ Notice:
+
+No default is required because compiler knows all subtypes (Circle, Rectangle, Square) from the sealed hierarchy.
+
+Each case directly binds the type (Circle c) and variable (c).
+
+
+
+
+
+🔹 Record + Pattern Matching (Super Powerful)
+With records, pattern matching can destructure objects:
+
+java
+Copy
+Edit
+record Point(int x, int y) {}
+
+static String printPoint(Object obj) {
+    return switch (obj) {
+        case Point(int x, int y) -> "Point at (" + x + ", " + y + ")";
+        case String s            -> "String: " + s;
+        case null                -> "Null value";
+        default                  -> "Something else";
+    };
+}
+
+
+
+✅ Summary
+
+Pattern Matching simplifies instanceof + casting.
+
+Works with switch expressions for sealed classes.
+
+Combined with records, it enables destructuring.
+
+Removes boilerplate and makes code more concise + type-safe.
