@@ -1,0 +1,63 @@
+What is DispatcherServlet in Spring?
+
+In Spring MVC, the DispatcherServlet is the front controller.
+
+It sits at the center of the Spring web application and is responsible for handling all incoming HTTP requests and delegating them to the right controller.
+
+Think of it as the traffic police that receives requests and decides which controller/method should process them, then returns the response.
+
+Workflow of DispatcherServlet
+
+Client Request
+
+User sends a request (e.g., GET /users/1).
+
+DispatcherServlet
+
+The request first goes to the DispatcherServlet.
+
+It is mapped in web.xml (in old XML config) or auto-configured by Spring Boot.
+
+Handler Mapping
+
+DispatcherServlet consults HandlerMapping to find the correct Controller/Method.
+
+Controller Execution
+
+The chosen controller method is called.
+
+ViewResolver / Response Body
+
+If it returns a view (e.g., JSP, Thymeleaf), ViewResolver resolves it.
+
+If it’s a REST API (@RestController), it directly returns JSON/XML.
+
+Response to Client
+
+The final response is sent back to the browser.
+
+Diagram (Simplified)
+Client Request ---> DispatcherServlet ---> HandlerMapping ---> Controller ---> Service ---> DAO/DB
+        |                                                               |
+        <--------------------------- Response --------------------------+
+
+In Spring Boot
+
+DispatcherServlet is auto-registered.
+
+Default URL mapping is "/" → meaning it handles all incoming requests.
+
+You don’t need to configure it manually (unless customization is required).
+
+Key Points
+
+Core of Spring MVC (Front Controller Pattern).
+
+Delegates requests to the right @Controller / @RestController.
+
+Works with HandlerMapping, HandlerAdapter, and ViewResolver.
+
+In REST APIs, it directly returns JSON/XML instead of a view.
+
+⚡ So in short:
+👉 DispatcherServlet = Request Dispatcher / Front Controller in Spring MVC that manages the whole request–response flow.

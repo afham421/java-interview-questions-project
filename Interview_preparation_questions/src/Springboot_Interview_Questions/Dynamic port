@@ -1,0 +1,75 @@
+In Spring Boot, by default your app runs on port 8080.
+If you want your application to run on a dynamic/random port, you have a few options:
+
+1. Random Port via application.properties
+server.port=0
+
+
+Setting server.port=0 tells Spring Boot to pick a free random port at startup.
+
+Useful for integration tests or when running multiple instances of the same service.
+
+2. Programmatically Set Port
+
+You can set the port dynamically based on logic (e.g., from DB, config service, or env variable):
+
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.stereotype.Component;
+
+@Component
+public class CustomPortConfig implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
+
+    @Override
+    public void customize(TomcatServletWebServerFactory factory) {
+        int dynamicPort = 9090; // fetch from config, env, or generate dynamically
+        factory.setPort(dynamicPort);
+    }
+}
+
+3. Using Command Line Argument
+
+When running the jar:
+
+java -jar myapp.jar --server.port=9091
+
+
+Or:
+
+java -jar myapp.jar --server.port=0   # dynamic random port
+
+4. Accessing the Assigned Dynamic Port
+
+If you used server.port=0, you may need to retrieve the actual port:
+
+import org.springframework.boot.web.context.WebServerApplicationContext;
+import org.springframework.stereotype.Component;
+
+import jakarta.annotation.PostConstruct;
+
+@Component
+public class PortLogger {
+
+    private final WebServerApplicationContext serverAppContext;
+
+    public PortLogger(WebServerApplicationContext serverAppContext) {
+        this.serverAppContext = serverAppContext;
+    }
+
+    @PostConstruct
+    public void logPort() {
+        int port = serverAppContext.getWebServer().getPort();
+        System.out.println("Application started on dynamic port: " + port);
+    }
+}
+
+
+✅ Summary:
+
+server.port=0 → random dynamic port.
+
+Customizer → set programmatically.
+
+CLI args → override per run.
+
+Use WebServerApplicationContext to read the assigned port at runtime.
