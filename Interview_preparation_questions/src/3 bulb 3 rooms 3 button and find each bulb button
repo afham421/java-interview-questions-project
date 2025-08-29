@@ -1,0 +1,30 @@
+🏠 Scenario:
+
+You have 3 rooms.
+
+Each room has 1 bulb.
+
+Outside the rooms, you have 3 switches (buttons) (one switch controls one bulb).
+
+You can enter the rooms only once to check bulbs.
+
+You need to figure out which switch controls which bulb.
+
+🔦 Trick Solution:
+
+Turn ON switch 1 and leave it ON for a few minutes.
+(This will make the bulb in that room hot 🔥).
+
+Turn OFF switch 1 and then turn ON switch 2.
+
+Leave switch 3 OFF.
+
+🚪 Now enter the rooms:
+
+The bulb that is ON → belongs to switch 2.
+
+The bulb that is OFF but HOT → belongs to switch 1.
+
+The bulb that is OFF and COLD → belongs to switch 3.
+
+✅ This way you can map all switches to bulbs in just one visit.

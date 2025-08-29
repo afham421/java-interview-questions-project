@@ -1,0 +1,112 @@
+In Spring Transaction Management, two important concepts are:
+
+🔹 Propagation
+
+It defines how a transaction boundary behaves when a method is called inside another transactional method.
+Think of it like: If Method A is already running in a transaction, and it calls Method B, should B join the same transaction or start a new one?
+
+Common Propagation Types
+
+REQUIRED (default)
+
+If a transaction exists, join it; else start a new one.
+
+✅ Most commonly used.
+
+@Transactional(propagation = Propagation.REQUIRED)
+public void methodA() {}
+
+
+REQUIRES_NEW
+
+Always starts a new transaction, suspends the current one.
+
+Useful when one operation must be committed independently of the outer transaction.
+
+SUPPORTS
+
+If a transaction exists, join it; else run without one.
+
+MANDATORY
+
+Must run inside an existing transaction, else throw exception.
+
+NOT_SUPPORTED
+
+Run without a transaction, suspend the current one if exists.
+
+NEVER
+
+Must run without a transaction, else throw exception.
+
+NESTED
+
+Executes in a nested transaction inside the current one (like savepoints).
+
+If nested fails, outer transaction can continue.
+
+🔹 Isolation
+
+It defines how data consistency is maintained when multiple transactions run at the same time.
+In databases, transactions may conflict (e.g., reading uncommitted data, dirty reads).
+Isolation controls that.
+
+Isolation Levels
+
+DEFAULT
+
+Uses the DB’s default isolation level (varies: e.g., MySQL → REPEATABLE_READ).
+
+READ_UNCOMMITTED
+
+Lowest isolation, allows dirty reads.
+
+One transaction can see uncommitted changes of another.
+
+READ_COMMITTED
+
+Prevents dirty reads (only committed data is visible).
+
+Still allows non-repeatable reads & phantom reads.
+
+REPEATABLE_READ
+
+Prevents dirty reads + non-repeatable reads.
+
+Phantom reads still possible (MySQL actually prevents those too with gap locks).
+
+SERIALIZABLE
+
+Highest isolation. Transactions are executed one by one.
+
+Prevents all anomalies but reduces concurrency.
+
+📝 Example in Spring
+@Transactional(
+    propagation = Propagation.REQUIRES_NEW,
+    isolation = Isolation.REPEATABLE_READ
+)
+public void processPayment() {
+    // business logic here
+}
+
+
+🔹 Key Problems with Uncommitted Data
+
+Dirty Read → One transaction reads uncommitted data from another.
+
+If the first transaction later rolls back, the second transaction has read "invalid" data.
+
+✅ In short:
+
+Committed data = permanent, safe, visible to everyone.
+
+Uncommitted data = temporary, risky, visible only within the transaction (unless isolation is very low).
+
+
+
+⚖️ Summary:
+
+Propagation = how transaction behaves across method calls.
+
+Isolation = how transaction ensures data consistency when multiple transactions run concurrently.

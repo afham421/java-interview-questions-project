@@ -1,0 +1,107 @@
+🔹 1. Code-Level Improvements
+
+Efficient Queries
+
+Avoid SELECT *, fetch only required fields.
+
+Use indexes in DB.
+
+Cache heavy queries.
+
+Asynchronous Processing
+
+For non-critical tasks (like sending emails/logging), use async or message queues (RabbitMQ, Kafka).
+
+Reduce Object Mapping Overhead
+
+Use DTOs instead of returning full entities.
+
+Avoid unnecessary JSON serialization.
+
+Connection Pooling
+
+Use HikariCP (default in Spring Boot) with proper pool size.
+
+🔹 2. Caching
+
+Use in-memory cache like Redis, Caffeine, or Guava.
+
+Cache:
+
+Static data (configs, dropdowns).
+
+Repeated DB queries.
+
+Authentication tokens.
+
+Example (Spring Boot + Redis):
+
+@Cacheable("users")
+public User getUserById(Long id) {
+    return userRepository.findById(id).orElseThrow();
+}
+
+🔹 3. API Gateway / Load Balancing
+
+Deploy multiple instances behind NGINX / Spring Cloud Gateway / Kubernetes Ingress.
+
+Use round-robin load balancing to distribute traffic.
+
+🔹 4. Database Optimization
+
+Normalize but denormalize for performance where needed.
+
+Use read replicas (master-slave setup).
+
+Partition or shard if dataset grows huge.
+
+⚡ 2. Optimize Database Access
+✅ Avoid N+1 queries:
+
+Use proper JOINs or batch fetching (especially in JPA/Hibernate)
+
+✅ Use indexing:
+
+Ensure database columns used in WHERE, JOIN, or ORDER BY have indexes
+
+✅ Reduce unnecessary data:
+
+Don’t use SELECT * → fetch only required columns
+
+✅ Connection pooling:
+
+Use libraries like HikariCP for efficient DB connection handling
+
+
+
+🔹 5. Network Optimizations
+
+Enable GZIP compression for responses.
+
+Use HTTP/2 if possible.
+
+Minimize payload size → return only required fields, avoid huge JSON.
+
+🔹 6. Monitoring & Profiling
+
+Use Spring Actuator + Micrometer + Prometheus/Grafana to detect bottlenecks.
+
+Profile code with tools like VisualVM / JProfiler.
+
+🔹 7. Scalability Techniques
+
+Use stateless APIs → easy to scale horizontally.
+
+Run multiple instances in Docker/Kubernetes.
+
+Implement rate limiting to prevent overload.
+
+✅ Example: If your API fetches user details from DB:
+
+First request → fetch from DB.
+
+Next requests → serve from Redis cache.
+
+If load grows → run 3 API instances behind Nginx.
+
+If DB becomes bottleneck → add read replica for SELECT queries.

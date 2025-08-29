@@ -39,7 +39,7 @@ Deal with more complex scenarios like multi-valued dependencies, join dependenci
 
 Denormalization
 Denormalization is the process of combining normalized tables into larger tables to improve read performance.
- It involves introducing redundancy into a database design, which is typically avoided in normalization.
+It involves introducing redundancy into a database design, which is typically avoided in normalization.
 
 Benefits of Denormalization
 Improves Query Performance: By reducing the number of joins required to retrieve data, denormalization can speed up read-heavy operations.

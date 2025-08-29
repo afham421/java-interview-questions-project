@@ -1,0 +1,96 @@
+🔹 1. Use DTO Projection (Best practice for skipping columns in response)
+
+Instead of returning the full entity, you map only required columns into a DTO.
+
+Entity
+
+@Entity
+@Table(name = "person")
+public class Person {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+
+    private int age;
+
+    private String address; // you want to skip this in response
+
+    // getters & setters
+}
+
+
+DTO (only selected fields)
+
+public class PersonDTO {
+    private Long id;
+    private String name;
+
+    public PersonDTO(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    // getters
+}
+
+
+Repository with JPQL Projection
+
+public interface PersonRepository extends JpaRepository<Person, Long> {
+
+    @Query("SELECT new com.example.demo.dto.PersonDTO(p.id, p.name) FROM Person p")
+    List<PersonDTO> findAllPersonDTOs();
+}
+
+
+👉 Now findAllPersonDTOs() will only fetch id and name, skipping age and address.
+
+🔹 2. Use Spring Data Projection (Interface-based)
+
+If you don’t want a DTO class, you can use an interface projection:
+
+public interface PersonView {
+    Long getId();
+    String getName();
+}
+
+public interface PersonRepository extends JpaRepository<Person, Long> {
+    List<PersonView> findAllBy();
+}
+
+
+👉 JPA will fetch only id and name columns.
+
+🔹 3. Use @JsonIgnore (only for hiding in JSON response, not DB fetch)
+
+If you want the column available in DB but not visible in API response (e.g., hiding password):
+
+@Entity
+public class Person {
+    @Id
+    private Long id;
+
+    private String name;
+
+    @JsonIgnore   // will not appear in response JSON
+    private String address;
+}
+
+
+👉 This still fetches address from DB, but it won’t be sent in JSON response.
+
+🔹 4. Use @Transient if column should not exist in DB
+
+If the field should never be persisted or fetched:
+
+@Transient
+private String tempData;
+
+
+✅ Recommendation:
+
+If you want to skip fetching from DB → Use DTO or Projection.
+
+If you just want to hide in response → Use @JsonIgnore.

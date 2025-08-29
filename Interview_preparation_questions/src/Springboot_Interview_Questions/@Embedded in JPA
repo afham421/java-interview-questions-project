@@ -1,0 +1,73 @@
+🔹 What is @Embedded in JPA?
+
+@Embedded is used when you want to reuse a group of columns (value object) inside an entity, without making it a separate table.
+It lets you embed another class’s fields into your entity’s table.
+
+Example:
+
+Embeddable Class
+
+@Embeddable
+public class Address {
+    private String street;
+    private String city;
+    private String zipCode;
+
+    // getters & setters
+}
+
+
+👉 This is not an entity, but a reusable component.
+
+Entity with @Embedded
+
+@Entity
+public class Person {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+
+    @Embedded   // fields of Address will be stored in Person table
+    private Address address;
+
+    // getters & setters
+}
+
+Table Created (person)
+| id | name  | street      | city     | zipCode |
+| -- | ----- | ----------- | -------- | ------- |
+| 1  | John  | Main Street | New York | 12345   |
+| 2  | Sarah | Park Ave    | Chicago  | 67890   |
+
+
+👉 Notice: Address did not create a separate table.
+Its fields (street, city, zipCode) are stored in the same table (person).
+
+🔹 Benefits of @Embedded
+
+✅ Code reuse – You can use Address in multiple entities (Person, Company, Employee).
+✅ Keeps related columns grouped logically.
+✅ Still only one table – no joins needed.
+
+🔹 Related Annotation
+
+@Embeddable → marks a class as embeddable.
+
+@Embedded → used inside an entity to include that class.
+
+@AttributeOverrides → lets you rename embedded column names if you embed multiple times.
+
+👉 Example with override:
+
+@Embedded
+@AttributeOverrides({
+    @AttributeOverride(name = "street", column = @Column(name = "home_street")),
+    @AttributeOverride(name = "city", column = @Column(name = "home_city"))
+})
+private Address homeAddress;
+
+
+⚡ In short:
+@Embedded = Put another class’s fields inside the same table (not another table).

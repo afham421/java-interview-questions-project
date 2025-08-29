@@ -1,0 +1,73 @@
+✅ Pros of Native Queries
+
+Full SQL Power
+
+Can use advanced SQL features not available in JPQL (e.g., window functions, CTEs, JSON operators, DB-specific functions).
+
+Performance Tuning
+
+Directly leverage database-specific optimizations for faster queries.
+
+Legacy Support
+
+Useful when working with existing SQL queries or stored procedures in a legacy database.
+
+Flexibility
+
+Easier to write for developers who are comfortable with raw SQL instead of JPQL/HQL.
+
+Direct DB Features
+
+Can use vendor-specific extensions (LIMIT, OFFSET, ROWNUM, partitioning, full-text search, etc.).
+
+❌ Cons of Native Queries
+
+Database Vendor Lock-In
+
+Queries are tied to a specific database dialect.
+
+Switching DB means rewriting queries.
+
+Bypass JPA Benefits
+
+No automatic entity mapping, no caching, no dirty checking.
+
+You lose type-safety and object-relational abstraction.
+
+Harder to Maintain
+
+Column/table renames in entities won’t automatically update queries.
+
+Large SQL inside repositories reduces readability.
+
+No Compile-Time Validation
+
+JPQL is validated at startup; native queries only fail at runtime.
+
+SQL Injection Risk
+
+If string concatenation is used instead of parameters.
+
+JPQL handles parameter binding safely.
+
+Manual Mapping Required
+
+For complex joins, you must use @SqlResultSetMapping or DTOs.
+
+With JPQL, entities are automatically mapped.
+
+May Break ORM Optimizations
+
+Hibernate caching, batching, and lazy-loading may not apply to native queries.
+
+⚖️ Conclusion
+
+Use JPQL/Criteria API for most CRUD and entity-based queries.
+
+Use native queries only when:
+
+You need DB-specific features.
+
+You need to optimize performance.
+
+You’re working with a legacy system.

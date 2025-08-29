@@ -3,7 +3,7 @@ package JavaQuestions;
 
 import java.lang.reflect.Method;
 
-public class test {
+public class testing {
 
 
 
