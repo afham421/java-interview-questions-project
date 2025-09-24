@@ -69,7 +69,7 @@ Then deploy the generated target/*.war file to WildFly using its admin console o
 Summary:
 | Feature           | Embedded Tomcat         | WildFly Deployment          |
 | ----------------- | ----------------------- | --------------------------- |
-| Packaging         | JAR                     | WAR                         |
+| Packaging         | JAR , WAR                    | WAR                         |
 | Deployment style  | Standalone app          | Application server-managed  |
 | Startup command   | `java -jar`             | Deploy to WildFly via admin |
 | Servlet container | Embedded (Tomcat/Jetty) | Provided by WildFly         |

@@ -1,0 +1,62 @@
+If we apply a composite index on three columns (created_date, role_type, another_col), and in the WHERE clause we use all three columns,
+ but change their order — for example, sometimes role_type first, then created_date, then another_col — will the indexing work the same or differently?
+
+Good question 👍 this is an important detail about composite (multi-column) indexes.
+
+📌 How Composite Index Works
+
+Let’s say you create a composite index on 3 columns:
+
+CREATE INDEX idx_user_role_date_other
+ON my_table (created_date, role_type, other_col);
+
+
+The index is ordered left → right.
+This means MySQL (or any RDBMS) can efficiently use it only if the leading column(s) are included in your WHERE clause.
+
+✅ Cases where the index is used
+
+Query with all three columns in any order:
+
+WHERE created_date = '2025-09-12' AND role_type = 'ADMIN' AND other_col = 123
+
+
+👉 Order in WHERE doesn’t matter — optimizer can reorder them, index will still be used.
+
+⚠️ Cases where performance differs
+
+If your index is (created_date, role_type, other_col):
+
+✅ This works (uses full index):
+
+WHERE created_date = '2025-09-12' AND role_type = 'ADMIN'
+
+
+⚠️ This does not use the index efficiently:
+
+WHERE role_type = 'ADMIN' AND other_col = 123
+
+
+Because created_date (the first column in the index) is skipped.
+
+📊 Rule of Thumb
+
+Composite index works left to right:
+
+Index (A, B, C) can be used for:
+
+(A), (A, B), (A, B, C)
+
+But not directly for:
+
+(B), (C), (B, C)
+
+🔎 Your Case
+
+If you query with all three columns, order in the SQL doesn’t matter — index will work the same.
+But if sometimes you filter by role_type first without created_date, then the index (created_date, role_type, other_col) won’t help much.
+In that case, you might consider:
+
+Separate indexes on role_type (or role_type, created_date)
+
+Or use a covering index that matches your most common query pattern.

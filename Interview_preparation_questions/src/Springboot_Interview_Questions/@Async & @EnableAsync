@@ -31,6 +31,8 @@ Create an Asynchronous Method: // it is used for example we have task to save la
 response in postman by this we have not good user experience of our application but if we use @Async THEN we will get response quickly without completing task
 and this task is working in background in separate thread so that we will get good user experience ////// and we can get fast our Api by ExecutorService
 
+If the program (the JVM process itself) crashes or Tomcat/Spring Boot server is stopped, then the async task will also stop immediately (it cannot survive a JVM shutdown).
+
 Annotate the method you want to run asynchronously with @Async. This method will be executed in a separate thread.
 
 import org.springframework.scheduling.annotation.Async;
