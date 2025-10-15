@@ -1,0 +1,27 @@
+In Hibernate/JPA, both load()/getOne() (older style) and findById() are used to fetch an entity by its primary key, but they behave differently:
+
+🔹 loadById (or Session.load())
+
+Returns a proxy object (not the actual entity immediately).
+
+The entity is fetched lazily → data is retrieved from DB only when you access a property.
+
+If the entity does not exist in DB → it throws ObjectNotFoundException at access time.
+
+Good when you are sure the entity exists and want to avoid immediate DB hit.
+
+🔹 findById (or EntityManager.find() / Spring Data findById())
+
+Immediately hits the database and returns the entity.
+
+If the entity is not found → it returns null (or Optional.empty() in Spring Data).
+
+No proxy object is returned.
+
+Safer when you are unsure if the record exists.
+
+✅ Summary:
+
+loadById → Lazy (proxy), exception if not found.
+
+findById → Immediate fetch, returns null/Optional if not found.

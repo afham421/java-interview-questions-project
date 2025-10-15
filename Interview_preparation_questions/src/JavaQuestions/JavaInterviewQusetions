@@ -1,0 +1,493 @@
+
+
+MySQL execution order:
+
+shell from
+on
+join
+where
+group by
+having
+select
+distinct
+union (all)
+order by
+limit
+
+
+
+
+
+
+### ☕ **Core Java**
+
+* Java 8 Features (Lambdas, Streams, Functional Interfaces)
+* Streams API — map, filter, reduce, collect
+* Immutable Class — how to create & advantages
+* Marker Interface — what it is & use cases
+* HashSet / HashMap — internal working
+* HashSet / HashMap vs LinkedHashSet / LinkedHashMap
+* HashTable vs ConcurrentHashMap
+* Custom Exception — how to create & handle exceptions
+* `volatile` vs `Atomic` variables
+* Thread — creation methods & lifecycle
+* ThreadPool & ExecutorService
+* Identifying & resolving Java memory leaks
+* `@Synchronized` vs `@Async`
+* `CompletableFuture` — async programming in Java
+* annotations like @qualifier, @Value, @transactional, @component, @primery, @configuration
+
+---
+
+### 🌱 **Spring & Spring Boot**
+
+* Bean Scopes — singleton, prototype, request, session
+* IOC Container & Dependency Injection (types: constructor, setter, field)
+* Spring Profiles — environment-specific configs
+* Exception Handling — `@ExceptionHandler`, `@ControllerAdvice`
+* CRUD & JPA Repositories — differences & usage
+* `RestTemplate` usage
+* JWT & Auth Token — implementation & flow
+* **DB Configuration — how to configure multiple databases in Spring Boot**
+
+---
+
+### ⚙️ **Microservices**
+
+* Microservice Architecture — benefits & challenges vs Monolith
+* Saga Pattern — managing distributed transactions
+* Circuit Breaker Pattern — resilience design
+* Microservice Deployment Types — e.g., Docker, Kubernetes
+
+---
+
+### 📖 **Design & Best Practices**
+
+* SOLID Principles — especially Dependency Inversion
+* Swagger — API documentation and testing
+
+
+
+
+Muhammad Saad Amin
+3:23 PM
+1- JDK/JVM/JRE
+2- oop
+3- design pattern
+4- collections
+5- exception handling
+6- threading in java
+7- generics
+8- hashmaps
+9- hashsets
+10- toString /equals
+11- Atomic integers/volatile
+12- String pool/ String buffer/ String Builder
+13- Static classes/static keywords
+14- Immutable vs Mutable
+15- Rest vs Saop Api
+16- Heap vs Stack memory
+17- java 8 streams
+18- java 8 map & flat map  / map & tomap
+19- out of memeory 	 handling in java 8
+20- All objects in java inherited from
+21- Wrapper class (primitive vs non primitive )
+22- What are the two ways to create a thread?
+23- What are the different types of garbage collectors in Java?
+24- What is a finally block? Is there a case when finally will 	 execute?
+25- What are the differences between processes and threads
+26- hashmap collision
+27- Design Patterns
+28- join/fork/future
+29- peak in arrays
+30- repitions in string
+31- diamiond problem
+32- Cascading & its types
+33- Method Hiding
+34- Predicates
+35- COnstructor Chaining
+xx
+
+Spring boot
+1- dependency injection
+2- Spring IOC
+3- Spring Application context
+4- Spring maven/gradle
+5- Spring Annotations
+6- Spring bean
+7- JPA vs Crud repo
+8-Spring security
+9- native queries
+10- hibernate query language
+11- Join mapping in hibernate
+12- transient
+13- @Lob/@Basic(fetch = FetchType.LAZY)/@joincolumn
+14- Spingboot path variable
+15- swagger
+16- lazy vs eager loading
+17- OOP -> multiple inheritance
+18- OOP-> Create parent object with reference of child
+19- https://qxf2.com/blog/mysql-query-execution/
+
+MYSQL
+1- query exception
+2- joins
+3- mysql indexes
+4- union & union all
+5- differences primary vs unique key
+6- wildcards
+7- group by & having differences
+8- mysql query for excluding common values from joincolum
+9-normalization
+10-
+
+other
+microservices
+Tomcat
+linux
+GIT commands
+Kubernettes
+DOCkers
+
+different parametrs datatype
+cascadetype in spring
+predicate and functional
+springbean lazy loading
+mongoDB
+Transaction management on method, internal method, class , what will happend
+
+
+
+----------------------------     springboot anotations ----------------------------------
+1- @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "CLIENT_ID")
+	@Entity(name = "APPLICATION_COMMENTS")
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	    @OneToOne
+    @JoinColumn(name = "CATEGORY_ID")
+	   @Enumerated(EnumType.STRING)
+@AttributeOverrides({
+   @Lob
+      @Transient
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "COMPLAINT_ID")
+	    @JsonManagedReference
+  @Where
+  @MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)
+ @LastModifiedDate
+     @PreAuthorize("hasAuthority('ENTERPRISE') or hasAuthority('DEVELOPER')")
+    @PostMapping("/upload-user-application-file")
+    @Transactional
+	@CrossOrigin
+	@CurrentUser
+	 @Valid @RequestBody
+	 @Api
+	   @ApiOperation(value = "Save developer's plot")
+----------------- important links
+
+https://www.javainuse.com/spring/sprboot_sec
+
+https://www.javainuse.com/spring/sprsec
+
+https://www.javainuse.com/spring/sprsec_authprovider
+
+https://www.javatpoint.com/spring-boot-starter-web
+
+
+https://mkyong.com/spring-boot/spring-boot-spring-data-jpa-mysql-example/
+
+https://www.codejava.net/frameworks/spring-boot/form-authentication-with-jdbc-and-mysql
+
+
+https://www.codejava.net/frameworks/spring-boot/user-registration-and-login-tutorial
+
+
+https://www.javatpoint.com/spring-boot-rest-example
+
+https://codezup.com/deploy-spring-boot-war-to-external-tomcat/
+
+
+https://www.javainuse.com/spring/boot_swagger_annotations
+
+https://programmingsharing.com/configuration-connection-pool-in-springboot-c561b5b90b99
+
+https://www.springboottutorial.com/creating-microservices-with-spring-boot-part-1-getting-started
+
+https://www.techgeeknext.com/spring/spring-boot-security-token-authentication-jwt-mysql
+
+https://stackoverflow.com/questions/4560471/how-to-exclude-rows-that-dont-join-with-another-table
+
+https://www.javainuse.com/spring/boot_swaggersec
+https://howtodoinjava.com/java/stream/java-streams-by-examples/
+
+https://zetcode.com/all/#springboot
+
+
+
+
+more deep into highlevel questions
+
+scalibility and resilience
+DDD
+event driven microservices
+
+comperators/comperables for multiple variables in object
+
+scopes in spring
+
+by default scope in spring
+
+propogations/prepositons
+
+two face commit
+saaga pattern
+intermediate and terminal operations
+composite design patterns
+mongo Db ODM
+
+design patterns
+
+duplicate values /counts/peaks
+
+
+
+
+transaction delegation
+
+
+hashset /hashmap/hashtables
+
+comperable /comperator
+
+tutorialspoint.com/design_pattern/observer_pattern.htm
+mongoDB
+1- datastructures
+2- relationships
+3- queries
+4-
+
+
+24th may 2022
+design patterns
+composite design patterns
+difference in stream vs collections
+springscopes
+springboot annotations
+event driven msa
+method hiding in java
+null values in set and hashmap
+occurences of numbers/strings using string
+
+
+
+------------------
+
+
+  Compare three integer arrays and find which are equal using java 8 stream
+
+
+
+[Yesterday 5:57 pm] Inam Ullah Khan
+
+Find the duplicate from arrays using stream and remove duplicate values(ask najam bhai )
+
+
+
+[Yesterday 6:01 pm] Inam Ullah Khan
+
+do you know stream if yes then write remove null from List of strings
+
+ask na
+
+
+      //  Set<String> setOfList=new HashSet<>(testList);
+
+     //   List<String> testListWithOutDuplicate=new ArrayList<>(setOfList);
+
+      List<String> uniqueValues=testList.stream().filter(e->Collections.frequency(testList,e)==1 && e!=null).collect(Collectors.toList());
+
+uniqueValues.forEach(e->{
+    System.out.println(e);
+});
+        System.out.println("test");
+
+
+testList2.stream().collect(Collectors.groupingBy(Function.identity(),Collectors.counting())).entrySet().stream().filter(e->e!=null && e.getValue()>1).forEach(System.out::println);
+
+springboot anotations
+spring transactions
+two face commit
+saaga pattern
+domain driven design
+
+
+
+test gorilla
+
+
+-------------------
+how to convert a monolithic application to microservice application
+
+
+
+2- bean types
+3- Design Patterns
+builder/hibernate/singleton
+4- jwt
+5- testcases
+6- mockito testcases
+7- java 8 basics streams
+8- total interview time : 1 hour
+9- No questions
+10- Urdu / ENglish mixup
+
+----------------------------
+1- java beans
+2- spring security implement
+3- IntelliJ configure
+4- Spring AOP
+5- springboot annonations
+6- Transaction management
+
+--------------------------------
+
+
+
+
+
+
+int a=10;
+
+
+
+try{
+
+    a pay function perform huwa
+    a=20
+}
+catch(e){
+    a=5;
+}
+finally {
+    a=0
+}
+return a;
+
+------------------------
+
+Great! As a Java developer with 6 years of experience, you're likely already familiar with many core concepts. However, preparing for a Java interview typically involves revisiting key topics, practicing problem-solving, and learning how to communicate your technical expertise clearly.
+
+Here’s a structured approach to help you prepare for your Java interview:
+
+1. Key Topics for Java Interviews
+Make sure you are comfortable with the following topics, which are often covered in Java interviews:
+
+Core Java Concepts:
+Java Basics: Data types, operators, control statements (if-else, loops), switch, and type casting.
+Object-Oriented Programming (OOP): Classes, objects, inheritance, polymorphism, encapsulation, and abstraction.
+Be prepared to explain these principles with examples and discuss the advantages of OOP.
+Exception Handling: try-catch blocks, throws, throw, finally, custom exceptions, and checked vs unchecked exceptions.
+Collections Framework: List, Set, Map, Queue, and common implementations (ArrayList, HashMap, HashSet, LinkedList, etc.). Understand when to use each and their time complexities.
+Generics: Generic classes, methods, and wildcards (? extends, ? super).
+Multithreading and Concurrency:
+Threads, Runnable, ExecutorService, synchronized, locks, volatile, and Concurrent collections (e.g., ConcurrentHashMap`).
+Understanding of thread safety, race conditions, deadlocks, and thread pools.
+Java 8 Features:
+Lambda Expressions: Syntax, benefits, and usage.
+Streams API: Filtering, mapping, reducing, and collecting.
+Optional: Handling null values.
+Functional Interfaces: Consumer, Function, Supplier, and Predicate.
+Java Memory Management:
+Stack vs Heap memory, garbage collection, and JVM (Java Virtual Machine) internals.
+Java Garbage Collection: Different collectors (Serial, Parallel, CMS, G1), and memory management strategies.
+Advanced Java Topics:
+Design Patterns: Singleton, Factory, Observer, Strategy, etc.
+JVM Internals: Classloading, bytecode, and JIT compilation.
+Spring Framework (if applicable): Dependency Injection, Spring Boot, RESTful services, Spring Data, etc.
+Database Interaction: JDBC, JPA, Hibernate, and Spring Data.
+Version Control: Git basics (branches, merging, rebasing), resolving conflicts, and working with repositories.
+2. Java Interview Questions
+Here’s a mix of basic, intermediate, and advanced Java interview questions that you should practice:
+
+Core Java Questions:
+Explain the difference between == and .equals() in Java.
+
+What are the implications for comparing primitive types vs objects?
+What is the difference between an abstract class and an interface?
+
+When would you use one over the other?
+What is a final keyword?
+
+Explain how it's used with variables, methods, and classes.
+What is the difference between HashMap and ConcurrentHashMap?
+
+How does synchronization work in ConcurrentHashMap?
+Can you explain the concept of Autoboxing and Unboxing in Java?
+
+What problems can arise from Autoboxing?
+What is the purpose of the transient keyword in Java?
+
+Explain the concept of method overloading and method overriding.
+
+Can you give examples of when you'd use each?
+What is the significance of hashCode() and equals() in Java collections?
+
+How do these methods relate to the HashMap?
+What is the difference between String, StringBuilder, and StringBuffer?
+
+When would you choose each one?
+Concurrency and Multithreading Questions:
+What is the difference between synchronized and ReentrantLock?
+
+When would you use one over the other?
+What are the different thread states in Java?
+
+How does thread scheduling work?
+What are the differences between wait(), notify(), and notifyAll() methods?
+
+How would you prevent a deadlock in Java?
+
+Explain with an example.
+Explain the concept of thread safety.
+
+How would you make a collection or class thread-safe?
+Java 8 and Beyond:
+What are lambda expressions and how do they work?
+
+Provide an example and explain their benefits over anonymous classes.
+What is the Stream API in Java 8?
+
+How do map(), filter(), and reduce() work in streams?
+Explain Optional in Java 8.
+
+When would you use Optional to avoid NullPointerException?
+What are default methods in interfaces?
+
+Can you have a method with implementation in an interface?
+What is the purpose of @FunctionalInterface annotation?
+
+Advanced Java and Design Patterns:
+Explain the Singleton design pattern.
+
+How would you implement a thread-safe Singleton?
+What is Dependency Injection?
+
+How does it work in Spring, and what are its advantages?
+What is the Observer design pattern?
+
+Provide an example of its use case.
+How does Java handle memory management and garbage collection?
+
+What are the different garbage collectors in Java and how do they differ?
+Explain the difference between equals() and compareTo().
+
+Practical Coding Problems:
+Prepare for algorithmic questions that may require you to write code in an interview. Here are some common problem types:
+
+String Manipulation: Reverse a string, check for anagram, or find a palindrome.
+Array Problems: Find the largest sum of non-adjacent elements, merge sorted arrays, or find duplicates.
+Linked List: Reverse a linked list, detect a cycle, or find the middle element.
+Sorting and Searching: Implement quicksort or binary search.
+jix-gdxn-kwd

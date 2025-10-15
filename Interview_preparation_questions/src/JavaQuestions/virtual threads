@@ -1,0 +1,59 @@
+Great topic 👍 — Virtual Threads are an advanced feature in Java (introduced in Java 19 as preview, stabilized in Java 21) to make concurrency lightweight.
+
+🔹 What are Virtual Threads?
+
+A virtual thread is a lightweight thread managed by the JVM (not directly by the OS).
+
+Unlike platform threads (traditional Java threads), they don’t map 1-to-1 to OS threads.
+
+Thousands (even millions) of virtual threads can run concurrently without heavy memory/CPU cost.
+
+🔹 Why Virtual Threads?
+
+Traditional threads are expensive → each consumes ~1MB stack memory.
+
+Virtual threads use small memory and are scheduled by JVM, so they are cheap to create.
+
+Great for apps with I/O bound tasks (like servers, HTTP requests, DB calls).
+
+🔹 Example
+public class VirtualThreadDemo {
+    public static void main(String[] args) throws InterruptedException {
+        Runnable task = () -> {
+            System.out.println("Running in: " + Thread.currentThread());
+        };
+
+        // Create a virtual thread
+        Thread vt = Thread.ofVirtual().start(task);
+
+        vt.join();
+    }
+}
+
+
+👉 Output (example):
+
+Running in: VirtualThread[#21]/runnable@ForkJoinPool-1-worker-1
+
+🔹 Executor with Virtual Threads
+try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+    IntStream.range(1, 5).forEach(i ->
+        executor.submit(() -> {
+            Thread.sleep(1000);
+            System.out.println("Task " + i + " in " + Thread.currentThread());
+            return i;
+        })
+    );
+}
+
+🔹 Key Benefits
+
+Create millions of concurrent tasks.
+
+Simpler async code → looks synchronous but scales better.
+
+Perfect for web servers, microservices, DB queries.
+
+✅ Interview Short Answer:
+“Virtual Threads are lightweight threads introduced in Java 19/21 that allow us to run millions of concurrent tasks efficiently.
+ They reduce the overhead of traditional threads and are ideal for I/O-heavy applications.”

@@ -1,0 +1,54 @@
+🔹 thread.start()
+
+Creates a new thread in the JVM.
+
+The run() method executes in a separate call stack (parallel execution).
+
+Correct way to start a thread.
+
+Example:
+
+class MyThread extends Thread {
+    public void run() {
+        System.out.println("Running in: " + Thread.currentThread().getName());
+    }
+}
+
+public class Test {
+    public static void main(String[] args) {
+        MyThread t1 = new MyThread();
+        t1.start();  // starts a new thread
+        System.out.println("Main thread: " + Thread.currentThread().getName());
+    }
+}
+
+
+Output (order may vary):
+
+Main thread: main
+Running in: Thread-0
+
+🔹 thread.run()
+
+Does not create a new thread.
+
+Simply calls the run() method like a normal method.
+
+Executes in the current thread’s call stack (usually main).
+
+Example:
+
+MyThread t1 = new MyThread();
+t1.run();   // behaves like a normal method call, no new thread
+
+
+Output:
+
+Running in: main
+
+
+✅ Summary:
+
+start() → Spawns a new thread, runs run() in parallel.
+
+run() → Just a normal method call, no multithreading.

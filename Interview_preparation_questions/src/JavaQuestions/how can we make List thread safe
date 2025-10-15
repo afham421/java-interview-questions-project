@@ -1,0 +1,142 @@
+Got it 👍 you’re asking about updating a list while it’s being processed.
+This is a tricky area in Java because of ConcurrentModificationException that happens if you modify a list while iterating.
+
+Here are the safe ways 👇
+
+1. Use CopyOnWriteArrayList
+
+This list is designed for concurrent read/write.
+
+Every modification creates a new copy of the list internally.
+
+Best for more reads, fewer writes.
+
+import java.util.concurrent.CopyOnWriteArrayList;
+
+public class Example {
+    public static void main(String[] args) {
+        CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<>();
+        list.add("A");
+        list.add("B");
+
+        for (String s : list) {
+            if (s.equals("A")) {
+                list.add("C"); // Safe update during iteration
+            }
+        }
+
+        System.out.println(list); // [A, B, C]
+    }
+}
+
+2. Use Iterator with iterator.remove()
+
+Works only for removal, not for adding new elements.
+
+import java.util.*;
+
+public class Example {
+    public static void main(String[] args) {
+        List<String> list = new ArrayList<>(Arrays.asList("A", "B", "C"));
+
+        Iterator<String> it = list.iterator();
+        while (it.hasNext()) {
+            String s = it.next();
+            if (s.equals("B")) {
+                it.remove(); // Safe remove
+            }
+        }
+
+        System.out.println(list); // [A, C]
+    }
+}
+
+3. Collect updates separately, then apply
+
+Instead of modifying inside the loop, collect what to add/remove in a temp list.
+
+Apply changes after the iteration.
+
+List<String> list = new ArrayList<>(Arrays.asList("A", "B", "C"));
+List<String> toAdd = new ArrayList<>();
+
+for (String s : list) {
+    if (s.equals("A")) {
+        toAdd.add("D");
+    }
+}
+list.addAll(toAdd);
+
+System.out.println(list); // [A, B, C, D]
+
+4. Use Streams with mapping
+
+If you want to transform elements, better use streams.
+
+List<String> updated = list.stream()
+                           .map(s -> s.equals("A") ? "Z" : s)
+                           .toList();
+
+
+✅ 5. Collections.synchronizedList()
+
+Wraps a normal List with synchronized methods.
+
+import java.util.*;
+
+public class Example {
+    public static void main(String[] args) {
+        List<String> list = Collections.synchronizedList(new ArrayList<>());
+
+        // Safe add/remove across threads
+        list.add("A");
+        list.add("B");
+
+        // When iterating, must synchronize manually
+        synchronized (list) {
+            for (String s : list) {
+                System.out.println(s);
+            }
+        }
+    }
+}
+
+
+⚠️ Drawback: Single lock → may reduce performance under high concurrency.
+
+✅ 6. Manual Synchronization (Locks)
+
+Use ReentrantLock if you need fine-grained control.
+
+import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class Example {
+    private static final List<String> list = new ArrayList<>();
+    private static final ReentrantLock lock = new ReentrantLock();
+
+    public static void main(String[] args) {
+        lock.lock();
+        try {
+            list.add("A");
+        } finally {
+            lock.unlock();
+        }
+    }
+}
+
+✅ Rule of Thumb:
+
+Concurrent updates → Use CopyOnWriteArrayList or ConcurrentLinkedQueue.
+
+Single-thread safe removal → Use Iterator.remove().
+
+Transformations → Use streams.
+
+Rule of Thumb:
+
+Few writes, many reads → CopyOnWriteArrayList
+
+Balanced reads/writes → Collections.synchronizedList()
+
+High concurrency / queues → ConcurrentLinkedQueue

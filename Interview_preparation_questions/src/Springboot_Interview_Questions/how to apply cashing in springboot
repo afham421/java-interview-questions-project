@@ -1,0 +1,125 @@
+🚀 1. What is Caching in Spring Boot
+
+Caching means storing the result of a method call (like a DB query) so the next call with the same parameters is faster because it returns the stored result instead of running the expensive operation again.
+
+Spring Boot provides annotation-based caching using the Spring Cache Abstraction.
+
+⚙️ 2. Steps to Enable Caching
+🔸 Step 1: Add Dependency
+
+If you’re using Maven, add Spring Boot Starter Cache:
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-cache</artifactId>
+</dependency>
+
+
+For a simple in-memory cache, no extra library is needed.
+For production, you can use EhCache, Redis, Caffeine, etc.
+
+👉 Example for Redis cache:
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-redis</artifactId>
+</dependency>
+
+🔸 Step 2: Enable Caching in Your Application
+
+Add @EnableCaching to your main Spring Boot class:
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
+
+@SpringBootApplication
+@EnableCaching       // 🔥 Enables Spring’s annotation-based caching
+public class MyApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(MyApplication.class, args);
+    }
+}
+
+🔸 Step 3: Add Caching to Your Service Methods
+
+Use the @Cacheable annotation on the method whose result you want to cache.
+
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
+
+@Service
+public class ProductService {
+
+    @Cacheable("products")    // 🔥 Caches the result using the key = method arguments
+    public Product getProductById(Long id) {
+        System.out.println("Fetching from DB...");
+        // Simulate DB call
+        return new Product(id, "Laptop", 1500.0);
+    }
+}
+
+
+👉 Explanation:
+
+"products" is the cache name.
+
+The first time the method is called, the result is fetched from the DB and stored in the cache.
+
+The next time with the same ID, it will return from the cache (no DB call).
+
+🔸 Step 4: Clear or Update Cache
+
+Use @CacheEvict to remove data from cache when data changes.
+
+@CacheEvict(value = "products", key = "#id")
+public void deleteProduct(Long id) {
+    System.out.println("Deleting product from DB and cache...");
+    // delete from DB
+}
+
+
+Use @CachePut if you want to update the cache whenever the method is called:
+
+@CachePut(value = "products", key = "#product.id")
+public Product updateProduct(Product product) {
+    System.out.println("Updating DB and cache...");
+    return product;
+}
+
+🔥 3. Properties (Optional)
+
+You can customize cache behavior in application.properties:
+
+spring.cache.type=simple           # In-memory cache (default)
+# For Redis:
+# spring.cache.type=redis
+# spring.redis.host=localhost
+# spring.redis.port=6379
+
+⚡ 4. Key Annotations
+
+| Annotation       | Purpose                                             |
+| ---------------- | --------------------------------------------------- |
+| `@Cacheable`     | Stores the result in cache (if not already cached). |
+| `@CacheEvict`    | Removes data from cache.                            |
+| `@CachePut`      | Updates both cache and DB every time.               |
+| `@EnableCaching` | Enables Spring’s caching feature.                   |
+
+📂 5. Example Flow
+
+Call getProductById(1) → goes to DB → stores in cache → returns data.
+
+Call getProductById(1) again → returns from cache (fast, no DB hit).
+
+If product is deleted → @CacheEvict clears the cached entry.
+
+⚡ Quick Tips
+
+For small projects or testing, use SimpleCacheManager (in-memory).
+
+For scalable production, use Redis or EhCache.
+
+Always evict or update cache when the underlying data changes.
+
+Use meaningful cache names and keys.

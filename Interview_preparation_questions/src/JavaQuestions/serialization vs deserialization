@@ -1,0 +1,73 @@
+🔹 What is Serialization?
+
+Serialization in Java = converting an object into a byte stream so it can be:
+
+Stored (e.g. in a file or database)
+
+Transmitted (e.g. over network, API, sockets, RMI)
+
+Later deserialized back into the same object.
+
+ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("user.ser"));
+out.writeObject(user);   // Serialization
+
+🔹 Benefits of Serialization
+
+Persistence
+Save objects to files/databases and restore them later.
+
+Communication
+Send objects over a network between different JVMs or microservices.
+
+Caching
+Store ready-made objects in cache for fast retrieval.
+
+Deep Copy
+Can be used to clone complex objects (via serialize/deserialize).
+
+Distributed Systems
+Essential for technologies like RMI, JMS, Kafka, Hibernate, etc.
+
+🔹 Why do we use it?
+
+Because normal objects exist only in JVM memory.
+If the JVM stops → objects are gone.
+Serialization allows us to save and share objects across JVM restarts or between systems.
+
+✅ Interview Short Answer:
+Serialization lets us convert an object into a byte stream so it can be saved or transferred.
+ The main benefit is persistence and communication in distributed systems (e.g., saving to file, sending over network, caching).
+
+ 🔹 What is Deserialization?
+
+ Deserialization is the reverse of serialization.
+ It means converting a byte stream back into an object.
+
+ 👉 If you saved or sent an object using serialization, you can reconstruct the same object later with deserialization.
+
+ 🔹 Example in Java
+ // Deserialization: read object back
+ ObjectInputStream in = new ObjectInputStream(new FileInputStream("user.ser"));
+ User user = (User) in.readObject();
+ in.close();
+
+ System.out.println("User: " + user);
+
+ 🔹 Why is it Useful?
+
+ Retrieve stored objects from a file or DB.
+
+ Receive objects sent across a network.
+
+ Reconstruct session state (e.g., web servers).
+
+ 🔹 Key Point
+
+ Serialization → Object → Byte Stream
+
+ Deserialization → Byte Stream → Object
+
+ ✅ Interview Short Answer:
+ Deserialization is the process of converting a byte stream back into a Java object.
+  It allows us to restore objects that were previously serialized and saved or transmitted.
+
