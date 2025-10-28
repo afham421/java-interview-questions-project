@@ -1,0 +1,77 @@
+In Java, the method .intern() is used with String objects to manage and optimize memory usage — especially when you have many duplicate string values.
+
+Let’s break it down clearly 👇
+intern() Method
+
+intern() force karta hai String ko Pool me dalne ke liye.
+Example:
+
+String s1 = new String("Java");
+String s2 = s1.intern(); // Pool ka reference mil gaya
+
+
+🧠 What .intern() Does
+
+When you call:
+
+String interned = myString.intern();
+
+
+It tells Java:
+
+“Put this string into the String pool, and if an equal string already exists there, just use that one instead.”
+
+So it ensures that all identical string literals share the same memory reference.
+
+🔍 Example
+String s1 = new String("Hello");
+String s2 = new String("Hello");
+
+System.out.println(s1 == s2); // false (different objects)
+
+
+Now use intern():
+
+String s1 = new String("Hello").intern();
+String s2 = new String("Hello").intern();
+
+System.out.println(s1 == s2); // true (same reference)
+
+
+✅ Both now point to the same object in the String pool, saving memory.
+
+💡 Why It’s Useful
+
+Memory Optimization:
+Avoids creating multiple copies of the same string in memory.
+
+Reference Comparison:
+You can safely compare strings using == if both are interned.
+
+Performance in High-volume String Apps:
+For example, when you’re processing millions of repeated values (like IDs, names, etc.), interning can significantly reduce heap usage.
+
+⚠️ Important Notes
+
+The string pool (also known as the intern pool) is a special area in the Java heap that stores unique string literals.
+
+String literals in code are automatically interned by Java:
+
+String s1 = "Hello";
+String s2 = "Hello";
+System.out.println(s1 == s2); // true (already interned)
+
+
+But strings created with new String("...") are not interned automatically, so you need .intern() if you want to pool them.
+
+🧩 Real-World Use Case
+
+Imagine reading millions of rows from a database containing repeating city names:
+
+for (String city : citiesFromDB) {
+    city = city.intern();
+    // now all "Karachi" strings refer to one shared instance
+}
+
+
+This can save a lot of memory when working with repeated data.

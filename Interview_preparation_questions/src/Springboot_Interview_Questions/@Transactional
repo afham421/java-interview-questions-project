@@ -71,6 +71,64 @@ Edit
 public void updateData() {
     // your transactional logic
 }
+
+⚙️ @Transactional(rollbackFor = Exception.class)
+
+By default, Spring rolls back only for unchecked exceptions (i.e. subclasses of RuntimeException and Error).
+But sometimes you also want to roll back for checked exceptions (like IOException, SQLException, etc.).
+
+So:
+
+@Transactional(rollbackFor = Exception.class)
+
+
+means:
+
+Roll back the transaction for any type of Exception, both checked and unchecked.
+
+✅ Example:
+
+@Transactional(rollbackFor = Exception.class)
+public void processPayment() throws Exception {
+    saveTransaction();
+    if (someConditionFails) {
+        throw new Exception("Something went wrong");
+    }
+}
+
+
+Without rollbackFor, the transaction would not roll back because Exception is checked.
+With it, Spring ensures the whole transaction is rolled back.
+
+📖 @Transactional(readOnly = true)
+
+This tells Spring (and the underlying database connection) that this transaction is read-only — you are not going to modify data.
+
+It’s typically used for queries, reporting, or fetching data.
+
+Spring can optimize such transactions — for example:
+
+It might skip dirty checking in Hibernate (less overhead).
+
+The database might enforce or optimize read-only behavior.
+
+✅ Example:
+
+@Transactional(readOnly = true)
+public List<User> getAllUsers() {
+    return userRepository.findAll();
+}
+
+
+If you accidentally try to perform an update inside this method, some databases might throw an exception, or Spring might not flush the persistence context.
+
+🧠 Summary Table
+| Attribute                       | Purpose                                                    | Example                    |
+| ------------------------------- | ---------------------------------------------------------- | -------------------------- |
+| `rollbackFor = Exception.class` | Roll back for both checked & unchecked exceptions          | For full rollback coverage |
+| `readOnly = true`               | Optimize for read operations; no data modification allowed | Use for `SELECT` queries   |
+
+
 ✅ Propagation Types (Important in Microservices & Nested Calls)
 | Type           | Meaning                                                                |
 | -------------- | ---------------------------------------------------------------------- |
