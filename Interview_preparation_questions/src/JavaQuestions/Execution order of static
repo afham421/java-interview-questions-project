@@ -1,0 +1,125 @@
+This is a very common interview topic 👍
+I’ll explain execution order of static block, constructor, and static method in Java — step by step, with a clear example.
+
+🔹 Execution Order in Java (High Level)
+
+When a class is used, Java follows this order:
+
+1️⃣ Static variables
+2️⃣ Static blocks
+⬇
+3️⃣ main() method
+⬇
+4️⃣ Object creation (new)
+
+Instance variables
+
+Instance blocks
+
+Constructor
+
+⚠️ Static methods execute only when explicitly called
+
+🧩 Example Program (Must-Remember)
+class Test {
+
+    static {
+        System.out.println("1. Static Block");
+    }
+
+    Test() {
+        System.out.println("4. Constructor");
+    }
+
+    static void staticMethod() {
+        System.out.println("3. Static Method");
+    }
+
+    public static void main(String[] args) {
+        System.out.println("2. Main Method");
+
+        staticMethod();
+
+        Test t = new Test();
+    }
+}
+
+▶️ Step-by-Step Execution
+Step 1️⃣ Class Loading
+
+JVM loads class Test
+
+Executes static block
+
+1. Static Block
+
+Step 2️⃣ main() Starts
+2. Main Method
+
+Step 3️⃣ Static Method Call
+
+Executes only when called
+
+3. Static Method
+
+Step 4️⃣ Object Creation
+
+Constructor executes
+
+4. Constructor
+
+🖨️ Final Output
+1. Static Block
+2. Main Method
+3. Static Method
+4. Constructor
+
+🔍 Important Rules (Interview Gold)
+✔ Static Block
+
+Executes once
+
+Executes when class is loaded
+
+Used for static initialization
+
+✔ Constructor
+
+Executes every time object is created
+
+Used to initialize instance variables
+
+✔ Static Method
+
+Does not execute automatically
+
+Must be called explicitly
+
+Can access only static members
+
+❌ Common Interview Traps
+❓ Will constructor execute before static block?
+
+No ❌
+Static block always executes first.
+
+❓ Will static method run automatically?
+
+No ❌
+Only runs when called.
+
+❓ How many times static block runs?
+
+Once per class loading
+
+🧠 Memory View (Quick)
+
+Static block → Method Area
+
+Constructor → Heap (object creation)
+
+Static method → Method Area
+
+🟢 One-Line Interview Answer
+
+Static blocks execute first during class loading, constructors execute on object creation, and static methods execute only when explicitly called.

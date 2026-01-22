@@ -1,0 +1,106 @@
+The difference between start() and run() is a classic Java multithreading question 🔥
+I’ll explain it clearly, with examples, and interview-ready.
+
+1️⃣ What is run()?
+
+run() is a normal method
+
+It contains the code (task) to execute
+
+Calling run() does NOT create a new thread
+
+Example
+class MyThread extends Thread {
+    public void run() {
+        System.out.println("Thread running");
+    }
+}
+
+
+Calling:
+
+MyThread t = new MyThread();
+t.run();
+
+What happens?
+
+Runs in main thread
+
+No multithreading
+
+Just a method call
+
+2️⃣ What is start()?
+
+start() creates a new thread
+
+JVM calls run() internally
+
+Executes run() in a separate thread
+
+Example
+MyThread t = new MyThread();
+t.start();
+
+What happens?
+
+New thread created
+
+run() executed asynchronously
+
+True multithreading
+
+3️⃣ Core Difference (Side-by-Side)
+| Feature            | `run()`       | `start()`       |
+| ------------------ | ------------- | --------------- |
+| Creates new thread | ❌ No          | ✅ Yes           |
+| Calls `run()`      | ❌ Direct call | ✅ JVM calls     |
+| Thread execution   | Main thread   | Separate thread |
+| Asynchronous       | ❌ No          | ✅ Yes           |
+| Used for           | Normal method | Multithreading  |
+
+4️⃣ Output Example (Very Important)
+class Test extends Thread {
+    public void run() {
+        System.out.println(Thread.currentThread().getName());
+    }
+
+    public static void main(String[] args) {
+        Test t1 = new Test();
+        Test t2 = new Test();
+
+        t1.run();
+        t2.start();
+    }
+}
+
+Possible Output
+main
+Thread-0
+
+5️⃣ Interview Trap Question ⚠️
+❓ Can we call start() twice?
+t.start();
+t.start(); // ❌
+
+Answer:
+
+🚫 No
+
+Throws IllegalThreadStateException
+
+6️⃣ Correct Usage Pattern
+Best Practice
+new Thread(() -> {
+    System.out.println("Running in new thread");
+}).start();
+
+7️⃣ One-Line Interview Answer
+
+run() executes code like a normal method, while start() creates a new thread and then invokes run() internally.
+
+🟢 Summary
+
+Never call run() to start a thread
+
+Always call start() for multithreading

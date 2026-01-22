@@ -28,7 +28,7 @@ public class javaTrickyQuestion {
 
         int j = 0;
         for (System.out.println("Start"); j < 3; j++) {
-            System.out.println(j);
+            System.out.print(j);
         }
 //        A. Compilation Error
 //        B. Start 0 1 2
@@ -39,6 +39,7 @@ public class javaTrickyQuestion {
 
         // Question 3: What will be the output of the following code?
         int x = 5;
+        System.out.println();
         System.out.println(x++);
         System.out.println(++x);
 //        A. 5 7

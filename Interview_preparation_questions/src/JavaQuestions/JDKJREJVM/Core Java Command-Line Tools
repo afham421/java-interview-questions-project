@@ -17,9 +17,10 @@ Output: HelloWorld.class
 
 2. 🔎 javap — Java Class File Disassembler
 Usage: Displays bytecode-level method signatures and other class details.
-
+Why javap is called a Disassembler?
+Java source code → compiled into bytecode >>>>>>>>>>>
+javap disassembles that bytecode into a human-readable format >>>>>>>>>
 Example:
-
 
 javap HelloWorld
 or to see method internals:
@@ -33,13 +34,12 @@ Usage: Runs a compiled .class file or JAR.
 
 Example:
 
-
 java HelloWorld
+
 4. 📦 jar — Java Archive Tool
 Usage: Creates and manages .jar files (Java archives).
 
 Example:
-
 
 jar cf app.jar *.class
 cf = create, file name
@@ -49,15 +49,15 @@ Usage: Generates HTML documentation from Javadoc comments.
 
 Example:
 
-
 javadoc MyClass.java
+
 6. 🕵️‍♂️ jdb — Java Debugger
 Usage: Command-line debugger for Java programs.
 
 Example:
 
-
 jdb HelloWorld
+
 7. 📈 jconsole, jvisualvm, jstat, jmap, jstack
 These tools are for monitoring, profiling, and debugging running Java applications:
 

@@ -1,5 +1,6 @@
 👀 Observer Design Pattern in Java
-The Observer Pattern is a behavioral design pattern that allows one object (Subject) to notify multiple other objects (Observers) about changes in its state — automatically.
+The Observer Pattern is a behavioral design pattern that allows one object (Subject) to notify multiple other objects (Observers) about changes
+ in its state — automatically.
 
 🔍 Definition:
 When one object changes state, all its dependents are notified and updated automatically.

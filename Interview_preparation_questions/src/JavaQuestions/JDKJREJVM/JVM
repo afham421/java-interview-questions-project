@@ -3,11 +3,13 @@ The JVM is the engine that runs Java bytecode.
 It’s part of the JRE and is responsible for executing .class files created by the Java compiler.
 
 
-Yes, in the JVM, the instructions that are executed are in the form of Java bytecode instructions — a set of low-level, platform-independent instructions.
+Yes, in the JVM, the instructions that are executed are in the form of Java bytecode instructions — a set of low-level,
+ platform-independent instructions.
 
 🔹 What Are These Instructions?
-When you compile a Java file (.java), the javac compiler converts your code into a .class file, which contains bytecode. This bytecode is not machine code, but rather instructions for the JVM.
-
+When you compile a Java file (.java), the javac compiler converts your code into a .class file, which contains bytecode.
+ This bytecode is not machine code, but rather instructions for the JVM.
+JVM does not execute .class files as machine code. It interprets or JIT-compiles the bytecode into native machine instructions at runtime
 
 🔹 Key Responsibilities of JVM:
 

@@ -1,0 +1,106 @@
+Here’s a clear, simple explanation of static vs global, especially useful for Java (since you’re a Java developer).
+
+1️⃣ What is Static?
+Meaning
+
+static belongs to the class, not to an object.
+
+Only one copy exists in memory, shared by all objects.
+
+Static Variable (Java)
+class Employee {
+    static int companyCode = 101;
+    String name;
+}
+
+
+companyCode → shared
+
+name → per object
+
+Static Method
+class MathUtil {
+    static int add(int a, int b) {
+        return a + b;
+    }
+}
+
+
+Call without object:
+
+MathUtil.add(2, 3);
+
+Static Block
+static {
+    System.out.println("Loaded once when class loads");
+}
+
+
+Runs once, when class is loaded.
+
+2️⃣ What is Global?
+Important Truth
+
+👉 Java has NO global variables like C/C++.
+
+There is no keyword global in Java.
+
+3️⃣ Why People Say “Global” in Java
+
+When people say global variable in Java, they usually mean:
+
+Static Variable (Class-level)
+class Config {
+    public static String ENV = "PROD";
+}
+
+
+This behaves like a global variable, but it is actually static.
+
+4️⃣ Static vs Global (Comparison Table)
+| Feature        | Static (Java) | Global (C/C++) |
+| -------------- | ------------- | -------------- |
+| Keyword exists | ✅ Yes         | ✅ Yes          |
+| Belongs to     | Class         | Entire program |
+| Object needed  | ❌ No          | ❌ No           |
+| Encapsulation  | ✅ Yes         | ❌ Poor         |
+| Thread-safe    | ❌ By default  | ❌              |
+| Java support   | ✅             | ❌              |
+
+5️⃣ Example: “Global” Config in Java (Correct Way)
+public class AppConfig {
+    private AppConfig() {}  // prevent object creation
+
+    public static final String BASE_URL = "https://api.example.com";
+}
+
+
+Usage:
+
+String url = AppConfig.BASE_URL;
+
+6️⃣ Common Interview Question
+❓ Is static variable global in Java?
+
+Answer:
+
+No. Java does not support global variables.
+Static variables are class-level, not global.
+
+7️⃣ When to Use Static
+
+✔ Constants (static final)
+✔ Utility methods
+✔ Shared configuration
+✔ Counters
+
+8️⃣ When NOT to Use Static
+
+❌ Business state
+❌ User-specific data
+❌ Request-scoped data
+❌ Spring beans state
+
+🟢 One-Line Summary
+
+Java has no global variables. Static variables are often used as a safe, controlled alternative.

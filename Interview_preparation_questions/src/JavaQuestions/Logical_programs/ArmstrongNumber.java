@@ -10,20 +10,6 @@ public class ArmstrongNumber {
         System.out.println("Enter any number to check: ");
         int n=scanner.nextInt();//It is the number to check Armstrong
         int number = n; // this is not for first way it is for 2nd way
-        temp=n;
-        while(n > 0)
-        {
-            a=n%10;
-            n=n/10;
-            c=c+(a*a*a);
-        }
-        System.out.println("By 1st way");
-        if(temp==c)
-            System.out.println("armstrong number");
-        else
-            System.out.println("Not armstrong number");
-
-
 
         System.out.println("By 2nd way");
         if (isArmstrong(number)) {

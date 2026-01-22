@@ -4,7 +4,7 @@ public class IBMissingNumberProblem {
 
     public static void main(String[] args) {
 
-        int[] array = {4, 3, 8, 7, 5, 2, 6};
+        int[] array = {4, 3, 8, 1, 5, 2, 6};
         int missingNumber = findMissingNum(array);
         System.out.println("Missing Number is " + missingNumber);
     }

@@ -1,5 +1,6 @@
 ✅ What is instanceof in Java?
-The instanceof keyword is used to check whether an object is an instance of a specific class or implements a specific interface — including marker interfaces (interfaces with no methods).
+The instanceof keyword is used to check whether an object is an instance of a specific class or
+ implements a specific interface — including marker interfaces (interfaces with no methods).
 
 🧪 Syntax:
 java

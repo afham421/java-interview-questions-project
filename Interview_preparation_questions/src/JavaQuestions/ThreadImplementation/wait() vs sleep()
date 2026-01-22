@@ -1,0 +1,111 @@
+Here’s a clear, interview-ready explanation of wait() vs sleep() in Java 👇
+
+1️⃣ sleep() – Pause a Thread
+What it does
+
+Pauses the currently executing thread for a fixed time
+
+Does NOT release any lock (monitor)
+
+After time expires, thread becomes Runnable
+
+Where it belongs
+
+Thread.sleep()
+
+Static method of Thread class
+
+Example
+synchronized (this) {
+    Thread.sleep(2000);
+    // lock is still held here
+}
+
+2️⃣ wait() – Inter-Thread Communication
+What it does
+
+Makes the thread wait until notified
+
+Releases the lock on the object
+
+Used with notify() / notifyAll()
+
+Where it belongs
+
+wait() is a method of Object class
+
+Must be called inside a synchronized block
+
+Example
+synchronized (this) {
+    wait(); // releases lock
+    // resumes after notify()
+}
+
+3️⃣ Key Differences (Very Important)
+| Feature            | `wait()`                   | `sleep()`       |
+| ------------------ | -------------------------- | --------------- |
+| Class              | `Object`                   | `Thread`        |
+| Releases lock      | ✅ Yes                      | ❌ No            |
+| Needs synchronized | ✅ Yes                      | ❌ No            |
+| Wakes up by        | `notify()` / `notifyAll()` | Time expiry     |
+| Purpose            | Thread coordination        | Pause execution |
+
+4️⃣ What Happens to Lock? (Core Concept)
+sleep()
+synchronized(obj) {
+    Thread.sleep(1000);
+}
+
+
+Lock is NOT released
+
+Other threads BLOCKED
+
+wait()
+synchronized(obj) {
+    obj.wait();
+}
+
+
+Lock is released
+
+Other threads can enter synchronized block
+
+5️⃣ Illegal Usage (Interview Trap ⚠️)
+❌ This will throw exception:
+wait();   // IllegalMonitorStateException
+
+✅ Correct:
+synchronized(this) {
+    wait();
+}
+
+6️⃣ Real-World Example
+Producer–Consumer (Simple)
+synchronized (queue) {
+    while(queue.isEmpty()) {
+        queue.wait();
+    }
+    consume();
+}
+
+
+Producer:
+
+synchronized (queue) {
+    produce();
+    queue.notify();
+}
+
+7️⃣ One-Line Interview Answer
+
+wait() releases the lock and waits for notification, while sleep() pauses the thread for a fixed time without releasing any lock.
+
+🟢 Summary
+
+Use sleep() for timing/delays
+
+Use wait() for thread communication
+
+Never mix them blindly

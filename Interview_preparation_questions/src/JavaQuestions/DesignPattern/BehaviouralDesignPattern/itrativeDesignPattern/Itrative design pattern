@@ -1,5 +1,6 @@
 🔁 Iterator Design Pattern in Java
-The Iterator Pattern is a behavioral design pattern that provides a way to access elements of a collection sequentially without exposing the collection's internal structure.
+The Iterator Pattern is a behavioral design pattern that provides a way to access elements of a collection sequentially without
+ exposing the collection's internal structure.
 
 🧠 Definition:
 Allows traversing elements of a collection one-by-one using a common interface.

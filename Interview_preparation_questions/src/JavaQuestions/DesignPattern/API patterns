@@ -1,0 +1,235 @@
+API patterns (also called API design patterns) are standard ways to design, expose, and consume APIs so they are scalable, maintainable,
+and easy to use. Since you’re a Java backend developer, I’ll explain them in a clear, interview-oriented way with examples.
+
+1. REST (Representational State Transfer)
+
+📌 Most common API pattern
+
+Key ideas
+
+Resource-based URLs
+
+Uses HTTP methods
+
+Stateless
+
+Example
+
+GET    /users/10
+POST   /users
+PUT    /users/10
+DELETE /users/10
+
+
+HTTP methods meaning
+
+GET → read
+
+POST → create
+
+PUT → update (full)
+
+PATCH → update (partial)
+
+DELETE → remove
+
+✅ Simple
+✅ Cacheable
+❌ Over-fetching / under-fetching sometimes
+
+Used in: Spring Boot, Microservices
+
+2. CRUD Pattern
+
+📌 Built on REST, focused on database operations
+
+Operation	HTTP Method
+Create	POST
+Read	GET
+Update	PUT / PATCH
+Delete	DELETE
+
+Example
+
+POST /orders
+GET /orders/123
+
+
+✅ Easy to understand
+❌ Not good for complex workflows
+
+3. RPC (Remote Procedure Call)
+
+📌 API looks like calling a function
+
+Example
+
+POST /calculateTax
+POST /sendOtp
+
+
+Payload
+
+{
+  "amount": 1000
+}
+
+
+✅ Simple logic mapping
+❌ Not resource-oriented
+
+Used in: Legacy systems, internal services
+
+4. SOAP (Simple Object Access Protocol)
+
+📌 XML-based, strict contract
+
+Characteristics
+
+Uses WSDL
+
+Strong typing
+
+Heavy XML
+
+✅ Secure
+❌ Slow, verbose
+
+Used in: Banks, legacy enterprise systems
+
+5. GraphQL
+
+📌 Client decides what data it needs
+
+Example
+
+{
+  user(id: 10) {
+    name
+    email
+  }
+}
+
+
+✅ No over-fetching
+✅ Single endpoint
+❌ Complex caching
+
+Used in: Modern frontend-heavy apps
+
+6. Event-Driven API (Async Pattern)
+
+📌 Communication via events
+
+Example
+
+OrderCreated → Kafka Topic → Billing Service
+
+
+✅ Highly scalable
+✅ Loose coupling
+❌ Harder to debug
+
+Used in: Microservices, Kafka, RabbitMQ
+
+7. Webhooks
+
+📌 Server calls client on event
+
+Example
+
+Payment success → POST /webhook/payment
+
+
+✅ Real-time updates
+❌ Retry handling needed
+
+8. API Gateway Pattern
+
+📌 Single entry point for multiple services
+
+Responsibilities
+
+Authentication
+
+Rate limiting
+
+Logging
+
+Routing
+
+Flow
+
+Client → API Gateway → Microservices
+
+
+Tools
+
+Spring Cloud Gateway
+
+Kong
+
+NGINX
+
+9. Backend-for-Frontend (BFF)
+
+📌 Separate backend per frontend
+
+Example
+
+Mobile BFF
+Web BFF
+
+
+✅ Optimized responses
+❌ More services to maintain
+
+10. HATEOAS
+
+📌 API responses contain links
+
+Example
+
+{
+  "id": 10,
+  "links": {
+    "self": "/users/10",
+    "orders": "/users/10/orders"
+  }
+}
+
+
+✅ Discoverable APIs
+❌ Rarely used in practice
+
+11. Pagination, Filtering & Sorting Pattern
+
+📌 Handles large datasets
+
+Example
+
+GET /users?page=1&size=20&sort=name
+
+12. Versioning Pattern
+
+📌 Prevents breaking clients
+
+Common approaches
+
+/api/v1/users
+/api/v2/users
+
+
+or
+
+Accept: application/vnd.app.v1+json
+
+Interview Tip (Important ⭐)
+
+If interviewer asks:
+
+Which API pattern do you prefer and why?
+
+Answer:
+
+“I mostly use RESTful APIs with proper HTTP methods, pagination, versioning, and API Gateway for microservices. For async communication, I prefer event-driven APIs using Kafka.”
