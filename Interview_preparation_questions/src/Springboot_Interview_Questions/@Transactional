@@ -9,6 +9,22 @@ If any part fails or throws an exception, all changes are rolled back
 
 If everything succeeds, the transaction is committed
 
+3️⃣ Spring Boot @Transactional – Deep Flow
+🔁 What happens internally?
+@Transactional
+public void transfer() {
+    debit();
+    credit();
+}
+
+Behind the scenes 🧠
+Spring opens DB transaction
+Auto-commit = OFF
+Executes all SQL
+If no exception → COMMIT
+If RuntimeException → ROLLBACK
+DB ensures ACID
+
 🔍 Where is @Transactional Used?
 On service layer methods (recommended)
 

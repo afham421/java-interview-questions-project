@@ -1,9 +1,11 @@
 
 ✅ What Are RESTful Services?
-RESTful services are web services that follow the REST (Representational State Transfer) architectural style. They allow systems to communicate over HTTP using standard methods like GET, POST, PUT, and DELETE.
+RESTful services are web services that follow the REST (Representational State Transfer) architectural style.
+ They allow systems to communicate over HTTP using standard methods like GET, POST, PUT, and DELETE.
 
 🔍 Definition:
-A RESTful service is an API designed and implemented according to REST principles. It's resource-based, stateless, and uses standard HTTP methods and status codes.
+A RESTful service is an API designed and implemented according to REST principles.
+ It's resource-based, stateless, and uses standard HTTP methods and status codes.
 
 💡 Key Characteristics of RESTful Services:
 Principle	            Description

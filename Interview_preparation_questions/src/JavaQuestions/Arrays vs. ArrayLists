@@ -1,3 +1,7 @@
+Array: Primitive types (int, char, double) aur objects dono store kar sakta hai.
+
+ArrayList: Sirf objects store karta hai. Agar primitive store karna ho toh wrapper class use karni padti hai (jaise int → Integer).
+
 ✅ Contiguous Memory in Arrays vs. ArrayLists
 🔹 Arrays:
 Arrays in Java are stored in contiguous (continuous) memory locations.

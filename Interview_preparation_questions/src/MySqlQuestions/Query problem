@@ -1,0 +1,35 @@
+Aapko employee name aur uske department ka naam chahiye.
+Maan lete hain department_ids ek single department id hai (agar multiple hain to relation alag hoga).
+
+SQL Query:
+
+SELECT e.name, d.dept_name
+FROM Employees e
+JOIN Departments d
+ON e.department_ids = d.department_id;
+
+
+
+if ids coma , separate
+
+1.
+SELECT e.name, d.dept_name
+FROM Employees e
+JOIN Departments d
+ON FIND_IN_SET(d.department_id, e.department_ids);
+
+
+2.
+SELECT e.name AS employee_name,
+       d.dept_name AS department_name
+FROM Employees e
+JOIN Departments d
+  ON FIND_IN_SET(d.department_id, e.department_ids) > 0;
+
+3.
+Using STRING_SPLIT
+
+SELECT e.name, d.dept_name
+FROM Employees e
+JOIN STRING_SPLIT(e.department_ids, ',') s
+JOIN Departments d ON d.department_id = s.value;

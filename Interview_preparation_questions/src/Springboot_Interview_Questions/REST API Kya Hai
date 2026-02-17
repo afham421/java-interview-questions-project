@@ -1,0 +1,49 @@
+REST API Kya Hai?
+
+REST ka matlab hai Representational State Transfer — ye ek architecture style hai jo web services banane ke liye use hota hai.
+REST API ka kaam hota hai client (browser, mobile app) aur server ke beech me data exchange karna, mostly HTTP protocol use karke.
+
+1. REST API ke Principles
+
+Stateless – Har request independent hoti hai, server previous request ka data ya state yaad nahi rakhta.
+
+Client-Server – Client UI handle kare, server data/business logic handle kare.
+
+Uniform Interface – Standard way of communication (URLs, methods, responses).
+
+Cacheable – Responses cache kiye ja sakte hain performance improve karne ke liye.
+
+2. REST me Common HTTP Methods
+| Method | Kaam (Roman Urdu)                 |
+| ------ | --------------------------------- |
+| GET    | Data read/retrieve karna          |
+| POST   | Naya data create karna            |
+| PUT    | Data update karna (poora replace) |
+| PATCH  | Data update karna (partially)     |
+| DELETE | Data delete karna                 |
+
+3. Example URL Structure
+GET    /api/users           → sab users ka data
+GET    /api/users/5         → sirf user id 5 ka data
+POST   /api/users           → naya user create
+PUT    /api/users/5         → user id 5 update
+DELETE /api/users/5         → user id 5 delete
+
+4. REST API ka Data Format
+
+Mostly JSON ya XML hota hai.
+Example JSON Response:
+
+{
+  "id": 5,
+  "name": "Talha",
+  "email": "talha@example.com"
+}
+
+5. REST API ke Advantages
+
+Simple aur easy to understand
+
+Language independent (Java, Python, JS sab use kar sakte hain)
+
+Scalability aur flexibility zyada hoti hai

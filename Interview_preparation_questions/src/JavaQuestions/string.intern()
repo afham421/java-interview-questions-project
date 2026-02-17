@@ -1,4 +1,5 @@
-In Java, the method .intern() is used with String objects to manage and optimize memory usage — especially when you have many duplicate string values.
+In Java, the method .intern() is used with String objects to manage
+and optimize memory usage — especially when you have many duplicate string values.
 
 Let’s break it down clearly 👇
 intern() Method

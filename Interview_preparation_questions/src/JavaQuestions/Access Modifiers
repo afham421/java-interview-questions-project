@@ -1,0 +1,53 @@
+Access Modifiers in Java (Roman Urdu me)
+
+Java me access modifiers wo keywords hain jo decide karte hain class, variable, method ka access scope (kaun use kar sakta hai).
+
+1. public
+
+Access: Har jagah se accessible (same class, same package, different package, subclass).
+
+Example:
+
+public int age;
+
+
+Matlab koi bhi class is age ko access kar sakti hai.
+
+2. private
+
+Access: Sirf usi class ke andar accessible jahan define hua hai.
+
+Example:
+
+private String name;
+
+
+Dusri class se direct access nahi hoga, getter/setter use karna padega.
+
+3. protected
+
+Access:
+
+Same package ke andar → accessible
+
+Different package → sirf subclasses me accessible
+
+Example:
+
+protected void display() { }
+
+4. default (package-private)
+
+Access: Agar koi modifier nahi lagaya toh default hota hai → sirf same package me accessible.
+
+Example:
+
+int count; // default
+
+
+| Modifier  | Same Class | Same Package | Subclass (diff package) | Other Packages |
+| --------- | ---------- | ------------ | ----------------------- | -------------- |
+| public    | ✅          | ✅            | ✅                       | ✅              |
+| protected | ✅          | ✅            | ✅                       | ❌              |
+| default   | ✅          | ✅            | ❌                       | ❌              |
+| private   | ✅          | ❌            | ❌                       | ❌              |

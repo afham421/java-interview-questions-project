@@ -11,6 +11,14 @@ public class Record_class {
 // Limitations
 // No Inheritance: Records cannot extend other classes. They implicitly extend java.lang.Record.
 // Immutable Fields: Once a record is created, its fields cannot be modified.
+
+//    DTOs k liye best practice Java 17 mein
+//    Use Records agar DTO immutable chahiye (jo ke zyada secure aur safe hota hai).
+//    Agar aapko mutable DTO chahiye (jisme setters ka use karna ho), to phir normal class hi use karni hogi.
+//            👉 Matlab simple lafzon mein:
+//    Immutable DTOs → Record use karo
+//    Mutable DTOs → Normal Class use karo
+
     public static void main(String[] args) {
         Point point = new Point(10, 20);
 

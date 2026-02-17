@@ -1,0 +1,38 @@
+🔹 Before (Traditional switch statement)
+String day = "MONDAY";
+int num;
+
+switch (day) {
+    case "MONDAY":
+        num = 1;
+        break;
+    case "TUESDAY":
+        num = 2;
+        break;
+    default:
+        num = 0;
+}
+
+❌ Problems with old style
+
+Required break (easy to forget → bugs)
+
+More boilerplate
+
+Not an expression (can’t assign directly)
+
+Less readable
+
+🔹 After (Java 12+ / 14+ / 17+)
+
+Your modern version (switch expression):
+
+int num = switch (day) {
+    case "MONDAY" -> 1;
+    case "TUESDAY" -> 2;
+    default -> 0;
+};
+
+🧠 Interview one-liner
+
+“Switch expressions allow switch to return a value, eliminate fall-through, and improve readability using arrow syntax.”

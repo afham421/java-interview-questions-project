@@ -120,8 +120,34 @@ public class streamsOperations {
                 .forEach(System.out::println);
 
 
+        List<Product> products = Arrays.asList(
+                new Product("Laptop", 1200),
+                new Product("Mobile", 800),
+                new Product("Tablet", 400)
+        );
+
+        // stream se sirf names ka list
+        List<String> namessss = products.stream()
+                .map(Product::name) // sirf name uthaya
+                .collect(Collectors.toList());
+        System.out.println(namessss);
+
+
+        double minPrice = 500; // yahan aap apna threshold dal saktay ho
+
+        List<String> namesGreater = products.stream()
+                .filter(p -> p.price() > minPrice) // sirf wo jo minPrice se zyada hain
+                .map(Product::name) // sirf name uthaya
+                .sorted()
+                .collect(Collectors.toList());
+
+        System.out.println(namesGreater);
     }
+
+
 }
+
+record Product(String name, int price){}
 
 class User {
     private String name;

@@ -1,0 +1,50 @@
+REST API me GET mapping ke liye best convention ka matlab hai ke aapke URL design aur naming clean, consistent, aur industry standards follow karein.
+Main aapko Roman Urdu me best practices bata deta hoon:
+
+1. Nouns use karein, Verbs nahi
+
+❌ Galat: /getAllUsers
+✅ Sahi: /users
+
+Reason: HTTP method (GET) already batata hai ke hum data fetch kar rahe hain, isliye URL me verb likhne ki zarurat nahi.
+
+2. Plural form use karein
+
+Resource names plural hon taki consistent lagein.
+✅ /users → saare users
+✅ /users/10 → sirf ek user
+
+3. Hierarchy dikhayein (Nested Resources)
+
+Agar ek resource ka relation dusre se ho, to URL me hierarchy dikhayein.
+Example:
+✅ /users/10/orders → user ID 10 ke saare orders
+✅ /users/10/orders/5 → ek specific order
+
+4. Filters aur Parameters ka use karein
+
+GET request me search ya filter karne ke liye query params use karein.
+✅ /users?role=admin
+✅ /products?category=mobile&sort=price
+
+5. Hyphen (-) ka use karein, underscore (_) nahi
+
+Reason: Hyphen URLs me zyada readable hota hai aur SEO friendly hota hai.
+✅ /user-profiles
+❌ /user_profiles
+
+6. Lowercase use karein
+
+✅ /user-profiles
+❌ /UserProfiles
+
+Example Best GET Mapping:
+
+@GetMapping("/users")
+public List<User> getAllUsers() { ... }
+
+@GetMapping("/users/{id}")
+public User getUserById(@PathVariable Long id) { ... }
+
+@GetMapping("/users/{id}/orders")
+public List<Order> getUserOrders(@PathVariable Long id) { ... }

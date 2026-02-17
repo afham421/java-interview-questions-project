@@ -1,0 +1,10 @@
+4. Text Blocks
+
+Multi-line strings likhne ka easy tareeqa.
+
+String json = """
+    {
+        "name": "Talha",
+        "age": 25
+    }
+    """;
