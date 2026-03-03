@@ -1,0 +1,89 @@
+1️⃣ Covering Index
+📌 What is a Covering Index?
+
+A covering index is an index that contains all the columns needed by the query, so MySQL does not need to read the table (no back lookup).
+
+Example Table
+users(
+  id,
+  created_date,
+  role_type,
+  salary
+)
+
+Index:
+
+CREATE INDEX idx_test
+ON users (created_date, role_type);
+❌ Normal Query (Not Covering)
+SELECT salary
+FROM users
+WHERE created_date = '2025-09-12'
+  AND role_type = 'ADMIN';
+
+Index has:
+
+created_date ✅
+
+role_type ✅
+
+salary ❌ (not in index)
+
+So MySQL:
+
+Uses index to find rows
+
+Goes back to table to fetch salary
+
+This is called:
+
+Back to table lookup (bookmark lookup)
+
+✅ Covering Index Version
+
+If we create:
+
+CREATE INDEX idx_test
+ON users (created_date, role_type, salary);
+
+Now the query is fully satisfied by index.
+
+🔥 MySQL shows in EXPLAIN:
+
+Using index
+🎯 Interview Answer
+
+A covering index avoids table lookup because all required columns exist inside the index.
+
+It improves performance significantly.
+
+2️⃣ Selectivity
+📌 What is Selectivity?
+
+Selectivity measures how unique a column's values are.
+
+Formula:
+
+Selectivity = unique values / total rows
+Example
+
+If table has 1,000,000 rows:
+
+| Column    | Unique Values | Selectivity |
+| --------- | ------------- | ----------- |
+| gender    | 2             | Very Low ❌  |
+| role_type | 3             | Low ❌       |
+| email     | 1,000,000     | Very High ✅ |
+
+🔥 Rule
+
+High selectivity column = good for index
+Low selectivity column = bad for index
+
+Interview Point
+
+Indexes are most effective on columns with high cardinality (high uniqueness).
+
+🧠 Very Strong Interview Closing Line
+
+Index design should be based on query patterns, equality conditions first, then range, and high selectivity columns early in composite index.

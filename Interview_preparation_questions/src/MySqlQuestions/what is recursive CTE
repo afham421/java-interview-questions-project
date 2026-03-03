@@ -1,0 +1,74 @@
+Here’s a simple recursive CTE example in SQL (commonly asked in interviews).
+
+✅ Example 1: Generate Numbers from 1 to 5
+WITH RECURSIVE numbers AS (
+    -- Anchor member (starting point)
+    SELECT 1 AS num        // base query
+
+    UNION ALL
+
+    -- Recursive member
+    SELECT num + 1   // recursive query
+    FROM numbers
+    WHERE num < 5     // condition check
+)
+SELECT * FROM numbers;
+🔎 Output:
+1
+2
+3
+4
+5
+🧠 How It Works
+
+A recursive CTE has 2 parts:
+
+Anchor Query → Starting value
+
+SELECT 1 AS num
+
+Recursive Query → Refers to itself
+
+SELECT num + 1 FROM numbers WHERE num < 5
+
+UNION ALL → Combines anchor + recursive results.
+
+Stops when condition fails (num < 5).
+
+✅ Real Interview Example (Hierarchy)
+
+Suppose we have an employees table:
+
+id	name	manager_id
+1	CEO	NULL
+2	Ali	1
+3	Ahmed	2
+4	Sara	2
+Query to get employee hierarchy:
+WITH RECURSIVE emp_hierarchy AS (
+    -- Anchor (Top level manager)
+    SELECT id, name, manager_id
+    FROM employees
+    WHERE manager_id IS NULL
+
+    UNION ALL
+
+    -- Recursive part
+    SELECT e.id, e.name, e.manager_id
+    FROM employees e
+    JOIN emp_hierarchy eh ON e.manager_id = eh.id
+)
+SELECT * FROM emp_hierarchy;
+🎯 When Recursive CTE is Used
+
+Tree / Hierarchy data
+
+Organizational structure
+
+Category tree
+
+Folder structure
+
+Bill of materials
+
+Generating sequences

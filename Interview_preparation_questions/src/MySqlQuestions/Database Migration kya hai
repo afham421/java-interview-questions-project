@@ -1,0 +1,52 @@
+Database Migration kya hai?
+
+Database migration ka matlab hai database ki structure (schema) mein changes ko manage aur track karna.
+
+Matlab agar aap production app chalate ho aur aapko naye columns add karne hain,
+tables change karne hain, constraints lagani hain → to manually database update karna risky hota hai.
+Isliye hum migration tools use karte hain jo ye changes step by step track karte hain
+aur sab environments (dev, test, prod) mein same changes apply kar dete hain.
+
+Example situation
+
+Pehle aapke paas table hai:
+
+CREATE TABLE users (id INT PRIMARY KEY, name VARCHAR(100));
+
+
+Ab requirement aayi ke email column bhi add karna hai.
+Agar aap manually SQL chalate ho to sab developers ko batana padega.
+Lekin agar aap migration script banao to wo automatically sab environments mein run ho jayega.
+
+ALTER TABLE users ADD email VARCHAR(100);
+
+Java world mein famous migration tools
+
+Flyway (zyada simple aur commonly use hota hai)
+
+SQL scripts ya Java-based migrations likh sakte ho.
+
+Files ka naming convention hota hai like:
+V1__create_users.sql, V2__add_email_to_users.sql
+
+Liquibase
+
+Thoda advanced hai, XML, YAML, JSON aur SQL sab support karta hai.
+
+Zyada complex migrations ke liye use hota hai.
+
+Migration ka faida
+
+Sab developers ka database schema same rehta hai.
+
+Manual SQL run karne ki zarurat nahi.
+
+Version control system ke through track hota hai (git mein scripts save hote hain).
+
+Deployment easy aur safe hoti hai.
+
+Roman Urdu Summary:
+
+Database migration ka matlab hai ke database schema ke changes ko step by step scripts ki form mein track
+ karna aur automatic apply karna, taake dev, test, aur production sab jagah database ek jaisa ho.
+Spring Boot projects mein mostly Flyway ya Liquibase use hota hai.

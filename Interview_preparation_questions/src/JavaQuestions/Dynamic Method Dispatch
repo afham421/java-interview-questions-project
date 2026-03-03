@@ -1,0 +1,81 @@
+🔹 Dynamic Method Dispatch (Java)
+
+Dynamic Method Dispatch is a mechanism by which a call to an overridden method is resolved at runtime, not at compile time.
+
+It is one of the core concepts behind Runtime Polymorphism in Java.
+
+✅ Simple Definition (Interview Style)
+
+Dynamic Method Dispatch is the process where a method call is resolved at runtime based on the object being referred to, not the reference type.
+
+🔹 Example in Java
+class Animal {
+    void sound() {
+        System.out.println("Animal makes sound");
+    }
+}
+
+class Dog extends Animal {
+    void sound() {
+        System.out.println("Dog barks");
+    }
+}
+
+public class Test {
+    public static void main(String[] args) {
+        Animal obj = new Dog();   // Upcasting
+        obj.sound();              // Dynamic Method Dispatch
+    }
+}
+🔹 Output:
+Dog barks
+🔎 Why?
+
+Reference type → Animal
+
+Object type → Dog
+
+Method executed → Dog’s sound() method
+
+👉 Because Java decides at runtime which overridden method to call.
+
+🔹 Important Points
+
+Only works with method overriding
+
+Only applies to non-static methods
+
+Decision happens at runtime
+
+Based on object type, not reference type
+
+🔹 When It Does NOT Work
+❌ Static methods
+
+Static methods are resolved at compile time (Method Hiding).
+
+❌ Variables
+
+Instance variables are resolved based on reference type.
+
+🔹 Real-Life Example (Interview Explanation)
+
+Think of:
+
+Animal a = new Dog();
+
+You are saying:
+
+"I know it's an Animal reference, but at runtime I will decide which real animal it is."
+
+🔹 Difference from Compile-Time Polymorphism
+| Feature            | Compile Time   | Runtime     |
+| ------------------ | -------------- | ----------- |
+| Method Overloading | ✅ Yes          | ❌ No        |
+| Method Overriding  | ❌ No           | ✅ Yes       |
+| Decision Time      | Compile time   | Runtime     |
+| Based On           | Reference type | Object type |
+
+🎯 Interview One-Liner
+
+Dynamic Method Dispatch allows Java to support runtime polymorphism by resolving overridden methods at runtime using the object’s actual type.

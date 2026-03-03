@@ -5,7 +5,8 @@ Indexing is a database optimization technique used to speed up the retrieval of 
 Index is like a book index – it helps the database find data faster, without scanning the whole table.
 
 🔧 How It Works:
-When you create an index on a column (e.g., name), the database creates a separate structure that holds the values of that column in sorted order, along with pointers to the actual rows.
+When you create an index on a column (e.g., name), the database creates a separate structure that holds the values of that column in sorted order,
+ along with pointers to the actual rows.
 
 So when you run a SELECT query with WHERE name = 'John', the database looks in the index first.
 

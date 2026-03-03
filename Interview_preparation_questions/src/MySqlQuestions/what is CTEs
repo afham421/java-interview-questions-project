@@ -10,6 +10,7 @@ WITH cte_name AS (
     SELECT ...
 )
 SELECT * FROM cte_name;
+
 🔹 Example:
 sql
 Copy
@@ -24,6 +25,9 @@ This creates a virtual table TopEmployees that contains employees with salary > 
 
 🔹 Uses of CTEs:
 Improve query readability (instead of subqueries)
+
+
+
 
 Reuse logic within a single SQL
 

@@ -1,0 +1,159 @@
+Let’s clearly understand Offset Pagination vs Cursor Pagination.
+
+1️⃣ Offset Pagination
+📌 What it is
+
+Uses LIMIT and OFFSET in SQL.
+
+SELECT *
+FROM users
+ORDER BY id
+LIMIT 10 OFFSET 20;
+
+👉 This means:
+
+Skip first 20 rows
+
+Return next 10 rows
+
+📌 How it works
+
+If:
+
+Page size = 10
+
+Page number = 3
+
+Then:
+
+OFFSET = (pageNumber - 1) * pageSize
+OFFSET = (3 - 1) * 10 = 20
+📌 Example
+
+Page 1:
+
+LIMIT 10 OFFSET 0
+
+Page 2:
+
+LIMIT 10 OFFSET 10
+
+Page 3:
+
+LIMIT 10 OFFSET 20
+📌 Advantages
+
+✅ Simple to implement
+✅ Easy to understand
+✅ Allows jumping directly to page 50
+
+📌 Problems
+
+❌ Slow for large datasets
+
+If OFFSET = 1,000,000
+Database still scans first 1,000,000 rows and discards them.
+
+❌ Data inconsistency
+
+If someone inserts a record while paging:
+
+You may see duplicate data
+
+Or miss some records
+
+2️⃣ Cursor Pagination (Keyset Pagination)
+📌 What it is
+
+Instead of OFFSET, we use a reference column (cursor) like id, created_at.
+
+SELECT *
+FROM users
+WHERE id > 20
+ORDER BY id
+LIMIT 10;
+
+Here:
+
+20 is the last id from previous page
+
+This is called the cursor
+
+📌 How it works
+
+Page 1:
+
+SELECT * FROM users
+ORDER BY id
+LIMIT 10;
+
+Last id returned = 10
+
+Page 2:
+
+SELECT * FROM users
+WHERE id > 10
+ORDER BY id
+LIMIT 10;
+
+Page 3:
+
+WHERE id > 20
+📌 Advantages
+
+✅ Much faster for large datasets
+✅ Uses index properly
+✅ No skipping/scanning millions of rows
+✅ More consistent with inserts
+
+📌 Limitations
+
+❌ Cannot jump directly to page 50
+❌ Needs a stable, indexed column (like id or created_at)
+❌ Slightly more complex implementation
+
+🔥 Performance Comparison
+| Feature                | Offset Pagination | Cursor Pagination |
+| ---------------------- | ----------------- | ----------------- |
+| Large data performance | ❌ Slow            | ✅ Fast            |
+| Jump to any page       | ✅ Yes             | ❌ No              |
+| Handles inserts well   | ❌ No              | ✅ Yes             |
+| Implementation         | Easy              | Medium            |
+
+🎯 When to Use What?
+✅ Use Offset Pagination When:
+
+Small dataset
+
+Admin panel
+
+Need direct page navigation
+
+✅ Use Cursor Pagination When:
+
+Large dataset
+
+Infinite scroll
+
+APIs
+
+Social media feeds
+
+High performance systems
+
+💡 Real World Example
+
+Instagram, Twitter → Cursor pagination
+
+Admin dashboards → Offset pagination
+
+🚀 Interview Answer (Short Version)
+
+If interviewer asks:
+
+What is difference between offset and cursor pagination?
+
+You can say:
+
+Offset pagination uses LIMIT and OFFSET and is easy but slow for large datasets because database scans skipped rows.
+Cursor pagination uses a reference column like id and is more efficient and consistent for large datasets, but does not allow direct page jumping.

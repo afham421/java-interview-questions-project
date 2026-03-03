@@ -60,7 +60,8 @@ public class AnimalService {
     }
 }
 📌 Rules
-The string in @Qualifier("...") must match the bean name — usually the class name with lowercase first letter (unless overridden with @Component("name") or @Bean(name = "...")).
+The string in @Qualifier("...") must match the bean name — usually the class name with lowercase first letter
+ (unless overridden with @Component("name") or @Bean(name = "...")).
 
 You can also use @Qualifier with @Bean methods.
 

@@ -1,0 +1,87 @@
+📂 Linux Filesystem Hierarchy — Key Roles & Directories
+🌀 Root Directory (/)
+
+This is the top-level directory — the base of all files and directories in Linux. Everything starts from here.
+
+📁 Important Directories Under /
+| Directory               | Purpose                                                                                                            |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **`/bin`**              | Essential executable programs (basic commands like `ls`, `cp`, `mv`) needed by all users.  |
+| **`/sbin`**             | System **administration binaries** used by the admin/root (like `fsck`, `shutdown`). noraml user cannot access      |
+| **`/etc`** (editable text configuration)             | System-wide **configuration files** (network configs, service settings).                  |
+| **`/home`**             | Personal home directories for regular users (e.g., `/home/alice`).    each user have directory                     |
+| **`/root`**             | Home directory for the **root (admin) user**.                                                   |
+| **`/var`**              | **Variable data** — logs, caches, mail, and files that grow/change constantly.                    |
+| **`/usr`**              | User programs and utilities (non-essential system apps).                                           |
+| **`/tmp`**              | Temporary files (cleared on reboot).                                                      |
+| **`/boot`**             | Contains the **kernel and bootloader files** to start the system.                         |
+| **`/dev`**              | **Device files** representing hardware devices (disks, terminals).                        |
+| **`/mnt` / `/media`**   | Mount points for removable or temporarily attached filesystems.                            |
+| **`/proc` / `/sys`**    | **Virtual filesystems** showing process and system info.                                   |
+| **`/opt`**              | Optional add-on or third-party software details.                                                   |
+| **`/lib` / `/usr/lib`** | Shared **library files** used by binaries.     essential libraries required at runtime the app                                           |
+    /srv                    stores service-specific data that is served to clients over the network.
+    /srv/http/              So if someone opens your website, the server reads files from /srv.
+ /sys                       directory is a virtual filesystem called sysfs. It provides information about hardware devices and kernel subsystems directly from the Linux kernel.
+
+Difference Between /sys and /proc
+| `/sys`                                 | `/proc`                            |
+| -------------------------------------- | ---------------------------------- |
+| Focused on hardware & devices          | Focused on processes & system info |
+| Structured device model                | Process-based virtual filesystem   |
+| Can sometimes modify kernel parameters | Mostly read-only system info       |
+
+
+🧠 What “Role” Means in Linux
+
+In Linux, each major directory serves a specific role in how the system works — it keeps things organized so that:
+
+Programs have a predictable place to live
+
+Configurations are kept separate from logs and user files
+
+User data doesn’t get mixed with system files
+
+Administers can control and secure system parts more easily
+
+For example:
+
+/etc holds system settings, not programs.
+
+/bin holds executable commands needed even during system boot.
+
+/var stores files that change over time, like logs.
+
+🧩 How Permissions Fit In (Quick Context)
+
+Linux uses a permission model where files/directories have read/write/execute rights for:
+
+Owner
+
+Group
+
+Others
+
+This determines who can read, write, or execute files — very important for system directories like /etc or /bin.
+
+🧭 Summary
+
+Linux directories are organized in a hierarchical tree (root at top), and each one has a role:
+
+System executables: /bin, /sbin
+
+Configs: /etc
+
+User data: /home
+
+Logs & variable data: /var
+
+Boot files: /boot
+
+Devices: /dev
+
+Temporary data: /tmp
+
+Libraries: /lib, /usr/lib
+
+Application space: /usr, /opt

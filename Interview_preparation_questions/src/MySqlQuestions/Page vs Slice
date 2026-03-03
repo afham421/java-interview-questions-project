@@ -1,0 +1,68 @@
+🟢 Page vs Slice (Important Interview Point)
+1️⃣ Page
+Page<User> page = repo.findAll(pageable);
+
+It:
+
+Executes main query
+
+Executes an extra COUNT(*) query
+
+So it gives:
+
+totalElements
+
+totalPages
+
+hasNext()
+
+etc.
+
+⚠️ Slightly slower because of count query.
+
+
+
+2️⃣ Slice
+Slice<User> slice = repo.findAll(pageable);
+
+It:
+
+Does NOT run count query
+
+Only checks if next page exists
+
+⚡ Faster than Page
+
+Used in:
+
+Infinite scroll
+
+Large datasets
+
+
+
+🚨 Important: Does Spring Support Cursor Pagination?
+
+❌ Not automatically.
+
+Spring Data JPA does NOT provide built-in cursor pagination.
+
+If you want cursor pagination, you must write custom query like:
+
+@Query("SELECT u FROM User u WHERE u.id > :lastId ORDER BY u.id ASC")
+List<User> findNextUsers(@Param("lastId") Long lastId, Pageable pageable);
+
+That is manual keyset pagination.
+
+
+
+🔥 Interview-Level Answer
+
+If interviewer asks:
+
+What pagination strategy does Spring Boot use?
+
+You say:
+
+By default, Spring Data JPA uses offset-based pagination with LIMIT and OFFSET. The Page object also triggers a count query.
+ For better performance in large datasets, we can use Slice or implement custom cursor-based pagination.

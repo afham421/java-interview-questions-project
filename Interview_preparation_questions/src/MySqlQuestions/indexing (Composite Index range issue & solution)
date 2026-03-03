@@ -1,0 +1,119 @@
+Good 🔥 this is a very important indexing concept for backend interviews.
+
+Let’s break it clearly.
+
+📌 Suppose You Have This Composite Index
+(created_date, role_type, other_col)
+
+Index order matters.
+
+✅ Case 1 — All Equal Conditions (Best Case)
+WHERE created_date = '2025-09-12'
+  AND role_type = 'ADMIN'
+
+👉 Database can use:
+
+created_date
+
+then role_type
+
+This is perfect index usage.
+
+❗ Case 2 — Range Condition Appears  (<, > or between)
+WHERE created_date > '2025-09-01'
+  AND role_type = 'ADMIN'
+
+Now something changes.
+
+🔎 What Happens Internally?
+
+Indexes are stored like a sorted tree (B-Tree).
+
+Think of it like this:
+
+2025-09-01, ADMIN
+2025-09-01, USER
+2025-09-02, ADMIN
+2025-09-02, USER
+2025-09-03, ADMIN
+...
+
+When you write:
+created_date > '2025-09-01'
+
+Database must:
+
+Find first matching date
+
+Then scan forward for all greater dates
+
+⚠️ Once it starts scanning a range,
+it cannot efficiently jump to role_type = 'ADMIN'.
+
+It must check role_type row by row.
+
+🚨 Important Rule
+
+In composite index, once a RANGE condition is used, columns after it cannot be used for index search (only filtering).
+
+🎯 So In This Query
+WHERE created_date > '2025-09-01'
+  AND role_type = 'ADMIN'
+
+Index usage:
+
+| Column       | Used For           |
+| ------------ | ------------------ |
+| created_date | ✅ Index search     |
+| role_type    | ❌ Post-filter only |
+
+🔥 Why?
+
+Because index works like:
+
+(created_date → then role_type → then other_col)
+
+But range breaks the strict ordering.
+
+Equal condition = precise lookup
+Range condition = scanning starts
+
+After scanning starts → no more precise narrowing.
+
+📌 Interview-Ready Statement
+
+In a composite index, columns after a range condition cannot be used for index lookup — they are only used for filtering.
+
+???????????    solution  >>>>>>>>>>>>>>>>>>
+🧠 Advanced Tip (Very Strong Interview Point)
+
+If your query is mostly:
+
+WHERE role_type = 'ADMIN'
+  AND created_date > '2025-09-01'
+
+Then a better index would be:
+
+(role_type, created_date)
+
+Because:
+
+First exact match on role_type
+
+Then range on created_date
+
+👉 This will use both columns efficiently.
+
+
+
+
+
+🚀 Golden Rule for Composite Index Design
+
+Order columns like this:
+
+Equality conditions first
+
+Range conditions after
+
+High selectivity columns first (usually)

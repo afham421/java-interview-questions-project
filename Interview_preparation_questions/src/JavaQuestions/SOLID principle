@@ -188,17 +188,33 @@ interface Database {
 class MySQLDatabase implements Database {
     public void connect() {}
 }
+class PostgresDatabase implements Database {
+    public void connect() {}
+}
+// here if we found MULTIPLE classes that implements database
+ then we use (@Primary (default choice) or @Qualifier (EXPLICIT choice) or @Profile (environment-based) )
 
 class Application {
     private Database db;
 
-    public Application(Database db) {
+    public Application(@Qualifier("mysqldatabase") Database db) {
         this.db = db;
     }
 }
+✅ Final takeaway
+| Situation                | What Spring does |
+| ------------------------ | ---------------- |
+| One implementation       | Auto inject      |
+| Multiple implementations | Error            |
+| Use `@Primary`           | Default winner   |
+| Use `@Qualifier`         | Explicit winner  |
+| Use `@Profile`           | Env-based        |
+
 
 
 ➡ Now you can inject PostgresDatabase or OracleDatabase without changing Application.
+
+
 
 🧠 Summary Table
 | Principle | Meaning                                 |
