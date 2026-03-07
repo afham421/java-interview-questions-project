@@ -1,0 +1,120 @@
+In Spring Framework, when Spring creates a proxy, it uses two techniques:
+
+1️⃣ JDK Dynamic Proxy
+2️⃣ CGLIB Proxy
+
+Spring automatically chooses one depending on your class.
+
+1️⃣ JDK Dynamic Proxy
+
+JDK proxy works only if the class implements an interface.
+
+Example
+public interface UserService {
+    void createUser();
+}
+@Service
+public class UserServiceImpl implements UserService {
+
+    public void createUser() {
+        System.out.println("User created");
+    }
+}
+
+Spring creates a proxy like:
+
+UserServiceProxy implements UserService
+
+Flow:
+
+Client
+ ↓
+Proxy (implements interface)
+ ↓
+UserServiceImpl
+
+So the proxy implements the same interface and intercepts method calls.
+
+Key Point
+
+JDK proxy cannot proxy a class directly, only interfaces.
+
+2️⃣ CGLIB Proxy
+
+If the class does not implement any interface, Spring uses CGLIB.
+
+CGLIB works by creating a subclass of the target class.
+
+Example:
+
+@Service
+public class PaymentService {
+
+    public void processPayment() {
+        System.out.println("Payment processed");
+    }
+}
+
+Spring generates something like:
+
+PaymentService$$EnhancerBySpring
+
+Flow:
+
+Client
+ ↓
+CGLIB Proxy (subclass)
+ ↓
+PaymentService
+3️⃣ Visual Difference
+JDK Proxy
+Interface
+   ↑
+Proxy implements interface
+   ↑
+Target class
+CGLIB Proxy
+Proxy extends TargetClass
+4️⃣ Important Limitations
+JDK Proxy
+
+Works only with interfaces
+
+CGLIB
+
+Cannot proxy final classes
+
+Cannot override final methods
+
+Example:
+
+public final class UserService { }
+
+CGLIB cannot create subclass, so proxy fails.
+
+5️⃣ Which One Spring Boot Uses?
+
+In Spring Boot:
+
+| Situation                  | Proxy Type        |
+| -------------------------- | ----------------- |
+| Class implements interface | JDK Dynamic Proxy |
+| Class has no interface     | CGLIB             |
+
+6️⃣ Interview Trick Question
+
+If you write:
+
+@Transactional
+public void methodA() {
+    methodB();
+}
+
+methodB() will not run inside proxy because internal calls bypass proxy.
+
+This is a very common Spring interview trap.
+
+🔑 Interview One-Line Answer
+
+Spring creates proxies using JDK Dynamic Proxy when a bean implements an interface, and CGLIB when no interface is present,
+ allowing Spring AOP features like transactions and logging to intercept method calls.

@@ -1,0 +1,226 @@
+This is a very common Spring interview question:
+“Why does @Transactional sometimes not work in Spring Framework / Spring Boot?”
+
+The main reason is Spring uses Proxy-based AOP.
+
+1️⃣ How @Transactional Works
+
+When you write:
+
+@Transactional
+public void createUser() {
+    // database operations
+}
+
+Spring does not modify the method directly.
+Instead it creates a proxy around the bean.
+
+Flow:
+
+Client
+ ↓
+Proxy (transaction start)
+ ↓
+createUser()
+ ↓
+Proxy (commit / rollback)
+
+So the transaction logic runs inside the proxy.
+
+2️⃣ Problem: Internal Method Calls
+
+Example:
+
+@Service
+public class UserService {
+
+    public void methodA() {
+        methodB();   // internal call
+    }
+
+    @Transactional
+    public void methodB() {
+        // database operation
+    }
+}
+
+Client calls:
+
+userService.methodA();
+
+Flow:
+
+Client
+ ↓
+Proxy
+ ↓
+methodA()
+ ↓
+methodB()   ❌ Direct call (proxy bypassed)
+
+Because methodA and methodB are inside the same class, the call does not go through the proxy.
+
+Result:
+
+@Transactional will NOT work
+3️⃣ Correct Way
+
+Move transactional method to another service.
+
+Example:
+
+Service 1
+@Service
+public class UserService {
+
+    @Autowired
+    private OrderService orderService;
+
+    public void methodA() {
+        orderService.methodB();
+    }
+}
+Service 2
+@Service
+public class OrderService {
+
+    @Transactional
+    public void methodB() {
+        // database operation
+    }
+}
+
+Now flow becomes:
+
+Client
+ ↓
+UserService Proxy
+ ↓
+OrderService Proxy
+ ↓
+methodB() (transaction works)
+4️⃣ Other Reasons @Transactional May Not Work
+1️⃣ Method is private
+@Transactional
+private void saveUser()
+
+Proxy cannot intercept private methods.
+
+2️⃣ Method is final
+
+CGLIB cannot override final methods.
+
+3️⃣ Called inside constructor
+
+Spring proxy is not fully initialized.
+
+5️⃣ Real Interview Answer
+
+@Transactional sometimes does not work because Spring uses proxy-based AOP. If a transactional method is called internally within the same class,
+ the call bypasses the proxy, so transaction management is not applied.
+
+
+ Great! Let’s break down Spring’s @Transactional propagation types with simple examples. This is very common in senior Java/Spring interviews.
+
+ 1️⃣ REQUIRED (Default)
+
+ If a transaction exists, join it.
+
+ If no transaction exists, create a new one.
+
+ @Transactional(propagation = Propagation.REQUIRED)
+ public void methodA() {
+     // part of transaction
+ }
+ Example
+ methodA (REQUIRED) → calls methodB (REQUIRED)
+
+ Both run in same transaction.
+
+ If methodB fails, everything rolls back.
+
+ ✅ Most common and default.
+
+ 2️⃣ REQUIRES_NEW
+
+ Always suspends current transaction and starts a new transaction.
+
+ @Transactional(propagation = Propagation.REQUIRES_NEW)
+ public void methodB() { ... }
+ Example
+ methodA (REQUIRED) → calls methodB (REQUIRES_NEW)
+
+ methodB has separate transaction.
+
+ If methodB fails, only methodB rolls back, methodA continues.
+
+ 3️⃣ SUPPORTS
+
+ If a transaction exists, join it.
+
+ If no transaction exists, run without transaction.
+
+ @Transactional(propagation = Propagation.SUPPORTS)
+ public void methodC() { ... }
+
+ Useful for read-only operations.
+
+ 4️⃣ MANDATORY
+
+ Must be called inside an existing transaction.
+
+ Throws Exception if no transaction exists.
+
+ @Transactional(propagation = Propagation.MANDATORY)
+ public void methodD() { ... }
+
+ Ensures transaction is already active.
+
+ 5️⃣ NOT_SUPPORTED
+
+ Do not run in a transaction.
+
+ If a transaction exists, suspend it.
+
+ @Transactional(propagation = Propagation.NOT_SUPPORTED)
+ public void methodE() { ... }
+
+ Useful for operations that should never be transactional, e.g., logging.
+
+ 6️⃣ NEVER
+
+ Throws exception if a transaction exists.
+
+ Runs only when no transaction is active.
+
+ @Transactional(propagation = Propagation.NEVER)
+ public void methodF() { ... }
+ 7️⃣ NESTED
+
+ Creates a nested transaction using savepoints.
+
+ If nested fails, rolls back only nested part, not parent transaction.
+
+ @Transactional(propagation = Propagation.NESTED)
+ public void methodG() { ... }
+
+ Only supported by databases that support savepoints (like MySQL, PostgreSQL).
+
+ 🔑 Quick Reference Table
+| Propagation   | Behavior                      |
+| ------------- | ----------------------------- |
+| REQUIRED      | Join existing or create new   |
+| REQUIRES_NEW  | Always new, suspends existing |
+| SUPPORTS      | Join if exists, else no tx    |
+| MANDATORY     | Must exist, else exception    |
+| NOT_SUPPORTED | Suspend existing, run non-tx  |
+| NEVER         | Throw exception if tx exists  |
+| NESTED        | Nested tx with savepoints     |
+
+ 🔑 Interview Tip
+
+ Most common: REQUIRED and REQUIRES_NEW
+
+ Trick question: internal method calls + propagation type
+
+ Always mention: “Proxy-based AOP affects transactions”

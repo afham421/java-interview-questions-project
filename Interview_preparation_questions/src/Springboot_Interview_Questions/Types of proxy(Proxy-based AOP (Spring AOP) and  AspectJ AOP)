@@ -1,0 +1,119 @@
+In Spring Framework AOP, there are two main ways aspects are applied:
+
+Proxy-based AOP (Spring AOP)
+
+AspectJ AOP
+
+Understanding their difference is a very common backend interview question.
+
+1️⃣ Proxy-based AOP (Spring AOP)
+
+This is the default AOP used in Spring Boot applications.
+
+Spring creates a proxy object around your bean.
+
+How it works
+Client
+  ↓
+Proxy Object
+  ↓
+Target Method
+
+When the client calls the method:
+
+Call goes to proxy
+
+Proxy executes aspect logic
+
+Then calls actual method
+
+Example Flow
+UserService (Original Bean)
+      ↑
+   Proxy Bean
+
+Client calls:
+
+userService.createUser();
+
+Actually it calls:
+
+Proxy → Aspect → Real Method
+Important Limitation
+
+Proxy-based AOP only works for public methods and external method calls.
+
+Example problem:
+
+public void methodA() {
+    methodB();   // AOP will NOT work here
+}
+
+Because internal method calls bypass proxy.
+
+2️⃣ AspectJ AOP
+
+AspectJ works differently.
+It modifies the actual bytecode of the class.
+
+So aspects are woven directly into the class.
+
+How it works
+Client
+  ↓
+Modified Class (with aspect inside)
+
+No proxy is needed.
+
+Advantages
+
+AspectJ can apply AOP to:
+
+private methods
+
+protected methods
+
+constructors
+
+field access
+
+internal method calls
+
+3️⃣ Visual Difference
+Spring Proxy AOP
+Client
+  ↓
+Proxy
+  ↓
+Target Class
+AspectJ AOP
+Client
+  ↓
+Aspect + Target (woven together)
+4️⃣ Performance Difference
+| Feature         | Spring Proxy AOP | AspectJ          |
+| --------------- | ---------------- | ---------------- |
+| Implementation  | Proxy            | Bytecode weaving |
+| Internal calls  | ❌ Not supported  | ✅ Supported      |
+| Private methods | ❌                | ✅                |
+| Performance     | Slightly slower  | Faster           |
+| Complexity      | Easy             | More complex     |
+
+5️⃣ What Companies Usually Use
+
+Most microservices built with Spring Boot use:
+
+✅ Spring Proxy AOP
+
+Because:
+
+Easy to configure
+
+Works well for logging, transactions, security
+
+AspectJ is used only when deep bytecode-level AOP is required.
+
+🔑 Interview Answer (Short)
+
+Spring AOP is proxy-based and applies aspects by creating proxy objects around beans,
+ while AspectJ performs bytecode weaving and can apply aspects directly to classes, including private methods and internal calls.

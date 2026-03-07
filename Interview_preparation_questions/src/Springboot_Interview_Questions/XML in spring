@@ -55,6 +55,7 @@ public class App {
 }
 
 Beans:
+
 @Service
 public class UserService { }
 

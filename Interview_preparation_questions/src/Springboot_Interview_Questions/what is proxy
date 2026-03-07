@@ -1,0 +1,140 @@
+In Spring Framework AOP, a Proxy is an intermediate object that sits between the client and the actual object (target bean)
+and intercepts method calls.
+
+Think of it as a middleman.
+
+1️⃣ Simple Definition
+
+A Proxy is a wrapper object created by Spring that intercepts method calls to add extra behavior
+(like logging, security, transactions) before or after the real method runs.
+
+2️⃣ Simple Real-Life Example
+
+Imagine you want to talk to a CEO.
+
+You usually cannot talk directly.
+Instead you talk to the assistant.
+
+Client → Assistant → CEO
+
+The assistant can:
+
+check permission
+
+record meeting
+
+schedule time
+
+In programming:
+
+Client → Proxy → Real Object
+
+The Proxy can:
+
+log method calls
+
+check security
+
+start transactions
+
+measure performance
+
+3️⃣ Example Without Proxy
+public class UserService {
+
+    public void createUser() {
+        System.out.println("User created");
+    }
+}
+
+Client call:
+
+userService.createUser();
+
+Flow:
+
+Client → UserService
+
+No extra behavior.
+
+4️⃣ Example With Proxy (Spring AOP)
+
+Spring creates a proxy around the bean.
+
+Client → Proxy → UserService
+
+Flow:
+
+1️⃣ Client calls method
+2️⃣ Proxy intercepts the call
+3️⃣ Proxy executes aspect logic
+4️⃣ Proxy calls real method
+
+Example:
+
+Client
+ ↓
+Proxy (logging)
+ ↓
+UserService.createUser()
+
+Output:
+
+Method called
+User created
+5️⃣ Example in Spring Boot
+
+Aspect:
+
+@Aspect
+@Component
+public class LoggingAspect {
+
+    @Before("execution(* com.example.service.*.*(..))")
+    public void log() {
+        System.out.println("Method called");
+    }
+}
+
+Spring internally creates:
+
+UserServiceProxy
+
+So when client calls:
+
+userService.createUser();
+
+Actual flow:
+
+Client
+ ↓
+UserServiceProxy
+ ↓
+LoggingAspect
+ ↓
+UserService
+6️⃣ Why Proxy is Important in Spring
+
+Spring uses proxies for many features:
+
+AOP (logging, security)
+
+Transactions (@Transactional)
+
+Security (@PreAuthorize)
+
+Lazy loading
+
+🔑 Interview One-Line Answer
+
+A proxy is an object created by Spring that wraps the target bean and intercepts method calls to apply additional behavior
+ like logging, security, or transactions before or after the actual method execution.
+
+✅ If you're preparing for Java backend interviews, the next very common question after proxy is:
+
+“How does Spring create proxies internally?”
+
+Answer involves:
+
+JDK Dynamic Proxy
+CGLIB Proxy

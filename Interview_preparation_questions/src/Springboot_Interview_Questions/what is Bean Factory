@@ -5,11 +5,13 @@ Although BeanFactory is a basic interface, Spring provides a more advanced and c
 However, understanding BeanFactory is key to grasping Spring's underlying mechanism for managing beans.
 
 Key Responsibilities of BeanFactory
-Bean Instantiation: It creates and manages instances of beans, typically using a configuration (e.g., XML, Java annotations, or Java-based configuration).
+Bean Instantiation: It creates and manages instances of beans, typically using a configuration(e.g XML, Java annotations or Java-based configuration)
 Dependency Injection: It wires together beans by resolving dependencies between them (setter injection, constructor injection, etc.).
 Lifecycle Management: It controls the complete lifecycle of beans, from creation to destruction.
 Lazy Initialization: Beans are created only when they are needed, providing an efficient resource management mechanism.
-Singleton/Prototype Scope: BeanFactory can manage beans in different scopes like singleton (one instance per container) or prototype (a new instance per request).
+Singleton/Prototype Scope: BeanFactory can manage beans in different scopes
+like singleton (one instance per container) or prototype (a new instance per request).
+
 Example of BeanFactory
 In an XML-based Spring configuration, you can configure beans and access them via the BeanFactory.
 
@@ -18,6 +20,8 @@ XML Configuration (beans.xml):
 <beans>
     <bean id="myService" class="com.example.MyService"/>
 </beans>
+
+
 BeanFactory Usage in Code:
 
 
@@ -33,6 +37,7 @@ public class Main {
         myService.doSomething();
     }
 }
+
 Types of BeanFactory Implementations
 XmlBeanFactory: This is a simple implementation that reads bean definitions from an XML file.
  It's now deprecated and replaced by ApplicationContext implementations.
@@ -44,12 +49,35 @@ Lazy Loading: BeanFactory instantiates beans lazily (only when requested),
 while ApplicationContext eagerly instantiates beans during container startup (except for lazy beans).
 
 Additional Features: ApplicationContext provides more advanced features like:
-Event propagation (e.g., ApplicationEventPublisher)
-Internationalization (i18n) support
-AOP integration
-Web application context capabilities
+1.  Event propagation (e.g., ApplicationEventPublisher)
+UserService
+   |
+publish event → UserCreatedEvent
+   |
+listeners:
+   → SendEmailListener
+   → AuditLogListener
+⚠️ Important:
+This event system works inside the same microservice, not between microservices.
+For communication between microservices, we use:
+REST APIs
+Messaging systems like Apache Kafka
+RabbitMQ
 
-Common Usage: ApplicationContext is more commonly used in modern Spring applications due to its rich set of features and better integration with Spring's ecosystem.
+2.  Internationalization (i18n) support
+In microservices, each service may return messages in different languages.
+Example:
+User Service response:
+English → "User created successfully"
+Urdu → "صارف کامیابی سے بن گیا"
+ApplicationContext provides MessageSource to manage these translations.
+
+3.  AOP integration
+
+4.  Web application context capabilities
+
+Common Usage: ApplicationContext is more commonly used in modern Spring applications due to its rich set of features
+and better integration with Spring's ecosystem.
  However, BeanFactory is lighter and useful when memory consumption or startup performance is a concern.
 
 When to Use BeanFactory

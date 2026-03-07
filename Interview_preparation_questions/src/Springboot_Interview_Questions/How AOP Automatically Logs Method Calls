@@ -1,0 +1,266 @@
+Here is a real production example used in microservices built with Spring Boot to log every HTTP request automatically using AOP.
+
+This is very common in backend systems.
+
+1️⃣ Problem
+
+In microservices we have many controllers:
+
+UserController
+OrderController
+PaymentController
+ProductController
+
+If we log manually:
+
+log.info("Request received");
+
+inside every API method, it becomes repetitive and messy.
+
+So we use AOP to log all controller requests automatically.
+
+2️⃣ Create Logging Aspect
+@Aspect
+@Component
+public class ControllerLoggingAspect {
+
+    @Before("execution(* com.example.controller..*(..))")
+    public void logRequest(JoinPoint joinPoint) {
+
+        String methodName = joinPoint.getSignature().getName();
+        String className = joinPoint.getTarget().getClass().getSimpleName();
+
+        System.out.println("API Called: " + className + "." + methodName);
+    }
+}
+What this means
+execution(* com.example.controller..*(..))
+
+This means:
+
+any method
+inside controller package
+in any class
+
+3️⃣ Example Controller
+@RestController
+@RequestMapping("/users")
+public class UserController {
+
+    @GetMapping
+    public String getUsers() {
+        return "Users list";
+    }
+}
+4️⃣ What Happens When API is Called
+
+Client calls:
+
+GET /users
+
+Console output:>>>>>>>>>>>>>
+
+API Called: UserController.getUsers
+
+Your controller code remains clean.
+
+5️⃣ Even Better Production Example
+
+You can log:
+
+URL
+
+HTTP method
+
+request parameters
+
+execution time
+
+Example:
+
+@Around("execution(* com.example.controller..*(..))")
+public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
+
+    long start = System.currentTimeMillis();
+
+    Object result = joinPoint.proceed();
+
+    long time = System.currentTimeMillis() - start;
+
+    System.out.println(joinPoint.getSignature() + " executed in " + time + "ms");
+
+    return result;
+}
+
+Example output:>>>>>>>>>>>>.
+
+UserController.getUsers executed in 15ms
+
+
+6️⃣ Why Companies Use This
+
+In microservices there may be 50+ APIs.
+
+AOP helps to:
+
+log all requests
+
+measure performance
+
+add security checks
+
+audit API calls
+
+without modifying controller code.
+
+🔑 Interview Answer (Very Important)
+
+In Spring Boot, AOP can be used to log all HTTP requests by creating an aspect that intercepts controller methods using pointcut expressions
+ like execution(* controller..*(..)), allowing centralized logging without modifying each API method.
+
+ 🔑🔑🔑🔑🔑🔑Difference between
+
+ @Before
+ @After
+ @AfterReturning
+ @AfterThrowing
+ @Around
+
+ In AOP of Spring Framework / Spring Boot, these annotations define when an aspect should run relative to the target method execution.
+
+ They are called Advice types.
+
+ 1️⃣ @Before
+
+ Runs before the method executes.
+
+ Example
+ @Before("execution(* com.example.service.*.*(..))")
+ public void logBefore() {
+     System.out.println("Method is about to run");
+ }
+ Flow
+ @Before
+ ↓
+ Actual Method
+
+ Example Output
+
+ Method is about to run
+ Creating user
+ Use Cases
+
+ Logging
+
+ Authentication
+
+ Input validation
+
+ 2️⃣ @After
+
+ Runs after the method finishes, whether it succeeds or throws an exception.
+
+ Example
+ @After("execution(* com.example.service.*.*(..))")
+ public void logAfter() {
+     System.out.println("Method finished");
+ }
+ Flow
+ Method
+ ↓
+ @After
+
+ Even if exception happens, this still runs.
+
+ 3️⃣ @AfterReturning
+
+ Runs only if the method executes successfully.
+
+ Example
+ @AfterReturning(pointcut="execution(* com.example.service.*.*(..))", returning="result")
+ public void logSuccess(Object result) {
+     System.out.println("Method returned: " + result);
+ }
+ Flow
+ Method
+ ↓
+ Return value
+ ↓
+ @AfterReturning
+ Use Case
+
+ Logging response
+
+ Caching result
+
+ 4️⃣ @AfterThrowing
+
+ Runs only when the method throws an exception.
+
+ Example
+ @AfterThrowing(pointcut="execution(* com.example.service.*.*(..))", throwing="ex")
+ public void logException(Exception ex) {
+     System.out.println("Exception occurred: " + ex.getMessage());
+ }
+ Flow
+ Method
+ ↓
+ Exception
+ ↓
+ @AfterThrowing
+ Use Case
+
+ Error logging
+
+ Alerting system
+
+ 5️⃣ @Around (Most Powerful)
+
+ Runs before AND after the method.
+
+ You can even control whether the method runs or not.
+
+ Example
+ @Around("execution(* com.example.service.*.*(..))")
+ public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
+
+     long start = System.currentTimeMillis();
+
+     Object result = joinPoint.proceed();
+
+     long time = System.currentTimeMillis() - start;
+
+     System.out.println("Execution time: " + time + " ms");
+
+     return result;
+ }
+ Flow
+ @Around (before)
+ ↓
+ Method
+ ↓
+ @Around (after)
+ Use Cases
+
+ Performance monitoring
+
+ Transaction handling
+
+ Security checks
+
+ Retry logic
+
+ 🔑 Simple Comparison Table
+ | Advice            | When It Runs                        |
+ | ----------------- | ----------------------------------- |
+ | `@Before`         | Before method execution             |
+ | `@After`          | After method (success or exception) |
+ | `@AfterReturning` | Only after successful return        |
+ | `@AfterThrowing`  | Only when exception occurs          |
+ | `@Around`         | Before and after method             |
+
+ 🔑 Interview One-Line Answer
+
+ In Spring AOP, @Before, @After, @AfterReturning, @AfterThrowing, and @Around are advice types that define
+ when an aspect executes relative to the target method lifecycle.
+

@@ -1,0 +1,291 @@
+1️⃣ How We Use Indexing in Spring Boot?
+
+Spring Boot itself does not create indexes automatically (except primary key).
+Indexes are defined at:
+
+✅ Database level (recommended)
+
+✅ JPA entity level (optional)
+
+✅ 1. Using Index with JPA Entity
+
+Example:
+
+@Entity
+@Table(
+    name = "users",
+    indexes = {
+        @Index(name = "idx_created_role", columnList = "created_date, role_type")
+    }
+)
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private LocalDate createdDate;
+    private String roleType;
+    private Double salary;
+}
+
+👉 When Spring Boot runs (if ddl-auto=update/create),
+Hibernate creates the index in MySQL.
+
+🔥 Interview Point
+
+Indexes are used to optimize WHERE, JOIN, ORDER BY queries in Spring Boot applications.
+
+2️⃣ How Spring Boot Uses Index Internally?
+
+Suppose you write:
+
+List<User> users = userRepository
+    .findByCreatedDateAndRoleType(date, "ADMIN");
+
+Spring Data JPA generates:
+
+SELECT *
+FROM users
+WHERE created_date = ?
+AND role_type = ?
+
+If index exists:
+
+(created_date, role_type)
+
+👉 MySQL optimizer automatically uses it.
+
+Spring Boot does nothing special — DB handles optimization.
+
+3️⃣ Covering Index in Spring Boot
+
+If your query is:
+
+@Query("SELECT u.salary FROM User u WHERE u.createdDate = :date AND u.roleType = :role")
+List<Double> getSalary(...);
+
+If index is:
+
+(created_date, role_type, salary)
+
+Then:
+
+✔ No table lookup
+✔ Faster response
+✔ Less I/O
+
+Very useful in high-traffic APIs.
+
+4️⃣ Checking Index Usage in Spring Boot
+
+You can test in MySQL:
+
+EXPLAIN SELECT * FROM users WHERE role_type = 'ADMIN';
+
+Or enable Hibernate SQL logs:
+
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+
+Then copy query → run EXPLAIN manually.
+
+5️⃣ Selectivity in Real Spring Boot Project
+
+Bad example:
+
+findByGender(String gender)
+
+If gender has only 2 values → low selectivity.
+
+Index may not help much.
+
+Better indexing candidates:
+
+email (unique)
+
+user_id
+
+order_id
+
+transaction_id
+
+6️⃣ Composite Index Design in Spring Boot APIs
+
+Suppose your API frequently does:
+
+findByRoleTypeAndCreatedDateBetween(...)
+
+Then best index:
+
+(role_type, created_date)
+
+Because:
+
+role_type → equality
+
+created_date → range
+
+🔥 Perfect composite order.
+
+7️⃣ Real Backend Optimization Example
+
+Imagine:
+
+Page<User> findByRoleType(String role, Pageable pageable);
+
+Spring generates:
+
+SELECT * FROM users
+WHERE role_type = ?
+ORDER BY id
+LIMIT 10 OFFSET 0;
+
+If no index → full table scan ❌
+
+Better:
+
+(role_type, id)
+
+Now:
+
+✔ WHERE optimized
+✔ ORDER BY optimized
+✔ Pagination faster
+
+8️⃣ Very Important (Production Level)
+
+In high traffic systems:
+
+Avoid too many indexes (slows insert/update)
+
+Index only frequently filtered columns
+
+Monitor slow query log
+
+Use EXPLAIN before adding index
+
+🎯 Interview-Ready Answer (Spring Boot)
+
+In Spring Boot, indexing is defined at the database level or using @Index in JPA.
+ The database optimizer automatically uses indexes for repository queries. Proper composite index design based on query patterns
+  significantly improves API performance.
+
+Since you're preparing for interviews, next I can explain:
+
+🔥 N+1 problem in Spring Boot
+
+🔥 Lazy vs Eager loading
+
+🔥 Why pagination becomes slow
+
+🔥 How to optimize large table queries (10M+ rows)
+
+🔥 Real production tuning strategy
+
+Tell me which level you want: Mid-level or Senior-level depth?
+
+👉 When Spring Boot runs (if `ddl-auto=update/create`),
+
+if i do ddl auto none then what will be
+
+Good question 👍 very common Spring Boot interview point.
+
+You’re asking:
+
+If I set spring.jpa.hibernate.ddl-auto=none, what will happen?
+
+🔹 What is ddl-auto?
+
+Property:
+
+spring.jpa.hibernate.ddl-auto=update
+
+Controls how Hibernate handles database schema generation.
+
+Options:
+
+Value	Meaning
+create	Drops and recreates tables every startup
+create-drop	Create at start, drop at shutdown
+update	Updates schema without deleting data
+validate	Checks schema matches entity
+none	Does nothing
+🔥 If You Set:
+spring.jpa.hibernate.ddl-auto=none
+👉 Hibernate will NOT:
+
+Create tables
+
+Update tables
+
+Create indexes
+
+Validate schema
+
+It will completely ignore schema generation.
+
+⚠️ What Does That Mean Practically?
+
+If your database does not already have:
+
+tables
+
+columns
+
+indexes
+
+Then your application will fail at runtime when querying.
+
+Example error:
+
+Table 'users' doesn't exist
+✅ When Do We Use none?
+
+In production environments.
+
+Because:
+
+Schema changes are handled by:
+
+Liquibase
+
+Flyway
+
+Manual SQL scripts
+
+You don’t want Hibernate modifying production DB automatically
+
+🔥 Important for Your Index Question
+
+If you define:
+
+@Index(name = "idx_created_role", columnList = "created_date, role_type")
+
+But:
+
+ddl-auto=none
+
+👉 Hibernate will NOT create that index.
+
+You must manually create it:
+
+CREATE INDEX idx_created_role
+ON users(created_date, role_type);
+🎯 Real Project Best Practice
+Development:
+ddl-auto=update
+Production:
+ddl-auto=none
+
+And use:
+
+Flyway
+or
+
+Liquibase
+
+🧠 Senior-Level Interview Answer
+
+When ddl-auto is set to none, Hibernate does not perform any schema management.
+Database structure must be maintained externally. This is recommended in production environments.
