@@ -1,0 +1,167 @@
+Great. These are very common backend interview questions. I’ll explain them clearly.
+
+1️⃣ Session vs JWT (Very Important)
+| Feature     | Session               | JWT                  |
+| ----------- | --------------------- | -------------------- |
+| Storage     | Server                | Client               |
+| State       | Stateful              | Stateless            |
+| Scalability | Hard in microservices | Easy                 |
+| Performance | Server memory used    | Lightweight          |
+| Usage       | Traditional web apps  | Microservices / APIs |
+
+Session Flow
+
+User login
+
+Server creates session id
+
+Session stored in server memory
+
+Browser stores session id in cookie
+
+Each request sends session id
+
+Problem:
+If you have multiple servers, session sharing becomes difficult.
+
+JWT Flow
+
+User login
+
+Server generates JWT Token
+
+Token sent to client
+
+Client sends token in Authorization header
+
+Example:
+
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+Server verifies token without storing session.
+
+That’s why JWT is used in microservices.
+
+2️⃣ How Session Works Internally
+
+Step-by-step flow:
+
+Step 1 — User Login
+
+User sends request
+
+POST /login
+username=abdullah
+password=123
+Step 2 — Server Creates Session
+
+Server generates
+
+SessionID = A7F8C9D2
+
+Server stores:
+
+SessionID -> {userId: 10, role: admin}
+Step 3 — Cookie Sent to Browser
+Set-Cookie: JSESSIONID=A7F8C9D2
+
+Browser stores it.
+
+Step 4 — Next Request
+
+Browser automatically sends
+
+Cookie: JSESSIONID=A7F8C9D2
+Step 5 — Server Retrieves Session
+
+Server checks memory
+
+A7F8C9D2 -> user data
+
+User is authenticated.
+
+3️⃣ Session in Microservices
+
+Sessions create problems in distributed systems.
+
+Example architecture:
+
+User
+  |
+Load Balancer
+ |      |
+Service1  Service2
+
+If session stored in Service1 memory,
+next request may go to Service2 → session lost.
+
+Solutions:
+
+1️⃣ Sticky Session
+
+Load balancer always sends user to same server.
+
+Problem → not scalable.
+
+2️⃣ Shared Session Storage
+
+Store session in:
+
+Redis
+
+Database
+
+Memcached
+
+Example:
+
+User
+  |
+Load Balancer
+ |      |
+Service1  Service2
+    |
+   Redis
+
+Both services access session.
+
+3️⃣ JWT (Best Solution)
+
+No session stored anywhere.
+
+Server only verifies token.
+
+That is why modern systems use JWT.
+
+4️⃣ Session Fixation Attack
+
+A security attack where attacker forces victim to use a known session id.
+
+Example:
+
+Attacker creates session
+
+Sends link to victim
+
+Victim logs in with same session id
+
+Attacker now accesses victim account
+
+Solution:
+
+Regenerate session id after login
+
+Example in Java:
+
+request.changeSessionId();
+5️⃣ Senior Java Interview Answer (Best)
+
+If interviewer asks:
+
+What is session?
+
+You can say:
+
+Session is a server-side mechanism used to maintain state across multiple HTTP requests.
+ When a user logs in, the server creates a session object and assigns a unique session ID.
+  This ID is stored in the client’s cookie and sent with every request so the server can identify the user.

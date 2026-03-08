@@ -1,0 +1,134 @@
+1️⃣ What is a Session?
+
+A Session is a way to store user data on the server for a specific user during their interaction with an application.
+
+When a user logs into a website, the server creates a session to remember that user across multiple requests.
+
+Since HTTP is stateless, every request is independent.
+So sessions help maintain state between requests.
+
+Example data stored in session:
+
+Logged-in user information
+
+Shopping cart items
+
+User preferences
+
+Authentication status
+
+Example flow:
+
+User logs in
+
+Server creates a Session ID
+
+Session ID is sent to browser (usually in a cookie)
+
+Browser sends Session ID with every request
+
+Server retrieves user data using that Session ID
+
+2️⃣ Example in Real Life
+
+Login to Facebook / Gmail
+
+Without session:
+
+You login → go to next page → system forgets you
+
+With session:
+
+You login → session created → system remembers you until logout
+3️⃣ How to Create Session in Java (Servlet)
+HttpSession session = request.getSession();
+
+// store data
+session.setAttribute("username", "abdullah");
+
+// get data
+String user = (String) session.getAttribute("username");
+Explanation
+request.getSession()
+
+Creates a new session if one doesn't exist.
+
+setAttribute()
+
+Stores data in session.
+
+getAttribute()
+
+Retrieves data from session.
+
+4️⃣ Session Example Flow
+Login Servlet
+HttpSession session = request.getSession();
+session.setAttribute("user", "Abdullah");
+Another Page
+HttpSession session = request.getSession(false);
+String user = (String) session.getAttribute("user");
+
+If session exists → user continues
+If session not exists → redirect to login.
+
+5️⃣ Session Timeout
+
+Session automatically expires after inactivity.
+
+Example:
+
+<session-config>
+   <session-timeout>30</session-timeout>
+</session-config>
+
+30 minutes timeout.
+
+6️⃣ Session vs Cookie
+| Feature  | Session             | Cookie      |
+| -------- | ------------------- | ----------- |
+| Stored   | Server              | Browser     |
+| Security | More secure         | Less secure |
+| Size     | Large data possible | 4KB limit   |
+| Usage    | Login, cart         | preferences |
+
+7️⃣ In Spring Boot (Most Important for Interviews)
+
+Example:
+
+@GetMapping("/login")
+public String login(HttpSession session) {
+    session.setAttribute("user", "Abdullah");
+    return "success";
+}
+
+Get session:
+
+@GetMapping("/dashboard")
+public String dashboard(HttpSession session) {
+    String user = (String) session.getAttribute("user");
+    return user;
+}
+8️⃣ Advanced Interview Question
+
+Where session stored internally?
+
+Usually in:
+
+Application server memory (Tomcat)
+
+Redis (distributed session)
+
+Database
+
+In Microservices architecture, sessions are often stored in:
+
+Redis
+
+JWT tokens (stateless authentication)
+
+✅ Short Interview Answer
+
+Session is a server-side mechanism used to maintain user state across multiple HTTP requests.
+ When a user logs in, the server creates a session and assigns a unique session ID stored in a cookie.
+  The server uses this session ID to retrieve user data for subsequent requests.

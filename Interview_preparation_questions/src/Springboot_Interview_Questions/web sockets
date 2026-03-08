@@ -1,83 +1,164 @@
-💡 What is a WebSocket?
+WebSockets are commonly used when you need real-time communication between client
+and server (chat apps, live notifications, stock prices, live dashboards, etc.).
+ As a Java developer preparing for interviews, you should know both concept and Spring Boot implementation.
 
-WebSocket is a protocol that allows a persistent, two-way (full-duplex) communication channel between a client (like a web browser) and a server — over a single TCP connection.
+1. What is WebSocket?
 
-In simple terms:
-➡️ Unlike HTTP, which is request–response-based (client always initiates),
-➡️ WebSocket lets both client and server send messages anytime after the connection is established.
+WebSocket is a protocol that provides full-duplex communication between client and server over a single persistent TCP connection.
 
-🔄 How it works (in short)
+Normal HTTP:
 
-Client sends a WebSocket handshake request to the server (over HTTP).
-
-Server responds and upgrades the connection from HTTP → WebSocket protocol.
-
-After that, both sides can send data anytime without reconnecting again.
-
-⚙️ Example
-Traditional HTTP:
-Client → Server: "Give me latest messages"
-Server → Client: "Here they are"
-(Client must ask again and again)
+Client → Request
+Server → Response
+Connection closed
 
 WebSocket:
-Client ↔ Server (open connection)
-Server → Client: "New message received"
-Client → Server: "Message sent"
-(Both communicate instantly)
 
-🚀 Why We Use WebSockets
-| Reason                      | Explanation                                                   |
-| --------------------------- | ------------------------------------------------------------- |
-| **Real-time communication** | No need to refresh or poll repeatedly — updates are instant.  |
-| **Efficiency**              | Less overhead than HTTP — no repeated headers or connections. |
-| **Bi-directional**          | Both client and server can send messages anytime.             |
-| **Low latency**             | Great for apps where delay must be minimal.                   |
+Client ↔ Server (continuous two-way communication)
+Connection stays open
 
-🔧 Common Use Cases
-| Use Case                | Example                             |
-| ----------------------- | ----------------------------------- |
-| **Chat applications**   | WhatsApp Web, Slack, Discord        |
-| **Live dashboards**     | Stock prices, analytics panels      |
-| **Online gaming**       | Multiplayer coordination            |
-| **Live notifications**  | Push updates, alerts                |
-| **Collaborative tools** | Google Docs-style real-time editing |
+So server can push data to client anytime without client requesting.
 
-🧠 Example in Java (Server Side)
+Example:
 
-Using Spring Boot:
+Chat application
 
-@ServerEndpoint("/chat")
-public class ChatSocket {
+Live stock price
 
-    @OnOpen
-    public void onOpen(Session session) {
-        System.out.println("Connected: " + session.getId());
+Notifications
+
+Multiplayer games
+
+2. How WebSocket Connection Starts
+
+1️⃣ Client sends HTTP request to upgrade connection.
+
+GET /chat
+Upgrade: websocket
+Connection: Upgrade
+
+2️⃣ Server accepts upgrade.
+
+HTTP 101 Switching Protocols
+
+3️⃣ Now connection becomes WebSocket.
+
+Client ↔ Server
+
+Both can send messages anytime.
+
+3. WebSocket in Spring Boot
+
+Spring Boot supports WebSockets using STOMP protocol.
+
+Dependency:
+
+<dependency>
+ <groupId>org.springframework.boot</groupId>
+ <artifactId>spring-boot-starter-websocket</artifactId>
+</dependency>
+
+4. WebSocket Configuration
+@Configuration
+@EnableWebSocketMessageBroker
+public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/chat")
+                .setAllowedOrigins("*")
+                .withSockJS();
     }
 
-    @OnMessage
-    public void onMessage(String message, Session session) {
-        System.out.println("Message: " + message);
-        session.getBasicRemote().sendText("Server received: " + message);
-    }
-
-    @OnClose
-    public void onClose(Session session) {
-        System.out.println("Closed: " + session.getId());
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry registry) {
+        registry.enableSimpleBroker("/topic");
+        registry.setApplicationDestinationPrefixes("/app");
     }
 }
 
+Explanation:
 
-And the client (browser) connects like:
+/chat      → connection endpoint
+/topic     → message subscription
+/app       → message sending prefix
 
-const socket = new WebSocket("ws://localhost:8080/chat");
-socket.onmessage = (event) => console.log("Received:", event.data);
-socket.send("Hello Server!");
+5. Controller Example
+@Controller
+public class ChatController {
 
-🧾 Summary
-| Feature       | WebSocket      | HTTP                  |
-| ------------- | -------------- | --------------------- |
-| Connection    | Persistent     | Reconnects each time  |
-| Communication | Bi-directional | Request–response only |
-| Latency       | Very low       | Higher                |
-| Use case      | Real-time apps | Traditional REST APIs |
+    @MessageMapping("/send")
+    @SendTo("/topic/messages")
+    public String sendMessage(String message) {
+        return message;
+    }
+}
+
+Flow:
+
+Client send → /app/send
+Server process
+Server broadcast → /topic/messages
+All subscribed clients receive
+
+6. JavaScript Client Example
+var socket = new SockJS('/chat');
+var stompClient = Stomp.over(socket);
+
+stompClient.connect({}, function() {
+
+    stompClient.subscribe('/topic/messages', function(message){
+        console.log(message.body);
+    });
+
+    stompClient.send("/app/send", {}, "Hello Server");
+});
+
+7. Real Example Flow
+
+Chat Application:
+
+User A sends message
+       ↓
+WebSocket server receives
+       ↓
+Broadcast message
+       ↓
+User B, C, D receive instantly
+
+No polling needed.
+
+8. Difference: WebSocket vs HTTP
+| Feature       | HTTP                  | WebSocket      |
+| ------------- | --------------------- | -------------- |
+| Communication | Request/Response      | Two-way        |
+| Connection    | Closed after response | Persistent     |
+| Latency       | Higher                | Very low       |
+| Use case      | APIs                  | Real-time apps |
+
+9. Real Microservice Use Cases
+
+In microservices architecture:
+
+Live notifications
+
+Order tracking
+
+Chat services
+
+Live dashboards
+
+Stock price streaming
+
+Example:
+
+Order Service → Kafka → Notification Service → WebSocket → Client
+10. Interview Question
+
+Q: When should we use WebSockets?
+
+Answer:
+
+WebSockets are used when we need real-time bidirectional communication between client and server.
+Examples include chat applications, live notifications, stock market updates, and multiplayer games.
+Unlike HTTP, WebSocket maintains a persistent connection allowing the server to push updates instantly without repeated client requests.
