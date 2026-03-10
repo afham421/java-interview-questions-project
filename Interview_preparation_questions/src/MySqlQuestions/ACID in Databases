@@ -15,12 +15,14 @@ These are the key properties that ensure reliable processing of database transac
 Atomicity means that a transaction is treated as a single unit.
 → Either all the operations within the transaction happen, or none of them do.
 
-📌 Example: If you transfer money from Account A to Account B, both the debit and credit operations must succeed. If one fails, the entire transaction is rolled back.
+📌 Example: If you transfer money from Account A to Account B, both the debit and credit operations must succeed.
+If one fails, the entire transaction is rolled back.
 
 🔹 2. Consistency (Valid State)
 Consistency ensures that the database always stays in a valid state.
 → Any transaction will take the database from one valid state to another.
 🔧 Mechanism: Constraints + Validation
+
 Database me rules defined hote hain:
 NOT NULL
 UNIQUE

@@ -1,0 +1,256 @@
+What is Idempotency?
+
+Idempotency means that performing the same operation multiple times produces the same result as performing it once.
+
+In backend systems and payment systems (like Easypaisa), idempotency is very important to prevent duplicate transactions.
+
+Simple Example (Real Life)
+
+User clicks “Pay 1000 PKR”.
+
+But due to slow internet the user clicks Pay button 3 times.
+
+Without idempotency:
+
+Request 1 → Pay 1000
+Request 2 → Pay 1000
+Request 3 → Pay 1000
+
+Result:
+
+Total deducted = 3000 PKR ❌
+With Idempotency
+
+Each request includes an Idempotency Key.
+
+Example request:
+
+POST /payment
+
+Idempotency-Key: abc123
+Amount: 1000
+
+Even if the request comes 3 times, the system checks the key.
+
+Request 1 → Process payment
+Request 2 → Same key → return previous response
+Request 3 → Same key → return previous response
+
+Result:
+
+Total deducted = 1000 PKR ✅
+Backend Flow
+
+Example logic:
+
+Client sends request
+        ↓
+Check idempotency key in database
+        ↓
+If key exists → return previous response
+If key not exists → process payment
+        ↓
+Store key + response
+Example Database Table
+idempotency_key | payment_id | status
+-------------------------------------
+abc123          | 5678       | SUCCESS
+
+When the same key comes again:
+
+System returns payment_id = 5678
+Example API Request
+POST /payments
+Headers:
+Idempotency-Key: 12345
+
+Body:
+{
+  "amount": 1000,
+  "user_id": 25
+}
+
+Response:
+
+{
+  "payment_id": 7890,
+  "status": "SUCCESS"
+}
+
+If the same request is sent again with Idempotency-Key: 12345, the server returns the same response instead of creating a new payment.
+
+Why Idempotency is Important in Fintech
+
+Systems like Apache Kafka or payment APIs may retry requests due to:
+
+network timeout
+
+server crash
+
+client retry
+
+message duplication
+
+Idempotency ensures no duplicate financial transactions.
+
+Short Interview Answer (Best)
+
+If the interviewer asks:
+
+What is idempotency?
+
+You can answer:
+
+Idempotency means that executing the same request multiple times produces the same result as executing it once.
+It is commonly used in payment systems to prevent duplicate transactions by using idempotency keys.
+
+>>>>>>>>>>>>>>>>>>>>>
+
+Why Idempotency is Needed in Kafka
+
+Kafka guarantees at-least-once delivery by default.
+
+That means a message can be delivered more than once.
+
+Example:
+
+Producer → Kafka → Consumer
+
+Scenario:
+
+Consumer processes a payment event
+
+Consumer crashes before committing offset
+
+Kafka re-delivers the same message
+
+Now the consumer may process the same payment twice ❌
+
+Example Problem (Without Idempotency)
+
+Message in Kafka topic:
+
+{
+  "transaction_id": "TX1001",
+  "user_id": 25,
+  "amount": 1000
+}
+
+Consumer processes it:
+
+Deduct 1000 from user wallet
+
+Consumer crashes before committing offset.
+
+Kafka sends message again.
+
+Result:
+
+Deduct 1000 again
+
+Total deducted = 2000 ❌
+
+Solution: Idempotent Consumer
+
+The consumer checks whether the transaction was already processed.
+
+Step 1 — Store transaction ID
+
+Example database table:
+
+transaction_id	status
+TX1001	PROCESSED
+Step 2 — Consumer logic
+
+Pseudo logic:
+
+Receive message
+      ↓
+Check transaction_id in database
+      ↓
+If exists → ignore message
+If not exists → process transaction
+      ↓
+Store transaction_id
+      ↓
+Commit offset
+Example Consumer Flow
+
+Kafka message:
+
+{
+  "transaction_id": "TX1001",
+  "amount": 1000
+}
+
+Consumer steps:
+
+Check DB → TX1001 exists?
+
+Case 1 — First time:
+
+Not found
+→ Process payment
+→ Save TX1001
+
+Case 2 — Duplicate message:
+
+Found in DB
+→ Ignore message
+
+Result:
+
+Payment executed only once
+Example Code Logic (Pseudo)
+if (!transactionRepository.exists(txId)) {
+
+    processPayment();
+
+    transactionRepository.save(txId);
+
+}
+
+This makes the consumer idempotent.
+
+Another Approach (Unique Constraint)
+
+Create unique constraint in database:
+
+ALTER TABLE transactions
+ADD CONSTRAINT unique_tx_id UNIQUE(transaction_id);
+
+If duplicate message arrives:
+
+INSERT fails
+
+Consumer ignores duplicate.
+
+Interview Tip (Very Important)
+
+If interviewer asks:
+
+How do you handle duplicate messages in Kafka?
+
+Best answer:
+
+Kafka provides at-least-once delivery, so duplicate messages can occur. To handle this, consumers should be idempotent. This is usually done by storing a unique transaction ID or event ID in a database and checking it before processing the message.
+
+Fintech Example (Easypaisa Type System)
+
+Money transfer event:
+
+User sends money
+      ↓
+Transaction Service
+      ↓
+Kafka Topic: transactions
+      ↓
+Wallet Service (Consumer)
+
+Wallet service logic:
+
+Check transaction_id
+If processed → ignore
+Else → update wallet balance
+
+This ensures no double deduction.

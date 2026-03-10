@@ -1,0 +1,17 @@
+Example: duplicates in email
+
+SELECT email, COUNT(*)
+FROM users
+GROUP BY email
+HAVING COUNT(*) > 1;
+
+✅ This shows which emails appear more than once.
+
+>>>>>>>>>>>>>>>>>>>>>
+
+
+If duplicates depend on multiple columns (e.g., name and phone):
+SELECT name, phone, COUNT(*)
+FROM table_name
+GROUP BY name, phone
+HAVING COUNT(*) > 1;

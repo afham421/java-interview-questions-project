@@ -1,0 +1,125 @@
+In Apache Kafka, Apache ZooKeeper and KRaft are used for cluster management and metadata coordination.
+Understanding this difference is a very common interview question.
+
+1️⃣ What is ZooKeeper in Kafka?
+
+Earlier versions of Kafka used ZooKeeper to manage the Kafka cluster.
+
+ZooKeeper is a distributed coordination system used to manage:
+
+Broker metadata
+
+Leader election
+
+Cluster configuration
+
+Topic information
+
+Controller election
+
+Architecture (Old Kafka)
+Kafka Broker 1
+Kafka Broker 2
+Kafka Broker 3
+       ↓
+ZooKeeper Cluster
+
+Kafka brokers communicate with ZooKeeper to get cluster information.
+
+2️⃣ Example of ZooKeeper Responsibilities
+
+ZooKeeper manages:
+
+Broker registration
+
+When a Kafka broker starts:
+
+Broker → registers with ZooKeeper
+
+ZooKeeper stores:
+
+/brokers/ids/1
+/brokers/ids/2
+Leader election
+
+Each partition has a leader.
+
+If leader broker crashes:
+
+ZooKeeper elects new leader
+Metadata storage
+
+ZooKeeper stores:
+
+topics
+partitions
+replication info
+cluster state
+3️⃣ Problems with ZooKeeper
+
+Using ZooKeeper created some operational challenges:
+
+1️⃣ Extra system to maintain
+2️⃣ More infrastructure complexity
+3️⃣ Performance limitations
+4️⃣ Harder cluster scaling
+
+Because of this, Kafka introduced KRaft mode.
+
+4️⃣ What is KRaft?
+
+KRaft = Kafka Raft Metadata Mode
+
+KRaft removes the dependency on ZooKeeper.
+
+Kafka brokers manage metadata themselves using the Raft consensus protocol.
+
+Architecture (New Kafka)
+Kafka Broker 1
+Kafka Broker 2
+Kafka Broker 3
+       ↓
+KRaft Controller Quorum
+
+No ZooKeeper required.
+
+5️⃣ What KRaft Does
+
+KRaft manages:
+
+broker metadata
+
+topic metadata
+
+partition leadership
+
+cluster configuration
+
+All stored inside Kafka itself.
+
+6️⃣ ZooKeeper vs KRaft
+| Feature             | ZooKeeper Mode | KRaft Mode      |
+| ------------------- | -------------- | --------------- |
+| External dependency | Required       | Not required    |
+| Complexity          | Higher         | Lower           |
+| Performance         | Slower         | Faster          |
+| Scalability         | Limited        | Better          |
+| Future support      | Being removed  | Future of Kafka |
+
+7️⃣ Interview Answer (Best Short Version)
+
+If interviewer asks:
+
+What is the difference between ZooKeeper and KRaft in Kafka?
+
+Best answer:
+
+Earlier Kafka versions used Apache ZooKeeper for cluster coordination, metadata storage, and leader election.
+ Newer versions use KRaft (Kafka Raft Metadata mode), which removes the ZooKeeper dependency and manages metadata internally using the Raft consensus protocol.
+  This simplifies architecture and improves scalability.
+
+8️⃣ Extra Point (Good for 4-Year Experience)
+
+You can add:
+
+Kafka is gradually deprecating ZooKeeper mode, and modern Kafka clusters are moving toward KRaft-based architecture.

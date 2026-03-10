@@ -1,0 +1,237 @@
+1️⃣ Scenario: Consumer crashes after processing message
+
+Question
+
+A Kafka consumer processes a payment event but crashes before committing the offset. Kafka sends the message again. How do you prevent duplicate processing?
+
+Answer
+
+Kafka provides at-least-once delivery, so duplicates are possible.
+
+Solution:
+
+Make the consumer idempotent
+
+Store transaction_id/event_id
+
+Check before processing
+
+Example logic:
+
+Receive message
+      ↓
+Check transaction_id in DB
+      ↓
+If exists → ignore
+Else → process
+2️⃣ Scenario: Messages are processed slowly
+
+Question
+
+Your Kafka consumer is too slow and lag keeps increasing. What will you do?
+
+Answer
+
+Possible solutions:
+
+Increase number of partitions
+
+Increase number of consumers
+
+Optimize processing logic
+
+Use batch processing
+
+Add consumer instances
+
+3️⃣ Scenario: Consumers are idle
+
+Question
+
+You have 10 consumers but only 3 partitions. Why are some consumers idle?
+
+Answer
+
+Rule in Kafka:
+
+One partition can only be consumed by one consumer in a consumer group.
+
+Example:
+
+Partitions = 3
+Consumers = 10
+
+Result:
+
+3 active consumers
+7 idle consumers
+
+Solution: increase partitions.
+
+4️⃣ Scenario: Broker failure
+
+Question
+
+One Kafka broker crashes. Will data be lost?
+
+Answer
+
+No, if replication is enabled.
+
+Example:
+
+Replication factor = 3
+
+Each partition has:
+
+Leader
+Follower
+Follower
+
+If leader fails → follower becomes leader.
+
+5️⃣ Scenario: Ordering problem
+
+Question
+
+Your system requires strict ordering of transactions. How do you ensure ordering in Kafka?
+
+Answer
+
+Ordering is guaranteed only within a partition.
+
+Solution:
+
+Use same key for related events.
+
+Example:
+
+Key = user_id
+
+Kafka will send all events for that user to same partition.
+
+6️⃣ Scenario: Message loss
+
+Question
+
+How do you guarantee that Kafka does not lose messages?
+
+Answer
+
+Use:
+
+Producer configuration:
+
+acks=all
+retries=true
+enable.idempotence=true
+
+Broker configuration:
+
+replication.factor >= 3
+min.insync.replicas >= 2
+7️⃣ Scenario: System receives duplicate messages
+
+Question
+
+Kafka delivered duplicate events. How will your service handle them?
+
+Answer
+
+Implement idempotent processing.
+
+Common approaches:
+
+unique transaction_id
+
+database unique constraint
+
+event store
+
+deduplication table
+
+8️⃣ Scenario: High throughput system
+
+Question
+
+Your payment system needs to process millions of events per second. How do you scale Kafka?
+
+Answer
+
+Scale horizontally:
+
+increase number of partitions
+
+add more brokers
+
+increase consumer instances
+
+distribute load across cluster
+
+9️⃣ Scenario: Large message size
+
+Question
+
+Kafka performance is slow because messages are very large (10MB+). What should you do?
+
+Answer
+
+Best practice:
+
+Store file/data in external storage:
+
+object storage
+
+database
+
+file system
+
+Kafka message contains only reference link.
+
+Example:
+
+Kafka message:
+{
+  file_url: "storage/payment_receipt_123.pdf"
+}
+🔟 Scenario: Reprocessing old data
+
+Question
+
+Your analytics team wants to reprocess messages from the last 7 days. How can Kafka support this?
+
+Answer
+
+Kafka stores messages based on retention policy.
+
+Example:
+
+retention.ms = 7 days
+
+Consumers can reset offset:
+
+consumer.seek()
+
+Or create a new consumer group to read from beginning.
+
+⭐ One Scenario Very Likely in Fintech Interviews
+
+Question
+
+User sends money → Kafka event → wallet service deducts money.
+How do you guarantee:
+
+1️⃣ no duplicate payment
+2️⃣ no message loss
+
+Expected Answer
+
+idempotent consumer (transaction_id)
+
+Kafka replication
+
+acks=all
+
+exactly-once semantics
+
+database transaction

@@ -1,0 +1,353 @@
+Q1: Why Kafka instead of REST API communication?
+
+Answer:
+
+Kafka provides:
+
+asynchronous communication
+
+high throughput
+
+fault tolerance
+
+decoupling between services
+
+Example:
+
+Instead of:
+
+Payment Service → Fraud Service → Notification Service
+
+Use Kafka:
+
+Payment Service → Kafka → Multiple Consumers
+Q2: What happens if a consumer crashes?
+
+Kafka stores the offset. (Offset is a unique sequential ID assigned to each message within a partition so consumers know which messages they already processed.)
+
+When consumer restarts:
+
+Consumer resumes from last committed offset
+
+No data loss.
+
+Q3: What if partitions are more than consumers?
+
+Example:
+
+Partitions: 5
+Consumers: 2
+
+Result:
+
+Consumer1 → 3 partitions
+Consumer2 → 2 partitions
+
+Kafka balances them.
+
+Q4: What if consumers are more than partitions?
+
+Example:
+
+Partitions: 2
+Consumers: 5
+
+Result:
+
+2 consumers active
+3 consumers idle
+
+Because one partition can only have one consumer in a group.
+
+Q5: What is message ordering in Kafka?
+
+Ordering is guaranteed only within a partition, not across partitions.
+
+Q6: What is retention in Kafka?
+
+Kafka keeps data for a configured time or size.
+
+Example:
+
+retention.ms = 7 days
+
+Even if consumer reads it, message remains.
+
+Q7: What is Kafka Cluster?
+
+A cluster is multiple Kafka brokers working together.
+
+Example:
+
+Broker1
+Broker2
+Broker3
+
+Benefits:
+
+load balancing
+
+high availability
+
+fault tolerance
+
+6️⃣ Very Common Scenario Question
+Interviewer may ask:
+
+How do you ensure no message loss in Kafka?
+
+Answer:
+
+enable replication
+set acks=all
+configure min.insync.replicas
+enable idempotent producer
+
+7️⃣ Exactly Once vs At Least Once
+| Delivery Type | Meaning                  |
+| ------------- | ------------------------ |
+| At most once  | Message may be lost      |
+| At least once | Message may duplicate    |
+| Exactly once  | No duplicate and no loss |
+
+Kafka supports exactly-once semantics.
+
+8️⃣ Kafka vs Traditional Queue
+| Feature      | Kafka        | Traditional Queue |
+| ------------ | ------------ | ----------------- |
+| Data storage | Persistent   | Usually removed   |
+| Scalability  | Very high    | Medium            |
+| Throughput   | Millions/sec | Lower             |
+| Use case     | Streaming    | Task queue        |
+
+9️⃣ Questions They May Ask with 4 Years Experience
+
+Be ready for:
+
+Kafka architecture
+
+Partitioning strategy
+
+Consumer group rebalancing
+
+Offset management
+
+Kafka performance tuning
+
+Kafka with microservices
+
+Kafka monitoring
+
+Kafka failure scenarios
+
+🔟 Smart Interview Answer Example
+
+If interviewer asks:
+
+Where have you used Kafka?
+
+Example answer:
+
+We used Apache Kafka for event-driven communication between microservices. Transaction events were produced to Kafka topics, and multiple consumers
+such as fraud detection, notification, and analytics services processed the events asynchronously.
+
+
+1️⃣ What is Consumer Lag?
+Definition
+
+Consumer lag is the difference between the latest message in a partition and the last message processed by the consumer.
+
+Simple formula:
+
+Consumer Lag = Latest Offset – Consumer Offset
+Example
+
+Partition messages:
+
+Offset 0
+Offset 1
+Offset 2
+Offset 3
+Offset 4
+Offset 5
+
+Consumer has processed only up to:
+
+Offset 2
+
+Lag:
+
+Latest offset = 5
+Consumer offset = 2
+
+Lag = 3
+
+So 3 messages are still waiting to be processed.
+
+Why Consumer Lag Happens
+
+Common reasons:
+
+consumer is slow
+
+heavy processing logic
+
+too few consumers
+
+too few partitions
+
+system load is high
+
+How to Fix Consumer Lag
+
+Solutions:
+
+increase consumer instances
+
+increase partitions
+
+optimize processing
+
+scale infrastructure
+
+use batch processing
+
+Interview Answer (Short)
+
+Consumer lag is the difference between the latest offset in a Kafka partition and the offset last processed by the consumer. It indicates how far the consumer is behind in processing messages.
+
+2️⃣ What is Kafka Rebalance?
+Definition
+
+A rebalance happens when Kafka redistributes partitions among consumers in a consumer group.
+
+This occurs when:
+
+a new consumer joins
+
+a consumer leaves
+
+a consumer crashes
+
+partitions change
+
+Example
+
+Topic:
+
+Partitions: 4
+
+Consumer Group:
+
+Consumer A
+Consumer B
+
+Assignment:
+
+Consumer A → P0, P1
+Consumer B → P2, P3
+
+Now a new consumer joins.
+
+Consumer A
+Consumer B
+Consumer C
+
+Kafka triggers rebalance.
+
+New assignment:
+
+Consumer A → P0
+Consumer B → P1
+Consumer C → P2, P3
+Problem with Rebalance
+
+During rebalance:
+
+consumers stop processing
+
+partitions are reassigned
+
+processing pauses briefly
+
+So too frequent rebalancing can affect performance.
+
+Interview Answer (Short)
+
+Kafka rebalance is the process of redistributing topic partitions among consumers in a consumer group when consumers join, leave, or fail.
+
+3️⃣ What Happens When a New Consumer Joins a Group?
+
+When a new consumer joins a consumer group, Kafka performs rebalance.
+
+Steps:
+
+1 Consumer joins group
+2 Kafka pauses consumers
+3 Partitions are reassigned
+4 Consumers resume processing
+Example
+
+Topic:
+
+Partitions = 3
+
+Initial state:
+
+Consumer A → P0, P1, P2
+
+New consumer joins.
+
+Consumer A
+Consumer B
+
+After rebalance:
+
+Consumer A → P0, P1
+Consumer B → P2
+
+Now processing happens in parallel.
+
+Real Fintech Example (Easypaisa-type system)
+
+In a payment system like Easypaisa:
+
+Topic:
+
+transactions
+
+Partitions:
+
+6 partitions
+
+Consumer group:
+
+wallet-service
+
+Consumers:
+
+Wallet-1
+Wallet-2
+Wallet-3
+
+Assignment:
+
+Wallet-1 → P0, P1
+Wallet-2 → P2, P3
+Wallet-3 → P4, P5
+
+If Wallet-4 starts:
+
+Kafka triggers rebalance and redistributes partitions.
+
+⭐ Pro Tip (Good for 4-Year Experience)
+
+Mention this in interviews:
+
+Too many rebalances can cause downtime, so production systems use:
+
+cooperative rebalancing
+
+static group membership
+
+proper session timeout configuration
