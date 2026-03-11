@@ -43,9 +43,7 @@ MyBatis (hybrid: supports SQL + mapping)
 ✅ Example using Spring Boot + Spring Data JPA
 1. Entity Class
 
-java
-Copy
-Edit
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -60,17 +58,13 @@ public class User {
 }
 2. Repository Interface
 
-java
-Copy
-Edit
+
 public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByName(String name);
 }
 3. Service or Controller Usage
 
-java
-Copy
-Edit
+
 @Autowired
 private UserRepository userRepository;
 
@@ -89,9 +83,7 @@ public void createUser() {
 
 ⇩
 
-java
-Copy
-Edit
+
 class User {
   Long id;
   String name;

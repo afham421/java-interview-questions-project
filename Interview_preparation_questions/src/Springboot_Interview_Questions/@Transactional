@@ -31,9 +31,7 @@ On service layer methods (recommended)
 Can also be applied on class level (all methods inside will be transactional)
 
 ✅ Common Use Case
-java
-Copy
-Edit
+
 @Service
 public class UserService {
 
@@ -74,9 +72,7 @@ If an exception occurs → ROLLBACK.
 
 
 ✅ Example with Attributes
-java
-Copy
-Edit
+
 @Transactional(
     readOnly = false,
     rollbackFor = Exception.class,
@@ -96,7 +92,6 @@ But sometimes you also want to roll back for checked exceptions (like IOExceptio
 So:
 
 @Transactional(rollbackFor = Exception.class)
-
 
 means:
 
@@ -135,7 +130,6 @@ public List<User> getAllUsers() {
     return userRepository.findAll();
 }
 
-
 If you accidentally try to perform an update inside this method, some databases might throw an exception, or Spring might not flush the persistence context.
 
 🧠 Summary Table
@@ -164,9 +158,6 @@ Avoid using it on interfaces if using Spring’s proxy approach.
 🧪 Testing @Transactional
 If you annotate a test with @Transactional, Spring will roll back all changes made during the test after it finishes.
 
-java
-Copy
-Edit
 @SpringBootTest
 @Transactional
 public class MyServiceTest {
@@ -201,9 +192,6 @@ This change was made because Oracle transferred the Java EE namespace to the Ecl
 ✅ Which One Should You Use?
 ✔️ Always prefer:
 
-java
-Copy
-Edit
 import org.springframework.transaction.annotation.Transactional;
 Because:
 
@@ -222,9 +210,7 @@ It’s more commonly used in Spring Boot apps
 
 
 ✅ Example (Recommended for Spring Boot)
-java
-Copy
-Edit
+
 import org.springframework.transaction.annotation.Transactional;
 
 @Service

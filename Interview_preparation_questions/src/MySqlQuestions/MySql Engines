@@ -5,7 +5,8 @@ In MySQL, storage engines (also known as table types) are components that handle
 Common MySQL Storage Engines
 
 1. InnoDB
-Description: The default storage engine in MySQL since version 5.5. InnoDB is designed for high reliability and performance, especially with large databases. It supports ACID-compliant transactions, foreign keys, and row-level locking.
+Description: The default storage engine in MySQL since version 5.5. InnoDB is designed for high reliability and performance, especially with large databases.
+ It supports ACID-compliant transactions, foreign keys, and row-level locking.
 
 Features:
 ACID Compliance: Supports transactions with COMMIT, ROLLBACK, and crash recovery.
@@ -22,7 +23,8 @@ CREATE TABLE example (
 
 
 2. MyISAM
-Description: The default storage engine before InnoDB, MyISAM is a non-transactional engine focused on fast read operations. It is simple, but lacks features like transactions and foreign keys.
+Description: The default storage engine before InnoDB, MyISAM is a non-transactional engine focused on fast read operations.
+It is simple, but lacks features like transactions and foreign keys.
 
 Features:
 Table-Level Locking: Locks entire tables during read or write operations, which can lead to contention in write-heavy environments.
@@ -37,7 +39,8 @@ CREATE TABLE example (
 ) ENGINE=MyISAM;
 
 3. MEMORY (HEAP)
-Description: Stores all data in RAM, making it extremely fast for read and write operations. However, data is lost when the database server is restarted since it is not persistent.
+Description: Stores all data in RAM, making it extremely fast for read and write operations. However,
+data is lost when the database server is restarted since it is not persistent.
 
 Features:
 Fast Access: Extremely fast due to in-memory storage.

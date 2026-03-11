@@ -1,5 +1,6 @@
 🔶 What is Hazelcast?
-Hazelcast is a distributed in-memory data grid (IMDG). It helps you store and process data in memory across multiple nodes (servers or instances) to achieve high speed and horizontal scalability.
+Hazelcast is a distributed in-memory data grid (IMDG). It helps you store and process data in memory across multiple nodes (servers or instances)
+to achieve high speed and horizontal scalability.
 
 🔧 Key Features of Hazelcast:
 | Feature                 | Description                                              |
@@ -30,18 +31,15 @@ Pub/Sub Messaging
 1. Add Hazelcast Dependency
 Maven:
 
-xml
-Copy
-Edit
+
 <dependency>
     <groupId>com.hazelcast</groupId>
     <artifactId>hazelcast</artifactId>
     <version>5.3.6</version>
 </dependency>
+
 2. Use Hazelcast Map
-java
-Copy
-Edit
+
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import java.util.Map;
@@ -56,9 +54,7 @@ public class HazelcastDemo {
 }
 ⚙️ Hazelcast in Spring Boot
 1. Add dependencies:
-xml
-Copy
-Edit
+
 <dependency>
     <groupId>com.hazelcast</groupId>
     <artifactId>hazelcast</artifactId>
@@ -68,25 +64,22 @@ Edit
     <groupId>com.hazelcast</groupId>
     <artifactId>hazelcast-spring</artifactId>
 </dependency>
+
 2. Configure in application.yml (optional)
-yaml
-Copy
-Edit
+
 spring:
   cache:
     type: hazelcast
+
 3. Enable Hazelcast-backed cache:
-java
-Copy
-Edit
+
 @SpringBootApplication
 @EnableCaching
 public class DemoApplication {
 }
+
 4. Use @Cacheable:
-java
-Copy
-Edit
+
 @Cacheable("users")
 public User getUserById(Long id) {
     return userRepository.findById(id).orElse(null);

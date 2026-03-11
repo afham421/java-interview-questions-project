@@ -7,15 +7,11 @@ Imagine you want to fetch a list of students and each student’s courses.
 
 You write a query like:
 
-java
-Copy
-Edit
+
 List<Student> students = studentRepository.findAll();
 Now, when you try to get each student’s courses:
 
-java
-Copy
-Edit
+
 for (Student student : students) {
     System.out.println(student.getCourses());
 }
@@ -42,9 +38,7 @@ Use eager fetching or JOIN FETCH to load related data in one go:
 
 ✅ Example with JPQL:
 
-java
-Copy
-Edit
+
 @Query("SELECT s FROM Student s JOIN FETCH s.courses")
 List<Student> findAllWithCourses();
 Now you get all students and their courses in just 1 query.

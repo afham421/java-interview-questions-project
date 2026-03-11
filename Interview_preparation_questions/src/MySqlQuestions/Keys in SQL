@@ -29,9 +29,7 @@
 
 
 🔧 SQL Example:
-sql
-Copy
-Edit
+
 CREATE TABLE users (
     user_id INT PRIMARY KEY,
     email VARCHAR(100) UNIQUE,

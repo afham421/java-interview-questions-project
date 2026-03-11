@@ -11,9 +11,7 @@ When you create an index on a column (e.g., name), the database creates a separa
 So when you run a SELECT query with WHERE name = 'John', the database looks in the index first.
 
 🛠️ Example:
-sql
-Copy
-Edit
+
 CREATE INDEX idx_employee_name ON employees(name);
 This will create an index on the name column in the employees table.
 

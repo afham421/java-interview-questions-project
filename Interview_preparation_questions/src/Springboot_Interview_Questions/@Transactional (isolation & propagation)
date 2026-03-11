@@ -1,0 +1,149 @@
+These two concepts are usually discussed in transaction management in frameworks like Spring (Java).
+
+1. Transaction Isolation
+
+Isolation defines how one transaction is visible to other concurrent transactions.
+
+It controls data consistency when multiple transactions run at the same time.
+
+Common Problems Without Isolation
+
+1️⃣ Dirty Read
+Reading data that another transaction has not committed yet.
+
+Example:
+
+Transaction T1
+
+UPDATE account SET balance = 900 WHERE id = 1;
+
+Transaction T2 reads balance = 900 before T1 commits.
+
+If T1 rolls back → T2 read invalid data.
+
+2️⃣ Non-Repeatable Read
+Reading the same row twice but getting different values.
+
+Example:
+
+T1:
+
+SELECT balance FROM account WHERE id = 1;
+
+T2 updates the balance and commits.
+
+T1 reads again → value changed.
+
+3️⃣ Phantom Read
+
+Example:
+
+T1
+
+SELECT * FROM orders WHERE amount > 1000;
+
+T2 inserts a new row that matches the condition.
+
+T1 runs the same query again → new row appears.
+
+Isolation Levels
+
+1️⃣ Read Uncommitted (lowest)
+
+Allows dirty reads.
+
+2️⃣ Read Committed
+
+Only committed data is visible.
+
+3️⃣ Repeatable Read
+
+Same rows return same data during transaction.
+
+4️⃣ Serializable (highest)
+
+Transactions run like sequential execution.
+
+2. Transaction Propagation
+
+Propagation defines how a transaction behaves when one transactional method calls another transactional method.
+
+Example:
+
+Method A (transaction)
+   |
+   ---> Method B (transaction)
+
+Propagation decides whether B will use A's transaction or create a new one.
+
+Common Propagation Types
+1️⃣ REQUIRED (Most Common)
+
+If a transaction exists → join it
+If none exists → create new
+
+Example:
+
+ServiceA.methodA()  (Transaction started)
+       |
+       ---> ServiceB.methodB()
+
+Method B joins the same transaction.
+
+If B fails → whole transaction rolls back.
+
+2️⃣ REQUIRES_NEW
+
+Always creates a new transaction.
+
+Example:
+
+Method A transaction
+       |
+       ---> Method B (new transaction)
+
+If B fails → only B rolls back, A can still commit.
+
+Used in:
+
+Logging
+
+Audit
+
+Notifications
+
+3️⃣ SUPPORTS
+
+If a transaction exists → use it
+If not → run without transaction.
+
+4️⃣ NOT_SUPPORTED
+
+Always run without transaction.
+
+Existing transaction is suspended.
+
+5️⃣ MANDATORY
+
+Must run inside an existing transaction.
+
+If no transaction exists → exception.
+
+6️⃣ NEVER
+
+Must run without transaction.
+
+If transaction exists → exception.
+
+Simple Interview Difference
+| Feature  | Isolation                                          | Propagation                                                  |
+| -------- | -------------------------------------------------- | ------------------------------------------------------------ |
+| Purpose  | Control visibility between concurrent transactions | Control behavior when one transactional method calls another |
+| Used for | Concurrency control                                | Transaction flow                                             |
+| Example  | Dirty reads, phantom reads                         | REQUIRED, REQUIRES_NEW                                       |
+
+Very Short Interview Answer
+
+Isolation defines how transactions interact with each other when running concurrently.
+
+Propagation defines how transactions behave when one transactional method calls another transactional method.

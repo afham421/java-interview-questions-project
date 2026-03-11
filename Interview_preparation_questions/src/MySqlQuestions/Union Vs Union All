@@ -1,4 +1,5 @@
-In MySQL, UNION and UNION ALL are used to combine the results of two or more SELECT queries into a single result set. While they are similar, there are key differences between them:
+In MySQL, UNION and UNION ALL are used to combine the results of two or more SELECT queries into a single result set.
+ While they are similar, there are key differences between them:
 
 1. UNION
 Combines the results of two or more SELECT statements and removes duplicate rows from the final result set.
@@ -9,7 +10,9 @@ SELECT first_name FROM employees
 UNION
 SELECT first_name FROM customers;
 
-Explanation: This query returns a list of unique first names from both the employees and customers tables. If a first name appears in both tables, it will only appear once in the result set.
+Explanation: This query returns a list of unique first names from both the employees and customers tables.
+ If a first name appears in both tables, it will only appear once in the result set.
+
 
 2. UNION ALL
 Combines the results of two or more SELECT statements and includes all rows, including duplicates.
@@ -20,7 +23,8 @@ SELECT first_name FROM employees
 UNION ALL
 SELECT first_name FROM customers;
 
-Explanation: This query returns all first names from both the employees and customers tables, including any duplicates. If a first name appears in both tables, it will appear twice in the result set.
+Explanation: This query returns all first names from both the employees and customers tables, including any duplicates.
+If a first name appears in both tables, it will appear twice in the result set.
 
 Performance Considerations
 UNION: The process of removing duplicates (using DISTINCT) adds an extra step, which can impact performance, especially with large datasets.

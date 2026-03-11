@@ -19,9 +19,7 @@ This causes the system to hang or stall until the deadlock is detected and resol
 
 🔁 Deadlock in MySQL (Database Deadlock)
 🧱 Example Scenario:
-sql
-Copy
-Edit
+
 -- Thread A
 START TRANSACTION;
 UPDATE accounts SET balance = balance - 100 WHERE id = 1;
@@ -40,9 +38,6 @@ UPDATE accounts SET balance = balance - 100 WHERE id = 1;
 ⚠️ MySQL Response
 MySQL detects deadlock and throws:
 
-sql
-Copy
-Edit
 ERROR 1213 (40001): Deadlock found when trying to get lock; try restarting transaction
 ✅ How to Avoid Deadlocks in SQL
 | Tip                               | Explanation                                 |
@@ -55,9 +50,7 @@ ERROR 1213 (40001): Deadlock found when trying to get lock; try restarting trans
 
 🧵 Deadlock in Java Multithreading
 🧱 Example Code:
-java
-Copy
-Edit
+
 public class DeadlockExample {
     static final Object lock1 = new Object();
     static final Object lock2 = new Object();

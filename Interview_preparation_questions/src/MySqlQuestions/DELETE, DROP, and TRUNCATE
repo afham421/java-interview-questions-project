@@ -13,9 +13,7 @@ Performance: Slower for large data.
 
 Table structure: Remains intact.
 
-sql
-Copy
-Edit
+
 DELETE FROM employees WHERE department = 'HR';
 
 
@@ -34,9 +32,7 @@ Performance: Faster than DELETE.
 
 Table structure: Remains intact.
 
-sql
-Copy
-Edit
+
 TRUNCATE TABLE employees;
 
 
@@ -54,9 +50,7 @@ Performance: Fast.
 
 Table structure: ❌ Removed.
 
-sql
-Copy
-Edit
+
 DROP TABLE employees;
 
 

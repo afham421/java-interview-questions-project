@@ -34,7 +34,8 @@ BEGIN
     VALUES (NEW.EmployeeID, 'INSERT', NOW());
 END;
 Explanation:
-This trigger logs every new employee added to the Employees table into an EmployeeAudit table, capturing the EmployeeID, the action taken (INSERT), and the date the action occurred.
+This trigger logs every new employee added to the Employees table into an EmployeeAudit table, capturing the EmployeeID, the action taken (INSERT),
+and the date the action occurred.
 
 Instead Of Triggers:
 Used primarily with views, INSTEAD OF triggers replace the standard action of the triggering event.
@@ -50,6 +51,7 @@ Used primarily with views, INSTEAD OF triggers replace the standard action of th
      INSERT INTO Salaries (EmployeeID, Salary)
      VALUES (NEW.EmployeeID, NEW.Salary);
  END;
+
 Explanation:
 In the INSTEAD OF trigger you've provided, the data is inserted into the Employees and Salaries tables, not directly into the EmployeeView.
 The trigger does not insert data into the EmployeeView itself; it redirects the insertion to the underlying Employees and Salaries tables.

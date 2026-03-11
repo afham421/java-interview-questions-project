@@ -78,6 +78,7 @@ Unlike JPQL, HQL supports inserting records from one entity into another.
 
 INSERT INTO Employee (id, name)
 SELECT p.id, p.name FROM Person p
+
 📌 JPQL does not support INSERT operations at all.
 
 

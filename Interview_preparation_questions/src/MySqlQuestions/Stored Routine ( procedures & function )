@@ -69,14 +69,17 @@ Usage:
 
 SELECT CalculateTax(50000);
 Differences Between Stored Procedures and Stored Functions
+
 Return Value:
 
 Stored Procedure: Does not return a value directly, but can return values through OUT parameters.
 Stored Function: Must return a single value.
+
 Usage:
 
 Stored Procedure: Called using the CALL statement and cannot be used in SQL expressions.
 Stored Function: Can be called in SQL expressions, like SELECT or WHERE clauses.
+
 Purpose:
 
 Stored Procedure: Typically used for executing a series of SQL statements, including complex business logic.

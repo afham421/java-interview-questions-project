@@ -23,18 +23,14 @@ Use Resilience4j — the recommended lightweight library supported by Spring Boo
 
 ⚙️ Add Resilience4j to Your Project
 1. Add Maven Dependency
-xml
-Copy
-Edit
+
 <dependency>
     <groupId>io.github.resilience4j</groupId>
     <artifactId>resilience4j-spring-boot3</artifactId>
 </dependency>
 🧪 Basic Usage Example
 2. Service Class with Circuit Breaker
-java
-Copy
-Edit
+
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -55,9 +51,7 @@ public class MyService {
     }
 }
 3. Configuration in application.yml
-yaml
-Copy
-Edit
+
 resilience4j:
   circuitbreaker:
     instances:
@@ -68,6 +62,7 @@ resilience4j:
         waitDurationInOpenState: 10s
         permittedNumberOfCallsInHalfOpenState: 2
         automaticTransitionFromOpenToHalfOpenEnabled: true
+
 ⚙️ Explanation of Parameters
 | Parameter                                      | Meaning                                        |
 | ---------------------------------------------- | ---------------------------------------------- |
@@ -80,9 +75,7 @@ resilience4j:
 
 
 📊 States of Circuit Breaker
-text
-Copy
-Edit
+
 [ CLOSED ] → Too many failures → [ OPEN ]
 [ OPEN ] → Wait time expires → [ HALF-OPEN ]
 [ HALF-OPEN ] → Test call success → [ CLOSED ]
@@ -90,9 +83,7 @@ Edit
 🔄 Retry + Circuit Breaker
 You can also add retries and timeouts:
 
-yaml
-Copy
-Edit
+
 resilience4j:
   retry:
     instances:
@@ -100,19 +91,16 @@ resilience4j:
         maxAttempts: 3
         waitDuration: 2s
 📈 Optional: Metrics and Actuator
-xml
-Copy
-Edit
+
 <dependency>
     <groupId>io.github.resilience4j</groupId>
     <artifactId>resilience4j-micrometer</artifactId>
 </dependency>
+
 Access metrics at:
 
-bash
-Copy
-Edit
 /actuator/metrics/resilience4j.circuitbreaker.calls
+
 ✅ Summary
 | Feature         | Benefit                          |
 | --------------- | -------------------------------- |

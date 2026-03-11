@@ -18,15 +18,16 @@ If the application is a web application, Spring Boot starts an embedded server (
 This server runs within the same JVM as your application.
 
 Component Scanning:
-Spring Boot automatically scans the package where the main application class resides (and its sub-packages) for Spring components, services, repositories, and controllers
-, wiring them into the application context.
+Spring Boot automatically scans the package where the main application class resides (and its sub-packages) for Spring components, services, repositories,
+and controllers, wiring them into the application context.
 
 Externalized Configuration:
 Spring Boot loads configuration properties from external sources (e.g., application.properties or application.yml) and applies them during startup.
 These configurations can be environment-specific, supporting different settings for development, testing, and production.
 
 Spring Beans Initialization:
-Beans defined in the application are initialized and managed by the Spring context. Dependency injection is handled automatically, wiring up components based on their dependencies.
+Beans defined in the application are initialized and managed by the Spring context. Dependency injection is handled automatically,
+ wiring up components based on their dependencies.
 
 Application Startup Complete:
 Once everything is set up, Spring Boot signals that the application is ready to serve requests.

@@ -2,7 +2,8 @@ Key Concepts of Beans in Spring Boot
 
 Bean Definition:  // you can say bean is a object of class like object of service class ,object of DAO class etc.
 Beans are the objects that form the backbone of a Spring application and are managed by the Spring IoC container.
-A bean can be defined using annotations or XML configuration (though XML is less common in Spring Boot). In Spring Boot, annotations are commonly used for bean definition.
+A bean can be defined using annotations or XML configuration (though XML is less common in Spring Boot).
+In Spring Boot, annotations are commonly used for bean definition.
 Common annotations used to define beans include @Component, @Service, @Repository, @Controller, and @Bean.
 
 Bean Scopes:

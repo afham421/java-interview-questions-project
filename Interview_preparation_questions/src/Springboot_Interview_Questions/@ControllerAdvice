@@ -1,13 +1,12 @@
 ✅ @ControllerAdvice in Spring Boot
-@ControllerAdvice is a specialized annotation in Spring used to handle exceptions and global behaviors (like model attributes or data binding) across all controllers — kind of like a global try-catch for your REST API.
+@ControllerAdvice is a specialized annotation in Spring used to handle exceptions and global behaviors
+(like model attributes or data binding) across all controllers — kind of like a global try-catch for your REST API.
 
 🔹 Use Case: Global Exception Handling
 Instead of writing try-catch in every controller, you define a centralized class to handle exceptions.
 
 ✅ Example: Global Validation Error Handling
-java
-Copy
-Edit
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

@@ -5,16 +5,15 @@ There are two meanings of "pivot table", depending on context:
 🔹 2. Pivot Table (as Join Table in DB design)    >>>>>>>>>   in simple words it is a join table or intermediate table
 ➡️ This is what you're referring to:
 
-In database design, a pivot table (more correctly called a junction table, bridge table, or mapping table) is used in a many-to-many relationship to connect two tables.
+In database design, a pivot table (more correctly called a junction table, bridge table, or mapping table)
+is used in a many-to-many relationship to connect two tables.
 
 ✅ Example:
 Students can enroll in multiple courses, and each course can have multiple students.
 
 So we use a pivot table like:
 
-sql
-Copy
-Edit
+
 Student
 -------
 id | name
@@ -33,7 +32,8 @@ student_id | course_id
 ➡️ Used for transforming rows into columns, as explained earlier (used in data analysis/reporting).
 
 ✅ What is a Pivot Table (in SQL)?
-A pivot table is a way to transform rows into columns in SQL, summarizing data for reporting and analytics. It’s commonly used to aggregate data and display it in a more readable matrix or table format.
+A pivot table is a way to transform rows into columns in SQL, summarizing data for reporting and analytics.
+It’s commonly used to aggregate data and display it in a more readable matrix or table format.
 
 📊 Example:
 Suppose you have a sales table:

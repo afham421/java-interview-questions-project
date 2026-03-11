@@ -7,12 +7,10 @@ Usage: To insert a new entity into the database.
 
 It only works for new (transient) objects.
 
-java
-Copy
-Edit
 User user = new User();  // transient
 user.setName("Ali");
 entityManager.persist(user);  // now managed and inserted
+
 Key Points:
 
 Adds the entity to the persistence context
@@ -30,14 +28,13 @@ Provided by: EntityManager
 
 Usage: To insert or update an entity (commonly for detached objects).
 
-java
-Copy
-Edit
+
 User detachedUser = new User();  // detached object
 detachedUser.setId(1L);          // existing ID
 detachedUser.setName("Updated Name");
 
 User managedUser = entityManager.merge(detachedUser);
+
 Key Points:
 
 Can be used for existing or detached objects
@@ -55,12 +52,11 @@ Provided by: JpaRepository
 
 Internally uses: persist() or merge() based on entity state
 
-java
-Copy
-Edit
+
 User user = new User();
 user.setName("Awais");
 userRepository.save(user);  // Spring will call persist or merge
+
 Key Points:
 
 Simplifies the code in Spring Boot
