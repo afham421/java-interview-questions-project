@@ -1,0 +1,184 @@
+It is a shorter way of writing a lambda expression.
+
+1️⃣ Normal Lambda Version
+users.stream()
+     .map(user -> user.getName())
+     .toList();
+
+Here:
+
+user is an object of User
+
+getName() method is called
+
+name is returned
+
+2️⃣ Method Reference Version
+users.stream()
+     .map(User::getName)
+     .toList();
+
+This means:
+
+For each User object → call getName()
+
+Java automatically understands that the stream contains User objects.
+
+So internally it behaves like:
+
+user -> user.getName()
+3️⃣ Visual Flow
+Stream<User>
+      |
+      | map(User::getName)
+      v
+Stream<String>
+
+Example:
+
+User Object	getName()
+User("Ali")	"Ali"
+User("Ahmed")	"Ahmed"
+
+Result:
+
+["Ali", "Ahmed"]
+4️⃣ Why We Use Method Reference
+
+Benefits:
+
+✅ Cleaner code
+✅ Less boilerplate
+✅ More readable
+✅ Functional style programming
+
+5️⃣ Types of Method References (Important for Interviews)
+1️⃣ Static Method
+ClassName::staticMethod
+
+Example:
+
+Math::abs
+2️⃣ Instance Method of Particular Object
+object::method
+
+Example:
+
+System.out::println
+3️⃣ Instance Method of Arbitrary Object
+ClassName::method
+
+Example:
+
+User::getName
+4️⃣ Constructor Reference
+ClassName::new
+
+Example:
+
+ArrayList::new
+6️⃣ Small Working Example
+class User {
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+}
+
+List<User> users = List.of(
+        new User("Ali"),
+        new User("Sara")
+);
+
+List<String> names = users.stream()
+        .map(User::getName)
+        .toList();
+
+Output:
+
+[Ali, Sara]
+🔑 Interview One-Line Answer
+
+:: is a method reference operator used to refer to a method without executing it, providing a shorter alternative to lambda expressions.
+
+Example:
+
+user -> user.getName()
+
+becomes
+
+User::getName
+
+If you want, I can also explain a very tricky interview question:
+
+Why does User::getName work in map() but getName() alone does not?
+
+
+>>>>>>>>>>>>>>>>>>>>>>
+
+This question is very commonly asked in senior Java interviews.
+
+Why does `User::getName` work in `map()` but `getName()` alone does not?
+
+Because map() expects a Function, not the result of a function call.
+
+1️⃣ What map() Actually Expects
+
+The map() method in Stream API expects a Function.
+
+<R> Stream<R> map(Function<? super T, ? extends R> mapper)
+
+Meaning:
+
+Input  -> Output
+User   -> String
+
+So map() needs something like:
+
+Function<User, String>
+2️⃣ Lambda Version (Correct)
+users.stream()
+     .map(user -> user.getName())
+
+Here we pass a function:
+
+User → String
+
+Meaning:
+
+take a user → return name
+3️⃣ Method Reference Version (Also Correct)
+users.stream()
+     .map(User::getName)
+
+User::getName means:
+
+For any User object → call getName()
+
+Java converts it internally to:
+
+user -> user.getName()
+
+So it still provides a Function<User, String>.
+
+4️⃣ Why getName() Alone Fails
+
+If you write:
+
+users.stream()
+     .map(getName())   // ❌ compile error
+
+This means:
+
+call getName() immediately
+
+But:
+
+getName() needs a User object
+
+No object is provided
+
+map() expects a function, not a value
+
+So the compiler fails.

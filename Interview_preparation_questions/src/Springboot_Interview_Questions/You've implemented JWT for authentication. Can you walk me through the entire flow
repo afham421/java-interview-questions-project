@@ -1,0 +1,14 @@
+we implemented JWT and Spring Security for secure authentication and authorization. The flow works like this:
+1.	Login Request: The user enters their username and password on the client (e.g., a React frontend)
+    and sends a POST request to our /api/authenticate endpoint.
+2.	Server Validation: Spring Security's AuthenticationManager validates the credentials against the user data stored in our SQL database.
+3.	JWT Generation: If credentials are valid, the server generates a JSON Web Token (JWT). This token contains a header,
+     a payload (with user info like username, roles, expiration time), and a signature created with a secret key known only to the server.
+4.	Token Response: The server sends this JWT back to the client in the response body.
+5.	Client Storage: The client stores this token securely—typically in localStorage or sessionStorage.
+6.	Authenticated Requests: For all subsequent requests to protected endpoints (e.g., /api/technicians),
+    the client includes the JWT in the Authorization header, formatted as Bearer <token>.
+7.	Server-Side Filtering: We configured a Spring Security filter (JwtRequestFilter) that intercepts every request.
+    It extracts the token from the header, validates the signature using the secret key, and checks the expiration date.
+     If the token is valid, it sets the user's authentication context, allowing the request to proceed to the controller.
+     If not, it returns a 401 Unauthorized error.

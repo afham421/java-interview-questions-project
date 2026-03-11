@@ -1,0 +1,115 @@
+In Java (especially Java 8 Functional Interfaces), Predicate and Function are both used in Streams and Lambda expressions,
+ but they serve different purposes.
+
+1️⃣ Predicate
+
+A Predicate is used to test a condition and it always returns boolean (true / false).
+
+Package
+
+java.util.function.Predicate
+
+Method
+
+boolean test(T t)
+Example
+Predicate<Integer> isEven = n -> n % 2 == 0;
+
+System.out.println(isEven.test(10)); // true
+System.out.println(isEven.test(7));  // false
+Common Use Case
+
+Mostly used with filter() in streams.
+
+List<Integer> nums = List.of(1,2,3,4,5,6);
+
+nums.stream()
+    .filter(n -> n % 2 == 0)
+    .forEach(System.out::println);
+
+Output:
+
+2
+4
+6
+
+Here n -> n % 2 == 0 is a Predicate.
+
+2️⃣ Function
+
+A Function is used to transform one value into another value.
+
+Package
+
+java.util.function.Function
+
+Method
+
+R apply(T t)
+
+T → Input type
+
+R → Return type
+
+Example
+Function<Integer, Integer> square = n -> n * n;
+
+System.out.println(square.apply(5));
+
+Output:
+
+25
+Common Use Case
+
+Mostly used with map() in streams.
+
+List<Integer> nums = List.of(1,2,3,4);
+
+nums.stream()
+    .map(n -> n * n)
+    .forEach(System.out::println);
+
+Output:
+
+1
+4
+9
+16
+🔑 Key Differences (Interview Table)
+| Feature              | Predicate       | Function       |
+| -------------------- | --------------- | -------------- |
+| Purpose              | Check condition | Transform data |
+| Return Type          | `boolean`       | Any type `R`   |
+| Method               | `test()`        | `apply()`      |
+| Common Stream Method | `filter()`      | `map()`        |
+| Example              | `n -> n > 10`   | `n -> n * 2`   |
+
+🔹 Simple Way to Remember
+
+Predicate → Question (True/False)
+Is number even?
+
+Function → Transformation
+Convert number to square
+
+💡 Interview Tip (Very Common Question)
+
+Example combining Predicate + Function
+
+List<Integer> nums = List.of(1,2,3,4,5);
+
+nums.stream()
+    .filter(n -> n % 2 == 0)  // Predicate
+    .map(n -> n * n)          // Function
+    .forEach(System.out::println);
+
+Flow:
+
+1,2,3,4,5
+ ↓ filter (even)
+2,4
+ ↓ map (square)
+4,16
+
+If you want, I can also explain the complete Java Functional Interfaces hierarchy (Predicate, Function, Consumer, Supplier)
+— this is very common in Java backend interviews.

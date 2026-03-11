@@ -1,0 +1,111 @@
+In Java Streams, map() and filter() are two very common operations but they do different things.
+
+| Feature              | `map()`            | `filter()`                         |
+| -------------------- | ------------------ | ---------------------------------- |
+| Purpose              | Transform data     | Select data                        |
+| Output size          | Same as input size | Can be smaller                     |
+| Returns              | Modified elements  | Only elements that match condition |
+| Functional Interface | `Function<T, R>`   | `Predicate<T>`                     |
+
+1️⃣ map() – Transform Each Element
+
+map() is used when you want to convert or transform each element of a stream.
+
+Example
+List<Integer> numbers = Arrays.asList(1,2,3,4);
+
+List<Integer> squares = numbers.stream()
+        .map(n -> n * n)
+        .collect(Collectors.toList());
+
+System.out.println(squares);
+Output
+[1, 4, 9, 16]
+
+✔ Each element is transformed.
+
+Flow
+
+Input  : [1,2,3,4]
+map    : n -> n*n
+Output : [1,4,9,16]
+2️⃣ filter() – Select Elements
+
+filter() is used to keep only elements that satisfy a condition.
+
+Example
+List<Integer> numbers = Arrays.asList(1,2,3,4,5,6);
+
+List<Integer> even = numbers.stream()
+        .filter(n -> n % 2 == 0)
+        .collect(Collectors.toList());
+
+System.out.println(even);
+Output
+[2,4,6]
+
+✔ Only elements that match condition remain.
+
+Flow
+
+Input  : [1,2,3,4,5,6]
+filter : n % 2 == 0
+Output : [2,4,6]
+3️⃣ Using map() and filter() Together
+
+Very common in real backend code (Spring Boot).
+
+Example
+
+Get square of even numbers
+
+List<Integer> numbers = Arrays.asList(1,2,3,4,5,6);
+
+List<Integer> result = numbers.stream()
+        .filter(n -> n % 2 == 0)
+        .map(n -> n * n)
+        .collect(Collectors.toList());
+
+System.out.println(result);
+Output
+[4,16,36]
+
+Flow
+
+Input      : [1,2,3,4,5,6]
+filter     : [2,4,6]
+map(square): [4,16,36]
+4️⃣ Real Backend Example (Very Common Interview)
+Suppose we have a User class
+class User {
+    String name;
+    int age;
+}
+Get names of users older than 18
+List<String> names = users.stream()
+        .filter(u -> u.getAge() > 18)
+        .map(User::getName)
+        .collect(Collectors.toList());
+
+Step 1: filter() → select adults
+Step 2: map() → extract names
+
+5️⃣ Simple Way to Remember
+filter → remove elements
+map    → modify elements
+
+Example:
+
+[1,2,3,4,5]
+
+filter (even) → [2,4]
+map (*10)     → [20,40]
+6️⃣ Interview One-Line Answer
+
+map():
+
+Used to transform each element of a stream.
+
+filter():
+
+Used to select elements from a stream based on a condition.

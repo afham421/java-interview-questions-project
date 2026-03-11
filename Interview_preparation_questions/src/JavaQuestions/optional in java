@@ -24,9 +24,6 @@ Improve readability and null safety
 | `Optional.empty()`           | Creates an **empty** Optional                                         |
 
 
-java
-Copy
-Edit
 Optional<String> name1 = Optional.of("Ali");           // ✅ OK
 Optional<String> name2 = Optional.ofNullable(null);    // ✅ OK
 Optional<String> name3 = Optional.empty();             // ✅ Empty optional
@@ -43,9 +40,7 @@ Optional<String> name3 = Optional.empty();             // ✅ Empty optional
 
 
 ✅ Example:
-java
-Copy
-Edit
+
 Optional<String> name = Optional.of("Sara");
 
 // Safe access
@@ -58,9 +53,7 @@ String result = name.orElse("No Name"); // Output: Sara
 Optional<String> empty = Optional.empty();
 String result2 = empty.orElse("Anonymous"); // Output: Anonymous
 🔄 Chaining with map() and filter()
-java
-Copy
-Edit
+
 Optional<String> name = Optional.of("Afham");
 
 String upper = name

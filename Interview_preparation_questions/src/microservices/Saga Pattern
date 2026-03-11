@@ -1,7 +1,9 @@
 🔄 Saga Pattern — Managing Distributed Transactions in Microservices
-The Saga Pattern is a microservices design pattern used to manage data consistency across multiple services without using a distributed transaction.
+The Saga Pattern is a microservices design pattern used to manage data consistency across multiple services
+without using a distributed transaction.
 
-It breaks a large transaction into a sequence of smaller local transactions, each handled by one microservice, and uses compensating actions to handle failures.
+It breaks a large transaction into a sequence of smaller local transactions, each handled by one microservice,
+and uses compensating actions to handle failures.
 
 🧠 Why Saga Pattern?
 In microservices:
@@ -42,18 +44,13 @@ Each service emits events and listens to others.
 
 No central coordinator.
 
-text
-Copy
-Edit
 OrderPlaced → PaymentReceived → StockReserved → OrderShipped
+
 🔁 If StockReserved fails, it emits StockFailed, and PaymentService listens to that to refund.
 
 🎮 2. Orchestration Saga (Command-based)
 A Saga orchestrator tells each service what to do.
 
-java
-Copy
-Edit
 // Pseudo flow
 orchestrator.createOrder()
 orchestrator.makePayment()
@@ -119,9 +116,7 @@ Payment Service
 Inventory Service
 
 🧭 Saga Flow Overview (Choreography)
-text
-Copy
-Edit
+
 Order Service → Payment Service → Inventory Service
 
 ➡ Events:
@@ -131,6 +126,7 @@ Order Service → Payment Service → Inventory Service
 ⬅ Or Compensation:
 4. PaymentFailedEvent
 5. InventoryFailedEvent
+
 🔨 Kafka Topics
 order-topic
 
@@ -139,9 +135,7 @@ payment-topic
 inventory-topic
 
 🧱 1. Order Service (Publisher of OrderCreatedEvent)
-java
-Copy
-Edit
+
 @Service
 public class OrderService {
     @Autowired
@@ -154,9 +148,7 @@ public class OrderService {
     }
 }
 🧱 2. Payment Service (Listener & Publisher)
-java
-Copy
-Edit
+
 @Component
 public class PaymentConsumer {
 
@@ -175,9 +167,7 @@ public class PaymentConsumer {
     }
 }
 🧱 3. Inventory Service
-java
-Copy
-Edit
+
 @Component
 public class InventoryConsumer {
 
@@ -197,9 +187,7 @@ public class InventoryConsumer {
     }
 }
 🔄 Compensation Logic in Order Service (If Any Step Fails)
-java
-Copy
-Edit
+
 @KafkaListener(topics = "order-topic", groupId = "saga")
 public void handleSagaResponse(String event) {
     if (event.contains("FAILED")) {
@@ -209,6 +197,7 @@ public void handleSagaResponse(String event) {
         System.out.println("Order completed successfully!");
     }
 }
+
 ✅ Summary
 Each microservice reacts to events (Choreography).
 

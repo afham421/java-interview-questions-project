@@ -4,25 +4,26 @@ A default method is a method with a body in an interface.
 Used to provide a default implementation, so implementing classes don't have to override it.
 
 ✅ Example:
-java
-Copy
-Edit
+
 interface Vehicle {
     default void start() {
         System.out.println("Vehicle is starting");
     }
 }
 ➤ Usage in a class:
-java
-Copy
-Edit
+
 class Car implements Vehicle {
     // inherits start() without overriding
 }
+
 ✅ Why Use Default Methods?
-Backward compatibility — You can add new methods to interfaces without breaking existing code. // mean if we want default implementation then fine else we override it with new implementation
+Backward compatibility — You can add new methods to interfaces without breaking existing code.
+// mean if we want default implementation then fine else we override it with new implementation
 
 Enables shared behavior across multiple implementing classes.
+
+
+
 
 🔸 What Are Static Methods in Interfaces?
 A static method in an interface belongs to the interface itself, not to instances.
@@ -32,19 +33,16 @@ You cannot override it.
 Called using the interface name.
 
 ✅ Example:
-java
-Copy
-Edit
+
 interface Utils {
     static void printMessage() {
         System.out.println("Hello from interface static method");
     }
 }
 ➤ Usage:
-java
-Copy
-Edit
+
 Utils.printMessage(); // ✅ Correct
+
 ⚠️ Key Differences: default vs static
 | Feature           | `default` method      | `static` method                     |
 | ----------------- | --------------------- | ----------------------------------- |

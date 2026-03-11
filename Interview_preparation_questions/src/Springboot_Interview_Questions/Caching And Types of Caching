@@ -1,0 +1,252 @@
+Caching is a technique used to store frequently used data in fast storage (cache) so that the system can retrieve
+it quickly instead of fetching it again from the database, disk, or remote service.
+
+In backend systems (like Java / Spring Boot microservices), caching improves performance, reduces database load, and decreases response time.
+
+Example
+Instead of querying the database every time for a user:
+
+SELECT * FROM users WHERE id = 1;
+
+We store the result in cache.
+Next request → data comes from cache instead of DB.
+
+Types of Caching
+1. In-Memory Cache
+
+Data is stored inside application memory (RAM).
+
+Examples
+
+Redis
+
+Ehcache
+
+Caffeine
+
+Example flow:
+
+Client → Application
+        ↓
+      Cache
+        ↓
+      Database (only if cache miss)
+
+Advantages
+
+Very fast
+
+Reduces DB calls
+
+Disadvantage
+
+Data lost if app restarts (unless distributed cache)
+>>>>>>>>>>
+2. Distributed Cache
+
+A Distributed Cache is a cache system shared by multiple application servers.
+Instead of storing cache inside one application’s memory, the data is stored in a separate cache server that all services can access.
+
+Examples
+
+Redis
+
+Memcached
+
+Example architecture:
+
+Service 1
+Service 2  → Redis Cache → Database
+Service 3
+
+Advantages
+
+Works well in microservices
+
+Shared cache for all instances
+
+1. Why Distributed Cache is Needed
+
+In microservices or scaled applications, we usually run multiple application instances.
+
+Example:
+
+User Requests
+     ↓
+Load Balancer
+   ↓     ↓     ↓
+Server1 Server2 Server3
+
+If each server keeps its own local cache, the data becomes inconsistent.
+
+Example problem:
+
+Server1 cache → user = "Ali"
+Server2 cache → user = "Ahmed"
+
+To solve this → we use a shared cache server.
+
+2. Architecture
+
+Typical distributed cache architecture:
+
+                ┌─────────────┐
+                │ LoadBalancer│
+                └──────┬──────┘
+                       │
+         ┌─────────────┼─────────────┐
+         │             │             │
+      App1          App2          App3
+         │             │             │
+         └─────────────┼─────────────┘
+                       │
+                 Redis Cache
+                       │
+                    Database
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+3. Database Cache
+
+Database itself caches frequently used queries.
+
+Examples:
+
+Query cache
+
+Buffer pool
+
+Example in MySQL:
+
+Frequently accessed rows stored in memory.
+
+4. Client-Side Cache
+
+Data cached on client/browser.
+
+Examples:
+
+Browser caching
+
+Mobile app caching
+
+Example:
+
+Cache-Control: max-age=3600
+
+The browser will reuse the response for 1 hour.
+
+5. CDN Cache
+
+Static files cached on global servers.
+
+Example providers:
+
+Cloudflare
+
+Akamai
+
+Used for:
+
+Images
+
+CSS
+
+JS
+
+Cache Write Strategies (Very Important for Interviews)
+1. Cache Aside (Lazy Loading)
+
+Most common.
+
+Flow:
+
+1 Request
+2 Check Cache
+3 If miss → Query DB
+4 Store in Cache
+
+Example in Spring Boot
+
+@Cacheable("users")
+public User getUser(Long id){
+   return userRepository.findById(id);
+}
+2. Write Through
+
+When writing data:
+
+App → Cache → Database
+
+Cache and DB updated together.
+
+Advantage
+Data always consistent.
+
+3. Write Back (Write Behind)
+App → Cache
+      ↓
+   Later update DB
+
+Advantage
+Very fast writes.
+
+Risk
+Data loss if cache crashes.
+
+4. Refresh Ahead
+
+Cache refreshes before expiration.
+
+Good for:
+
+frequently accessed data
+
+Cache Concepts (Interview Important)
+Cache Hit
+
+Data found in cache.
+
+Request → Cache → Data returned
+Cache Miss
+
+Data not found in cache.
+
+Request → Cache → Database → Cache update
+TTL (Time To Live)
+
+Time after which cache expires.
+
+Example:
+
+userCache TTL = 10 minutes
+Real Example (Spring Boot Microservice)
+
+User service:
+
+GET /users/1
+
+Flow:
+
+API Request
+    ↓
+Check Redis Cache
+    ↓
+Cache Hit → return user
+Cache Miss → Query MySQL
+                ↓
+             Store in Cache
+
+Using:
+
+Spring Cache
+
+Redis
+
+MySQL
+
+✅ Short Interview Answer
+
+Caching is a technique used to store frequently accessed data in a fast storage layer so that future requests can be served faster
+without querying the database.
+Types include in-memory cache, distributed cache, database cache, client-side cache, and CDN cache.
+Common strategies are cache-aside, write-through, write-back, and refresh-ahead.
