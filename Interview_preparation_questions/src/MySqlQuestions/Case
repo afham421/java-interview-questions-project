@@ -14,6 +14,8 @@ CASE expression
     ...
     ELSE default_result
 END
+
+
 Searched CASE Statement:
 
 Evaluates a set of conditions, which do not have to be based on a single expression.
@@ -24,6 +26,8 @@ CASE
     ...
     ELSE default_result
 END
+
+
 Examples
 1. Simple CASE Statement
 Suppose you have a table named employees with a column job_title. You want to assign a department based on the job_title.
@@ -42,6 +46,7 @@ In this example:
 
 The CASE statement checks the value of job_title and returns the corresponding department.
 If job_title is not one of the specified values, it returns 'Other'.
+
 2. Searched CASE Statement
 Suppose you have a table orders with a column order_amount, and you want to categorize the orders into 'High', 'Medium', and 'Low' based on the amount.
 
