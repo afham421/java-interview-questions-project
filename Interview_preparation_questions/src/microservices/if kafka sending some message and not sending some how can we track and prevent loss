@@ -1,0 +1,131 @@
+When using Apache Kafka, message loss usually happens because of producer settings, broker failures, or consumer issues.
+In interviews, the expected answer is how to track missing messages and prevent loss.
+
+1️⃣ How to Track Missing Messages in Kafka
+1. Use Offsets
+
+Every Kafka message has an offset in a partition.
+
+Example:
+
+Partition 0
+offset 0 -> msg1
+offset 1 -> msg2
+offset 2 -> msg3
+
+Consumer commits the offset after processing.
+
+If messages are missing:
+
+Check last produced offset
+
+Check last consumed offset
+
+If produced offset = 100
+Consumed offset = 95
+
+➡ Messages 96–100 not consumed yet.
+
+Tools:
+
+kafka-consumer-groups.sh
+
+Monitoring tools (Prometheus, Grafana)
+
+2. Enable Logging / Monitoring
+
+Track:
+
+Producer send failures
+
+Consumer lag
+
+Broker errors
+
+Important metrics:
+
+consumer lag
+
+failed sends
+
+retry counts
+
+3. Dead Letter Queue (DLQ)
+
+If a consumer cannot process a message, send it to another topic.
+
+Example:
+
+main-topic  -> processing
+failed msg  -> dead-letter-topic
+
+This prevents message loss.
+
+2️⃣ How to Prevent Message Loss
+1. Enable Acknowledgements
+
+Producer should wait for broker confirmation.
+
+acks=all
+
+Meaning:
+Producer receives acknowledgment only when all replicas store the message.
+
+2. Set Retries
+
+If sending fails:
+
+retries=5
+
+Producer retries automatically.
+
+3. Use Idempotent Producer
+enable.idempotence=true
+
+This prevents duplicate messages during retries.
+
+4. Use Replication
+
+Kafka topics should have replicas.
+
+Example:
+
+replication.factor=3
+
+If one broker fails → message still exists on other brokers.
+
+5. Proper Offset Commit
+
+Consumers should commit offsets only after successful processing.
+
+Bad example:
+
+read message
+commit offset
+process message
+
+If processing fails → message lost.
+
+Correct:
+
+read message
+process message
+commit offset
+3️⃣ Real Interview Answer (Short Version)
+
+If Kafka is sending some messages and losing some, we can:
+
+Track messages using offsets and consumer lag monitoring.
+
+Enable producer acknowledgements (acks=all).
+
+Configure retries and idempotent producer.
+
+Use replication factor ≥ 3.
+
+Commit offsets after successful processing.
+
+Use Dead Letter Queue for failed messages.
+
+✅ Pro Interview Tip:
+A senior-level answer also mentions Exactly Once Semantics (EOS) in Kafka.
