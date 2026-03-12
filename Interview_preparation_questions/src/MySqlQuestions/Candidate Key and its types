@@ -1,6 +1,7 @@
 :
 🔹 Candidate Key in DBMS:
-A candidate key is a column (or set of columns) in a table that can uniquely identify each record. Every candidate key is eligible to become a primary key, but only one is chosen as the primary key.
+A candidate key is a column (or set of columns) in a table that can uniquely identify each record.
+ Every candidate key is eligible to become a primary key, but only one is chosen as the primary key.
 
 ✅ Key Features:
 Must be unique across all records.
@@ -21,9 +22,7 @@ Primary key is selected from the candidate keys.
 
 
 🧠 Example:
-sql
-Copy
-Edit
+
 CREATE TABLE Users (
     user_id INT,         -- Unique
     email VARCHAR(100),  -- Unique
@@ -44,9 +43,7 @@ A table can have multiple candidate keys, but only one of them is chosen as the 
 
 Example:
 
-sql
-Copy
-Edit
+
 CREATE TABLE Employee (
     emp_id INT,
     email VARCHAR(100),
@@ -64,9 +61,6 @@ It cannot be NULL and must be unique.
 
 Example:
 
-sql
-Copy
-Edit
 PRIMARY KEY (emp_id)
 Here, emp_id is selected as the primary key.
 
@@ -80,9 +74,6 @@ If emp_id is the primary key, then email and phone are alternate keys.
 
 You can enforce uniqueness like:
 
-sql
-Copy
-Edit
 UNIQUE (email),
 UNIQUE (phone)
 🔹 4. Composite Key
@@ -92,9 +83,6 @@ It is used when a single column is not sufficient to uniquely identify a row.
 
 Example:
 
-sql
-Copy
-Edit
 CREATE TABLE CourseRegistration (
     student_id INT,
     course_id INT,

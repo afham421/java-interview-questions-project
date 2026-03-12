@@ -1,0 +1,102 @@
+Short answer: Usually NO. If you catch the exception and don’t rethrow it, the transaction will not roll back and will commit.
+
+This is a common Spring @Transactional interview question.
+
+1. Normal Transaction Behavior
+
+In Spring @Transactional:
+
+Transaction ROLLBACKS when:
+
+RuntimeException
+
+Error
+
+Transaction COMMITS when:
+
+Exception is caught and handled
+
+Checked exceptions (unless configured)
+
+Example:
+
+@Transactional
+public void transfer() {
+    accountRepo.debit(100);
+
+    if(true) {
+        throw new RuntimeException("Error");
+    }
+
+    accountRepo.credit(100);
+}
+
+Result:
+❌ Transaction ROLLBACK
+
+2. When You Use try-catch
+@Transactional
+public void transfer() {
+    try {
+        accountRepo.debit(100);
+
+        if(true) {
+            throw new RuntimeException("Error");
+        }
+
+        accountRepo.credit(100);
+
+    } catch (Exception e) {
+        System.out.println("Handled");
+    }
+}
+
+Result:
+
+✔ Exception caught
+✔ Spring doesn't see the exception
+✔ Transaction COMMITS
+
+So the debit may happen but credit not → data inconsistency.
+
+3. Correct Way (Rethrow Exception)
+@Transactional
+public void transfer() {
+    try {
+        accountRepo.debit(100);
+
+        if(true) {
+            throw new RuntimeException("Error");
+        }
+
+        accountRepo.credit(100);
+
+    } catch (Exception e) {
+        throw e; // rethrow
+    }
+}
+
+Result:
+
+✔ Exception propagates
+✔ Spring detects it
+✔ Transaction ROLLBACK
+
+4. Another Way (Manual Rollback)
+catch (Exception e) {
+    TransactionAspectSupport
+        .currentTransactionStatus()
+        .setRollbackOnly();
+}
+5. Best Practice
+
+Use try-catch only for logging, then rethrow.
+
+catch(Exception e){
+    log.error("Error", e);
+    throw e;
+}
+6. Interview One-Line Answer
+
+If we catch and handle the exception inside a @Transactional method, Spring will not trigger rollback and the transaction will commit unless
+the exception is rethrown or rollback is explicitly marked.

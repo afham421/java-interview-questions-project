@@ -20,18 +20,15 @@ It abstracts away the underlying messaging infrastructure, so developers focus o
 
 🔧 Basic Setup Example (Kafka)
 1️⃣ Add Maven Dependencies
-xml
-Copy
-Edit
+
 <!-- pom.xml -->
 <dependency>
     <groupId>org.springframework.cloud</groupId>
     <artifactId>spring-cloud-starter-stream-kafka</artifactId>
 </dependency>
+
 2️⃣ Define a Producer (Send Message)
-java
-Copy
-Edit
+
 @EnableBinding(Source.class)
 @SpringBootApplication
 public class ProducerApp {
@@ -49,10 +46,10 @@ public class ProducerApp {
 }
 📝 Source is a Spring Cloud Stream interface for the output channel.
 
+
+
 3️⃣ Define a Consumer (Receive Message)
-java
-Copy
-Edit
+
 @EnableBinding(Sink.class)
 @SpringBootApplication
 public class ConsumerApp {
@@ -68,10 +65,10 @@ public class ConsumerApp {
 }
 📝 Sink is a Spring Cloud Stream interface for the input channel.
 
+
+
 4️⃣ Configure application.yml
-yaml
-Copy
-Edit
+
 spring:
   cloud:
     stream:
@@ -83,21 +80,46 @@ spring:
       kafka:
         binder:
           brokers: localhost:9092
+
+
 ⚡ New Style Using Functional Programming
 Instead of annotations like @StreamListener, you can use Spring Cloud Stream's functional support:
 
-java
-Copy
-Edit
+This helps understanding.
+@Bean
+public Consumer<String> process() {
+
+    Consumer<String> consumer = new Consumer<String>() {
+        @Override
+        public void accept(String message) {
+            System.out.println("Received: " + message);
+        }
+    };
+    return consumer;
+}
+Lambda version is just a shorter form.
+
+or
+
 @Bean
 public Consumer<String> process() {
     return message -> System.out.println("Received: " + message);
 }
+Example message arriving:
+"Hello World"
+Spring internally executes:
+process().accept("Hello World");
+So inside your code:
+message = "Hello World"
+Output:
+Received: Hello World
+>>>>>>>>>>>>>>>
 
 @Bean
 public Supplier<String> producer() {
     return () -> "Hello from producer!";
 }
+
 ✅ Why Use Spring Cloud Stream?
 | Benefit                        | Explanation                                          |
 | ------------------------------ | ---------------------------------------------------- |

@@ -3,7 +3,8 @@ package JavaQuestions.SerializationVsDeSerialization;
 import java.io.*;
 
 public class SerializationVsDeSerialization {
-//    Serialization and deserialization are mechanisms in Java that allow you to convert an object into a byte stream (serialization) and then back into an object (deserialization).
+//    Serialization and deserialization are mechanisms in Java that allow you to convert an object into a byte stream (serialization)
+//    and then back into an object (deserialization).
 //    This process is useful for saving objects to a file, sending them over a network, or persisting them in databases.
 //    When to Use Serialization/Deserialization
 //    Persistence: Saving an object's state to a file or database.

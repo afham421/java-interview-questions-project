@@ -1,0 +1,23 @@
+@ControllerAdvice vs @RestControllerAdvice
+@ControllerAdvice
+
+Used for
+
+Global Exception Handling
+Model attributes
+Binding
+
+Returns
+
+View (HTML)
+@RestControllerAdvice
+
+Combination of
+
+@ControllerAdvice + @ResponseBody
+
+Returns
+
+JSON
+
+Used in REST APIs.

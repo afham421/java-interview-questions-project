@@ -17,7 +17,8 @@ public class SystemOutPrintln {
 //println()	A method of PrintStream used to print text and move the cursor to a new line.
 //
 //🔹 Full Explanation (Interview Perspective)
-//"System.out.println() is used to display output to the console. Internally, System is a final class, and out is a static PrintStream object that represents the standard output stream.
+//"System.out.println() is used to display output to the console. Internally, System is a final class,
+// and out is a static PrintStream object that represents the standard output stream.
 // The println() method of PrintStream is invoked to print the value and then move the cursor to the next line."
 //
 //🔹 Key Technical Points (Interview Worthy)

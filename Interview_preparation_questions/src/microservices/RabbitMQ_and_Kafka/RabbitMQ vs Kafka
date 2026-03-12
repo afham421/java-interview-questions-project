@@ -41,13 +41,12 @@ You want to scale horizontally with consumer groups.
 
 You're handling large volumes of immutable events over time.
 
-💡 If you're tracking user interactions across services (like a user clicked a link from an SMS, or completed a survey after a call), Kafka would help collect and stream those events into databases, analytics systems, or Elasticsearch.
+💡 If you're tracking user interactions across services (like a user clicked a link from an SMS, or completed a survey after a call),
+Kafka would help collect and stream those events into databases, analytics systems, or Elasticsearch.
 
 📦 Integration in Spring Boot
 🐇 RabbitMQ
-java
-Copy
-Edit
+
 // Spring Boot Starter
 <dependency>
   <groupId>org.springframework.boot</groupId>
@@ -58,9 +57,7 @@ Uses @RabbitListener for consumers
 Easy to configure queues, exchanges, bindings via application.yml
 
 🐘 Kafka
-java
-Copy
-Edit
+
 // Spring Kafka Starter
 <dependency>
   <groupId>org.springframework.kafka</groupId>
@@ -89,18 +86,14 @@ Resume/LinkedIn experience points you can use
 RabbitMQ - Spring Boot Producer & Consumer
 pom.xml dependency:
 
-xml
-Copy
-Edit
+
 <dependency>
   <groupId>org.springframework.boot</groupId>
   <artifactId>spring-boot-starter-amqp</artifactId>
 </dependency>
 Producer:
 
-java
-Copy
-Edit
+
 @Service
 public class RabbitMQProducer {
 
@@ -117,9 +110,7 @@ public class RabbitMQProducer {
 }
 Consumer:
 
-java
-Copy
-Edit
+
 @Component
 public class RabbitMQConsumer {
 
@@ -130,9 +121,7 @@ public class RabbitMQConsumer {
 }
 application.yml (basic config):
 
-yaml
-Copy
-Edit
+
 spring:
   rabbitmq:
     host: localhost
@@ -148,18 +137,14 @@ spring:
 Kafka - Spring Boot Producer & Consumer
 pom.xml dependency:
 
-xml
-Copy
-Edit
+
 <dependency>
   <groupId>org.springframework.kafka</groupId>
   <artifactId>spring-kafka</artifactId>
 </dependency>
 Producer:
 
-java
-Copy
-Edit
+
 @Service
 public class KafkaProducer {
 
@@ -175,9 +160,7 @@ public class KafkaProducer {
 }
 Consumer:
 
-java
-Copy
-Edit
+
 @Component
 public class KafkaConsumer {
 
@@ -188,9 +171,7 @@ public class KafkaConsumer {
 }
 application.yml (basic config):
 
-yaml
-Copy
-Edit
+
 spring:
   kafka:
     bootstrap-servers: localhost:9092

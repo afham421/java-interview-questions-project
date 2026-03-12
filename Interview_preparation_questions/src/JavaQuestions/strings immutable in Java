@@ -1,4 +1,5 @@
-Great question! While security is a major reason, there are several other important reasons why String is immutable in Java. Here's a complete explanation:
+Great question! While security is a major reason, there are several other important reasons why String is immutable in Java.
+ Here's a complete explanation:
 ✅ 1. Caching and Performance (String Pooling)
 Java stores string literals in a string pool to reuse objects and save memory.
 Immutability allows strings to be shared safely across the JVM without risk of modification.
@@ -28,7 +29,8 @@ Class loading, file paths, and config values (like DB URLs, usernames) are passe
 If someone could modify those strings after they're created, it could lead to bugs or even security issues — immutability prevents that.
 
 ✅ 5. Predictable Behavior in Programs
-Immutability ensures strings behave consistently. You don’t have to worry about side effects — if a method gets a string, you know it won’t change it accidentally.
+Immutability ensures strings behave consistently. You don’t have to worry about side effects — if a method gets a string,
+you know it won’t change it accidentally.
 
 ✅ Summary:
 | Reason           | Benefit                           |

@@ -26,6 +26,9 @@ Checked Exception: Throws InterruptedException.
 
 👉 Use when you just want to pause execution for a specific time.
 
+
+
+
 🔹 Object.wait(ms)
 
 Defined in: java.lang.Object class (not Thread).

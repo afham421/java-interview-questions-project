@@ -28,6 +28,8 @@ Output:
 2
 3
 10
+
+
 ✅ Key Points:
 Varargs must be the last parameter in the method.
 
@@ -38,5 +40,7 @@ Internally, the ... is treated as an array.
 ❌ Invalid:
 
 void wrongMethod(String... args, int num) { } // ❌ varargs must be last
+
 ✅ Summary:
-"... in Java is used to declare varargs, allowing methods to accept a variable number of arguments. It's useful when the exact number of inputs is not known at compile time."
+"... in Java is used to declare varargs, allowing methods to accept a variable number of arguments.
+It's useful when the exact number of inputs is not known at compile time."

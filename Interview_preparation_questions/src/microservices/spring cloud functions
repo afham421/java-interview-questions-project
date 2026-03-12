@@ -1,9 +1,12 @@
-Great! Let's dive into Spring Cloud Function, a powerful feature for writing business logic as functions that can run in various environments (local apps, AWS Lambda, Azure Functions, etc.) with zero code change.
+Great! Let's dive into Spring Cloud Function, a powerful feature for writing business logic
+as functions that can run in various environments (local apps, AWS Lambda, Azure Functions, etc.) with zero code change.
 
 🌩️ What is Spring Cloud Function?
 Spring Cloud Function allows you to write business logic using Java 8 functional interfaces like:
 
 Function<T, R> – takes input and returns output.
+
+Predicate<T> – takes input and returns boolean.
 
 Consumer<T> – takes input, no output.
 
@@ -22,9 +25,7 @@ Message-driven or REST-based apps.
 
 🔧 How to Set It Up in Spring Boot
 📦 1. Add Dependencies
-xml
-Copy
-Edit
+
 <!-- pom.xml -->
 <dependency>
     <groupId>org.springframework.cloud</groupId>
@@ -32,17 +33,12 @@ Edit
 </dependency>
 If deploying to AWS Lambda:
 
-xml
-Copy
-Edit
 <dependency>
     <groupId>org.springframework.cloud</groupId>
     <artifactId>spring-cloud-function-adapter-aws</artifactId>
 </dependency>
 💡 2. Define Functions
-java
-Copy
-Edit
+
 @SpringBootApplication
 public class FunctionApp {
     public static void main(String[] args) {
@@ -71,27 +67,22 @@ public class FunctionApp {
 When you run your app, you can call the functions via HTTP:
 
 Function Example:
-bash
-Copy
-Edit
 POST http://localhost:8080/uppercase
 Body: "hello"
 Response: "HELLO"
+
 Consumer Example:
-bash
-Copy
-Edit
 POST http://localhost:8080/logger
 Body: "this is a log"
 → Logs: "Received: this is a log"
+
 Supplier Example:
-bash
-Copy
-Edit
 GET http://localhost:8080/greeting
 Response: "Hello from Supplier!"
+
 ☁️ Serverless Deployment
-If you want to deploy these functions to AWS Lambda, you don’t need to change any logic. You just include the correct adapter and configure AWS handler.
+If you want to deploy these functions to AWS Lambda, you don’t need to change any logic.
+You just include the correct adapter and configure AWS handler.
 
 ✅ Summary
 | Interface        | Description                 | Example                |

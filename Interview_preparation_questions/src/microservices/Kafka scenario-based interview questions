@@ -2,7 +2,8 @@
 
 Question
 
-A Kafka consumer processes a payment event but crashes before committing the offset. Kafka sends the message again. How do you prevent duplicate processing?
+A Kafka consumer processes a payment event but crashes before committing the offset. Kafka sends the message again.
+ How do you prevent duplicate processing?
 
 Answer
 
@@ -24,6 +25,8 @@ Check transaction_id in DB
       ↓
 If exists → ignore
 Else → process
+
+
 2️⃣ Scenario: Messages are processed slowly
 
 Question
@@ -43,6 +46,7 @@ Optimize processing logic
 Use batch processing
 
 Add consumer instances
+
 
 3️⃣ Scenario: Consumers are idle
 
@@ -68,6 +72,7 @@ Result:
 
 Solution: increase partitions.
 
+
 4️⃣ Scenario: Broker failure
 
 Question
@@ -90,6 +95,7 @@ Follower
 
 If leader fails → follower becomes leader.
 
+
 5️⃣ Scenario: Ordering problem
 
 Question
@@ -110,6 +116,8 @@ Key = user_id
 
 Kafka will send all events for that user to same partition.
 
+
+
 6️⃣ Scenario: Message loss
 
 Question
@@ -121,15 +129,15 @@ Answer
 Use:
 
 Producer configuration:
-
 acks=all
 retries=true
 enable.idempotence=true
 
 Broker configuration:
-
 replication.factor >= 3
 min.insync.replicas >= 2
+
+
 7️⃣ Scenario: System receives duplicate messages
 
 Question
@@ -150,6 +158,7 @@ event store
 
 deduplication table
 
+
 8️⃣ Scenario: High throughput system
 
 Question
@@ -167,6 +176,7 @@ add more brokers
 increase consumer instances
 
 distribute load across cluster
+
 
 9️⃣ Scenario: Large message size
 
@@ -194,6 +204,8 @@ Kafka message:
 {
   file_url: "storage/payment_receipt_123.pdf"
 }
+
+
 🔟 Scenario: Reprocessing old data
 
 Question
@@ -213,6 +225,8 @@ Consumers can reset offset:
 consumer.seek()
 
 Or create a new consumer group to read from beginning.
+
+
 
 ⭐ One Scenario Very Likely in Fintech Interviews
 

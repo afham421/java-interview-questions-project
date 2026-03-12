@@ -28,6 +28,9 @@ Output (order may vary):
 Main thread: main
 Running in: Thread-0
 
+
+
+
 🔹 thread.run()
 
 Does not create a new thread.

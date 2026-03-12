@@ -1,5 +1,6 @@
 🔐 What Are Synchronized Collections?
-Synchronized collections are Java collections that are safe to use in multi-threaded environments because only one thread can access the collection at a time.
+Synchronized collections are Java collections that are safe to use in multi-threaded environments because
+only one thread can access the collection at a time.
 
 They prevent concurrent modification issues, such as:
 
@@ -10,16 +11,11 @@ ConcurrentModificationException
 🧰 How to Get a Synchronized Collection?
 Java provides utility methods in the Collections class:
 
-java
-Copy
-Edit
 List<String> syncList = Collections.synchronizedList(new ArrayList<>());
 Set<String> syncSet = Collections.synchronizedSet(new HashSet<>());
 Map<String, String> syncMap = Collections.synchronizedMap(new HashMap<>());
 🧪 Example:
-java
-Copy
-Edit
+
 List<String> list = Collections.synchronizedList(new ArrayList<>());
 
 synchronized (list) {  // Manual synchronization during iteration

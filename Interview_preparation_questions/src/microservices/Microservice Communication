@@ -8,9 +8,6 @@ Protocol: Usually HTTP/HTTPS via REST APIs (also gRPC sometimes).
 
 Example:
 
-text
-Copy
-Edit
 UserService → OrderService
 - UserService sends request to OrderService
 - Waits for response before continuing
@@ -32,20 +29,13 @@ Scalability issues under high load
 Definition: One service sends a message/event, doesn’t wait for response.
 
 Protocol: Uses message brokers like:
-
 RabbitMQ
-
 Apache Kafka
-
 ActiveMQ
-
 Amazon SNS/SQS
 
 Example:
 
-text
-Copy
-Edit
 OrderService → [publishes event] → PaymentService
 - Order placed → event "OrderPlaced" is published
 - PaymentService listens and processes when ready

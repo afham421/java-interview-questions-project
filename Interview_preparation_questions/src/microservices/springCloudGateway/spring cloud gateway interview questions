@@ -1,9 +1,11 @@
 🔰 1. What is Spring Cloud Gateway?
 Explanation:
 Spring Cloud Gateway is an API Gateway built on top of Spring WebFlux. 
-It acts as a single entry point for all your backend services (microservices), and can handle routing, security, monitoring, and traffic control (like rate limiting).
+It acts as a single entry point for all your backend services (microservices), and can handle routing, security, monitoring,
+ and traffic control (like rate limiting).
 
-Think of it like a traffic cop—directing incoming client requests to the right backend service, possibly transforming or filtering those requests/responses.
+Think of it like a traffic cop—directing incoming client requests to the right backend service,
+possibly transforming or filtering those requests/responses.
 
 🔰 2. Why use Spring Cloud Gateway in Microservices Architecture?
 Explanation:
@@ -37,9 +39,6 @@ Filters: logic to apply before or after forwarding the request (e.g., modify hea
 
 Example:
 
-yaml
-Copy
-Edit
 spring:
   cloud:
     gateway:
@@ -65,6 +64,7 @@ Method=GET
 Host=*.mydomain.com
 
 You can combine multiple predicates using logical AND.
+
 
 🔰 5. What are Filters in Spring Cloud Gateway?
 Explanation:
@@ -93,9 +93,6 @@ Route-specific filters apply only to a particular route.
 
 Example of route-specific filter:
 
-yaml
-Copy
-Edit
 filters:
   - AddRequestHeader=X-Request-Foo, Bar
 Global filters are configured via Java by implementing GlobalFilter.
@@ -104,9 +101,7 @@ Global filters are configured via Java by implementing GlobalFilter.
 You can define routes in two ways:
 
 a) YAML/Properties
-yaml
-Copy
-Edit
+
 spring:
   cloud:
     gateway:
@@ -116,9 +111,7 @@ spring:
           predicates:
             - Path=/products/**
 b) Java Configuration
-java
-Copy
-Edit
+
 @Bean
 public RouteLocator customRoutes(RouteLocatorBuilder builder) {
     return builder.routes()
@@ -137,13 +130,12 @@ public RouteLocator customRoutes(RouteLocatorBuilder builder) {
 
 Spring Cloud Gateway uses WebFlux, which is why it’s non-blocking and reactive.
 
+
 🔰 9. How to enable service discovery in Spring Cloud Gateway?
 Answer:
 Spring Cloud Gateway can automatically discover services via Eureka. Use the lb:// prefix for the uri to enable client-side load balancing.
 
-yaml
-Copy
-Edit
+
 uri: lb://USER-SERVICE
 This means it will call a service named USER-SERVICE registered in Eureka.
 
@@ -159,21 +151,19 @@ Filters (like RequestRateLimiter)
 
 Example:
 
-yaml
-Copy
-Edit
+
 filters:
   - name: RequestRateLimiter
     args:
       redis-rate-limiter.replenishRate: 10
       redis-rate-limiter.burstCapacity: 20
+
+
 🔰 11. How to create a custom filter?
 Answer:
 Implement the GatewayFilter or GlobalFilter interface:
 
-java
-Copy
-Edit
+
 @Component
 public class LoggingFilter implements GlobalFilter {
     @Override
@@ -182,12 +172,11 @@ public class LoggingFilter implements GlobalFilter {
         return chain.filter(exchange);
     }
 }
+
 🔰 12. How to implement Circuit Breaker in Gateway?
 You can use Resilience4j:
 
-yaml
-Copy
-Edit
+
 filters:
   - name: CircuitBreaker
     args:
@@ -195,11 +184,13 @@ filters:
       fallbackUri: forward:/fallback
 When the service fails, Gateway routes the request to the fallback endpoint.
 
+
 🔰 13. How does Gateway support load balancing?
 Answer:
 If you use Eureka + lb://service-name, Gateway will automatically load balance between available service instances.
 
 This works using Spring Cloud LoadBalancer (or Ribbon if you’re using older Spring Cloud).
+
 
 🔰 14. How to implement JWT authentication in Spring Cloud Gateway?
 You can create a custom authentication filter to validate JWT tokens in requests, extract user roles, and pass them to downstream services.
@@ -210,9 +201,6 @@ Or, use Spring Cloud Security for full OAuth2/JWT integration.
 Answer:
 Add a CORS filter:
 
-java
-Copy
-Edit
 @Bean
 public CorsWebFilter corsWebFilter() {
     CorsConfiguration config = new CorsConfiguration();
@@ -226,13 +214,12 @@ public CorsWebFilter corsWebFilter() {
 
     return new CorsWebFilter(source);
 }
+
+
 🔰 16. Scenario-based: How to log requests and responses?
 Answer:
 Create a GlobalFilter that logs the request and response.
 
-java
-Copy
-Edit
 @Component
 public class LoggingFilter implements GlobalFilter {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {

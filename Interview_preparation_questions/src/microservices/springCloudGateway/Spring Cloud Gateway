@@ -26,16 +26,11 @@ Let’s break down internal flow in 7 simple steps:
 ✅ 1. Client Sends Request to Gateway
 📍Example:
 
-bash
-Copy
-Edit
 GET http://localhost:8080/users/list
+
 ✅ 2. Gateway Matches the Route
 Based on this config in application.yml:
 
-yaml
-Copy
-Edit
 routes:
   - id: user-service
     uri: lb://user-service
@@ -51,24 +46,16 @@ Since URI is lb://user-service, Gateway knows:
 
 ➡ Gateway uses DiscoveryClient to ask Eureka for all user-service instances:
 
-java
-Copy
-Edit
 List<ServiceInstance> instances = discoveryClient.getInstances("user-service");
 Eureka replies:
 
-arduino
-Copy
-Edit
 user-service is available at:
 - http://10.0.0.5:8081
 - http://10.0.0.6:8081
+
 ✅ 4. Load Balancer Picks One Instance
 Spring LoadBalancer picks one instance (e.g., using Round Robin or Random):
 
-java
-Copy
-Edit
 ServiceInstance chosen = loadBalancer.choose("user-service");
 ➡ Chooses: http://10.0.0.5:8081
 
@@ -85,27 +72,22 @@ Block requests, etc.
 
 📍Example filter:
 
-yaml
-Copy
-Edit
+
 filters:
   - AddRequestHeader=X-User-Id, 123
+
 ✅ 6. Forward the Request
 Gateway forwards the original request to the selected instance:
 
-nginx
-Copy
-Edit
 GET http://10.0.0.5:8081/users/list
+
 ✅ 7. Microservice Responds → Gateway Sends Back
 ➡ The user-service processes the request and sends a response (like user data)
 
 ➡ Gateway receives the response and returns it to the original client
 
 🔄 Diagram Overview (Text Form)
-css
-Copy
-Edit
+
 Client --> [Gateway] --> [Eureka → get user-service] --> [Pick instance] --> [Forward to Microservice]
                                                              ↑
                                                     Load Balancer
@@ -135,15 +117,14 @@ Client --> [Gateway] --> [Eureka → get user-service] --> [Pick instance] --> [
 ✅ Reactive (non-blocking) and fast
 
 ✅ Summary (One-liner)
-Spring Cloud Gateway is a smart, dynamic router that receives client requests, finds the right service using Eureka, and forwards the request — applying filters, load balancing, and more.
+Spring Cloud Gateway is a smart, dynamic router that receives client requests, finds the right service using Eureka,
+and forwards the request — applying filters, load balancing, and more.
 
 
 
 🔷 Step-by-Step: Connect Gateway to Eureka
 🔹 1. Add Dependencies to Gateway pom.xml
-xml
-Copy
-Edit
+
 <dependencies>
     <!-- Spring Cloud Gateway -->
     <dependency>
@@ -157,11 +138,9 @@ Edit
         <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
     </dependency>
 </dependencies>
+
 Also include Spring Cloud BOM in <dependencyManagement> if you haven't:
 
-xml
-Copy
-Edit
 <dependencyManagement>
     <dependencies>
         <dependency>
@@ -173,10 +152,10 @@ Edit
         </dependency>
     </dependencies>
 </dependencyManagement>
+
+
 🔹 2. Application Configuration (application.yml)
-yaml
-Copy
-Edit
+
 spring:
   application:
     name: api-gateway
@@ -207,9 +186,7 @@ eureka:
 “Use Load Balancer (lb) to find the actual instance of user-service via Eureka.”
 
 🔹 3. Add Eureka Client Annotation in Gateway Main Class
-java
-Copy
-Edit
+
 @SpringBootApplication
 @EnableEurekaClient
 public class ApiGatewayApplication {
@@ -222,26 +199,21 @@ Make sure:
 
 Your user-service, order-service, etc. all have:
 
-yaml
-Copy
-Edit
+
 spring.application.name: user-service
 eureka.client.service-url.defaultZone: http://localhost:8761/eureka
 And they include:
 
-xml
-Copy
-Edit
+
 <dependency>
     <groupId>org.springframework.cloud</groupId>
     <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
 </dependency>
+
 🧪 Test It
 Now you can call:
 
-bash
-Copy
-Edit
+
 http://localhost:8080/users/all
 http://localhost:8080/orders/list
 ➡ Gateway will:

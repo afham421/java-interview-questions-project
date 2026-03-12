@@ -1,5 +1,7 @@
-In Java, wrapper classes are used to convert primitive data types into objects. Each of the eight primitive data types in Java has a corresponding wrapper
-class in the java.lang package. These wrapper classes provide a way to use primitive data types as objects, which can be useful in situations where an object is required,
+In Java, wrapper classes are used to convert primitive data types into objects.
+ Each of the eight primitive data types in Java has a corresponding wrapper
+class in the java.lang package. These wrapper classes provide a way to use primitive data types as objects,
+ which can be useful in situations where an object is required,
 such as in collections like ArrayList or HashMap.
 
 List of Primitive Data Types and Their Wrapper Classes
@@ -14,7 +16,8 @@ char	Character
 boolean	Boolean
 
 Why Use Wrapper Classes?
-Collections: Collections in Java, like ArrayList and HashMap, can only store objects, not primitives. Wrapper classes allow you to store primitive values in collections.
+Collections: Collections in Java, like ArrayList and HashMap, can only store objects, not primitives.
+Wrapper classes allow you to store primitive values in collections.
 
 ArrayList<Integer> list = new ArrayList<>();
 list.add(10); // Autoboxing: int to Integer

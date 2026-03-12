@@ -1,0 +1,88 @@
+Let’s break down abstraction and encapsulation clearly, because they are often confused in Java or any OOP (Object-Oriented Programming) context.
+
+1. Abstraction
+
+Definition:
+Abstraction is the concept of hiding unnecessary implementation details and exposing only the essential features of an object.
+
+Focuses on what an object does, not how it does it.
+
+Achieved in Java using:
+
+Abstract classes
+
+Interfaces
+
+Example:
+
+abstract class Vehicle {
+    abstract void start();  // You know the vehicle can start, but not how
+}
+
+class Car extends Vehicle {
+    @Override
+    void start() {
+        System.out.println("Car starts with a key");
+    }
+}
+
+✅ Here:
+
+Vehicle shows the abstraction (all vehicles can start).
+
+The implementation (how the vehicle starts) is in Car.
+
+Key point: Abstraction is about hiding implementation.
+
+2. Encapsulation
+
+Definition:
+Encapsulation is wrapping data (variables) and code (methods) together as a single unit and restricting direct access from outside the class.
+
+Protects data from unauthorized access or modification.
+
+Achieved using:
+
+Private variables
+
+Public getters and setters
+
+Example:
+
+class BankAccount {
+    private double balance;  // hidden from outside
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void deposit(double amount) {
+        if (amount > 0) {
+            balance += amount;
+        }
+    }
+}
+
+✅ Here:
+
+balance is encapsulated.
+
+You cannot directly modify balance from outside; must use methods.
+
+Key point: Encapsulation is about data hiding and controlled access.
+
+Comparison Table
+| Feature           | Abstraction                       | Encapsulation                       |
+| ----------------- | --------------------------------- | ----------------------------------- |
+| Focus             | Hiding **implementation details** | Hiding **data**                     |
+| How               | Abstract classes, interfaces      | Private fields + getters/setters    |
+| Example           | `Vehicle` with `start()` method   | `BankAccount` with `balance` field  |
+| Question Answered | **What** does it do?              | **How** is it protected?            |
+| Purpose           | Simplify complex system           | Control access & maintain integrity |
+
+
+💡 Tip to remember:
+
+Abstraction = hiding complexity
+
+Encapsulation = hiding data

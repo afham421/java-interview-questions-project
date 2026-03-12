@@ -1,0 +1,77 @@
+An abstract class in Java can have a constructor, even though you cannot instantiate an abstract class directly.
+ This might seem counterintuitive at first, but there’s a solid reason. Let’s break it down clearly.
+
+1. Purpose of a constructor in an abstract class
+
+The constructor in an abstract class is called when a subclass is instantiated.
+Think of it as a way to initialize fields or perform setup that is common to all subclasses.
+
+Even though you can’t do:
+
+AbstractClass obj = new AbstractClass(); // ❌ Not allowed
+
+You can do:
+
+class ConcreteClass extends AbstractClass {
+    ConcreteClass() {
+        super(); // Calls abstract class constructor
+    }
+}
+
+ConcreteClass obj = new ConcreteClass(); // ✅ Allowed
+
+Here, super() calls the constructor of the abstract class.
+
+2. Why it is useful
+
+Initialize common state: If the abstract class has fields that all subclasses need, you can initialize them in the abstract constructor.
+
+Run common logic: You can execute code that should run whenever any subclass is created.
+
+Support inheritance chain: Java’s constructor chaining still applies. Abstract classes can participate in the chain just like normal classes.
+
+Example:
+
+abstract class Vehicle {
+    String brand;
+
+    Vehicle(String brand) {
+        this.brand = brand;
+        System.out.println("Vehicle constructor called");
+    }
+
+    abstract void start();
+}
+
+class Car extends Vehicle {
+    Car(String brand) {
+        super(brand);
+        System.out.println("Car constructor called");
+    }
+
+    void start() {
+        System.out.println(brand + " car started");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Car car = new Car("Toyota");
+    }
+}
+
+Output:
+
+Vehicle constructor called
+Car constructor called
+Toyota car started
+
+✅ Notice how the abstract class constructor executes first, initializing the brand field for the subclass.
+
+3. Key points
+
+Abstract classes can’t be instantiated, but their constructors are used by subclasses.
+
+Constructors in abstract classes help initialize common fields and logic.
+
+If an abstract class has no explicit constructor, Java provides a default no-arg constructor.

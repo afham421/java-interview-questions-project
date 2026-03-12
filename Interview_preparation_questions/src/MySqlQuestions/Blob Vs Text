@@ -32,13 +32,44 @@ Character Set and Collation:
 BLOB: Does not use character sets or collation; it’s treated as binary data.
 TEXT: Uses character sets and collation; it’s treated as textual data.
 
+1️⃣ Character Set
+A character set defines how characters are stored in bytes.
+Example character sets:
+utf8
+utf8mb4
+latin1
+Example:
+Character A
+In latin1 → 41
+In utf8 → 41
+Some other characters may use multiple bytes
+So character set = encoding of text.
+
+2️⃣ Collation
+Collation defines how text is compared and sorted.
+Example:
+Two strings:
+apple
+Apple
+Different collations behave differently.
+Example:
+| Collation        | Comparison    |
+| ---------------- | ------------- |
+| case sensitive   | apple ≠ Apple |
+| case insensitive | apple = Apple |
+Example in MySQL:
+utf8mb4_general_ci
+utf8mb4 → character set
+ci → case insensitive
+
 Use Cases:
 BLOB: Use when storing non-textual data (e.g., images, videos, audio).
 TEXT: Use when storing textual data (e.g., articles, JSON, XML).
 
 Operations:
 BLOB: Suitable for operations that involve binary data, like storing files or encrypted content.
-TEXT: Suitable for operations involving textual data, such as searching within the text, applying string functions, and considering case sensitivity based on collation.
+TEXT: Suitable for operations involving textual data, such as searching within the text, applying string functions,
+and considering case sensitivity based on collation.
 
 Summary
 Use BLOB when you need to store binary data like multimedia files or encrypted data.

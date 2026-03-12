@@ -43,9 +43,7 @@ Enables load balancing, resilience, and dynamic routing
 
 📁 Example: Configuration
 🖥️ application.yml for Eureka Server
-yaml
-Copy
-Edit
+
 server:
   port: 8761
 
@@ -54,9 +52,7 @@ eureka:
     register-with-eureka: false
     fetch-registry: false
 🖥️ application.yml for Eureka Client
-yaml
-Copy
-Edit
+
 spring:
   application:
     name: user-service
@@ -66,17 +62,13 @@ eureka:
     service-url:
       defaultZone: http://localhost:8761/eureka
 ✅ Eureka Client Discovery Example
-java
-Copy
-Edit
+
 @LoadBalanced
 @Bean
 public RestTemplate restTemplate() {
     return new RestTemplate();
 }
-java
-Copy
-Edit
+
 String url = "http://order-service/api/orders";
 ResponseEntity<Order[]> response = restTemplate.getForEntity(url, Order[].class);
 Here, order-service is resolved by Eureka, not DNS.
@@ -88,9 +80,7 @@ This protects against network partitions — called Self-Preservation Mode
 
 Can be disabled in test environments with:
 
-yaml
-Copy
-Edit
+
 eureka:
   server:
     enable-self-preservation: false
@@ -121,22 +111,19 @@ Q5: Can Eureka work in a production-ready cluster?
 A: Yes, Eureka servers can be set up in a peer-to-peer cluster (high availability).
 
 📺 Diagram: Simple Eureka Flow
-puml
-Copy
-Edit
-@startuml
-actor User
-participant "API Gateway" as G
-participant "Eureka Server" as E
-participant "User Service" as U
-participant "Order Service" as O
 
-U -> E: Register
-O -> E: Register
-G -> E: Discover U, O
-G -> U: Forward request
-U -> O: Call Order Service
-@enduml
+sequenceDiagram
+    actor User
+    participant G as "API Gateway"
+    participant E as "Eureka Server"
+    participant U as "User Service"
+    participant O as "Order Service"
+
+    User ->> E: Register
+    O ->> E: Register
+    G ->> E: Discover U, O
+    G ->> U: Forward request
+    U ->> O: Call Order Service
 
 ✅ Summary
 | Feature            | Eureka                             |

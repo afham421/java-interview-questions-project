@@ -22,18 +22,13 @@ Each class should do only one job.
 
 ❌ Bad Example:
 
-java
-Copy
-Edit
+
 class UserService {
     public void registerUser() { }
     public void sendEmail() { } // Not the responsibility of UserService
 }
 ✅ Good Example:
 
-java
-Copy
-Edit
 class UserService {
     public void registerUser() { }
 }
@@ -51,9 +46,7 @@ You should be able to add new behavior without changing existing code.
 
 ✅ Example using interfaces:
 
-java
-Copy
-Edit
+
 interface Notification {
     void send(String message);
 }
@@ -87,9 +80,6 @@ A subclass should not break the behavior of the parent class.
 
 ❌ Bad Example:
 
-java
-Copy
-Edit
 class Bird {
     void fly() {}
 }
@@ -101,9 +91,7 @@ class Ostrich extends Bird {
 }
 ✅ Good Example:
 
-java
-Copy
-Edit
+
 interface Bird { void eat(); }
 
 interface FlyingBird extends Bird { void fly(); }
@@ -124,9 +112,6 @@ Don't force a class to implement more than it needs.
 
 ❌ Bad Example:
 
-java
-Copy
-Edit
 interface Worker {
     void work();
     void eat();
@@ -138,9 +123,7 @@ class Robot implements Worker {
 }
 ✅ Good Example:
 
-java
-Copy
-Edit
+
 interface Workable {
     void work();
 }
@@ -166,9 +149,6 @@ Depend on abstractions, not on concrete implementations.
 
 ❌ Bad Example:
 
-java
-Copy
-Edit
 class MySQLDatabase {
     public void connect() {}
 }
@@ -178,9 +158,7 @@ class Application {
 }
 ✅ Good Example:
 
-java
-Copy
-Edit
+
 interface Database {
     void connect();
 }

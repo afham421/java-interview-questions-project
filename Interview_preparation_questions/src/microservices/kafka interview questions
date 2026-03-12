@@ -21,15 +21,20 @@ Payment Service → Fraud Service → Notification Service
 Use Kafka:
 
 Payment Service → Kafka → Multiple Consumers
+
+
+
 Q2: What happens if a consumer crashes?
 
-Kafka stores the offset. (Offset is a unique sequential ID assigned to each message within a partition so consumers know which messages they already processed.)
+Kafka stores the offset. (Offset is a unique sequential ID assigned to each message within a partition so consumers know which messages
+ they already processed.)
 
 When consumer restarts:
 
 Consumer resumes from last committed offset
 
 No data loss.
+
 
 Q3: What if partitions are more than consumers?
 
@@ -45,6 +50,8 @@ Consumer2 → 2 partitions
 
 Kafka balances them.
 
+
+
 Q4: What if consumers are more than partitions?
 
 Example:
@@ -59,9 +66,12 @@ Result:
 
 Because one partition can only have one consumer in a group.
 
+
+
 Q5: What is message ordering in Kafka?
 
 Ordering is guaranteed only within a partition, not across partitions.
+
 
 Q6: What is retention in Kafka?
 
@@ -72,6 +82,7 @@ Example:
 retention.ms = 7 days
 
 Even if consumer reads it, message remains.
+
 
 Q7: What is Kafka Cluster?
 
@@ -90,6 +101,8 @@ load balancing
 high availability
 
 fault tolerance
+
+
 
 6️⃣ Very Common Scenario Question
 Interviewer may ask:
@@ -119,6 +132,7 @@ Kafka supports exactly-once semantics.
 | Scalability  | Very high    | Medium            |
 | Throughput   | Millions/sec | Lower             |
 | Use case     | Streaming    | Task queue        |
+
 
 9️⃣ Questions They May Ask with 4 Years Experience
 
@@ -214,7 +228,9 @@ use batch processing
 
 Interview Answer (Short)
 
-Consumer lag is the difference between the latest offset in a Kafka partition and the offset last processed by the consumer. It indicates how far the consumer is behind in processing messages.
+Consumer lag is the difference between the latest offset in a Kafka partition and the offset last processed by the consumer.
+It indicates how far the consumer is behind in processing messages.
+
 
 2️⃣ What is Kafka Rebalance?
 Definition
@@ -275,6 +291,8 @@ So too frequent rebalancing can affect performance.
 Interview Answer (Short)
 
 Kafka rebalance is the process of redistributing topic partitions among consumers in a consumer group when consumers join, leave, or fail.
+
+
 
 3️⃣ What Happens When a New Consumer Joins a Group?
 

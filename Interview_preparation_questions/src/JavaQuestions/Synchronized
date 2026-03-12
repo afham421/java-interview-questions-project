@@ -5,12 +5,12 @@ You can synchronize a method or block of code like this:
 
 Synchronized Method:
 
-
 public synchronized void syncMethod() {
     // critical section
 }
-Synchronized Block:
 
+
+Synchronized Block:
 
 public void method() {
     synchronized(this) {

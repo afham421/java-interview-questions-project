@@ -1,0 +1,124 @@
+Horizontal Scaling vs Vertical Scaling are two ways to increase the capacity of a system (server, database, application).
+
+1️⃣ Vertical Scaling (Scale Up / Down)
+
+Meaning: Increase the power of a single machine.
+
+Examples:
+
+Add more RAM
+
+Add more CPU
+
+Add faster SSD
+
+📌 Example
+Your server has:
+
+4 CPU
+
+8 GB RAM
+
+You upgrade it to:
+
+16 CPU
+
+64 GB RAM
+
+➡️ This is Vertical Scaling.
+
+Diagram
+
+Before
+[ Server ]
+CPU: 4
+RAM: 8GB
+
+After
+[ Bigger Server ]
+CPU: 16
+RAM: 64GB
+
+✅ Advantages
+
+Easy to implement
+
+No major architecture changes
+
+❌ Disadvantages
+
+Hardware limit exists
+
+Expensive
+
+Single point of failure
+
+2️⃣ Horizontal Scaling (Scale Out / In)
+
+Meaning: Add more machines (servers) instead of upgrading one.
+
+Example:
+Instead of 1 server:
+
+[ Server 1 ]
+
+You add more servers:
+
+[ Server 1 ]   [ Server 2 ]   [ Server 3 ]
+        \        |        /
+        [ Load Balancer ]
+
+➡️ Traffic is distributed across servers.
+
+📌 Real example
+
+Netflix
+
+Amazon
+
+Google
+
+These companies use thousands of servers (horizontal scaling).
+
+✅ Advantages
+
+Almost unlimited scaling
+
+High availability
+
+Fault tolerant
+
+❌ Disadvantages
+
+Complex architecture
+
+Requires load balancer
+
+3️⃣ Simple Interview Answer (Best)
+
+Vertical Scaling: Increase resources of a single server (CPU, RAM).
+
+Horizontal Scaling: Increase the number of servers and distribute load.
+
+4️⃣ Real Example (Microservices / Spring Boot)
+
+Suppose your Spring Boot application handles 1000 users.
+
+Vertical
+
+Upgrade server:
+
+8GB RAM → 32GB RAM
+Horizontal
+
+Run multiple instances:
+
+Spring Boot Instance 1
+Spring Boot Instance 2
+Spring Boot Instance 3
+        ↓
+    Load Balancer
+
+✅ Interview Tip
+
+Most modern systems prefer Horizontal Scaling because it supports cloud architecture and microservices.

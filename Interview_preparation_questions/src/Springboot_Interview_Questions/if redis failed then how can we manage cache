@@ -1,0 +1,106 @@
+If Redis fails, the system should still work correctly. Cache should be treated as an optional performance layer, not a dependency.
+In interviews (especially for Java/Spring developers like you), they expect you to explain fallback strategies.
+
+Here are the common ways to manage cache failure 👇
+
+1️⃣ Fallback to Database (Cache-Aside Pattern)
+
+Most common approach.
+
+Flow:
+
+Application tries to read from Redis.
+
+If Redis is down → catch exception.
+
+Fetch data from database.
+
+Continue processing without cache.
+
+Example (Spring Boot style):
+
+public User getUser(Long id) {
+    try {
+        User user = redisTemplate.opsForValue().get("user:" + id);
+        if (user != null) {
+            return user;
+        }
+    } catch (Exception e) {
+        // Redis failure - ignore and fallback
+    }
+
+    // fallback to DB
+    User user = userRepository.findById(id).orElse(null);
+
+    // try caching again
+    try {
+        redisTemplate.opsForValue().set("user:" + id, user);
+    } catch (Exception ignored) {}
+
+    return user;
+}
+
+👉 Even if Redis fails, the DB still serves the request.
+
+2️⃣ Use Local Cache as Backup
+
+If Redis fails, use in-memory cache inside the application.
+
+Examples:
+
+Caffeine
+
+Ehcache
+
+Architecture:
+
+Request
+   ↓
+Local Cache (Caffeine)
+   ↓
+Redis
+   ↓
+Database
+
+This is called multi-level caching.
+
+3️⃣ Redis Cluster / Replication
+
+To avoid failure completely.
+
+Redis provides:
+
+Master–Replica
+
+Redis Sentinel
+
+Redis Cluster
+
+If the master Redis fails, replica becomes master automatically.
+
+4️⃣ Circuit Breaker
+
+If Redis keeps failing, stop calling it for some time.
+
+Using Resilience4j:
+
+Redis failing → Circuit breaker opens → Skip Redis → Use DB
+
+This prevents performance degradation.
+
+5️⃣ Graceful Degradation
+
+If cache is unavailable:
+
+System still works
+
+Response becomes slower
+
+But no system crash
+
+This is an important system design principle.
+
+✅ Interview One-Line Answer
+
+If Redis fails, the application should gracefully fall back to the database using the cache-aside pattern.
+To improve resilience, we can use local caches like Caffeine, Redis replication, and circuit breakers.

@@ -1,0 +1,85 @@
+If a transaction does not work in an inner method in Spring Framework / Spring Boot,
+ the most common reason is Spring’s proxy-based transaction management.
+
+1️⃣ The Problem (Self Invocation)
+
+Spring applies @Transactional using proxies.
+If a method inside a class calls another method of the same class, the call bypasses the proxy, so the transaction is not applied.
+
+Example (Transaction will NOT work)
+@Service
+public class OrderService {
+
+    public void createOrder() {
+        saveOrder();   // internal call
+    }
+
+    @Transactional
+    public void saveOrder() {
+        // transaction expected here but may not start
+    }
+}
+
+Why?
+
+Client → Proxy → createOrder() → saveOrder()
+                     ↑
+               direct call (no proxy)
+
+Since saveOrder() is called internally, it does not pass through the proxy, so @Transactional is ignored.
+
+2️⃣ Solution 1 (Recommended)
+
+Move the transactional method to another service class.
+
+@Service
+public class OrderService {
+
+    @Autowired
+    private PaymentService paymentService;
+
+    public void createOrder() {
+        paymentService.saveOrder();
+    }
+}
+@Service
+public class PaymentService {
+
+    @Transactional
+    public void saveOrder() {
+        // transaction works here
+    }
+}
+
+Now the call goes:
+
+Client → Proxy(OrderService) → Proxy(PaymentService) → saveOrder()
+
+So transaction works.
+
+3️⃣ Solution 2 (Call Through Proxy)
+
+Inject the same bean.
+
+@Autowired
+private OrderService self;
+
+public void createOrder() {
+    self.saveOrder(); // goes through proxy
+}
+4️⃣ Other Reasons Transactions May Not Work
+
+Check these too:
+
+Method is private (@Transactional works only on public methods).
+
+Class is not a Spring bean (@Service, @Component missing).
+
+Exception not thrown (transaction rolls back only on runtime exceptions by default).
+
+Wrong propagation setting.
+
+5️⃣ Interview One-Line Answer
+
+In Spring, @Transactional does not work on inner method calls because Spring uses proxy-based AOP, and self-invocation bypasses the proxy,
+ so the transactional advice is not applied.

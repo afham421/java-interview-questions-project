@@ -1,5 +1,6 @@
 🌐 What is a Microservice?
-A microservice is a small, independent, and loosely coupled service that does one specific business task and communicates with other services via APIs (usually HTTP or messaging).
+A microservice is a small, independent, and loosely coupled service that does one specific business task and communicates
+with other services via APIs (usually HTTP or messaging).
 
 💡 Instead of building one large application (monolith), you break it into many smaller services, each doing one thing well.
 
@@ -13,7 +14,8 @@ A microservice is a small, independent, and loosely coupled service that does on
 | 🔹 **Inter-Service Communication** | Uses **REST APIs**, **Message Queues** (RabbitMQ, Kafka), or **gRPC**           |
 
 ⚙️ What is gRPC?
-gRPC (Google Remote Procedure Call) is a high-performance, open-source framework developed by Google that allows services to communicate with each other.
+gRPC (Google Remote Procedure Call) is a high-performance, open-source framework developed
+by Google that allows services to communicate with each other.
 
 It’s often used instead of REST for faster, more efficient communication between microservices — especially in high-scale systems.
 
@@ -68,7 +70,8 @@ Asynchronous → via Message Brokers like RabbitMQ, Kafka       mean multiple th
 
 
 🧠 Summary
-A Microservice is a small, independently deployable service that focuses on a single business capability, communicates via APIs, and works with other services in a distributed system.
+A Microservice is a small, independently deployable service that focuses on a single business capability, communicates via APIs,
+ and works with other services in a distributed system.
 
 
 🔄 Microservice Communication
@@ -81,9 +84,7 @@ Protocol: Usually HTTP/HTTPS via REST APIs (also gRPC sometimes).
 
 Example:
 
-text
-Copy
-Edit
+
 UserService → OrderService
 - UserService sends request to OrderService
 - Waits for response before continuing
@@ -116,9 +117,7 @@ Amazon SNS/SQS
 
 Example:
 
-text
-Copy
-Edit
+
 OrderService → [publishes event] → PaymentService
 - Order placed → event "OrderPlaced" is published
 - PaymentService listens and processes when ready

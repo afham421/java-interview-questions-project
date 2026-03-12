@@ -1,0 +1,140 @@
+JWT and OAuth 2.0 are often confused, but they solve different problems. Since you're preparing for Java/Spring Boot interviews,
+ it's important to understand the difference clearly. 🚀
+
+1️⃣ JWT (JSON Web Token)
+
+JSON Web Token
+
+JWT is a token format used to securely transmit information between parties.
+
+It is commonly used for authentication.
+
+Structure of JWT
+
+A JWT has 3 parts:
+
+Header.Payload.Signature
+
+Example:
+
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+.
+eyJ1c2VySWQiOjEyMywicm9sZSI6IkFETUlOIn0
+.
+signature
+Parts
+
+1️⃣ Header
+
+{
+ "alg": "HS256",
+ "typ": "JWT"
+}
+
+2️⃣ Payload (data / claims)
+
+{
+ "userId": 123,
+ "role": "ADMIN"
+}
+
+3️⃣ Signature
+
+Used to verify the token wasn't modified.
+
+Flow
+
+User logs in
+
+Server verifies credentials
+
+Server returns JWT token
+
+Client sends token in every request
+
+Authorization: Bearer <JWT>
+Advantages
+
+✔ Stateless (no session stored on server)
+✔ Fast authentication
+✔ Good for microservices
+
+2️⃣ OAuth 2.0
+
+OAuth 2.0
+
+OAuth2 is an authorization framework, not a token format.
+
+It allows one application to access resources from another application on behalf of a user.
+
+Example:
+
+Login with Google
+
+Login with Facebook
+
+Login with GitHub
+
+Example Flow
+
+1️⃣ User clicks Login with Google
+2️⃣ App redirects to Google
+3️⃣ User grants permission
+4️⃣ Google sends access token
+5️⃣ App uses token to access user data
+
+Example request:
+
+GET https://api.google.com/user
+Authorization: Bearer access_token
+OAuth Roles
+
+1️⃣ Resource Owner → User
+2️⃣ Client → Application
+3️⃣ Authorization Server → Google / Facebook
+4️⃣ Resource Server → API
+
+3️⃣ Key Difference (Very Important for Interviews)
+| Feature  | JWT                | OAuth2                      |
+| -------- | ------------------ | --------------------------- |
+| Type     | Token format       | Authorization framework     |
+| Purpose  | Authentication     | Authorization               |
+| Data     | Contains user info | Contains access permissions |
+| Used for | API authentication | Third-party login           |
+| Example  | API login token    | Login with Google           |
+
+4️⃣ How They Work Together (Very Common)
+
+In many systems:
+
+OAuth2 uses JWT as the access token
+
+Example:
+
+OAuth2 → Authorization process
+JWT → Token format
+
+Example stack:
+
+OAuth2 → Login flow
+
+JWT → Token returned
+
+Used in:
+
+Spring Security
+
+Keycloak
+
+Auth0
+
+5️⃣ Simple Interview Answer (Best)
+
+If interviewer asks:
+
+JWT vs OAuth2
+
+Answer:
+
+JWT is a token format used to securely transmit user information between client and server, while OAuth2 is an authorization framework
+that allows applications to access user resources from another service. OAuth2 can use JWT as the token format.

@@ -1,0 +1,133 @@
+Rate Limiting means restricting how many requests a user/client can send to a system in a specific time period.
+It is mainly used in APIs, servers, and microservices to prevent overload or abuse.
+
+Simple Example
+
+Suppose an API allows:
+
+100 requests per minute per user
+
+If a user sends:
+
+80 requests → ✅ Allowed
+
+100 requests → ✅ Allowed
+
+101 requests → ❌ Blocked / rejected
+
+The server may return HTTP 429 – Too Many Requests.
+
+Why Rate Limiting is Important
+
+Prevent server overload 🚫
+
+Stop brute-force attacks
+
+Avoid API abuse
+
+Ensure fair usage among users
+
+Control costs (cloud resources)
+
+Example (Real Life Analogy)
+
+Think of a water tap 🚰.
+
+If water flows too fast → pipe may burst.
+
+So we control the flow.
+
+Rate limiting is the same idea for requests.
+
+Example in API
+Client → API Server
+
+Request 1
+Request 2
+Request 3
+Request 4
+Request 5
+
+If limit = 5 requests per second
+
+5 requests → accepted
+
+6th request → rejected
+
+Common Rate Limiting Algorithms
+1️⃣ Fixed Window
+
+Example:
+
+100 requests per minute
+
+If user sends 100 requests in 30 seconds → next requests blocked until next minute.
+
+2️⃣ Sliding Window
+
+More accurate version of fixed window.
+
+It calculates requests based on last time period, not a fixed minute.
+
+3️⃣ Token Bucket
+
+Requests consume tokens.
+
+Example:
+
+Bucket capacity = 10 tokens
+
+Each request consumes 1 token
+
+Tokens refill over time
+
+If tokens = 0 → request rejected.
+
+4️⃣ Leaky Bucket
+
+Requests enter a queue and are processed at a constant rate.
+
+If queue is full → requests are dropped.
+
+Example in Spring Boot (Interview Level)
+
+Using Resilience4j
+
+@RateLimiter(name = "apiLimiter")
+public String getData() {
+    return "success";
+}
+
+Config:
+
+resilience4j.ratelimiter.instances.apiLimiter.limitForPeriod=10
+resilience4j.ratelimiter.instances.apiLimiter.limitRefreshPeriod=1s
+
+Meaning:
+
+Only 10 requests per second allowed.
+
+Where Rate Limiting is Applied
+
+API Gateways
+
+Microservices
+
+Login endpoints
+
+Payment systems
+
+Public APIs
+
+Example tools:
+
+NGINX
+
+Kong API Gateway
+
+Spring Cloud Gateway
+
+Simple Interview Definition
+
+Rate Limiting is a technique used to control the number of requests a client can send to a server within a specific time period to prevent abuse
+ and ensure system stability.

@@ -29,6 +29,9 @@ Each input → one output
 So the structure does not change.
 
 Stream<String> → Stream<Integer>
+
+
+
 2️⃣ flatMap()
 
 flatMap() is used when each element produces multiple elements (a stream or collection).

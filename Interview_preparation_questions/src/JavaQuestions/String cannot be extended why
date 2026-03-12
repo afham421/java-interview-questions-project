@@ -3,9 +3,7 @@ Yes, in Java String is a class (java.lang.String), but you cannot extend it beca
 ✅ 1️⃣ String is declared as final
 The String class in Java is:
 
-java
-Copy
-Edit
+
 public final class String implements Serializable, Comparable<String>, CharSequence {
     ...
 }
@@ -14,11 +12,13 @@ final means no class can inherit (extend) it.
 ✅ 2️⃣ Why did Java designers make it final?
 Immutability
 
-String objects are immutable. If it were subclassed, someone could override methods and make it mutable, breaking security and performance optimizations.
+String objects are immutable. If it were subclassed, someone could override methods and make it mutable,
+ breaking security and performance optimizations.
 
 Security
 
-Strings are used in sensitive places (class loading, file paths, network connections). If a subclass could modify behavior, it could introduce vulnerabilities.
+Strings are used in sensitive places (class loading, file paths, network connections). If a subclass could modify behavior,
+it could introduce vulnerabilities.
 
 Hashcode caching
 
@@ -33,9 +33,6 @@ You can't extend String, but you can:
 
 Wrap it in your own class (Composition):
 
-java
-Copy
-Edit
 class MyString {
     private final String value;
     MyString(String value) { this.value = value; }

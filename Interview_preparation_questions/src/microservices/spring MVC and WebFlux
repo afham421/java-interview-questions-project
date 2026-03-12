@@ -1,6 +1,7 @@
 🌐 Spring MVC (Model-View-Controller)
 ✅ What is it?
-Spring MVC is the traditional, blocking, and servlet-based web framework in Spring. It's built on the Servlet API and uses synchronous (blocking) I/O.
+Spring MVC is the traditional, blocking, and servlet-based web framework in Spring.
+It's built on the Servlet API and uses synchronous (blocking) I/O.
 
 🔧 Key Features
 Blocking architecture: One thread per request.
@@ -16,9 +17,7 @@ Uses DispatcherServlet as the entry point.
 
 Annotated controllers using @RestController, @GetMapping, etc.
 
-java
-Copy
-Edit
+
 @RestController
 public class HelloController {
 
@@ -27,9 +26,13 @@ public class HelloController {
         return "Hello, MVC!";
     }
 }
+
+
+
 ⚡ Spring WebFlux
 ✅ What is it?
-Spring WebFlux is the non-blocking, reactive web framework introduced in Spring 5. It's designed for high concurrency and real-time apps, and can run on Netty, Undertow, or traditional servlet containers.
+Spring WebFlux is the non-blocking, reactive web framework introduced in Spring 5.
+It's designed for high concurrency and real-time apps, and can run on Netty, Undertow, or traditional servlet containers.
 
 🔧 Key Features
 Non-blocking architecture: Uses Reactive Streams.
@@ -47,9 +50,7 @@ Uses WebHandler, not DispatcherServlet.
 
 Controller methods return Mono<T> (single item) or Flux<T> (stream of items).
 
-java
-Copy
-Edit
+
 @RestController
 public class HelloReactiveController {
 
@@ -78,6 +79,7 @@ Your app is I/O-light (CPU-bound, like normal APIs).
 You're integrating with blocking libraries (JPA, JDBC).
 
 You want simplicity and wide ecosystem support.
+
 
 Use Spring WebFlux if:
 

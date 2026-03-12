@@ -1,0 +1,27 @@
+Circular Dependencies
+
+Occurs when
+
+A depends on B
+B depends on A
+
+Example
+
+@Service
+class A {
+   @Autowired B b;
+}
+
+@Service
+class B {
+   @Autowired A a;
+}
+Solutions
+
+1️⃣ Use Setter Injection
+
+2️⃣ Use
+
+@Lazy
+
+3️⃣ Redesign architecture.

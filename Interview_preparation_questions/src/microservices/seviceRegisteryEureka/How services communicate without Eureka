@@ -6,9 +6,6 @@ Each service must know the address of other services in advance.
 
 📌 Example:
 
-java
-Copy
-Edit
 // UserService is calling OrderService
 String url = "http://localhost:8082/orders";
 ResponseEntity<List<Order>> orders = restTemplate.getForEntity(url, List.class);
@@ -25,9 +22,6 @@ The services are running in different environments (dev/stage/prod)
 ✅ 2. Using Environment Properties
 You can keep the URLs in application.properties or .yml files:
 
-yaml
-Copy
-Edit
 order-service.url=http://localhost:8082
 But again:
 
@@ -38,9 +32,6 @@ No auto-registration or scaling support.
 ✅ 3. API Gateway Approach
 You use an API Gateway (like Spring Cloud Gateway, Zuul, or NGINX) to route requests:
 
-yaml
-Copy
-Edit
 routes:
   - id: order-service
     uri: http://localhost:8082
@@ -55,9 +46,6 @@ No discovery or failover
 ✅ 4. Containerization Tools (like Docker Compose or Kubernetes)
 If you use Docker:
 
-yaml
-Copy
-Edit
 services:
   userservice:
     build: .
@@ -69,9 +57,7 @@ services:
       - "8082:8082"
 Services can access each other by container name:
 
-java
-Copy
-Edit
+
 http://orderservice:8082/orders
 But it's still limited unless you use Kubernetes service discovery or Eureka/Consul.
 
@@ -95,7 +81,8 @@ But it's still limited unless you use Kubernetes service discovery or Eureka/Con
 
 
 🔁 Final Answer:
-Without Eureka, services must communicate using hardcoded URLs or config files, which is error-prone and hard to scale. Eureka removes this problem by providing dynamic service discovery and registration.
+Without Eureka, services must communicate using hardcoded URLs or config files, which is error-prone and hard to scale.
+Eureka removes this problem by providing dynamic service discovery and registration.
 
 
 
@@ -105,11 +92,9 @@ Without Eureka, services must communicate using hardcoded URLs or config files, 
 🔍 Normally:
 In a typical setup without Eureka, when your code says:
 
-java
-Copy
-Edit
 String url = "http://order-service/api/orders";
-Java (or Spring Boot) tries to find order-service using DNS resolution — like it would for a website (google.com → IP address).    //// if still not understand look bellow
+Java (or Spring Boot) tries to find order-service using DNS resolution — like it would for a website (google.com → IP address).
+ //// if still not understand look bellow
 
 🟢 But with Eureka:
 When you have this setup:
@@ -132,16 +117,13 @@ Sends the request to that instance
 
 ✅ What you need to make it work:
 In application.yml:
-yaml
-Copy
-Edit
+
 spring.application.name: user-service
 
 eureka.client.service-url.defaultZone: http://localhost:8761/eureka
+
 With @LoadBalanced bean:
-java
-Copy
-Edit
+
 @Bean
 @LoadBalanced // This makes Eureka service names resolvable
 public RestTemplate restTemplate() {
@@ -149,9 +131,6 @@ public RestTemplate restTemplate() {
 }
 Then you can call other services by name:
 
-java
-Copy
-Edit
 ResponseEntity<String> response = restTemplate.getForEntity("http://order-service/api/orders", String.class);
 🧾 Summary:
 | Without Eureka       | With Eureka                                   |
@@ -170,9 +149,6 @@ DNS resolution is the process of converting a name (like google.com) into an IP 
 💡 Real-World Example (without Eureka)
 You open your browser and type:
 
-arduino
-Copy
-Edit
 https://google.com
 👉 Your system asks DNS: “What is the IP address of google.com?”
 👉 DNS replies: “It is 142.250.190.78”
@@ -185,9 +161,6 @@ google.com → DNS → 142.250.190.78 (resolved name)
 🧱 Now in Java (Microservices)
 You write in your code:
 
-java
-Copy
-Edit
 String url = "http://order-service/api/orders";
 👉 Normally, Java (or Spring) tries to resolve order-service:
 
@@ -206,9 +179,6 @@ Or asks the network DNS server
 ✅ What Eureka Changes
 If you're using Eureka + @LoadBalanced:
 
-java
-Copy
-Edit
 @LoadBalanced
 @Bean
 public RestTemplate restTemplate() {

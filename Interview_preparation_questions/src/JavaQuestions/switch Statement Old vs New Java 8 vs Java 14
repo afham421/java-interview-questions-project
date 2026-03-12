@@ -30,6 +30,8 @@ Verbose
 
 Cannot return a value directly (used for side effects)
 
+
+
 ✅ 2. Enhanced switch Expression (Java 14+)
 
 String day = "MONDAY";
