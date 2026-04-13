@@ -1,0 +1,123 @@
+In JPA (Java Persistence API), implementing filtering for search is a very common interview topic.
+ There are multiple ways depending on how dynamic your search is.
+
+Let’s go from simple → advanced 👇
+
+✅ 1. Simple Filtering using Method Naming (Spring Data JPA)
+
+If filters are fixed, use method names:
+
+List<User> findByName(String name);
+List<User> findByAgeGreaterThan(int age);
+List<User> findByNameAndCity(String name, String city);
+
+✔ Easy
+❌ Not scalable for dynamic filters
+
+✅ 2. Using @Query (JPQL)
+
+For more control:
+
+@Query("SELECT u FROM User u WHERE u.name = :name AND u.city = :city")
+List<User> findUsers(@Param("name") String name,
+                     @Param("city") String city);
+
+✔ Better control
+❌ Still static
+
+✅ 3. Dynamic Filtering using Criteria API (IMPORTANT 🔥)
+
+Best when filters are optional (search screen).
+
+public List<User> searchUsers(String name, Integer age) {
+    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+    CriteriaQuery<User> cq = cb.createQuery(User.class);
+    Root<User> root = cq.from(User.class);
+
+    List<Predicate> predicates = new ArrayList<>();
+
+    if (name != null) {
+        predicates.add(cb.like(root.get("name"), "%" + name + "%"));
+    }
+
+    if (age != null) {
+        predicates.add(cb.equal(root.get("age"), age));
+    }
+
+    cq.where(predicates.toArray(new Predicate[0]));
+
+    return entityManager.createQuery(cq).getResultList();
+}
+
+✔ Fully dynamic
+✔ Used in real-world search APIs
+❌ Verbose
+
+✅ 4. Spring Data JPA Specification (MOST IMPORTANT ⭐)
+
+This is the best approach for interviews + real projects.
+
+👉 Step 1: Extend repository
+
+public interface UserRepository
+    extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
+}
+
+👉 Step 2: Create Specification
+
+public class UserSpecification {
+
+    public static Specification<User> hasName(String name) {
+        return (root, query, cb) ->
+            name == null ? null : cb.like(root.get("name"), "%" + name + "%");
+    }
+
+    public static Specification<User> hasAge(Integer age) {
+        return (root, query, cb) ->
+            age == null ? null : cb.equal(root.get("age"), age);
+    }
+}
+
+👉 Step 3: Use it
+
+Specification<User> spec = Specification
+        .where(UserSpecification.hasName(name))
+        .and(UserSpecification.hasAge(age));
+
+List<User> users = userRepository.findAll(spec);
+
+✔ Clean
+✔ Reusable
+✔ Dynamic filtering
+✔ Industry standard
+
+✅ 5. Using Example (QBE - Query by Example)
+User user = new User();
+user.setName("Ali");
+
+Example<User> example = Example.of(user);
+
+List<User> users = userRepository.findAll(example);
+
+✔ Simple
+❌ Limited (no complex queries like range, joins)
+
+🔥 Interview Summary (Must Say)
+
+If interviewer asks:
+
+👉 Best approach?
+
+Use Spring Data JPA Specification for dynamic filtering.
+
+👉 Why?
+
+Handles optional filters
+Clean and reusable
+Supports complex queries
+💡 Real-world Example (API)
+GET /users?name=ali&age=25
+
+→ Convert params into Specification
+→ Pass to repository
+→ Return filtered results

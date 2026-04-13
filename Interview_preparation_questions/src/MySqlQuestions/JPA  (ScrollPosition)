@@ -1,0 +1,101 @@
+🔹 What is ScrollPosition in JPA?
+
+Spring Data introduced:
+
+ScrollPosition
+Window<T>
+
+👉 This is cursor-based pagination built into Spring Data JPA
+
+So instead of manually passing cursor=id, you use:
+
+ScrollPosition
+🔹 1. Repository Implementation
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    Window<User> findAllByOrderByIdAsc(ScrollPosition position, Pageable pageable);
+
+}
+🔹 2. Service Layer
+public Window<User> getUsers(ScrollPosition position) {
+
+    Pageable limit = PageRequest.ofSize(10);
+
+    if (position == null) {
+        position = ScrollPosition.keyset(); // start
+    }
+
+    return userRepository.findAllByOrderByIdAsc(position, limit);
+}
+🔹 3. Controller
+@GetMapping("/users")
+public Map<String, Object> getUsers(
+        @RequestParam(required = false) String cursor) {
+
+    ScrollPosition position = (cursor == null)
+            ? ScrollPosition.keyset()
+            : ScrollPosition.of(cursor);
+
+    Window<User> window = userService.getUsers(position);
+
+    String nextCursor = window.positionAt(window.size() - 1).toString();
+
+    return Map.of(
+        "data", window.getContent(),
+        "nextCursor", nextCursor
+    );
+}
+🔹 4. How Scroll Position Works Internally
+
+Instead of:
+
+OFFSET 100
+
+It does:
+
+WHERE id > last_seen_id
+
+👉 But Spring handles this internally using keyset pagination
+
+🔹 5. Types of ScrollPosition
+✅ Keyset (Recommended)
+ScrollPosition.keyset()
+Uses indexed fields
+Fast
+No duplicates
+❌ Offset (Avoid for large data)
+ScrollPosition.offset()
+Same as LIMIT OFFSET
+Slow for big tables
+🔹 6. Important Rules 🚀
+✅ You MUST:
+Have ORDER BY in method name
+findAllByOrderByIdAsc(...)
+✅ Use indexed column
+id OR createdAt
+⚠️ For real-world (better sorting)
+findAllByOrderByCreatedAtAscIdAsc(...)
+🔹 7. Interview Answer (Perfect 🔥)
+
+If asked:
+
+👉 “How do you implement scroll position in JPA?”
+
+You say:
+
+Spring Data JPA provides ScrollPosition and Window<T> for keyset pagination.
+It avoids OFFSET and uses indexed columns to fetch next records efficiently.
+We pass the scroll position (cursor) and get the next window of data.
+
+🔹 8. Difference vs Manual Cursor
+| Approach               | Complexity | Control           |
+| ---------------------- | ---------- | ----------------- |
+| Manual (`id > cursor`) | Medium     | Full control      |
+| `ScrollPosition`       | Easy       | Framework handles |
+
+🔹 Final Summary
+Scroll position = cursor internally
+Use ScrollPosition.keyset()
+Return Window<T>
+Always use ORDER BY
+Best for infinite scroll APIs

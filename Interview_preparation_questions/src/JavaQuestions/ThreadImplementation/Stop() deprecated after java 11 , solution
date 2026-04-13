@@ -1,0 +1,107 @@
+You are getting this exception after moving from Java 8 → Java 21 because Thread.stop() is deprecated and now effectively disabled.
+
+In modern Java (Java 11+), calling Thread.stop() throws:
+
+java.lang.UnsupportedOperationException
+
+because it was unsafe and could leave objects in an inconsistent state.
+
+Why Thread.stop() Was Removed
+
+Thread.stop() could terminate a thread immediately, even if it was:
+
+writing to a database
+
+updating shared memory
+
+holding a lock
+
+This could corrupt application state.
+
+So modern Java requires graceful thread shutdown.
+
+Correct Approach (Java 21 Compatible)
+
+Instead of Thread.stop() you should use:
+
+A boolean flag
+
+interrupt()
+
+Fix Your Code
+Old Code
+ttransmit.stop();
+Correct Way
+
+Use interrupt().
+
+public void stopTXDriver(){
+    try{
+        if (ttransmit != null) {
+            Thread.State state = ttransmit.getState();
+            logger.info("stopDriver():Transmit Thread:" + state);
+
+            ttransmit.interrupt();   // graceful stop
+        }
+
+        if (pTX != null) {
+            pTX.stopThread();
+        }
+
+        ttransmit = null;
+    }
+    catch(Exception e){
+        e.printStackTrace();
+        logger.error(e.toString());
+    }
+}
+But Your Thread Must Support Interrupt
+
+Inside the thread run method you must check interrupt.
+
+Example:
+
+public void run() {
+    while (!Thread.currentThread().isInterrupted()) {
+        try {
+            // your logic
+        } catch (Exception e) {
+            break;
+        }
+    }
+}
+
+OR
+
+while (running) {
+    if(Thread.currentThread().isInterrupted()){
+        break;
+    }
+}
+Even Better Solution (Recommended for Java 21)
+
+Use ExecutorService instead of manual Thread handling.
+
+Example:
+
+ExecutorService executor = Executors.newSingleThreadExecutor();
+Future<?> future = executor.submit(pTX);
+
+Stop it:
+
+future.cancel(true);
+executor.shutdown();
+
+This is the modern thread management approach.
+
+Quick Summary
+| Old Java 8           | Java 21 Replacement |
+| -------------------- | ------------------- |
+| `Thread.stop()`      | ❌ Removed           |
+| `Thread.interrupt()` | ✅ Correct           |
+| Boolean flag         | ✅ Safe              |
+| ExecutorService      | ⭐ Best Practice     |
+
+
+💡 Important for your SMPP driver:
+Many old SMPP libraries (2008-2012) use Thread.stop(). When upgrading to Java 17/21, these must be refactored.

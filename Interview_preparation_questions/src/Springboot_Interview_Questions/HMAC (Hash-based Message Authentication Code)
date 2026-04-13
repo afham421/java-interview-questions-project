@@ -1,0 +1,166 @@
+🔑 Why we use HMAC
+Integrity (Data not changed)
+It ensures that the message was not modified during transmission.
+Even a small change in data → completely different HMAC.
+Authentication (Who sent it)
+Uses a secret key shared between sender and receiver.
+If HMAC matches → message came from someone who knows the secret key.
+Protection against tampering
+Attackers cannot modify data without knowing the secret key.
+⚙️ How it works (simple)
+
+Sender:
+
+HMAC = hash(secret_key + message)
+Receiver:
+Recalculates HMAC using same key
+Compares with received HMAC
+
+If both match ✅ → message is valid
+If not ❌ → message is tampered
+
+🔐 Real-world use cases
+APIs authentication (like request signing)
+JWT signatures
+Webhooks verification (Stripe, GitHub)
+Secure communication between services
+💡 Why not just hash?
+A simple hash (like SHA-256) is not secure for authentication
+Anyone can recompute hash if they know the message
+HMAC adds a secret key, making it secure
+🧠 Interview one-liner
+
+HMAC is used to verify both the integrity and authenticity of a message using a shared secret key.
+
+If you want, I can explain HMAC vs JWT vs OAuth or how to implement it in Java (very common interview question).
+
+
+Great—this is a very common interview topic. Let’s break it down clearly 👇
+
+🔐 HMAC vs JWT vs OAuth
+1️⃣ HMAC (Low-level security mechanism)
+
+👉 What it is:
+A cryptographic technique to sign data using a secret key
+
+👉 Purpose:
+
+Ensure data integrity + authenticity
+
+👉 Used in:
+
+API request signing
+Webhooks
+Inside JWT (sometimes)
+
+👉 Key point:
+
+Uses shared secret key
+
+👉 Example flow:
+
+HMAC = H(secret + message)
+2️⃣ JWT (JSON Web Token)
+
+👉 What it is:
+A token format used for authentication
+
+👉 Structure:
+
+Header.Payload.Signature
+
+👉 Purpose:
+
+Stateless authentication
+Carry user data (claims)
+
+👉 Uses HMAC internally
+
+Example: HS256 = HMAC + SHA-256
+
+👉 Example:
+
+eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEyM30.signature
+
+👉 Key point:
+
+Can be signed using:
+HMAC (shared key)
+RSA (public/private key)
+3️⃣ OAuth (Authorization Framework)
+
+👉 What it is:
+A protocol that allows apps to access user data without sharing passwords
+
+👉 Purpose:
+
+Authorization (not authentication directly)
+
+👉 Example:
+
+“Login with Google”
+“Login with Facebook”
+
+👉 Flow (simplified):
+
+User logs in via Google
+Google gives access token
+Your app uses token to access user data
+
+👉 Key point:
+
+Uses tokens (often JWT) internally
+🧠 Simple Comparison Table
+| Feature   | HMAC          | JWT                      | OAuth         |
+| --------- | ------------- | ------------------------ | ------------- |
+| Type      | Algorithm     | Token format             | Protocol      |
+| Purpose   | Sign data     | Authentication           | Authorization |
+| Uses key  | Shared secret | Secret or public/private | Uses tokens   |
+| Stateless | ❌             | ✅                        | ✅             |
+| Real use  | API security  | Login sessions           | Social login  |
+
+🔗 Relationship (Important for interview)
+
+👉 Very important concept:
+
+OAuth → gives token
+JWT → is the token format
+HMAC → signs the token
+
+💡 One line:
+
+OAuth uses JWT tokens, and JWT can be signed using HMAC.
+
+☕ Java Example (HMAC - Very Important)
+
+Using built-in Java:
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.util.Base64;
+
+public class HmacExample {
+    public static void main(String[] args) throws Exception {
+        String secret = "mySecretKey";
+        String message = "HelloWorld";
+
+        Mac mac = Mac.getInstance("HmacSHA256");
+        SecretKeySpec keySpec = new SecretKeySpec(secret.getBytes(), "HmacSHA256");
+        mac.init(keySpec);
+
+        byte[] hmacBytes = mac.doFinal(message.getBytes());
+        String hmac = Base64.getEncoder().encodeToString(hmacBytes);
+
+        System.out.println("HMAC: " + hmac);
+    }
+}
+🔥 Interview Tips
+
+👉 If interviewer asks:
+
+“Why JWT instead of session?”
+→ Stateless, scalable (no server memory)
+“Why HMAC?”
+→ To ensure integrity + authenticity
+“OAuth vs JWT?”
+→ OAuth = process, JWT = token
