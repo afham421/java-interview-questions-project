@@ -79,6 +79,9 @@ System.out.println(p1.address.city); // Islamabad ✅ (unchanged)
 | Independence   | Not fully independent   | Fully independent          |
 | Use case       | Simple objects          | Complex object graphs      |
 
+One-Line Summary
+Shallow copy = references shared
+Deep copy = everything duplicated
 
 ✅ Java Tools That Support Copying
 | Tool             | Type                 | Notes                                        |

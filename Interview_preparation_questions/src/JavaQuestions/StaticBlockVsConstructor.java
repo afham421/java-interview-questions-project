@@ -6,7 +6,7 @@ class Example {
     // Static block
     static {
         s = 10; // you can use only static variable in static method
-        System.out.println("Static block executed");
+        System.out.println("Static parant block executed");
     }
 
     // Constructor
@@ -17,13 +17,19 @@ class Example {
     static class children extends Example {
         //static
         static {
-            System.out.println("Static block executed");
+            System.out.println("Static child block executed");
         }
 
-        // Constructor
+//        // Constructor
         public children() {
             System.out.println("child Constructor executed");
         }
+
+//        // Constructor
+//        public children() {
+//            super(); // explicitly calling parent constructor
+//            System.out.println("Child Constructor executed");
+//        }
     }
 
 }

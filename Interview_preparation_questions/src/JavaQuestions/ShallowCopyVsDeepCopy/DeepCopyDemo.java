@@ -31,3 +31,7 @@ public class DeepCopyDemo {
         System.out.println(p1.address.city); // Islamabad ✅ (unchanged)
     }
 }
+
+//One-Line Summary
+//Shallow copy = references shared
+//Deep copy = everything duplicated
