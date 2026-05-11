@@ -11,17 +11,16 @@ Both are used for external configuration, but they differ in format, syntax, and
 
 ✅ 2. Syntax
 🔹 application.properties (Key-Value)
-properties
-Copy
-Edit
+
 server.port=8080
 spring.datasource.url=jdbc:mysql://localhost:3306/testdb
 spring.datasource.username=root
 spring.datasource.password=pass
+
+
+
 🔹 application.yml (YAML format)
-yaml
-Copy
-Edit
+
 server:
   port: 8080
 
@@ -46,18 +45,14 @@ application-prod.yml
 
 YAML example:
 
-yaml
-Copy
-Edit
+
 spring:
   profiles: dev
 server:
   port: 8081
 Properties example:
 
-properties
-Copy
-Edit
+
 spring.profiles=dev
 server.port=8081
 
@@ -65,9 +60,7 @@ server.port=8081
 ✅ 5. Multiline / List Support
 YAML supports lists and structured data more naturally:
 
-yaml
-Copy
-Edit
+
 my:
   servers:
     - host: server1.com
@@ -76,9 +69,7 @@ my:
       port: 8081
 In .properties, this is awkward:
 
-properties
-Copy
-Edit
+
 my.servers[0].host=server1.com
 my.servers[0].port=8080
 my.servers[1].host=server2.com

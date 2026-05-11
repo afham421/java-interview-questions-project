@@ -50,3 +50,29 @@ public class MyService {
 
 Use @Autowired if you are working in a purely Spring-based application and want to leverage Spring-specific features.
 Use @Inject if you prefer to follow Java standards (JSR-330) and aim for portability across different DI frameworks.
+
+
+Extra Notes
+
+If you want ordering:
+
+@Order(1)
+@Service
+public class JazzSmsService implements SmsService {
+}
+@Order(2)
+@Service
+public class ZongSmsService implements SmsService {
+}
+
+Spring injects the list in order.
+
+Summary
+| Feature                        | `@Autowired`          | `@Inject`             |
+| ------------------------------ | --------------------- | --------------------- |
+| Type                           | Spring-specific       | Standard Java/Jakarta |
+| Works with List                | Yes                   | Yes                   |
+| Recommended                    | Constructor injection | Constructor injection |
+| Required in single constructor | No                    | No                    |
+
+

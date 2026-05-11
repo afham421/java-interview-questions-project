@@ -4,15 +4,11 @@
 Used to inject single values from properties/yml file into fields.
 
 📁 application.properties
-properties
-Copy
-Edit
+
 myapp.name=ChatGPT
 myapp.version=1.0
 📦 Java Class using @Value
-java
-Copy
-Edit
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -43,9 +39,7 @@ No auto-binding of complex types like lists/maps
 Used to bind a group of related configuration values to a Java class.
 
 📁 application.yml
-yaml
-Copy
-Edit
+
 myapp:
   name: ChatGPT
   version: 1.0
@@ -53,9 +47,7 @@ myapp:
     enabled: true
     max-users: 100
 📦 Java Class using @ConfigurationProperties
-java
-Copy
-Edit
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -90,9 +82,7 @@ public class MyAppConfig {
     public void setFeatures(Features features) { this.features = features; }
 }
 ✅ Usage in any service:
-java
-Copy
-Edit
+
 @Autowired
 private MyAppConfig config;
 
@@ -126,18 +116,14 @@ Perfect! Here's how you can inject lists and maps from application.yml using @Co
 
 ✅ Injecting a List from application.yml
 📁 application.yml
-yaml
-Copy
-Edit
+
 myapp:
   supported-languages:
     - Java
     - Python
     - Go
 📦 Java Class
-java
-Copy
-Edit
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import java.util.List;
@@ -157,9 +143,7 @@ public class MyAppConfig {
     }
 }
 ✅ Usage
-java
-Copy
-Edit
+
 @Autowired
 private MyAppConfig config;
 
@@ -168,18 +152,14 @@ public void showLanguages() {
 }
 ✅ Injecting a Map from application.yml
 📁 application.yml
-yaml
-Copy
-Edit
+
 myapp:
   error-messages:
     404: "Not Found"
     500: "Server Error"
     403: "Forbidden"
 📦 Java Class
-java
-Copy
-Edit
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import java.util.Map;
@@ -199,9 +179,7 @@ public class MyAppConfig {
     }
 }
 ✅ Usage
-java
-Copy
-Edit
+
 @Autowired
 private MyAppConfig config;
 

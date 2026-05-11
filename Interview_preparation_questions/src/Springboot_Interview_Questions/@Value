@@ -68,7 +68,8 @@ The issue you're encountering is due to the fact that Spring's @Value annotation
          CC_EMAIL_ADDRESS = ccEmailAddress;
      }
  }
- Now, CC_EMAIL_ADDRESS can be accessed statically, but remember that this approach is generally not recommended as it goes against Spring's design principles.
+ Now, CC_EMAIL_ADDRESS can be accessed statically, but remember that this approach is generally not recommended
+ as it goes against Spring's design principles.
 
  Summary
  Use a non-static field for @Value injection and access it via a getter method.

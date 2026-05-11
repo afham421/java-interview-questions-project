@@ -107,9 +107,7 @@ public class GenericsExamples {
 //You cannot add elements, because the exact type is unknown — only reading is safe.
 //
 //📦 Example Use Case: Reading a List of Numbers
-//java
-//Copy
-//Edit
+
 //public class WildcardExample {
 //    public static void printNumbers(List<? extends Number> list) {
 //        for (Number num : list) {
@@ -129,10 +127,7 @@ public class GenericsExamples {
 //You can read elements as type Number.
 //
 //You cannot add elements to the list — because the exact subtype is unknown.
-//
-//java
-//Copy
-//Edit
+
 //list.add(5);       // ❌ Compilation error
 //list.add(null);    // ✅ Allowed
 //📌 When to use <? extends T>?

@@ -7,9 +7,7 @@ Returns views (like JSP, Thymeleaf).
 Usually used when building web pages (HTML).
 
 🔧 Example:
-java
-Copy
-Edit
+
 @Controller
 public class HomeController {
 
@@ -27,9 +25,7 @@ Combines @Controller + @ResponseBody.
 Returns JSON or XML directly in the response.
 
 🔧 Example:
-java
-Copy
-Edit
+
 @RestController
 public class ApiController {
 

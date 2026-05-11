@@ -8,9 +8,7 @@ Fully type-safe and purely in Java.
 
 Example:
 
-java
-Copy
-Edit
+
 @Configuration
 public class AppConfig {
     @Bean
@@ -27,9 +25,7 @@ Beans are auto-scanned using @ComponentScan.
 
 Example:
 
-java
-Copy
-Edit
+
 @Component
 public class MyComponent {}
 
@@ -47,9 +43,7 @@ Mostly used in legacy Spring apps.
 
 Example:
 
-xml
-Copy
-Edit
+
 <bean id="myService" class="com.example.MyServiceImpl"/>
 
 
@@ -72,17 +66,13 @@ Custom app config
 
 Example – application.properties:
 
-properties
-Copy
-Edit
+
 server.port=8081
 spring.datasource.url=jdbc:mysql://localhost:3306/mydb
 myapp.title=My Spring Boot App
 You can access them using @Value or @ConfigurationProperties:
 
-java
-Copy
-Edit
+
 @Value("${myapp.title}")
 private String title;
 
@@ -96,9 +86,7 @@ Environment variables
 
 Example:
 
-bash
-Copy
-Edit
+
 java -jar myapp.jar --server.port=9090
 
 

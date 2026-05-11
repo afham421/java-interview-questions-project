@@ -25,9 +25,7 @@ WebSocket (@Scope("websocket")): A single instance is created for the lifecycle 
 The @Scope annotation in Spring tells the container how long the bean should live, and how it should be created or reused.
 
 ✅ Correct usage (on a class):
-java
-Copy
-Edit
+
 @Component
 @Scope("prototype")
 public class MyBean {
@@ -38,9 +36,7 @@ public class MyBean {
 Every time this bean is injected or requested — a new instance will be created because it's prototype.
 
 ❌ Invalid usage (on a method):
-java
-Copy
-Edit
+
 public class MyConfig {
     @Scope("prototype") // ❌ This has no effect here
     public MyBean myBean() {
@@ -50,9 +46,7 @@ public class MyConfig {
 The above won’t work unless you use @Bean along with @Scope in a configuration class:
 
 ✅ Valid usage with @Bean (in config class):
-java
-Copy
-Edit
+
 @Configuration
 public class MyConfig {
 
@@ -106,4 +100,5 @@ Use prototype for stateful or expensive objects.
 
 Use request/session only in web layers, and avoid them in service/repo layers.
 
-Don’t mix scopes without caution—injecting a prototype into a singleton may not work as expected unless you handle it properly (e.g., with ObjectFactory or Provider).
+Don’t mix scopes without caution—injecting a prototype into a singleton may not work as expected unless you handle it properly
+(e.g., with ObjectFactory or Provider).

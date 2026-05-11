@@ -1,0 +1,72 @@
+🔹 1. Callable (Task that returns result)
+
+Callable is an interface used to define a task that returns a value.
+
+Key points:
+Introduced in Java 5 (java.util.concurrent)
+Similar to Runnable, but:
+✅ returns a result
+✅ can throw checked exceptions
+Method:
+V call() throws Exception;
+Example:
+Callable<Integer> task = () -> {
+    return 10 + 20;
+};
+🔹 2. Future (Result holder of async task)
+
+Future represents the result of an asynchronous computation.
+
+It is returned when you submit a Callable (or Runnable) to an Executor.
+
+Key methods:
+get()        // get result (blocking)
+isDone()     // check if completed
+cancel()     // cancel task
+isCancelled()
+🔹 3. How they work together
+
+👉 Callable = task
+👉 Future = result of that task
+
+Example:
+ExecutorService executor = Executors.newFixedThreadPool(2);
+
+Callable<Integer> task = () -> {
+    Thread.sleep(1000);
+    return 50;
+};
+
+Future<Integer> future = executor.submit(task);
+
+// Do something else...
+
+Integer result = future.get(); // blocks until result is ready
+System.out.println(result);
+
+executor.shutdown();
+🔹 4. Runnable vs Callable (important)
+| Feature      | Runnable        | Callable    |
+| ------------ | --------------- | ----------- |
+| Return value | ❌ No            | ✅ Yes       |
+| Exception    | ❌ No checked    | ✅ Yes       |
+| Method       | `run()`         | `call()`    |
+| Use case     | Fire-and-forget | Need result |
+
+🔹 5. Callable + Future flow (interview explanation)
+Create a Callable
+Submit it to ExecutorService
+Get a Future
+Call future.get() to retrieve result
+🔹 6. Important interview points
+future.get() is blocking
+Use future.get(timeout, unit) to avoid waiting forever
+Multiple tasks → use invokeAll()
+For better async chaining → use CompletableFuture (modern approach)
+🔹 7. When to use what?
+Use Runnable → when you don’t care about result
+Use Callable + Future → when you need result from thread
+Use CompletableFuture → for advanced async programming
+🔹 One-line answer (for interview)
+
+Callable defines a task that returns a result, while Future is used to retrieve the result of that asynchronous task.

@@ -2,9 +2,7 @@
 When Spring finds more than one bean of the same type, it doesn't know which one to inject. You use @Qualifier to specify the exact bean you want.
 
 🔧 Example: Without @Qualifier — causes ambiguity
-java
-Copy
-Edit
+
 @Component
 public class Dog implements Animal {
     public void speak() {
@@ -30,10 +28,10 @@ public class AnimalService {
         animal.speak();
     }
 }
+
+
 ✅ Example: With @Qualifier — resolves ambiguity
-java
-Copy
-Edit
+
 @Component
 public class Dog implements Animal {
     public void speak() {
@@ -59,6 +57,8 @@ public class AnimalService {
         animal.speak();  // Output: Meow
     }
 }
+
+
 📌 Rules
 The string in @Qualifier("...") must match the bean name — usually the class name with lowercase first letter
  (unless overridden with @Component("name") or @Bean(name = "...")).
