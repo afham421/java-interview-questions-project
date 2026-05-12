@@ -1,0 +1,171 @@
+In Redis, “manual operations with collections” usually means working directly with Redis data structures like List, Set, Hash, Sorted Set using commands.
+
+For Java interview perspective, these are very important.
+
+1. Redis String
+
+Used for simple key-value.
+
+SET user:name "Ali"
+GET user:name
+DEL user:name
+
+Java example:
+
+redisTemplate.opsForValue().set("user:name", "Ali");
+String name = redisTemplate.opsForValue().get("user:name");
+
+2. Redis List
+
+Works like queue/stack.
+
+Manual Commands
+LPUSH fruits "apple"
+LPUSH fruits "banana"
+
+RPUSH fruits "mango"
+
+LRANGE fruits 0 -1
+
+Output:
+
+banana
+apple
+mango
+
+Important Operations
+LPOP fruits
+RPOP fruits
+LLEN fruits
+
+Use Cases
+Queue
+Recent searches
+Notifications
+
+3. Redis Set
+
+Stores unique values.
+
+Manual Commands
+SADD users "Ali"
+SADD users "Ahmed"
+SADD users "Ali"
+
+SMEMBERS users
+
+Ali stored only once.
+
+Operations
+SREM users "Ali"
+SISMEMBER users "Ahmed"
+SCARD users
+
+Use Cases
+Unique users
+Tags
+Permissions
+
+4. Redis Hash
+
+Like Java Map<String, String>.
+
+Manual Commands
+HSET employee id 101
+HSET employee name "Ali"
+HSET employee city "Lahore"
+
+HGET employee name
+HGETALL employee
+
+Operations
+HDEL employee city
+HEXISTS employee name
+
+Use Cases
+User profile
+Object storage
+
+5. Redis Sorted Set (VERY IMPORTANT)
+
+Stores score + value.
+
+Manual Commands
+ZADD leaderboard 100 Ali
+ZADD leaderboard 200 Ahmed
+ZADD leaderboard 150 Bilal
+
+Get Data
+ZRANGE leaderboard 0 -1
+ZRANGE leaderboard 0 -1 WITHSCORES
+
+Reverse Order
+ZREVRANGE leaderboard 0 -1 WITHSCORES
+
+Use Cases
+Leaderboard
+Ranking
+Priority queue
+
+6. Expiry Operations
+SET otp "1234"
+EXPIRE otp 60
+TTL otp
+Auto delete after 60 sec
+
+Used heavily for:
+
+OTP
+Session
+Cache
+
+7. Redis Collection Operations in Spring Boot
+List
+redisTemplate.opsForList().leftPush("fruits", "apple");
+Set
+redisTemplate.opsForSet().add("users", "Ali");
+Hash
+redisTemplate.opsForHash().put("employee", "name", "Ali");
+Sorted Set
+redisTemplate.opsForZSet().add("leaderboard", "Ali", 100);
+
+Important Interview Question
+Why Redis collections are fast?
+
+Because Redis:
+
+Stores data in memory (RAM)
+Uses optimized internal data structures
+Single-threaded event loop avoids locking overhead
+
+Common Interview Use Cases
+| Collection | Use Case      |
+| ---------- | ------------- |
+| String     | Cache, OTP    |
+| List       | Queue         |
+| Set        | Unique values |
+| Hash       | User object   |
+| Sorted Set | Ranking       |
+
+Difference Between List and Set
+| List             | Set                 |
+| ---------------- | ------------------- |
+| Allows duplicate | Unique only         |
+| Ordered          | Unordered           |
+| Queue operations | Membership checking |
+
+Difference Between Hash and String
+| String                 | Hash               |
+| ---------------------- | ------------------ |
+| Single value           | Multiple fields    |
+| Whole object serialize | Field-wise storage |
+
+
+Example:
+
+SET user "{name:Ali,age:25}"
+
+vs
+
+HSET user name Ali
+HSET user age 25

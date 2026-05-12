@@ -1,0 +1,90 @@
+You probably mean Lettuce vs Jedis in Redis caching.
+
+Both are Java clients used to connect Spring Boot/Java applications with Redis.
+
+Jedis vs Lettuce
+| Feature             | Jedis                                       | Lettuce                                   |
+| ------------------- | ------------------------------------------- | ----------------------------------------- |
+| Type                | Synchronous/blocking                        | Asynchronous + reactive                   |
+| Thread Safety       | Not thread-safe (older versions especially) | Thread-safe                               |
+| Connection Handling | Usually uses connection pool                | Single shared connection possible         |
+| Reactive Support    | No                                          | Yes                                       |
+| Async Support       | Limited                                     | Strong support                            |
+| Performance         | Good for simple apps                        | Better for scalable/high concurrency apps |
+| Spring Boot Default | Older Spring versions                       | Modern Spring Boot default                |
+| Complexity          | Simple                                      | Slightly advanced                         |
+
+1. Jedis
+
+Jedis is the older and simpler Redis Java client.
+
+Example:
+
+Jedis jedis = new Jedis("localhost", 6379);
+jedis.set("name", "Ali");
+String value = jedis.get("name");
+Pros
+Easy to understand
+Lightweight
+Good for small/simple applications
+Cons
+Blocking I/O
+Connection pooling needed in multithreaded apps
+Less suitable for reactive systems
+2. Lettuce
+
+Lettuce is the modern Redis client built on Netty.
+
+Example:
+
+RedisClient client = RedisClient.create("redis://localhost:6379");
+StatefulRedisConnection<String, String> connection = client.connect();
+
+RedisCommands<String, String> sync = connection.sync();
+sync.set("name", "Ali");
+Pros
+Thread-safe
+Async + reactive support
+Better for microservices/high traffic
+Scales better
+Cons
+Slightly more complex
+More features than needed for tiny apps
+Which One Does Spring Boot Prefer?
+
+Modern Spring Boot uses Lettuce by default.
+
+If you add:
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-redis</artifactId>
+</dependency>
+
+Spring Boot automatically configures Lettuce unless you explicitly switch to Jedis.
+
+Interview Answer (Short Version)
+
+Jedis and Lettuce are Java Redis clients.
+Jedis is synchronous and simpler, while Lettuce is thread-safe and supports async/reactive programming.
+Modern Spring Boot uses Lettuce by default because it performs better in high-concurrency applications.
+
+Important Interview Point
+Why Lettuce is preferred in microservices?
+
+Because:
+
+Non-blocking
+Handles many concurrent requests efficiently
+Supports reactive programming
+Better connection management
+Real Project Usage
+
+In Spring Boot caching:
+
+@Cacheable("users")
+public User getUser(Long id) {
+    return repository.findById(id);
+}
+
+Redis backend is commonly powered by Lettuce internally.
