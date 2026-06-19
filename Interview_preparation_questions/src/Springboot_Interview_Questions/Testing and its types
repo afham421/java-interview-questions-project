@@ -1,0 +1,161 @@
+In software development, testing is the process of verifying that an application works as expected and finding defects before releasing it to users.
+
+Common Types of Testing
+1. Unit Testing
+
+Tests a single class, method, or function in isolation.
+
+Example:
+
+public int add(int a, int b){
+    return a + b;
+}
+
+Test:
+
+assertEquals(5, add(2,3));
+
+Tools: JUnit, Mockito
+
+2. Integration Testing
+
+Tests whether multiple modules work correctly together.
+
+Example:
+
+Spring Boot Service ↔ Repository ↔ Database
+
+Checks if data is saved and retrieved properly.
+
+3. System Testing
+
+Tests the complete application as a whole.
+
+Example:
+
+Login
+Create User
+Send SMS
+View Reports
+
+Everything is tested together.
+
+4. Regression Testing
+
+Ensures that existing functionality still works after new changes or bug fixes.
+
+Example:
+You fix a bug in the SMS module.
+
+Now you test:
+
+Login
+Dashboard
+User Management
+SMS Sending
+
+to ensure nothing else broke because of your change.
+
+Interview Definition:
+
+Regression testing is performed after code changes to verify that previously working functionality continues to work correctly.
+
+5. Smoke Testing
+
+A quick test to verify that the major features of a new build are working.
+
+Example:
+
+Application starts
+Login works
+Database connection works
+
+If smoke testing fails, further testing is stopped.
+
+6. Sanity Testing
+
+Performed after a minor change or bug fix to verify that the specific functionality works.
+
+Example:
+A bug in OTP generation is fixed.
+
+Test only OTP-related scenarios.
+
+7. Functional Testing
+
+Verifies that the application behaves according to business requirements.
+
+Example:
+Requirement:
+
+User can send SMS to up to 1000 recipients.
+
+Testing checks whether this requirement is met.
+
+8. Non-Functional Testing
+
+Tests quality attributes rather than functionality.
+
+Includes:
+
+Performance Testing
+Load Testing
+Security Testing
+Usability Testing
+9. Performance Testing
+
+Checks application speed and responsiveness.
+
+Example:
+Dashboard should load within 2 seconds.
+
+10. Load Testing
+
+Checks behavior under expected user load.
+
+Example:
+1,000 users sending SMS simultaneously.
+
+Tools:
+
+JMeter
+Gatling
+11. Stress Testing
+
+Checks behavior beyond normal limits.
+
+Example:
+10,000 users on a system designed for 1,000 users.
+
+12. Security Testing
+
+Finds vulnerabilities.
+
+Example:
+
+SQL Injection
+XSS
+CSRF
+Authentication issues
+13. User Acceptance Testing (UAT)
+
+Performed by business users or clients before production release.
+
+Example:
+Ufone team verifies that the SMS portal satisfies all business requirements.
+
+Smoke vs Sanity vs Regression
+| Testing Type       | Purpose                        | Scope          |
+| ------------------ | ------------------------------ | -------------- |
+| Smoke Testing      | Check whether build is stable  | Broad, shallow |
+| Sanity Testing     | Verify specific change/fix     | Narrow         |
+| Regression Testing | Ensure old features still work | Broad, deep    |
+
+Interview Example
+
+Suppose you fixed a bug in the OTP module:
+
+Sanity Testing → Test OTP functionality only.
+Regression Testing → Test OTP + Login + Dashboard + SMS + Reports.
+Smoke Testing → Verify the application starts and major features are accessible.
+

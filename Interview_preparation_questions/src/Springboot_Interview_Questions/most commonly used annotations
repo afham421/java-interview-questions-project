@@ -1,0 +1,155 @@
+In a Spring Boot controller, the most commonly used annotations are:
+
+Class Level
+@RestController
+
+Used to create REST APIs. Combines @Controller + @ResponseBody.
+
+@RestController
+public class UserController {
+}
+@RequestMapping
+
+Defines the base URL for all endpoints in the controller.
+
+@RestController
+@RequestMapping("/users")
+public class UserController {
+}
+Method Level Mapping Annotations
+@GetMapping
+
+For HTTP GET requests.
+
+@GetMapping("/{id}")
+public User getUser(@PathVariable Long id) {
+    return userService.getUser(id);
+}
+@PostMapping
+
+For HTTP POST requests.
+
+@PostMapping
+public User createUser(@RequestBody User user) {
+    return userService.save(user);
+}
+@PutMapping
+
+For HTTP PUT requests.
+
+@PutMapping("/{id}")
+public User updateUser(@PathVariable Long id,
+                       @RequestBody User user) {
+    return userService.update(id, user);
+}
+@DeleteMapping
+
+For HTTP DELETE requests.
+
+@DeleteMapping("/{id}")
+public void deleteUser(@PathVariable Long id) {
+    userService.delete(id);
+}
+Generic @RequestMapping
+@RequestMapping(value = "/test", method = RequestMethod.GET)
+public String test() {
+    return "Success";
+}
+Parameter Annotations
+@PathVariable
+
+Extract value from URL path.
+
+@GetMapping("/{id}")
+public User getUser(@PathVariable Long id) {
+}
+
+URL:
+
+GET /users/10
+@RequestParam
+
+Extract query parameter.
+
+@GetMapping
+public List<User> getUsers(
+        @RequestParam String name,
+        @RequestParam(required = false) Integer age) {
+}
+
+URL:
+
+GET /users?name=Ali&age=25
+@RequestBody
+
+Maps JSON request body to Java object.
+
+@PostMapping
+public User save(@RequestBody User user) {
+}
+
+Request:
+
+{
+  "name": "Ali",
+  "age": 25
+}
+@RequestHeader
+
+Read request headers.
+
+@GetMapping
+public String getToken(
+        @RequestHeader("Authorization") String token) {
+}
+@CookieValue
+
+Read cookie values.
+
+@GetMapping
+public String getCookie(
+        @CookieValue("sessionId") String sessionId) {
+}
+Response Related
+@ResponseStatus
+@PostMapping
+@ResponseStatus(HttpStatus.CREATED)
+public User create(@RequestBody User user) {
+}
+
+Returns HTTP 201 Created.
+
+Validation
+@Valid
+@PostMapping
+public User create(@Valid @RequestBody UserDto dto) {
+}
+
+DTO:
+
+public class UserDto {
+
+    @NotBlank
+    private String name;
+
+    @Email
+    private String email;
+}
+Interview Question
+
+Difference between @PathVariable and @RequestParam?
+
+@GetMapping("/users/{id}")      // PathVariable
+
+URL:
+
+/users/10
+@GetMapping("/users")           // RequestParam
+
+URL:
+
+/users?id=10
+@PathVariable → Part of URL path.
+@RequestParam → Query parameter.
+
+These are the controller annotations most frequently asked in Spring Boot interviews.

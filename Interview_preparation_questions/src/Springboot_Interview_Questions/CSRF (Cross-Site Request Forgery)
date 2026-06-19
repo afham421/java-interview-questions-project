@@ -1,0 +1,164 @@
+CSRF (Cross-Site Request Forgery) is a web security attack where a malicious website tricks a logged-in user
+ into performing an unwanted action on another website where they are already authenticated.
+
+Example
+
+Suppose you're logged into your banking application.
+
+The bank has an endpoint:
+
+POST /transfer
+
+with parameters:
+
+{
+  "toAccount": "12345",
+  "amount": 1000
+}
+
+If the bank only relies on the session cookie for authentication, an attacker can create a malicious page:
+
+<form action="https://bank.com/transfer" method="POST">
+    <input type="hidden" name="toAccount" value="attacker123">
+    <input type="hidden" name="amount" value="1000">
+</form>
+
+<script>
+    document.forms[0].submit();
+</script>
+
+When the victim visits this page:
+
+Browser automatically sends the bank's session cookie.
+Request appears authenticated.
+Money gets transferred without the user's consent.
+
+This is a CSRF attack.
+
+How CSRF is Prevented
+1. CSRF Token (Most Common)
+
+Server generates a random token and embeds it in forms.
+
+<input type="hidden" name="_csrf" value="abc123xyz">
+
+The server validates the token on form submission.
+
+Without the correct token, the request is rejected.
+
+2. SameSite Cookies
+
+Set session cookie as:
+
+Set-Cookie: JSESSIONID=123;
+SameSite=Strict
+
+or
+
+SameSite=Lax
+
+This prevents browsers from sending cookies in many cross-site requests.
+
+3. Verify Origin/Referer Headers
+
+Check:
+
+Origin: https://yourwebsite.com
+
+or
+
+Referer: https://yourwebsite.com/profile
+
+Reject requests coming from other domains.
+
+CSRF vs XSS
+| CSRF                               | XSS                                               |
+| ---------------------------------- | ------------------------------------------------- |
+| Tricks user into sending a request | Injects malicious JavaScript                      |
+| Exploits trust of website in user  | Exploits trust of user in website                 |
+| Requires authenticated user        | May not require authentication                    |
+| Prevented using CSRF tokens        | Prevented by input validation and output encoding |
+
+CSRF in Spring Security
+
+Spring Security enables CSRF protection by default for web applications.
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http.build();
+    }
+}
+
+To disable:
+
+http.csrf(csrf -> csrf.disable());
+Interview Question:
+
+Why is CSRF often disabled in REST APIs?
+
+Because REST APIs commonly use JWT tokens in the Authorization header instead of session cookies.
+ Since browsers do not automatically attach JWTs to requests, CSRF attacks are generally not possible.
+
+
+ If your application uses session-based authentication, then CSRF protection is required.
+
+ Why?
+
+ When a user logs in:
+
+ Set-Cookie: JSESSIONID=ABC123
+
+ The browser stores this cookie and automatically sends it with every request to your domain:
+
+ Cookie: JSESSIONID=ABC123
+
+ An attacker can exploit this behavior because the browser sends the session cookie even when a request originates from a malicious website.
+
+ Flow of a CSRF Attack
+    User logs into your application.
+    Browser stores JSESSIONID.
+    User visits a malicious website.
+    Malicious website submits a request to your application.
+    Browser automatically attaches JSESSIONID.
+    Server thinks the request is from the authenticated user.
+
+ How Spring Security Protects Against It
+
+ When CSRF is enabled, Spring generates a token:
+
+ <input type="hidden" name="_csrf" value="token123">
+
+ The client must send this token with POST/PUT/DELETE requests.
+
+ Example:
+
+ POST /transfer
+ Cookie: JSESSIONID=ABC123
+ X-CSRF-TOKEN: token123
+
+ The server validates the token before processing the request.
+
+ Session vs JWT
+| Feature                                 | Session-Based Auth | JWT Auth                  |
+| --------------------------------------- | ------------------ | ------------------------- |
+| Authentication stored in                | Server Session     | JWT Token                 |
+| Browser sends credentials automatically | Yes (Cookie)       | No (Authorization Header) |
+| Vulnerable to CSRF                      | Yes                | Usually No                |
+| CSRF Token Needed                       | Yes                | Usually No                |
+
+ Interview Answer
+
+ Q: When should CSRF protection be enabled?
+
+ CSRF protection should be enabled when authentication relies on cookies or server-side sessions because browsers automatically send cookies
+ with requests. An attacker can exploit this behavior to perform unauthorized actions on behalf of the user.
+ CSRF tokens help verify that the request originated from the legitimate application.
+
+ Q: Why do many Spring Boot REST APIs disable CSRF?
+
+ Because they use stateless authentication (JWT/Bearer tokens) in the Authorization header rather than session cookies.
+ Since browsers do not automatically attach Authorization headers, CSRF attacks are generally not possible.
