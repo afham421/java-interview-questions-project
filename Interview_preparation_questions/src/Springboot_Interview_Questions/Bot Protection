@@ -1,0 +1,84 @@
+Bot Protection is a security mechanism that detects and blocks automated programs (bots) from abusing your website, mobile app, or API while allowing
+legitimate users and trusted bots (like search engine crawlers) to access the application.
+
+Why do we need Bot Protection?
+
+Without bot protection, attackers can use bots to:
+
+Brute-force login (trying thousands of passwords)
+Credential stuffing (using leaked usernames/passwords)
+Web scraping (stealing your website's data)
+Spam (creating fake accounts or posting spam)
+Scalping (buying tickets or products automatically)
+DDoS/HTTP Flood attacks (sending massive requests to slow or crash your application)
+
+How Bot Protection Works
+
+A bot protection solution usually combines multiple techniques:
+
+Rate Limiting
+Limits the number of requests from an IP or user.
+Example: Maximum 100 requests per minute.
+
+CAPTCHA
+Asks users to verify they are human when suspicious activity is detected.
+
+Behavior Analysis
+Detects non-human behavior such as:
+Extremely fast clicks
+Repeated requests
+No mouse movement
+Unnatural browsing patterns
+
+Device/Browser Fingerprinting
+Identifies devices using browser and system characteristics.
+
+IP Reputation
+Blocks requests from known malicious IP addresses.
+
+WAF (Web Application Firewall)
+Filters malicious requests before they reach your application.
+
+Machine Learning
+Learns normal user behavior and detects anomalies automatically.
+
+
+Example
+
+Suppose your login API is:
+
+POST /api/login
+
+A normal user:
+
+1 login request every few minutes
+
+A bot:
+
+500 login requests in 30 seconds
+
+
+Bot protection can:
+
+Block the IP
+Require a CAPTCHA
+Temporarily throttle requests
+Alert administrators
+
+Bot Protection in Spring Boot
+
+If you're building a Spring Boot application, common approaches include:
+
+Spring Security for authentication and authorization.
+Rate limiting using libraries like Bucket4j or Resilience4j.
+CAPTCHA integration (Google reCAPTCHA or Cloudflare Turnstile).
+Reverse proxy/WAF such as Cloudflare, NGINX, or AWS WAF.
+Logging and monitoring with tools like ELK or Prometheus to detect unusual traffic patterns.
+
+
+Interview Answer (30 seconds)
+
+Bot protection is a security mechanism that prevents automated programs from abusing web applications and APIs.
+It protects against attacks like credential stuffing, brute-force logins, scraping, spam, and DDoS.
+Common techniques include rate limiting, CAPTCHA, IP reputation, device fingerprinting, behavior analysis, WAFs, and machine learning to distinguish
+legitimate users from malicious bots.

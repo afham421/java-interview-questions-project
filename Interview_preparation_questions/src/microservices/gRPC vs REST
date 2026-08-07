@@ -14,6 +14,40 @@ It’s often used instead of REST for faster, more efficient communication betwe
 | 🛠 Code generation | ✅ Auto-generates client/server code    | ❌ Manual                        |
 | 🌐 Browser support | ❌ Not directly (need proxy)            | ✅ Native                        |
 
+## payload size is lesser because unlike json it does not contain key value means each key is duplicate in every number of array in json that is larger in size)
+## when its size increase it take more bandwidth
+
+Bandwidth is the maximum amount of data that can be transferred over a network in a given amount of time. It's usually measured in:
+
+Mbps (Megabits per second)
+Gbps (Gigabits per second)
+Think of bandwidth as the width of a highway:
+A 2-lane road = low bandwidth (fewer cars can pass at once)
+An 8-lane highway = high bandwidth (more cars can pass at once)
+The cars are your data packets.
+
+json
+{
+  "id": 101,
+  "name": "Ali",
+  "age": 25
+}
+This is plain text. Every field name ("id", "name", "age") is transmitted every time.
+Approximate size:
+45–60 bytes
+
+!!!!  .proto
+message User {
+  int32 id = 1;
+  string name = 2;
+  int32 age = 3;
+}
+When sent over the network, it is encoded into a compact binary format.
+Approximate size:
+15–20 bytes
+The field names are not sent with every message—only their compact numeric identifiers and values are encoded.
+
+###############
 
 ✅ When is gRPC used in Microservices?
 When services need high performance (low latency, high throughput)
@@ -35,7 +69,7 @@ NotificationService (Go)
 
 Using gRPC, they can talk to each other seamlessly using Protocol Buffers with generated clients, without worrying about manual REST API integration.
 
-🧪 Bonus: Sample .proto file
+🧪 Bonus: Sample .proto file (means a file in which we pass like userid = 1, now where 1 is we take it as userid. and this is file is on both side to decode and encode file)
 
 syntax = "proto3";
 
@@ -52,6 +86,27 @@ message UserResponse {
   string email = 2;
 }
 From this, gRPC can auto-generate Java, Go, Python, or C# code.
+
+
+
+When Should You Use gRPC?
+
+Use gRPC when:
+
+✅ Building microservices
+✅ High-performance internal APIs
+✅ Real-time communication
+✅ Large numbers of service-to-service calls
+✅ Streaming data
+✅ Strong typing and automatic code generation are important
+
+Use REST when:
+
+✅ Exposing public APIs
+✅ APIs consumed directly by web browsers
+✅ Third-party integrations
+✅ Simplicity and broad compatibility matter more than maximum performance
+
 
 ✅ Summary
 | Concept               | gRPC                                          |

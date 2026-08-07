@@ -1,0 +1,252 @@
+The EXPLAIN keyword in MySQL is used to see how MySQL will execute a query. It helps you understand whether the query
+is efficient and is one of the most important tools for query optimization.
+
+Syntax
+EXPLAIN SELECT * FROM employees WHERE department_id = 10;
+
+Instead of executing the query normally, MySQL returns information about its execution plan.
+
+Example
+
+Suppose you have this table:
+
+CREATE TABLE employees (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    department_id INT,
+    salary DECIMAL(10,2)
+);
+
+Query:
+
+EXPLAIN
+SELECT *
+FROM employees
+WHERE department_id = 10;
+
+Output might look like this:
+
+| id | select_type | table     | type | possible_keys | key  | rows   | Extra       |
+| -- | ----------- | --------- | ---- | ------------- | ---- | ------ | ----------- |
+| 1  | SIMPLE      | employees | ALL  | NULL          | NULL | 100000 | Using where |
+
+
+This means MySQL performs a full table scan, which is slow for large tables.
+
+After Adding an Index
+CREATE INDEX idx_department
+ON employees(department_id);
+
+Run again:
+
+EXPLAIN
+SELECT *
+FROM employees
+WHERE department_id = 10;
+
+Output:
+
+| id | select_type | table     | type | possible_keys  | key            | rows | Extra |
+| -- | ----------- | --------- | ---- | -------------- | -------------- | ---- | ----- |
+| 1  | SIMPLE      | employees | ref  | idx_department | idx_department | 25   | NULL  |
+
+Now MySQL uses the index and reads only about 25 rows instead of scanning the entire table.
+
+Important Columns
+1. id
+
+The execution order of the query.
+
+1
+
+Simple queries usually have only one id.
+
+2. select_type
+
+Type of SELECT.
+
+Common values:
+
+| Value    | Meaning                                  |
+| -------- | ---------------------------------------- |
+| SIMPLE   | Simple query without subqueries or UNION |
+| PRIMARY  | Main query                               |
+| SUBQUERY | Nested subquery                          |
+| DERIVED  | Derived table (subquery in FROM)         |
+| UNION    | Second or later query in a UNION         |
+
+
+Example:
+
+SELECT *
+FROM employees
+WHERE id IN (
+    SELECT employee_id
+    FROM salaries
+);
+
+The outer and inner queries have different select_type values.
+
+3. table
+
+The table MySQL is reading.
+
+employees
+
+
+4. type (Very Important)
+
+Shows how MySQL accesses the table.
+
+Performance ranking (best to worst):
+
+| Type   | Performance             |
+| ------ | ----------------------- |
+| system | Best                    |
+| const  | Excellent               |
+| eq_ref | Very Good               |
+| ref    | Good                    |
+| range  | Good                    |
+| index  | Medium                  |
+| ALL    | Worst (Full table scan) |
+
+
+Example:
+
+ALL
+
+Means MySQL reads every row.
+
+Example:
+
+range
+
+Means MySQL scans only a range of index values.
+
+5. possible_keys
+
+Indexes MySQL could use.
+
+idx_department
+
+If NULL, no suitable index exists.
+
+6. key
+
+The index MySQL actually used.
+
+idx_department
+
+If NULL, no index was used.
+
+7. key_len
+
+How many bytes of the index are used.
+
+Smaller isn't always better—it depends on the data type and how much of a composite index is being used.
+
+8. ref
+
+Shows what value or column is compared to the index.
+
+Example:
+
+const
+
+or
+
+employees.department_id
+9. rows
+
+Estimated number of rows MySQL expects to read.
+
+100000
+
+means approximately 100,000 rows.
+
+20
+
+means only about 20 rows.
+
+Smaller is generally better.
+
+10. filtered
+
+Percentage of rows expected to pass the WHERE condition after being read.
+
+Example:
+
+50.00
+
+About half the examined rows are expected to match.
+
+11. Extra
+
+Additional execution details.
+
+Common values:
+
+| Extra             | Meaning                                                                 |
+| ----------------- | ----------------------------------------------------------------------- |
+| Using where       | Filtering rows with a `WHERE` clause                                    |
+| Using index       | Covered by the index (no table lookup needed)                           |
+| Using temporary   | Temporary table created (can be expensive)                              |
+| Using filesort    | Extra sorting operation (not necessarily disk-based, but can be slower) |
+| Using join buffer | Join performed without a suitable index                                 |
+
+Good vs Bad Execution Plans
+❌ Bad
+EXPLAIN
+SELECT *
+FROM employees
+WHERE department_id = 10;
+
+Output:
+
+| type | rows   | key  |
+| ---- | ------ | ---- |
+| ALL  | 500000 | NULL |
+
+Full table scan
+No index
+Reads 500,000 rows
+✅ Good
+CREATE INDEX idx_department
+ON employees(department_id);
+
+EXPLAIN
+SELECT *
+FROM employees
+WHERE department_id = 10;
+
+Output:
+| type | rows | key            |
+| ---- | ---- | -------------- |
+| ref  | 30   | idx_department |
+
+Uses an index
+Reads only about 30 rows
+Much faster
+EXPLAIN ANALYZE (MySQL 8.0.18+)
+
+Unlike EXPLAIN, which shows estimated execution details, EXPLAIN ANALYZE actually runs the query and reports real execution statistics, including actual
+rows processed and execution time.
+
+EXPLAIN ANALYZE
+SELECT *
+FROM employees
+WHERE department_id = 10;
+
+Use this when you want to compare MySQL's estimates with what actually happened.
+
+Interview Tips
+
+If you're asked "How do you optimize a slow MySQL query?", a good answer is:
+
+Run EXPLAIN to inspect the execution plan.
+Check whether the query is using the expected indexes (key column).
+Avoid type = ALL on large tables whenever possible.
+Create or adjust indexes based on the WHERE, JOIN, and ORDER BY clauses.
+Reduce the number of rows scanned (rows column).
+Watch for costly operations like Using temporary and Using filesort in the Extra column.
+Use EXPLAIN ANALYZE (MySQL 8+) to verify the actual execution behavior and validate improvements.

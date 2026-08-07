@@ -1,0 +1,106 @@
+IP throttling is a technique used to limit the number of requests that can come from a single IP address within a certain time period.
+It is mainly used to protect applications from abuse, excessive traffic, and attacks.
+
+Why do we use IP throttling?
+Prevent DDoS attacks
+Stop brute-force login attempts
+Prevent API abuse
+Ensure fair usage among users
+Protect server resources and improve performance
+Example
+
+Suppose your login API allows:
+
+5 login attempts per minute per IP
+
+If an IP address (192.168.1.10) sends:
+
+Request 1 ✅
+Request 2 ✅
+Request 3 ✅
+Request 4 ✅
+Request 5 ✅
+Request 6 ❌ (Blocked - Too Many Requests)
+
+The server returns:
+
+HTTP/1.1 429 Too Many Requests
+
+Sometimes it also sends a header like:
+
+Retry-After: 60
+
+which means the client should wait 60 seconds before trying again.
+
+How it works
+Client (IP: 203.0.113.5)
+        |
+        | 100 requests
+        |
+API Gateway / Load Balancer
+        |
+   Check IP Counter
+        |
+   <= 50 requests/min ? ---- Yes ----> Allow
+        |
+        No
+        |
+Return 429 Too Many Requests
+
+
+Common Algorithms
+1. Fixed Window
+Example: 100 requests per minute.
+Counter resets every minute.
+Simple but can allow bursts at window boundaries.
+2. Sliding Window
+Uses the last 60 seconds continuously.
+More accurate and smoother.
+3. Token Bucket
+Tokens are added at a fixed rate.
+Each request consumes one token.
+Allows occasional bursts.
+4. Leaky Bucket
+Requests are processed at a constant rate.
+Extra requests wait or are dropped.
+In Spring Boot
+
+Using Spring Cloud Gateway:
+
+spring:
+  cloud:
+    gateway:
+      routes:
+      - id: api
+        uri: http://localhost:8080
+        predicates:
+        - Path=/api/**
+        filters:
+        - name: RequestRateLimiter
+          args:
+            redis-rate-limiter.replenishRate: 10
+            redis-rate-limiter.burstCapacity: 20
+
+Here:
+
+replenishRate: 10 → 10 new requests allowed per second.
+burstCapacity: 20 → Up to 20 requests can be handled in a burst.
+
+Redis is commonly used to keep request counters across multiple application instances.
+
+IP Throttling vs User Throttling
+| IP Throttling                                 | User Throttling                 |
+| --------------------------------------------- | ------------------------------- |
+| Limits by IP address                          | Limits by authenticated user ID |
+| Good before login                             | Good after login                |
+| Can affect multiple users behind the same NAT | Fair for individual users       |
+| Easier to bypass using different IPs          | Harder to bypass                |
+
+
+
+Interview Answer (30 seconds)
+
+IP throttling is a rate-limiting mechanism that restricts how many requests a client can make based on its IP address within a specific time window.
+It helps prevent brute-force attacks, DDoS attacks, and API abuse while ensuring fair resource usage. When the limit is exceeded,
+the server typically responds with HTTP 429 (Too Many Requests). Common implementations use algorithms like Token Bucket,
+Sliding Window, or Leaky Bucket, often with Redis to store request counts in distributed systems.

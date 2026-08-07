@@ -1,0 +1,240 @@
+MinIO is a high-performance, S3-compatible object storage server.
+It allows you to store and retrieve files (objects) such as images, videos, PDFs, backups, logs, and other unstructured data.
+
+Think of it as your private version of Amazon S3 that you can run on your own server or in Kubernetes.
+
+Why do we use MinIO?
+
+Instead of storing files directly in a database, we store them in object storage like MinIO.
+
+Example
+
+Suppose you have a Spring Boot application where users upload:
+
+Profile pictures
+PDF invoices
+Videos
+Documents
+
+Instead of saving these files in MySQL, you:
+
+Upload the file to MinIO.
+
+MinIO stores the file.
+Save only the file URL or object name in the database.
+User
+   |
+   | Upload image
+   |
+Spring Boot API
+   |
+   | PUT Object
+   |
+ MinIO
+   |
+ Stores image
+   |
+MySQL
+   |
+Stores:
+user_id
+image_path = profile/user1.jpg
+
+
+
+
+
+Why not store files in MySQL?
+
+Although MySQL can store files using BLOB columns, it has drawbacks:
+
+Database size grows quickly.
+Backups become very large.
+Queries become slower.
+Scaling is difficult.
+
+Instead:
+
+Database → metadata
+MinIO → actual files
+
+Example:
+
+Database
+
+id	name	profile_image
+1	Ali	profile/ali.jpg
+
+MinIO
+
+Bucket:
+profile-images
+
+Objects:
+ali.jpg
+ahmed.jpg
+user123.png
+What is Object Storage?
+
+Object storage stores data as objects instead of files in folders or blocks on disk.
+
+Each object contains:
+
+File data
+Metadata
+Unique object name (key)
+
+Example:
+
+Bucket: employee-documents
+
+Object:
+resume.pdf
+
+Metadata:
+Size: 2 MB
+Uploaded By: Abdullah
+Created: Today
+Buckets
+
+A bucket is like a top-level container.
+
+Example:
+
+company-files
+│
+├── images/
+├── invoices/
+├── videos/
+└── documents/
+
+Common buckets:
+
+profile-images
+videos
+documents
+backups
+logs
+Why developers like MinIO
+Compatible with Amazon S3 APIs.
+Free and open source.
+Very fast.
+Easy to run with Docker.
+Supports large files (GBs/TBs).
+Supports versioning.
+Encryption support.
+Replication support.
+Highly scalable.
+Common use cases
+Image Storage
+Profile Picture
+Product Images
+Company Logos
+Video Storage
+Training Videos
+Movies
+Courses
+Document Storage
+PDF
+Word
+Excel
+ZIP
+Backup Storage
+Database Backup
+Server Backup
+Application Backup
+Log Storage
+
+Applications generate logs every day.
+
+Instead of storing them locally:
+
+Application
+      ↓
+   MinIO
+      ↓
+Long-term Storage
+How Spring Boot works with MinIO
+
+A typical upload flow:
+
+Client
+   |
+POST /upload
+   |
+Spring Boot
+   |
+MinioClient.putObject()
+   |
+MinIO
+
+Download flow:
+
+Client
+   |
+GET /download/123
+   |
+Spring Boot
+   |
+MinioClient.getObject()
+   |
+MinIO
+
+
+
+Example code (Spring Boot)
+
+Upload:
+
+minioClient.putObject(
+    PutObjectArgs.builder()
+        .bucket("documents")
+        .object("resume.pdf")
+        .stream(inputStream, fileSize, -1)
+        .contentType("application/pdf")
+        .build()
+);
+
+Download:
+
+InputStream inputStream =
+    minioClient.getObject(
+        GetObjectArgs.builder()
+            .bucket("documents")
+            .object("resume.pdf")
+            .build()
+    );
+
+Delete:
+
+minioClient.removeObject(
+    RemoveObjectArgs.builder()
+        .bucket("documents")
+        .object("resume.pdf")
+        .build()
+);
+MinIO vs MySQL
+| Feature         | MySQL                     | MinIO             |
+| --------------- | ------------------------- | ----------------- |
+| Structured data | ✅ Excellent               | ❌ No              |
+| Images          | ⚠️ Possible but not ideal | ✅ Excellent       |
+| Videos          | ❌ Poor                    | ✅ Excellent       |
+| Large files     | ❌ Not ideal               | ✅ Designed for it |
+| Backups         | ❌ Heavy                   | ✅ Efficient       |
+| Scalability     | Medium                    | High              |
+
+MinIO vs Amazon S3
+| Feature                 | MinIO                                            | Amazon S3                 |
+| ----------------------- | ------------------------------------------------ | ------------------------- |
+| Runs on your own server | ✅                                                | ❌                         |
+| Cloud service           | Optional                                         | ✅                         |
+| S3-compatible API       | ✅                                                | ✅                         |
+| Cost                    | Free (self-hosted)                               | Pay-as-you-go             |
+| Best for                | Private infrastructure, on-premises, development | Cloud-native applications |
+
+Interview answer (1 minute)
+
+MinIO is an open-source, S3-compatible object storage system used to store unstructured data such as images, videos, PDFs, backups, and logs.
+Instead of storing large files in a relational database, applications upload them to MinIO and store only the file reference in the database.
+This improves performance, reduces database size, and makes file storage more scalable.
+Since MinIO is compatible with the Amazon S3 API, applications can often switch between MinIO and S3 with minimal code changes.

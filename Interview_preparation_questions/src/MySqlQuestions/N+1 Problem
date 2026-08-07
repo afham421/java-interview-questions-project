@@ -35,13 +35,140 @@ Slows down as the data grows
 
 🛠 How to Fix It?
 Use eager fetching or JOIN FETCH to load related data in one go:
-
-✅ Example with JPQL:
+?????????????
+Solution 1:
+✅ Example with JPQL:  (JOIN FETCH)
 
 
 @Query("SELECT s FROM Student s JOIN FETCH s.courses")
 List<Student> findAllWithCourses();
 Now you get all students and their courses in just 1 query.
+
+????????????????
+Solution 2: EntityGraph (Recommended)
+
+Suppose you have:
+
+@OneToMany(mappedBy = "department")
+private List<Employee> employees;
+
+Repository:
+
+public interface DepartmentRepository extends JpaRepository<Department, Long> {
+
+    @EntityGraph(attributePaths = "employees")
+    List<Department> findAll();
+}
+
+Now Hibernate executes only one query.
+
+Generated SQL:
+
+SELECT d.*, e.*
+FROM department d
+LEFT JOIN employee e
+ON d.id = e.department_id;
+
+No additional queries are executed.
+
+??????????????
+Solution 3: Make Association LAZY
+
+Never use:
+
+@OneToMany(fetch = FetchType.EAGER)
+
+Prefer:
+
+@OneToMany(fetch = FetchType.LAZY)
+
+Then fetch only when required using:
+
+EntityGraph
+Fetch Join
+Why EntityGraph is better than EAGER
+
+Without EntityGraph:
+
+@OneToMany(fetch = FetchType.EAGER)
+private List<Employee> employees;
+
+Every time you load a department:
+
+departmentRepository.findById(1L);
+
+Employees are always loaded—even if you don't need them.
+
+With EntityGraph:
+
+@OneToMany(fetch = FetchType.LAZY)
+private List<Employee> employees;
+
+Normal query:
+
+departmentRepository.findById(1L);
+
+Only the department is loaded.
+
+When you need employees:
+
+@EntityGraph(attributePaths = "employees")
+Optional<Department> findWithEmployeesById(Long id);
+
+Only this method loads employees.
+
+This gives you much better performance and flexibility.
+
+??????????????????????????
+Solution 4:
+DTO Projection (Recommended for APIs)
+
+Instead of an interface, use a DTO.
+
+public class EmployeeDTO {
+
+    private String employeeName;
+    private String departmentName;
+
+    public EmployeeDTO(String employeeName,
+                       String departmentName) {
+        this.employeeName = employeeName;
+        this.departmentName = departmentName;
+    }
+}
+
+Repository:
+
+@Query("""
+SELECT new com.example.dto.EmployeeDTO(
+    e.name,
+    d.name
+)
+FROM Employee e
+JOIN e.department d
+""")
+List<EmployeeDTO> findEmployeeDTOs();
+
+This directly creates DTO objects without loading entity instances.
+
+Why Projection Avoids N+1
+
+Without projection:
+
+Department
+    ↓
+employees (LAZY)
+
+When you access department.getEmployees(), Hibernate issues another query for each department.
+
+With projection:
+
+SELECT d.name, e.name
+FROM Department d
+JOIN Employee e
+
+The data is fetched in a single SQL query, and no entities or lazy relationships are accessed, so there is no opportunity for N+1 queries.
+
 
 ✅ Summary (Roman Urdu):
 N+1 problem tab hota hai jab aap ek parent table load karte ho aur har row ke liye related table se alag query fire hoti hai.

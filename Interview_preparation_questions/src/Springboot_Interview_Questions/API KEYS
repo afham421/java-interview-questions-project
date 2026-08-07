@@ -1,0 +1,127 @@
+An API key is a unique secret string that allows one application to authenticate and access another application's API.
+Think of it as a password for applications.
+
+Why do we use API keys?
+Authentication – Identifies who is making the request.
+Authorization – Controls what the application is allowed to do.
+Usage tracking – Measures how many requests are made.
+Rate limiting – Prevents abuse by limiting requests.
+Billing – Associates API usage with an account.
+
+How it works
+You sign up for an API service (e.g., OpenAI, Google Maps).
+The service generates an API key for your account.
+Your application includes the API key in every request.
+The server validates the key and returns a response.
+
+Client Application
+        |
+        |  API Request + API Key
+        |
+        V
+   API Server
+        |
+   Validate Key
+        |
+   Return Response
+
+Example
+
+Suppose you're calling a weather API.
+
+HTTP Request
+
+GET /weather?city=Islamabad HTTP/1.1
+Host: api.weather.com
+Authorization: Bearer YOUR_API_KEY
+
+Or sometimes:
+
+GET https://api.weather.com/weather?apikey=YOUR_API_KEY
+
+
+Java Spring Boot Example
+
+HttpHeaders headers = new HttpHeaders();
+headers.setBearerAuth("YOUR_API_KEY");
+
+HttpEntity<String> entity = new HttpEntity<>(headers);
+
+RestTemplate restTemplate = new RestTemplate();
+
+ResponseEntity<String> response = restTemplate.exchange(
+    "https://api.example.com/data",
+    HttpMethod.GET,
+    entity,
+    String.class
+);
+
+System.out.println(response.getBody());
+
+
+Where are API keys stored?
+
+Never hardcode them in your source code.
+
+Instead, store them in:
+
+Environment variables
+application.properties
+application.yml
+Secret managers (AWS Secrets Manager, Azure Key Vault, etc.)
+
+Example:
+
+openai.api.key=sk-xxxxxxxxxxxxxxxx
+
+Read it in Spring Boot:
+
+@Value("${openai.api.key}")
+private String apiKey;
+API Key vs Username/Password
+| API Key                     | Username & Password        |
+| --------------------------- | -------------------------- |
+| Used by applications        | Used by people             |
+| Usually long random string  | Human-readable credentials |
+| Sent with every API request | Used mainly during login   |
+| Can be regenerated easily   | Usually changed manually   |
+
+API Key vs JWT Token
+| API Key                          | JWT Token                                     |
+| -------------------------------- | --------------------------------------------- |
+| Identifies the application       | Identifies the user                           |
+| Long-lived                       | Usually expires after minutes or hours        |
+| Doesn't contain user information | Contains user claims (ID, roles, permissions) |
+| Generated manually from provider | Generated after successful login              |
+
+Real-world example
+
+Imagine your Spring Boot application needs to send SMS using a third-party SMS provider.
+
+The SMS provider gives you:
+
+API Key = abc123xyz
+
+Your application sends:
+POST /sendSMS
+Authorization: Bearer abc123xyz
+
+The SMS provider checks:
+Is the key valid? ✅
+Is the account active? ✅
+Has the rate limit been exceeded? ❌
+If everything is valid, the SMS is sent.
+
+Best practices
+✅ Keep API keys secret.
+✅ Store them in environment variables or a secrets manager.
+✅ Rotate keys periodically.
+✅ Use HTTPS so keys aren't exposed in transit.
+✅ Never commit API keys to Git repositories.
+✅ Restrict key permissions to only what your application needs.
+
+Interview answer (30 seconds)
+
+"An API key is a unique secret credential used to authenticate an application when it calls an API. It identifies the calling application, enables authorization,
+supports rate limiting and billing, and helps secure API access. In Spring Boot, API keys are typically stored in environment variables or configuration files
+and included in HTTP headers such as Authorization: Bearer <API_KEY> when making external API calls."
