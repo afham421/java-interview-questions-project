@@ -74,6 +74,51 @@ Solution: increase partitions.
 
 
 4️⃣ Scenario: Broker failure
+>>>>>>>>>>>>>>>>>>>>>>>>>
+Q: Can multiple consumers consume the same Kafka partition?
+A: In the same consumer group, only one consumer can consume a partition at a time.
+Example: P0 → Consumer A (Group 1), while Consumer B in the same group cannot consume P0.
+But Consumer B in Group 2 can also consume P0 simultaneously.
+
+What if there are more consumers?
+Partitions: 3
+Consumers: 5
+
+P0 ──────> Consumer A
+P1 ──────> Consumer B
+P2 ──────> Consumer C
+
+Consumer D ── idle
+Consumer E ── idle
+
+Because there are only 3 partitions, only 3 consumers can actively consume at the same time in that group.
+
+But multiple consumer groups are different
+
+This is very important.
+
+Suppose:
+
+Topic: orders
+       ├── P0
+       ├── P1
+       └── P2
+
+Group A:
+   Consumer A1 ──> P0
+   Consumer A2 ──> P1
+   Consumer A3 ──> P2
+
+Group B:
+   Consumer B1 ──> P0
+   Consumer B2 ──> P1
+   Consumer B3 ──> P2
+
+Here P0 is being consumed by A1 and B1 simultaneously.
+
+That's allowed because they belong to different consumer groups.
+
+>>>>>>>>>>>>>>>>>>
 
 Question
 

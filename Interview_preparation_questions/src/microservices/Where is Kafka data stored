@@ -1,0 +1,3 @@
+A: Kafka stores data on the disk of Kafka brokers, not directly in memory.
+Example: Topic orders → Partition P0 → stored as log files on the broker's disk.
+Kafka keeps these messages for a configured retention period (e.g., 7 days), even after consumers read them.

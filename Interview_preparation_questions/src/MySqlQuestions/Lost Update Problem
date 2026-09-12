@@ -1,0 +1,84 @@
+Lost Update Problem
+
+A Lost Update happens when two transactions read the same data, modify it, and then one update overwrites the other.
+
+Example:
+
+Initial balance = 100
+
+Transaction A reads 100
+Transaction B reads 100
+A adds 50 → writes 150
+B adds 20 → writes 120
+
+A's update is lost, so final balance becomes 120 instead of 170.
+
+####### 1. Optimistic Locking
+
+Idea: Assume conflicts are rare. Don't lock the record while reading; instead, check whether someone changed it before updating.
+
+Usually implemented using a version column.
+
+id | balance | version
+1  | 100     | 5
+
+Both A and B read version 5.
+
+A updates:
+
+UPDATE account
+SET balance = 150, version = 6
+WHERE id = 1 AND version = 5;
+
+A succeeds.
+
+B tries:
+
+UPDATE account
+SET balance = 120, version = 6
+WHERE id = 1 AND version = 5;
+
+B gets 0 rows updated because the version is now 6.
+
+So B knows that someone else changed the record and can retry or throw an exception.
+
+Spring/JPA
+@Version
+private Long version;
+
+JPA automatically checks the version and can throw:
+
+OptimisticLockException
+
+Use when: conflicts are relatively rare and you want better concurrency.
+
+####### 2. Pessimistic Locking
+
+Idea: Assume conflicts can happen, so lock the database row before modifying it.
+
+Transaction A:
+
+SELECT * FROM account
+WHERE id = 1
+FOR UPDATE;
+
+The row is locked.
+
+Transaction B tries to access the same row for update and must wait until A commits/rolls back.
+
+A → Lock row → Read → Update → Commit
+                         ↓
+B → Wait ----------------┘
+   → Read latest value → Update
+
+Spring/JPA
+@Lock(LockModeType.PESSIMISTIC_WRITE)
+Optional<Account> findById(Long id);
+
+Use when: conflicts are frequent or the operation must be strongly protected from concurrent updates.
+
+Interview Answer ⭐
+
+Lost update occurs when two transactions read the same data and update it, causing one transaction's changes to overwrite the other's.
+Optimistic locking detects conflicts using a version field and is suitable when conflicts are rare.
+Pessimistic locking locks the database row during the transaction, preventing other transactions from modifying it until the lock is released.

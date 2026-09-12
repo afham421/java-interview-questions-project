@@ -1,0 +1,211 @@
+Yes. In load balancing, these are called load-balancing algorithms / request-distribution algorithms. The most common ones are:
+
+| Algorithm                          | How it works                                                                  | Best use case                     |
+| ---------------------------------- | ----------------------------------------------------------------------------- | --------------------------------- |
+| **Round Robin**                    | Sends requests sequentially: Server 1 → 2 → 3 → 1...                          | Servers have similar capacity     |
+| **Weighted Round Robin**           | More powerful servers get more requests                                       | Servers have different capacities |
+| **Least Connections**              | Sends request to the server with the fewest active connections                | Long-lived connections            |
+| **Weighted Least Connections**     | Least-connections algorithm, but considers server weights/capacity            | Different server capacities       |
+| **IP Hash**                        | Hashes client IP and maps it to a server                                      | Need client → same server         |
+| **Sticky IP / Source IP Affinity** | Same client IP is consistently routed to the same backend                     | Session persistence               |
+| **Least Response Time**            | Routes to server with the lowest response time, often considering connections | Performance-sensitive systems     |
+| **Random**                         | Selects a server randomly                                                     | Simple/basic distribution         |
+| **Weighted Random**                | Random selection based on server weights                                      | Different server capacities       |
+| **Resource-Based**                 | Chooses server based on CPU, memory, load, etc.                               | Dynamic environments              |
+| **Consistent Hashing**             | Hash-based routing designed to minimize reassignment when servers change      | Distributed systems/caches        |
+| **Power of Two Choices**           | Randomly selects two servers and chooses the less-loaded one                  | Large-scale systems               |
+| **Geographic / GeoDNS**            | Routes users to a server/region based on location                             | Global applications               |
+
+1. Round Robin
+
+Suppose you have:
+
+LB
+ ├── Server A
+ ├── Server B
+ └── Server C
+
+Requests:
+
+Request 1 → A
+Request 2 → B
+Request 3 → C
+Request 4 → A
+Request 5 → B
+Request 6 → C
+
+Very simple and commonly used.
+
+2. Weighted Round Robin
+
+Suppose:
+
+Server A → Weight 5
+Server B → Weight 3
+Server C → Weight 2
+
+Approximately:
+
+A → A → A → A → A
+B → B → B
+C → C
+
+So A receives more traffic because it has more capacity.
+
+3. Least Connections
+
+The load balancer checks active connections:
+
+Server A → 20 connections
+Server B → 8 connections
+Server C → 15 connections
+
+New request:
+
+          ↓
+         LB
+          ↓
+       Server B
+
+Because B currently has the fewest connections.
+
+This is particularly useful when requests don't all take the same amount of time.
+
+4. Sticky Session / Session Affinity
+
+The idea is:
+
+User A → Server 1
+User A → Server 1
+User A → Server 1
+
+User B → Server 2
+User B → Server 2
+
+The load balancer tries to keep a client on the same backend.
+
+This can be implemented using things such as:
+
+Cookie-based affinity
+Source IP affinity
+Application/session identifiers
+
+Important: Sticky sessions can become a problem if one server receives many users.
+
+5. IP Hash
+
+The load balancer calculates something like:
+
+hash(client_IP) % number_of_servers
+
+For example:
+
+192.168.1.10 → hash → Server A
+192.168.1.20 → hash → Server B
+192.168.1.30 → hash → Server C
+
+The same IP will generally map to the same server as long as the backend topology doesn't change.
+
+IP Hash ≠ exactly the same thing as sticky sessions, although both can provide session persistence.
+
+6. Least Response Time
+
+Suppose:
+
+Server A → 100 ms
+Server B → 40 ms
+Server C → 80 ms
+
+The LB can prefer:
+
+Request → Server B
+
+because B is responding fastest.
+
+This is useful when server performance varies dynamically.
+
+7. Resource-Based Load Balancing
+
+The LB can consider:
+
+Server A
+CPU: 80%
+Memory: 70%
+
+Server B
+CPU: 30%
+Memory: 40%
+
+Server C
+CPU: 50%
+Memory: 50%
+
+It will prefer Server B because it has more available resources.
+
+This is more common in sophisticated/cloud/container environments.
+
+8. Consistent Hashing
+
+This is especially important in distributed systems and caching.
+
+Instead of simply:
+
+hash(key) % N
+
+consistent hashing places servers and keys on a hash ring.
+
+The big advantage is that when a server is added/removed, only a relatively small portion of keys need to move.
+
+Commonly relevant to:
+
+Redis clusters
+Distributed caches
+Distributed databases
+CDNs
+Large-scale distributed systems
+The ones you should know for a Java/Spring Boot interview
+
+I'd prioritize these:
+
+1. Round Robin
+2. Weighted Round Robin
+3. Least Connections
+4. Weighted Least Connections
+5. IP Hash
+6. Sticky Session / Session Affinity
+7. Least Response Time
+8. Consistent Hashing
+9. Resource-Based
+
+And understand this distinction particularly well:
+
+Round Robin
+     ↓
+Equal distribution
+
+Weighted Round Robin
+     ↓
+Distribution based on server capacity
+
+Least Connections
+     ↓
+Based on current active connections
+
+IP Hash
+     ↓
+Based on client IP
+
+Sticky Session
+     ↓
+Keep a client/session on the same backend
+
+Least Response Time
+     ↓
+Based on server performance
+
+Consistent Hashing
+     ↓
+Stable key → server mapping even when nodes change
+
+For a Spring Boot + Microservices architecture, these algorithms commonly come into play around an API Gateway / Load Balancer,
+with tools such as NGINX, Spring Cloud LoadBalancer, Kubernetes Services, or cloud load balancers.

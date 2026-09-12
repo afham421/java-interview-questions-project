@@ -1,0 +1,24 @@
+Hot Partition Problem in Kafka
+
+A hot partition happens when one Kafka partition receives much more traffic than the other partitions.
+
+Example:
+
+Topic has 3 partitions: P0, P1, P2
+Most messages have the same key, e.g. customerId = 100
+Kafka sends all those messages to P0
+P0 becomes overloaded while P1 and P2 are mostly idle.
+
+Problem: The hot partition becomes a bottleneck, causing high latency and reducing overall throughput.
+
+Solutions:
+
+Use a better/more distributed partition key
+Increase the number of partitions
+Avoid keys that have very low cardinality
+For special high-volume keys, use key salting (e.g. customerId + random/suffix) if strict ordering for that key is not required.
+
+Interview answer:
+
+A hot partition occurs when one Kafka partition receives disproportionately high traffic compared to others.
+It creates a bottleneck because the partition's consumer and broker resources become overloaded while other partitions remain underutilized.

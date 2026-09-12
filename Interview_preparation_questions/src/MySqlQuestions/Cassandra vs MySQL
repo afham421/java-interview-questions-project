@@ -1,0 +1,121 @@
+If you mean Cassandra vs MySQL, the main reason we choose Cassandra is when the application needs very high scalability, high availability,
+ and huge amounts of data.
+
+MySQL vs Cassandra
+| Feature           | MySQL                                                    | Cassandra                                       |
+| ----------------- | -------------------------------------------------------- | ----------------------------------------------- |
+| Type              | Relational SQL database                                  | NoSQL wide-column database                      |
+| Data structure    | Tables, rows, relationships                              | Rows/columns grouped into partitions            |
+| Scaling           | Mainly vertical, can scale horizontally with more design | **Designed for horizontal scaling**             |
+| Joins             | ✅ Excellent                                              | ❌ Not supported like SQL joins                  |
+| Transactions      | ✅ Strong ACID transactions                               | Limited compared with MySQL                     |
+| Huge write volume | Good                                                     | **Excellent**                                   |
+| Availability      | Good                                                     | **Very high**                                   |
+| Query flexibility | **Excellent**                                            | Queries must be designed around access patterns |
+| Best for          | Business/transactional applications                      | Massive distributed systems                     |
+
+Simple example
+
+Suppose you have an application storing:
+
+10 million users
+
+MySQL can handle this very well.
+
+But imagine:
+
+10 billion IoT events
+100,000 writes/second
+Data distributed across multiple servers/datacenters
+System must continue working even if one server fails
+
+Cassandra becomes a much better choice.
+
+Why Cassandra is useful
+
+1. Horizontal scaling
+
+Instead of buying one very powerful MySQL server:
+
+MySQL
+   ↓
+Powerful Server
+
+Cassandra can distribute data:
+
+        Cassandra Cluster
+       /       |        \
+   Node 1    Node 2    Node 3
+       \       |        /
+        Distributed Data
+
+You can add more nodes as your data/traffic grows.
+
+2. High availability
+
+Cassandra replicates data across multiple nodes.
+
+If Node 1 goes down:
+
+Node 1 ❌
+Node 2 ✅
+Node 3 ✅
+
+The application can continue working.
+
+3. Very high write throughput
+
+Cassandra is particularly good for workloads where you're continuously inserting large amounts of data, such as:
+
+IoT sensor data
+Logs
+Messaging/events
+Tracking/location data
+Time-series-like data
+Large-scale analytics/event collection
+
+4. No single central database bottleneck
+
+Cassandra is designed as a distributed database. Data and requests can be spread across many machines.
+
+But Cassandra is NOT simply "better than MySQL"
+
+This is very important for interviews.
+
+If you have:
+
+Bank account
+Customer
+Order
+Payment
+Invoice
+
+where you need relationships, joins, constraints and strong transactions, MySQL is usually a better choice.
+
+For example:
+
+SELECT *
+FROM orders o
+JOIN customers c
+ON o.customer_id = c.id;
+
+MySQL is naturally suited for this.
+
+Cassandra would require you to design the data around the queries you need, and you generally denormalize/duplicate data instead of relying on joins.
+
+Interview answer
+
+If an interviewer asks:
+
+"Why would you use Cassandra instead of MySQL?"
+
+A good simple answer is:
+
+"I would choose Cassandra when I need a highly available distributed database that can handle very large amounts of data and very high write throughput.
+Cassandra scales horizontally by adding nodes and has strong fault tolerance. MySQL would be a better choice when I need relational data, complex queries,
+joins, and strong ACID transactions."
+
+Easy rule to remember:
+
+MySQL → relationships + transactions + complex queries
+Cassandra → massive data + high availability + horizontal scaling + high write volume

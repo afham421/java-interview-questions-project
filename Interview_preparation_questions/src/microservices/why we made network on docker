@@ -1,0 +1,42 @@
+In Docker, we create a network so that multiple containers can communicate with each other easily and securely.
+
+Simple example
+
+Suppose you have:
+
+spring-app → your Java application
+mysql → database
+redis → cache
+
+We create a Docker network:
+
+docker network create my-network
+
+Then run containers on it:
+
+docker run --network my-network --name mysql mysql
+docker run --network my-network --name spring-app my-app
+
+Now spring-app can connect to MySQL using the container name:
+
+mysql:3306
+
+instead of using an IP address.
+
+Why do we use Docker Network?
+Container-to-container communication
+Containers can communicate with each other.
+
+Service discovery
+Docker DNS allows us to use container names like:
+
+mysql:3306
+redis:6379
+Isolation
+Containers on one network can be separated from containers on another network.
+No hardcoded IPs
+Container IPs can change, but the container/service name remains usable.
+Interview answer
+
+We create a Docker network to allow containers to communicate with each other securely using service/container names instead of hardcoded IP addresses,
+while also providing network isolation.
