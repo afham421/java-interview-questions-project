@@ -13,4 +13,4 @@ For example, if you have spring-boot-starter-web in your project, Spring Boot wi
 
 @ComponentScan:
 Enables component scanning. It tells Spring to scan the package where the main class is located (and its sub-packages) for Spring components
- like @Controller, @Service, @Repository, and any beans annotated with @Component.
+like @Controller, @Service, @Repository, and any beans annotated with @Component.

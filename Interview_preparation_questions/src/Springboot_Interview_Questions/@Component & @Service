@@ -17,6 +17,7 @@ public class MyComponent {
         // Some logic here
     }
 }
+
 2. @Service
 Definition: @Service is a specialization of @Component used specifically for the service layer.
 Purpose: It indicates that a class provides some business functionality or service.
@@ -32,23 +33,28 @@ public class MyService {
         // Business logic here
     }
 }
+
 Key Differences
 Semantics and Intent:
 
 @Component is a generic stereotype for any Spring-managed component.
 @Service is a more specific stereotype for the service layer in an application, typically representing business logic or services.
+
 Specialization:
 
 @Service is a specialization of @Component. This means that any class annotated with @Service is also a @Component,
  but it specifically conveys the role of that class in the application architecture.
+
 Use in Different Layers:
 
 @Component can be used across all layers of an application.
 @Service is meant for the service layer.
+
 Spring Context Handling:
 
 There is no functional difference between @Component and @Service in terms of how Spring handles the bean in the application context.
 Both annotations are scanned during component scanning and are registered as beans.
+
 Readability and Maintenance:
 
 Using @Service improves code readability and helps in better maintenance by clearly indicating that the annotated class is meant to provide business services.

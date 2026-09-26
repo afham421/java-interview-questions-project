@@ -1,0 +1,594 @@
+OAuth 2.0 is primarily an authorization framework, not an authentication protocol.
+It allows an application to access protected resources using an access token instead of the user's password.
+
+1. First understand the problem
+
+Imagine you build a website called MyApp.
+
+A user has a Google account with:
+
+Name
+Email
+Profile picture
+Google Drive files
+
+You want MyApp to access the user's name and email.
+
+❌ Old/bad approach
+
+You ask the user:
+
+"Give me your Google email and password."
+
+Then your application uses those credentials to access Google.
+
+This is dangerous because MyApp now knows the user's Google password.
+
+OAuth solves this problem.
+
+2. What OAuth does
+
+OAuth basically says:
+
+"The user will authenticate directly with Google. Google will give MyApp a limited-access token. MyApp uses that token to access allowed resources."
+
+So:
+
+User
+  |
+  | wants to use MyApp
+  ↓
+MyApp
+  |
+  | "Please authenticate/authorize"
+  ↓
+Google
+  |
+  | user logs in
+  | user gives permission
+  ↓
+Google gives token
+  |
+  ↓
+MyApp
+  |
+  | token
+  ↓
+Google API
+
+Important: OAuth 2.0 itself is mainly about authorization. For actual user authentication/login, OpenID Connect (OIDC) is commonly used on top of OAuth 2.0.
+
+3. There are 4 important actors
+
+Let's use the same example.
+
+1. Resource Owner
+
+The user.
+
+You
+
+You own your Google data.
+
+2. Client
+
+The application requesting access.
+
+MyApp
+3. Authorization Server
+
+The server that handles login/consent and issues tokens.
+
+Google Authorization Server
+4. Resource Server
+
+The API containing the protected data.
+
+Google API
+
+So remember:
+
+User
+  ↓
+Client
+  ↓
+Authorization Server
+  ↓
+Access Token
+  ↓
+Resource Server
+4. Now the exact flow
+
+We'll use Authorization Code Flow, which is the most important flow to understand for interviews and modern web applications.
+
+Suppose you see:
+
+Continue with Google
+
+You click it.
+
+Step 1 — User clicks "Login with Google"
+
+Your browser is currently here:
+
+https://myapp.com
+
+You click:
+
+Login with Google
+
+MyApp doesn't ask you for your Google password.
+
+Instead, MyApp redirects your browser to Google's authorization endpoint.
+
+Something conceptually like:
+
+https://accounts.google.com/oauth/authorize
+    ?client_id=123
+    &redirect_uri=https://myapp.com/callback
+    &response_type=code
+    &scope=email
+
+Don't worry about every parameter yet.
+
+The important thing is:
+
+MyApp → Browser → Google
+5. What is client_id?
+
+When you register MyApp with Google, Google gives your application an ID.
+
+For example:
+
+client_id = abc123
+
+It tells Google:
+
+"I am MyApp."
+
+There is also normally a:
+
+client_secret
+
+which is used by confidential clients when exchanging the authorization code.
+
+Think:
+
+client_id
+    ↓
+Who is the application?
+
+client_secret
+    ↓
+Can the confidential application authenticate itself?
+6. Step 2 — Google shows login
+
+The browser is now on Google's website:
+
+Google Login
+----------------
+Email: __________
+Password: _______
+
+       Login
+
+The user enters their credentials.
+
+Very important
+
+The password goes to:
+
+User → Google
+
+NOT:
+
+User → MyApp
+
+This is one of the major benefits of OAuth.
+
+7. Step 3 — Google asks for permission
+
+After authentication, Google may show:
+
+MyApp wants access to:
+
+✓ Your email
+✓ Your profile
+
+       Allow
+       Deny
+
+This is authorization/consent.
+
+The user says:
+
+Allow
+
+Now Google knows:
+
+"This user has authenticated and has authorized MyApp for these requested scopes."
+
+8. Step 4 — Google sends an Authorization Code
+
+Google does not normally send the access token directly through the browser in the Authorization Code Flow.
+
+Instead, Google redirects the browser back to MyApp:
+
+https://myapp.com/callback?code=XYZ123
+
+Now MyApp receives:
+
+code = XYZ123
+
+This is called the:
+
+Authorization Code
+
+Think of it as a temporary ticket.
+
+Authorization Code
+        ↓
+temporary ticket
+        ↓
+exchange it for Access Token
+9. Why doesn't Google just give the Access Token?
+
+Because the authorization code flow provides an additional security layer.
+
+The browser receives:
+
+Authorization Code
+
+rather than the actual access token.
+
+Then the backend can securely exchange the code with Google's token endpoint.
+
+10. Step 5 — MyApp backend exchanges the code
+
+Now something important happens.
+
+This request happens server-to-server:
+
+MyApp Backend
+      |
+      | POST /token
+      |
+      ↓
+Google Authorization Server
+
+MyApp sends something conceptually like:
+
+POST /token
+
+grant_type=authorization_code
+code=XYZ123
+client_id=abc123
+client_secret=SECRET
+redirect_uri=https://myapp.com/callback
+
+Google validates:
+
+Is the authorization code valid?
+Has it expired?
+Does it belong to this client?
+Is the redirect URI correct?
+Is the client authenticated?
+
+If everything is valid, Google returns tokens.
+
+11. Step 6 — Google returns Access Token
+
+For example:
+
+{
+  "access_token": "eyJhbGciOi...",
+  "token_type": "Bearer",
+  "expires_in": 3600,
+  "refresh_token": "abcxyz..."
+}
+
+The most important one right now is:
+
+access_token
+12. What is an Access Token?
+
+Think of it like a temporary permission card.
+
+Instead of giving Google your password every time:
+
+password ❌
+
+you give Google:
+
+access_token ✅
+
+The token represents:
+
+"This application has been granted these permissions."
+
+13. Step 7 — MyApp calls Google API
+
+Suppose MyApp wants the user's profile.
+
+MyApp sends:
+
+GET /userinfo
+Authorization: Bearer eyJhbGciOi...
+
+Notice:
+
+Authorization: Bearer <access_token>
+
+The API receives the token.
+
+14. Step 8 — Google API validates the token
+
+Google's resource server checks things such as:
+
+Is token valid?
+        ↓
+Is token expired?
+        ↓
+Is token intended for this API?
+        ↓
+Does token have required scope?
+
+If everything is okay:
+
+Google API → User information
+
+For example:
+
+{
+  "name": "Muhammad",
+  "email": "user@example.com"
+}
+15. Complete flow
+
+Now put everything together:
+
+                    ┌─────────────────────┐
+                    │        User         │
+                    └──────────┬──────────┘
+                               │
+                     Click Login
+                               │
+                               ↓
+                    ┌─────────────────────┐
+                    │       MyApp         │
+                    │      (Client)       │
+                    └──────────┬──────────┘
+                               │
+                         Redirect
+                               │
+                               ↓
+              ┌─────────────────────────────┐
+              │    Google Authorization     │
+              │          Server             │
+              └──────────────┬──────────────┘
+                             │
+                       User Login
+                             │
+                       User Consent
+                             │
+                     Authorization Code
+                             │
+                             ↓
+                    ┌─────────────────────┐
+                    │       MyApp         │
+                    │      Backend        │
+                    └──────────┬──────────┘
+                               │
+                         code + secret
+                               │
+                               ↓
+              ┌─────────────────────────────┐
+              │    Google Token Endpoint   │
+              └──────────────┬──────────────┘
+                             │
+                       Access Token
+                             │
+                             ↓
+                    ┌─────────────────────┐
+                    │       MyApp         │
+                    └──────────┬──────────┘
+                               │
+                    Bearer Access Token
+                               │
+                               ↓
+                    ┌─────────────────────┐
+                    │    Google API       │
+                    │  Resource Server    │
+                    └──────────┬──────────┘
+                               │
+                         User's Data
+                               ↓
+                           MyApp
+16. Now understand scope
+
+You might see:
+
+scope=email profile
+
+Scope means:
+
+What permissions is MyApp asking for?
+
+For example:
+
+scope=email
+
+means:
+
+Give me permission to access email.
+
+Maybe:
+
+scope=profile email
+
+means:
+
+Give me profile and email access.
+
+The user can approve or deny those permissions.
+
+17. Access Token vs Refresh Token
+
+This is very important.
+
+Suppose:
+
+Access Token
+expires in 1 hour
+
+After one hour:
+
+Access Token ❌ expired
+
+You don't necessarily want the user to log in again.
+
+That's where the Refresh Token comes in.
+
+Refresh Token
+       ↓
+Token Server
+       ↓
+New Access Token
+
+Conceptually:
+
+MyApp
+  |
+  | refresh_token
+  ↓
+Google Token Server
+  |
+  | new access_token
+  ↓
+MyApp
+
+Then MyApp continues calling APIs.
+
+18. Where does JWT come into this?
+
+This is where people commonly get confused.
+
+OAuth:
+
+OAuth 2.0
+    ↓
+Authorization framework
+
+JWT:
+
+JWT
+ ↓
+Token format
+
+An OAuth access token may be a JWT, but OAuth does not require JWT.
+
+For example:
+
+OAuth
+   ↓
+Access Token
+   ↓
+could be JWT
+
+A JWT might look like:
+
+xxxxx.yyyyy.zzzzz
+
+with:
+
+Header.Payload.Signature
+19. OAuth vs Authentication
+
+This is an important interview question.
+
+Authentication
+
+Means:
+
+Who are you?
+
+Example:
+
+I am Muhammad.
+Authorization
+
+Means:
+
+What are you allowed to access?
+
+Example:
+
+Muhammad can read email.
+Muhammad cannot access admin settings.
+
+OAuth 2.0 is primarily about authorization.
+
+For login/authentication using an OAuth-based flow, you commonly use:
+
+OpenID Connect (OIDC)
+        +
+OAuth 2.0
+
+OIDC adds an ID Token, which tells the client about the authenticated user.
+
+20. Three tokens you should understand
+
+In an OIDC/OAuth setup you may encounter:
+
+Authorization Code
+
+Temporary code:
+
+code=ABC123
+
+Used to obtain tokens.
+
+Access Token
+
+Used to call APIs:
+
+Authorization: Bearer <access_token>
+ID Token
+
+Used by the client to obtain identity information about the authenticated user in OIDC.
+
+Often:
+
+ID Token = JWT
+21. The most important flow to memorize
+
+For your Java interview, memorize this sequence:
+
+1. User clicks Login
+        ↓
+2. Client redirects to Authorization Server
+        ↓
+3. User authenticates
+        ↓
+4. User gives consent
+        ↓
+5. Authorization Server returns Authorization Code
+        ↓
+6. Backend exchanges Code for Tokens
+        ↓
+7. Authorization Server returns Access Token
+   (+ Refresh Token / ID Token in OIDC)
+        ↓
+8. Client calls Resource Server
+        ↓
+9. Sends Access Token
+        ↓
+10. Resource Server validates token
+        ↓
+11. API returns protected resource
+
+
+One-line interview answer
+
+"In OAuth 2.0 Authorization Code Flow, the user authenticates with the authorization server, the client receives a temporary authorization code,
+exchanges it for an access token, and then uses that access token to access protected APIs."

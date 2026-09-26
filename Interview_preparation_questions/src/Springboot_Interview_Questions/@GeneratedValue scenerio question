@@ -2,7 +2,8 @@
 
 🔹 1. How @GeneratedValue works
 
-In JPA/Hibernate, when you use @Id with @GeneratedValue, the primary key generation strategy is controlled by the database or by Hibernate depending on the chosen strategy:
+In JPA/Hibernate, when you use @Id with @GeneratedValue, the primary key generation strategy is controlled by the database
+or by Hibernate depending on the chosen strategy:
 
 @Id
 @GeneratedValue(strategy = GenerationType.IDENTITY)

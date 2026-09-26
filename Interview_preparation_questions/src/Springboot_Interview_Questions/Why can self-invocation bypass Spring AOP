@@ -1,0 +1,100 @@
+Why can self-invocation bypass Spring AOP?
+
+Because Spring AOP works through a proxy, and self-invocation does not go through that proxy.
+
+Example:
+
+@Service
+public class PaymentService {
+
+    public void processPayment() {
+        validatePayment();   // self-invocation
+    }
+
+    @Transactional
+    public void validatePayment() {
+        // DB operation
+    }
+}
+
+When another bean calls:
+
+paymentService.validatePayment();
+
+the call is actually:
+
+Caller
+  ↓
+Spring Proxy
+  ↓
+@Transactional interceptor
+  ↓
+validatePayment()
+
+So the transaction is applied.
+
+But when processPayment() calls:
+
+validatePayment();
+
+the flow is:
+
+Caller
+  ↓
+Spring Proxy
+  ↓
+processPayment()
+  ↓
+this.validatePayment()
+
+The call goes directly to the same object (this), not back through the Spring proxy.
+
+Therefore:
+
+@Transactional
+@Async
+@Cacheable
+@Retry
+@PreAuthorize
+
+and other proxy-based AOP advice may be bypassed.
+
+Common solution
+
+Move the advised method to another Spring bean:
+
+@Service
+public class PaymentService {
+
+    private final ValidationService validationService;
+
+    public PaymentService(ValidationService validationService) {
+        this.validationService = validationService;
+    }
+
+    public void processPayment() {
+        validationService.validatePayment();
+    }
+}
+@Service
+public class ValidationService {
+
+    @Transactional
+    public void validatePayment() {
+        // DB operation
+    }
+}
+
+Now:
+
+PaymentService
+      ↓
+Spring Proxy of ValidationService
+      ↓
+@Transactional
+      ↓
+validatePayment()
+Interview answer
+
+Spring AOP is proxy-based. Self-invocation calls the method directly through this, so the Spring proxy and its interceptors are bypassed.
+Therefore annotations like @Transactional, @Async, @Cacheable, and @Retry may not take effect on self-invoked methods.

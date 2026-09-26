@@ -1,0 +1,158 @@
+How would you handle Kafka retries, ordering and idempotency?
+
+Interview answer:
+
+“For Kafka, I handle retries, ordering, and idempotency separately because each solves a different problem.
+
+For retries, I avoid an infinite retry loop. I usually use a limited retry count with increasing backoff, and after the retries are exhausted,
+I send the message to a Dead Letter Topic (DLT) for later investigation or reprocessing.
+
+For ordering, Kafka guarantees ordering within a partition, not across the entire topic. So if messages for the same entity need to remain ordered,
+I use a meaningful key such as customerId or orderId. Kafka then sends those messages to the same partition, preserving their order.
+
+For idempotency, I assume a message can be delivered more than once. I therefore make the consumer operation safe to execute multiple times.
+For example, I can use a unique event ID or transaction ID and store processed IDs in the database.
+Before processing, I check whether the event was already handled. Database unique constraints can also help prevent duplicate processing.
+
+So the overall approach is: partition key for ordering, controlled retries + DLT for failures, and idempotent consumers for duplicate messages.”
+
+Simple example
+
+Suppose we have:
+
+Payment Service → Kafka → Billing Service
+
+Events:
+
+payment-101
+payment-102
+payment-103
+1. Ordering
+
+Use:
+
+kafkaTemplate.send("payment-events", customerId, paymentEvent);
+
+If:
+
+customerId = 500
+
+then events for customer 500 go to the same partition:
+
+Partition 2:
+payment-101
+payment-102
+payment-103
+
+So their order is preserved.
+
+Important: same key → same partition → ordering within that partition.
+
+2. Retry
+
+Imagine payment-102 fails because the database is temporarily unavailable.
+
+You could have:
+
+Attempt 1 → fail
+    ↓
+wait 1 sec
+    ↓
+Attempt 2 → fail
+    ↓
+wait 5 sec
+    ↓
+Attempt 3 → fail
+    ↓
+DLT
+
+Example:
+
+payment-events
+       ↓
+Billing Consumer
+       ↓
+   processing
+       ↓
+   ❌ failure
+       ↓
+ retry
+       ↓
+ retry
+       ↓
+ payment-events.DLT
+
+The DLT allows you to inspect and reprocess failed messages later.
+
+3. Idempotency
+
+This is especially important because Kafka consumers can potentially process the same event more than once.
+
+For example:
+
+Event ID: TXN-123
+
+Consumer receives TXN-123
+       ↓
+Debit account
+       ↓
+Database update succeeds
+       ↓
+Consumer crashes before offset commit
+
+Kafka may deliver TXN-123 again.
+
+Without idempotency:
+
+Debit 1000
+Debit 1000  ← duplicate ❌
+
+With idempotency:
+
+Check TXN-123
+       ↓
+Already processed?
+       ↓
+YES
+       ↓
+Skip
+
+A database table could be:
+
+CREATE TABLE processed_events (
+    event_id VARCHAR(100) PRIMARY KEY,
+    processed_at TIMESTAMP
+);
+
+Then:
+
+if (processedEventRepository.existsById(eventId)) {
+    return;
+}
+
+processPayment(event);
+
+processedEventRepository.save(
+    new ProcessedEvent(eventId)
+);
+
+In a real system, I'd make the business operation and idempotency record part of the same database transaction where possible,
+rather than relying on the two operations independently.
+
+One important interview point
+
+Don't say:
+
+"Kafka guarantees exactly-once processing."
+
+A better answer is:
+
+Kafka supports exactly-once semantics in specific Kafka-to-Kafka transactional workflows, but when my consumer interacts with an external database or API,
+I still design the consumer to be idempotent.
+
+Remember this formula
+Retries     → Retry + Backoff + DLT
+Ordering    → Message Key + Partition
+Idempotency → Event ID + DB Constraint/Processed Record
+
+That's a strong mid/senior-level Kafka interview answer.

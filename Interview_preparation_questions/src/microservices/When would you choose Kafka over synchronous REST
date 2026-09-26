@@ -1,0 +1,151 @@
+The main difference is communication style:
+
+REST → synchronous request/response
+Kafka → asynchronous event/message-based communication
+Simple rule
+
+If the caller needs an immediate response, use REST.
+If the caller only needs to publish an event and the work can happen asynchronously, consider Kafka.
+
+When I would choose Kafka
+1. The operation doesn't need an immediate response
+
+Example:
+
+Order Service
+     |
+     | OrderCreated event
+     ↓
+   Kafka
+   /    \
+  ↓      ↓
+Payment  Notification
+Service  Service
+
+Order Service doesn't need to wait for notification or analytics services.
+
+kafkaTemplate.send("order-created", orderEvent);
+
+The consumers process it independently.
+
+2. Multiple services need the same event
+
+Suppose an order is created.
+
+You might have:
+
+Order Service
+      ↓
+    Kafka
+   /  |   \
+  ↓   ↓    ↓
+Payment Email Analytics
+
+With REST, Order Service would have to call all three services:
+
+Order → Payment
+Order → Email
+Order → Analytics
+
+Kafka allows each service to subscribe to the event independently.
+
+3. You want loose coupling
+
+With REST:
+
+Service A → Service B
+
+A depends directly on B being available.
+
+With Kafka:
+
+Service A → Kafka → Service B
+
+Service A doesn't need Service B to be available at that exact moment.
+
+The event can remain in Kafka until B processes it.
+
+4. Traffic is bursty
+
+Imagine:
+
+10,000 orders/sec
+
+The consumer may only be able to process:
+
+3,000 orders/sec
+
+Kafka can act as a buffer:
+
+Producer
+   ↓
+Kafka
+████████████████
+   ↓
+Consumers
+
+Consumers can process messages at their own rate.
+
+5. You need event replay
+
+Kafka retains messages for a configured period.
+
+For example:
+
+OrderCreated
+OrderCreated
+PaymentCompleted
+OrderShipped
+
+If a new analytics service is introduced, it can potentially consume historical events from Kafka.
+
+This is one of Kafka's major advantages over a normal REST call.
+
+When I would NOT choose Kafka
+
+If I need an immediate response:
+
+Client
+  ↓
+Get Customer
+  ↓
+Customer Service
+  ↓
+Customer data
+
+REST is simpler:
+
+GET /customers/123
+
+Using Kafka for this would unnecessarily complicate the system.
+
+Other examples where REST is usually more natural:
+
+Fetching customer details
+Login/authentication
+Checking account balance
+CRUD operations where the caller needs confirmation immediately
+Request/response workflows
+
+REST vs Kafka
+| Requirement               | REST | Kafka |
+| ------------------------- | ---- | ----- |
+| Immediate response        | ✅    | ❌     |
+| Synchronous communication | ✅    | ❌     |
+| Asynchronous processing   | ⚠️   | ✅     |
+| Loose coupling            | ⚠️   | ✅     |
+| Multiple consumers        | ⚠️   | ✅     |
+| Traffic buffering         | ❌    | ✅     |
+| Event replay              | ❌    | ✅     |
+| Simple CRUD               | ✅    | ❌     |
+| Event-driven architecture | ⚠️   | ✅     |
+
+
+Interview answer
+
+I would choose Kafka when communication can be asynchronous and I want loose coupling, scalability, buffering, or multiple consumers.
+ For example, after an order is created, I can publish an OrderCreated event to Kafka and let payment, notification,
+ and analytics services consume it independently. Kafka is also useful when I need message durability and replay.
+
+I would choose synchronous REST when the caller needs an immediate response, such as fetching customer information or validating a request.
+In a real microservices system, I would often use both REST and Kafka rather than treating them as alternatives.

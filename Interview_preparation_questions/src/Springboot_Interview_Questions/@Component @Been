@@ -1,9 +1,10 @@
 
-In Spring, @Bean and @Component are both used for defining and managing beans within the Spring container, but they serve different purposes and are used in different contexts.
+In Spring, @Bean and @Component are both used for defining and managing beans within the Spring container,
+but they serve different purposes and are used in different contexts.
 
 1. @Component
-Purpose: @Component is a class-level annotation used to automatically detect and register a class as a Spring bean. It marks the class as a candidate for component scanning,
-meaning Spring will automatically discover and create an instance of the class as a bean during the component scan process.
+Purpose: @Component is a class-level annotation used to automatically detect and register a class as a Spring bean. It marks the class as a candidate
+for component scanning, meaning Spring will automatically discover and create an instance of the class as a bean during the component scan process.
 Use Case: It's typically used for general-purpose components (services, repositories, controllers, etc.) that you want Spring to manage automatically.
 Automatic Detection: When you use @Component, Spring will automatically scan and register the class as a bean without the need to explicitly declare it in a configuration file.
 

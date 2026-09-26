@@ -1,0 +1,163 @@
+Explain CompletableFuture chaining and exception handling
+
+CompletableFuture is used to run tasks asynchronously and then perform additional operations when the previous task completes.
+
+1. Basic chaining
+CompletableFuture.supplyAsync(() -> {
+    return "Afham";
+})
+.thenApply(name -> {
+    return "Hello " + name;
+})
+.thenAccept(result -> {
+    System.out.println(result);
+});
+
+Flow:
+
+supplyAsync()
+     ↓
+  "Afham"
+     ↓
+thenApply()
+     ↓
+"Hello Afham"
+     ↓
+thenAccept()
+     ↓
+print
+2. thenApply() vs thenAccept() vs thenRun()
+| Method         | Input           | Returns          | Use            |
+| -------------- | --------------- | ---------------- | -------------- |
+| `thenApply()`  | Previous result | New result       | Transform data |
+| `thenAccept()` | Previous result | Nothing (`void`) | Consume result |
+| `thenRun()`    | Nothing         | Nothing          | Run an action  |
+
+
+Example:
+
+CompletableFuture.supplyAsync(() -> 10)
+    .thenApply(x -> x * 2)       // 20
+    .thenAccept(x -> System.out.println(x));
+3. Chaining asynchronous operations
+
+Suppose API-1 returns a user ID, then API-2 gets the user's orders.
+
+CompletableFuture<User> userFuture =
+        CompletableFuture.supplyAsync(() -> getUser());
+
+CompletableFuture<List<Order>> ordersFuture =
+        userFuture.thenCompose(user ->
+            CompletableFuture.supplyAsync(() -> getOrders(user.getId()))
+        );
+
+Here thenCompose() is useful when the next operation also returns a CompletableFuture.
+
+Without thenCompose():
+
+CompletableFuture<CompletableFuture<List<Order>>>
+
+With thenCompose():
+
+CompletableFuture<List<Order>>
+
+Interview line:
+
+thenApply() transforms a result, while thenCompose() is used to chain another asynchronous operation and avoid nested CompletableFuture.
+
+4. Combining independent tasks
+
+If two tasks are independent, we can execute them in parallel:
+
+CompletableFuture<String> user =
+    CompletableFuture.supplyAsync(() -> getUser());
+
+CompletableFuture<String> orders =
+    CompletableFuture.supplyAsync(() -> getOrders());
+
+CompletableFuture<String> result =
+    user.thenCombine(orders,
+        (u, o) -> u + " has " + o + " orders");
+
+Flow:
+
+             ┌── getUser() ────┐
+Start ───────┤                  ├── thenCombine() → result
+             └── getOrders() ──┘
+Exception Handling
+
+CompletableFuture provides methods specifically for handling exceptions.
+
+5. exceptionally()
+
+Used to provide a fallback value when an exception occurs.
+
+CompletableFuture<String> future =
+    CompletableFuture.supplyAsync(() -> {
+        if (true) {
+            throw new RuntimeException("Something went wrong");
+        }
+        return "Success";
+    })
+    .exceptionally(ex -> {
+        System.out.println(ex.getMessage());
+        return "Fallback";
+    });
+
+Result:
+
+Exception
+   ↓
+exceptionally()
+   ↓
+"Fallback"
+6. handle()
+
+handle() executes whether the operation succeeds or fails.
+
+CompletableFuture<String> future =
+    CompletableFuture.supplyAsync(() -> "Success")
+        .handle((result, exception) -> {
+
+            if (exception != null) {
+                return "Failed";
+            }
+
+            return result;
+        });
+
+Think:
+
+             ┌── success → result
+Future ──────┤
+             └── failure → exception
+                    ↓
+                 handle()
+7. whenComplete()
+
+Used when you want to perform logging/cleanup but don't want to change the result.
+
+CompletableFuture<String> future =
+    CompletableFuture.supplyAsync(() -> "Success")
+        .whenComplete((result, exception) -> {
+
+            if (exception != null) {
+                System.out.println("Error: " + exception);
+            } else {
+                System.out.println("Result: " + result);
+            }
+        });
+Key difference
+exceptionally()
+    → handles exception and can provide replacement result
+
+handle()
+    → handles success AND exception and can transform result
+
+whenComplete()
+    → observes success/exception, normally for logging/cleanup
+⭐ Interview answer
+
+CompletableFuture chaining allows us to execute asynchronous operations sequentially or combine independent operations using methods like thenApply,
+thenCompose, and thenCombine. For exception handling, exceptionally provides a fallback, handle processes both success and failure and can transform the result,
+while whenComplete is mainly used for logging or cleanup without changing the result.

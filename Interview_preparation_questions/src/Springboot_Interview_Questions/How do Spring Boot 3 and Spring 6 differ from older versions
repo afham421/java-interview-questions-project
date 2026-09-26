@@ -1,0 +1,208 @@
+Spring Boot 3 vs Older Versions
+
+The biggest change is that Spring Boot 3 is built on Spring Framework 6 and Jakarta EE 10, and it requires Java 17+.
+
+1. Java 17+ is required
+
+Older Spring Boot versions such as Boot 2.x commonly supported Java 8/11.
+
+Spring Boot 3:
+
+Java 17 minimum
+Java 21 commonly used
+
+This allows modern Java features and removes support for older Java versions.
+
+2. javax.* → jakarta.* ⭐ Important
+
+This is probably the most common migration issue.
+
+Older Spring:
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.validation.Valid;
+
+Spring Boot 3:
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.validation.Valid;
+
+Why?
+
+Spring 6 moved from the old Java EE javax namespace to Jakarta EE jakarta namespace.
+
+So:
+
+javax.persistence
+       ↓
+jakarta.persistence
+
+javax.validation
+       ↓
+jakarta.validation
+
+javax.servlet
+       ↓
+jakarta.servlet
+3. Spring Framework 6
+
+Spring Boot 3 uses:
+
+Spring Boot 3
+      ↓
+Spring Framework 6
+      ↓
+Jakarta EE 10
+
+Spring 6 introduced a baseline for modern Java and Jakarta EE APIs.
+
+4. Hibernate 6
+
+Spring Boot 3 uses Hibernate 6 instead of Hibernate 5 used commonly with Boot 2.
+
+This can affect:
+
+HQL/JPQL
+SQL generation
+custom types
+dialect configuration
+entity mappings
+Hibernate APIs
+
+For example, some old Hibernate-specific code may need changes during migration.
+
+5. Spring Security configuration changed ⭐
+
+Older Spring Security configurations often used:
+
+WebSecurityConfigurerAdapter
+
+Example:
+
+@Configuration
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+            .authorizeRequests()
+            .anyRequest().authenticated();
+    }
+}
+
+This approach is removed/deprecated in newer Spring Security.
+
+Spring Boot 3 commonly uses a SecurityFilterChain bean:
+
+@Bean
+SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/public/**").permitAll()
+            .anyRequest().authenticated()
+        );
+
+    return http.build();
+}
+
+So in an interview, remember:
+
+Boot 3 → modern Spring Security configuration using beans/lambdas instead of WebSecurityConfigurerAdapter.
+
+6. Observability improvements
+
+Spring Boot 3 introduced a stronger observability model around:
+
+Metrics
+   +
+Tracing
+   +
+Logging
+
+It integrates closely with Micrometer Observation and supports modern distributed tracing approaches such as OpenTelemetry.
+
+This is particularly useful for microservices.
+
+7. Actuator changes
+
+Spring Boot Actuator was updated along with the observability changes.
+
+For example:
+
+/actuator/health
+/actuator/metrics
+
+can be used for monitoring application health and metrics, while tracing/observation can provide visibility across distributed services.
+
+8. Native image / AOT support
+
+Boot 3 significantly improved support for Ahead-of-Time (AOT) processing and GraalVM native images.
+
+Traditional:
+
+Java source
+   ↓
+JVM
+   ↓
+Application
+
+Native:
+
+Java source
+   ↓
+AOT processing
+   ↓
+Native executable
+
+Benefits can include:
+
+faster startup
+lower memory consumption
+useful for serverless/container workloads
+9. Configuration property changes
+
+Some old configuration properties were renamed, removed, or changed.
+
+For example, when migrating from Boot 2 → Boot 3, you should use the Spring Boot migration guide / configuration properties migration support rather
+than assuming every property remains unchanged.
+
+Quick Interview Comparison
+| Area          | Older Spring/Boot              | Spring 6 / Boot 3                   |
+| ------------- | ------------------------------ | ----------------------------------- |
+| Java          | Java 8/11 commonly             | **Java 17+**                        |
+| Framework     | Spring 5                       | **Spring 6**                        |
+| EE namespace  | `javax.*`                      | **`jakarta.*`**                     |
+| JPA           | Hibernate 5 commonly           | **Hibernate 6**                     |
+| Security      | `WebSecurityConfigurerAdapter` | **`SecurityFilterChain`**           |
+| Observability | Metrics-focused                | **Metrics + tracing + observation** |
+| Native/AOT    | Limited                        | **Strong AOT/native support**       |
+| Servlet API   | `javax.servlet`                | **`jakarta.servlet`**               |
+| Validation    | `javax.validation`             | **`jakarta.validation`**            |
+
+🎯 Interview answer
+
+If they ask "What are the major differences between Spring Boot 3 and older versions?", say:
+
+"Spring Boot 3 is based on Spring Framework 6 and requires Java 17 or higher.
+The biggest migration change is the move from javax.* to jakarta.* because of Jakarta EE 10. It also uses Hibernate 6,
+has modern Spring Security configuration with SecurityFilterChain, improved observability through Micrometer, and much better AOT and native-image support.
+So when migrating from Boot 2 to Boot 3, the major areas I would check are Java version, Jakarta namespace changes, Hibernate compatibility,
+Spring Security configuration, and deprecated or changed properties/APIs."
+
+Easy memory trick:
+
+Boot 3
+  ↓
+Java 17+
+  ↓
+Spring 6
+  ↓
+Jakarta
+  ↓
+Hibernate 6
+  ↓
+Modern Security
+  ↓
+Observability + AOT

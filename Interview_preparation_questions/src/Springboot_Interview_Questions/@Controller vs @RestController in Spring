@@ -1,4 +1,5 @@
 ✅ @Controller vs @RestController in Spring
+
 🔸 1. @Controller
 Used in traditional Spring MVC applications.
 
@@ -17,6 +18,8 @@ public class HomeController {
         return "home"; // returns view name (e.g. home.html or home.jsp)
     }
 }
+
+
 🔸 2. @RestController
 Added in Spring 4 for RESTful APIs.
 

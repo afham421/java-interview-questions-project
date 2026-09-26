@@ -1,0 +1,175 @@
+I would choose the communication mechanism based on whether the interaction needs an immediate response or can be asynchronous.
+
+1. Synchronous communication — REST / HTTP
+
+For request-response operations, I would use REST APIs.
+
+Example:
+
+Order Service
+     |
+     | HTTP REST
+     ↓
+Payment Service
+     |
+     ↓
+Response
+
+In Spring Boot, I could use OpenFeign:
+
+@FeignClient(name = "payment-service")
+public interface PaymentClient {
+
+    @PostMapping("/payments")
+    PaymentResponse makePayment(@RequestBody PaymentRequest request);
+}
+
+Then:
+
+PaymentResponse response =
+        paymentClient.makePayment(request);
+
+I would add:
+
+Timeouts — don't let one slow service block indefinitely.
+Retries — only for transient failures and preferably with exponential backoff.
+Circuit breaker — Resilience4j to prevent cascading failures.
+Load balancing — distribute requests across service instances.
+Authentication/authorization — OAuth2/JWT or service credentials.
+Correlation ID — trace a request across multiple services.
+Centralized logging and monitoring.
+2. Asynchronous communication — Kafka / RabbitMQ
+
+If the caller doesn't need an immediate response, I would prefer messaging.
+
+Example:
+
+Order Service
+     |
+     | OrderCreated event
+     ↓
+   Kafka
+     |
+     +------→ Payment Service
+     |
+     +------→ Notification Service
+     |
+     +------→ Analytics Service
+
+For example:
+
+kafkaTemplate.send(
+    "order-created",
+    orderId,
+    orderCreatedEvent
+);
+
+This gives us:
+
+Loose coupling
+Better scalability
+Asynchronous processing
+Better resilience
+Multiple consumers for the same event
+
+I would also consider:
+
+Idempotent consumers
+Retry topics / dead-letter topics
+Message ordering where required
+Consumer groups
+Schema/version management
+Monitoring consumer lag
+3. Service discovery
+
+If services are dynamically deployed, I wouldn't hardcode IP addresses.
+
+For example:
+
+Order Service
+     |
+     ↓
+Service Discovery / Kubernetes DNS
+     |
+     ↓
+Payment Service instance
+
+In Kubernetes, services can communicate through Kubernetes DNS:
+
+http://payment-service:8080/payments
+4. API Gateway
+
+For external clients, I would normally put an API Gateway in front:
+
+Client
+  |
+  ↓
+API Gateway
+  |
+  +------→ Order Service
+  |
+  +------→ Payment Service
+  |
+  +------→ User Service
+
+The gateway can handle:
+
+Authentication
+Routing
+Rate limiting
+TLS termination
+Request logging
+Sometimes aggregation
+
+But internal service-to-service calls shouldn't necessarily go through the gateway unless there's a specific architectural reason.
+
+5. Handling failure
+
+This is an important interview point.
+
+Suppose:
+
+Order → Payment → Notification
+
+If Payment Service is unavailable, I don't want the entire system hanging.
+
+I'd use:
+
+Timeout
+   ↓
+Retry (limited)
+   ↓
+Circuit Breaker
+   ↓
+Fallback / Eventual processing
+
+For asynchronous operations:
+
+Order
+  ↓
+Kafka
+  ↓
+Payment
+  ↓
+Failure
+  ↓
+Retry / DLQ
+
+
+Interview answer
+
+"I would use synchronous REST communication, typically through OpenFeign, when the caller needs an immediate response.
+For independent or long-running operations, I would use asynchronous messaging with Kafka or RabbitMQ. For both approaches,
+I would consider timeouts, retries, circuit breakers, authentication, load balancing, correlation IDs, and observability.
+In Kubernetes, service discovery can be handled through Kubernetes Services and DNS.
+External traffic would normally come through an API Gateway, while internal communication can happen directly between services.
+I would also design consumers to be idempotent and use retry/DLQ mechanisms for messaging failures."
+
+Simple rule to remember:
+
+Need immediate response? → REST / Feign
+Don't need immediate response? → Kafka / RabbitMQ
+External client? → API Gateway
+Service unavailable? → Timeout + Retry + Circuit Breaker
+Message failure? → Retry + DLQ
+Need tracing? → Correlation ID + Distributed Tracing

@@ -4,7 +4,9 @@
 In Spring, you can enable asynchronous method execution using the @Async annotation. This allows methods to run in a separate thread,
 freeing up the caller thread to continue its execution without waiting for the method to complete. To use @Async, you need to follow a few steps:
 
-Asynchronous programming in Spring Boot allows you to run methods in the background, without blocking the main thread. This is very useful for improving performance, especially in:
+Asynchronous programming in Spring Boot allows you to run methods in the background, without blocking the main thread.
+This is very useful for improving performance, especially in:
+
 Sending emails
 Processing files
 Making API calls
@@ -27,7 +29,7 @@ public class AsyncApplication {
         SpringApplication.run(AsyncApplication.class, args);
     }
 }
-Create an Asynchronous Method: // it is used for example we have task to save lac of record int DB  if we run method without @Async it will take time to complete and
+Create an Asynchronous Method: // it is used for example we have task to save lac of record into DB, if we run method without @Async it will take time to complete and
 response in postman by this we have not good user experience of our application but if we use @Async THEN we will get response quickly without completing task
 and this task is working in background in separate thread so that we will get good user experience ////// and we can get fast our Api by ExecutorService
 

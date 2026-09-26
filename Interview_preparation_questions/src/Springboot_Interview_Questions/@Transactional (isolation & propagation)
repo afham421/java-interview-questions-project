@@ -52,17 +52,21 @@ Isolation Levels
 
 Allows dirty reads.
 
-2️⃣ Read Committed
+2️⃣ Read Committed         >>>>>>>>   resolve dirty read problem
 
 Only committed data is visible.
 
-3️⃣ Repeatable Read
-
+3️⃣ Repeatable Read          >>>>>>>>>>   resolve Non-Repeatable Read  and phantom also   but it does not lock records physically in DB means insertion can happen
+(( but phantom read prevented by this because it keep snapshot of the exact time and return value on 2nd read from snapshot not from DB)
 Same rows return same data during transaction.
 
-4️⃣ Serializable (highest)
+4️⃣ Serializable (highest)        >>>>>>>>>>>   resolve ALL ( dirty read , Non-Repeatable Read , Phantom read )   it lock DB rows physically under
+where conditon like id less then 100 means less then 100 no one can insert during this transaction
 
 Transactions run like sequential execution.
+
+
+
 
 2. Transaction Propagation
 

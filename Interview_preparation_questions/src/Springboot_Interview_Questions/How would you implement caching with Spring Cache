@@ -1,0 +1,238 @@
+In Spring Boot, I’d implement caching using Spring Cache abstraction. The idea is: instead of querying the database every time,
+the first request loads the data and stores it in a cache; subsequent requests get it from the cache.
+
+1. Add dependency
+
+For example, with Redis:
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-cache</artifactId>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-redis</artifactId>
+</dependency>
+
+
+
+2. Enable caching
+@SpringBootApplication
+@EnableCaching
+public class Application {
+
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+}
+
+@EnableCaching tells Spring to create the caching infrastructure and intercept methods annotated with cache annotations.
+
+3. Use @Cacheable
+
+Suppose we have:
+
+@Service
+public class UserService {
+
+    @Cacheable(value = "users", key = "#id")
+    public User getUser(Long id) {
+
+        System.out.println("Calling database...");
+
+        return userRepository.findById(id)
+                .orElseThrow();
+    }
+}
+
+Now:
+
+GET /users/10
+First request
+Controller
+   ↓
+Service
+   ↓
+Cache → MISS
+   ↓
+Database
+   ↓
+User returned
+   ↓
+User stored in cache
+Second request
+Controller
+   ↓
+Service
+   ↓
+Cache → HIT
+   ↓
+User returned
+
+The database isn't called on the second request.
+
+4. @CachePut
+
+Use this when you want to execute the method and update the cache.
+
+@CachePut(value = "users", key = "#user.id")
+public User updateUser(User user) {
+
+    return userRepository.save(user);
+}
+
+Unlike @Cacheable, @CachePut does not skip the method execution.
+
+So:
+
+@Cacheable → cache hit → method doesn't execute
+@CachePut  → method always executes → cache gets updated
+5. @CacheEvict
+
+When data is deleted or becomes invalid:
+
+@CacheEvict(value = "users", key = "#id")
+public void deleteUser(Long id) {
+
+    userRepository.deleteById(id);
+}
+
+This removes:
+
+users::10
+
+from the cache.
+
+You can also clear the entire cache:
+
+@CacheEvict(value = "users", allEntries = true)
+public void clearUsersCache() {
+}
+6. @Caching
+
+Sometimes you need multiple cache operations:
+
+@Caching(
+    put = {
+        @CachePut(value = "users", key = "#user.id")
+    },
+    evict = {
+        @CacheEvict(value = "userList", allEntries = true)
+    }
+)
+public User updateUser(User user) {
+
+    return userRepository.save(user);
+}
+
+Here we:
+
+Update the individual user's cache.
+Invalidate the cached user list.
+7. Redis configuration
+
+For Redis, you can configure:
+
+spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600000
+
+Here the cache entries have a TTL of 10 minutes.
+
+For example:
+
+users::10
+    ↓
+User object
+    ↓
+TTL = 10 minutes
+
+After 10 minutes, Redis removes/invalidates the entry and the next request goes to the database again.
+
+8. Important interview point: Spring Cache uses proxies
+
+This is similar to the Spring AOP question you asked earlier.
+
+When you write:
+
+@Cacheable("users")
+public User getUser(Long id) {
+    ...
+}
+
+Spring doesn't modify your method directly.
+
+Conceptually:
+
+Client
+  ↓
+Spring Proxy
+  ↓
+Check cache
+  ↓
+ ┌───────────────┐
+ │ Cache HIT?    │
+ └───────────────┘
+    ↓        ↓
+   YES       NO
+    ↓        ↓
+ return   execute method
+             ↓
+          Database
+             ↓
+        put in cache
+
+That's why self-invocation can bypass caching:
+
+public void methodA() {
+    methodB();   // @Cacheable on methodB may be bypassed
+}
+
+@Cacheable("users")
+public User methodB() {
+    ...
+}
+
+Because the call doesn't go through the Spring proxy.
+
+9. What would I choose in a real backend?
+
+For a simple single-instance application:
+
+Spring Cache
+     ↓
+Caffeine
+     ↓
+In-memory cache
+
+For a distributed microservices application:
+
+Spring Cache
+     ↓
+Redis
+     ↓
+Shared distributed cache
+
+For example:
+
+             ┌── Service Instance 1 ──┐
+Client ──────┤                         ├── Redis
+             ├── Service Instance 2 ──┤
+             └── Service Instance 3 ──┘
+
+All instances can access the same cached data.
+
+Interview answer
+
+"I would use Spring Cache abstraction with @EnableCaching. For read-heavy operations, I'd use @Cacheable to check the cache before hitting the database.
+For updates, I'd use @CachePut or evict the stale entry with @CacheEvict. In a distributed Spring Boot application,
+I'd generally use Redis as the cache provider and configure TTL to prevent stale data from remaining indefinitely.
+I'd also pay attention to cache keys, serialization, eviction strategy, and cache consistency."

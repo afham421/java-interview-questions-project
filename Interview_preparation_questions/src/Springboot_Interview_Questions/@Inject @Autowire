@@ -13,8 +13,8 @@
     Spring Specific: It’s tightly coupled with Spring’s dependency injection container and works seamlessly within the Spring ecosystem.
     Legacy: It’s more commonly used in older Spring applications but remains widely used due to its flexibility and features.
     @Inject:
-    Framework Agnostic: Since it’s part of a standard, it can be used in any framework that supports JSR-330, making it more portable across different DI frameworks.
-    Modern Applications: It’s more commonly used in modern Java applications that prefer using standard annotations for better portability and framework independence.
+Framework Agnostic: Since it’s part of a standard, it can be used in any framework that supports JSR-330, making it more portable across different DI frameworks.
+Modern Applications: It’s more commonly used in modern Java applications that prefer using standard annotations for better portability and framework independence.
 
 @Component
 public class MyService {

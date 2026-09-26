@@ -1,0 +1,220 @@
+What is Kubernetes?
+
+Kubernetes (K8s) is a container orchestration platform. It manages Docker/containerized applications by handling deployment, scaling, networking,
+load balancing, and self-healing.
+
+Main Kubernetes components
+
+The most important terms are:
+
+Pod ⭐
+Deployment
+Service
+ReplicaSet
+ConfigMap
+Secret
+Namespace
+Ingress
+Node
+Cluster
+
+
+
+1. Pod
+
+A Pod is the smallest deployable unit in Kubernetes.
+
+Usually, one Pod contains one application container.
+
+Pod
+ └── Spring Boot Container
+
+Example: If you deploy your Spring Boot application, Kubernetes may create:
+
+Pod-1 → Spring Boot
+Pod-2 → Spring Boot
+Pod-3 → Spring Boot
+
+
+
+2. Deployment
+
+A Deployment manages Pods.
+
+It helps with:
+
+Creating Pods
+Maintaining the required number of Pods
+Rolling updates
+Rollbacks
+Deployment
+    |
+    ├── Pod 1
+    ├── Pod 2
+    └── Pod 3
+
+For example:
+
+replicas: 3
+
+Kubernetes tries to keep 3 Pods running.
+
+
+
+3. ReplicaSet
+
+ReplicaSet makes sure the required number of Pods are running.
+
+Deployment
+     ↓
+ReplicaSet
+     ↓
+Pod Pod Pod
+
+Usually, you don't create ReplicaSets directly; a Deployment manages them.
+
+
+
+
+4. Service
+
+Pods can be recreated, so their IP addresses can change.
+
+A Service provides a stable network endpoint and distributes traffic among Pods.
+
+             Service
+           /    |    \
+        Pod-1 Pod-2 Pod-3
+
+Think of it like a load balancer for Pods.
+
+
+
+
+5. ConfigMap
+
+Stores non-sensitive configuration.
+
+Example:
+
+DB_HOST=localhost
+APP_PORT=8080
+
+Your Spring Boot application can read these values from the ConfigMap.
+
+
+
+
+6. Secret
+
+Stores sensitive configuration, such as:
+
+DB_USERNAME
+DB_PASSWORD
+API_KEY
+
+So:
+
+ConfigMap → normal configuration
+Secret → sensitive configuration
+
+
+
+
+7. Namespace
+
+A Namespace logically separates resources inside a Kubernetes cluster.
+
+For example:
+
+Cluster
+ ├── dev
+ │    └── Pods
+ ├── staging
+ │    └── Pods
+ └── production
+      └── Pods
+
+
+
+8. Ingress
+
+Ingress manages external HTTP/HTTPS traffic coming into the cluster.
+
+For example:
+
+User
+  ↓
+Ingress
+  ↓
+Service
+  ↓
+Pods
+
+It can route based on hostname/path:
+
+/api/users → User Service
+/api/orders → Order Service
+
+
+
+9. Node
+
+A Node is a machine/VM where Kubernetes runs Pods.
+
+Cluster
+ ├── Node 1
+ │    ├── Pod
+ │    └── Pod
+ │
+ ├── Node 2
+ │    ├── Pod
+ │    └── Pod
+ │
+ └── Node 3
+      └── Pod
+
+
+
+10. Cluster
+
+A Cluster is the complete Kubernetes environment containing multiple nodes.
+
+Kubernetes Cluster
+│
+├── Control Plane
+│
+├── Node 1
+│    ├── Pod
+│    └── Pod
+│
+├── Node 2
+│    ├── Pod
+│    └── Pod
+│
+└── Node 3
+     └── Pod
+Easy interview flow
+
+
+
+Remember this hierarchy:
+
+Cluster → Node → Pod → Container
+
+And application management:
+
+Deployment → ReplicaSet → Pods
+
+And networking:
+
+Ingress → Service → Pods
+
+
+
+
+Interview answer in 3–4 lines
+
+Kubernetes is a container orchestration platform used to deploy, manage, scale, and monitor containerized applications.
+The main components I commonly work with are Pods, Deployments, Services, ReplicaSets, ConfigMaps, Secrets, and Ingress.
+A Deployment manages Pods, a Service provides stable networking and load balancing, and Ingress handles external HTTP/HTTPS traffic.

@@ -1,8 +1,6 @@
 ✅ @Qualifier — What It Does
 When Spring finds more than one bean of the same type, it doesn't know which one to inject. You use @Qualifier to specify the exact bean you want.
 
-🔧 Example: Without @Qualifier — causes ambiguity
-
 @Component
 public class Dog implements Animal {
     public void speak() {
@@ -16,6 +14,9 @@ public class Cat implements Animal {
         System.out.println("Meow");
     }
 }
+
+
+🔧 Example: Without @Qualifier — causes ambiguity
 
 @Component
 public class AnimalService {
@@ -31,20 +32,6 @@ public class AnimalService {
 
 
 ✅ Example: With @Qualifier — resolves ambiguity
-
-@Component
-public class Dog implements Animal {
-    public void speak() {
-        System.out.println("Woof");
-    }
-}
-
-@Component
-public class Cat implements Animal {
-    public void speak() {
-        System.out.println("Meow");
-    }
-}
 
 @Component
 public class AnimalService {

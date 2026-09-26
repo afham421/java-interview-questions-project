@@ -1,0 +1,85 @@
+For backend workloads, the main difference is how each GC balances throughput vs latency vs heap size.
+
+GC	Main Goal	Pause Time	Throughput	Best For
+| GC              | Main Goal                     | Pause Time          | Throughput | Best For                            |
+| --------------- | ----------------------------- | ------------------- | ---------- | ----------------------------------- |
+| **Parallel GC** | Maximum throughput            | Higher              | ⭐⭐⭐        | Batch jobs, CPU-heavy processing    |
+| **G1 GC**       | Balanced latency + throughput | Moderate/controlled | ⭐⭐         | General backend APIs                |
+| **ZGC**         | Extremely low latency         | Very low            | ⭐⭐         | Large heaps, latency-sensitive APIs |
+
+1. Parallel GC
+
+Idea: Use multiple threads to stop the application and clean a large portion of the heap.
+
+Application
+     ↓
+STOP
+     ↓
+Parallel GC → Multiple GC threads clean heap
+     ↓
+Resume application
+Optimized for throughput, not low latency.
+Can cause noticeable stop-the-world pauses.
+Good when occasional pauses are acceptable.
+Useful for batch processing or background workloads.
+
+Example:
+
+-XX:+UseParallelGC
+2. G1 GC
+
+G1 divides the heap into many regions and tries to collect regions containing the most garbage first.
+
+Heap
+┌────┬────┬────┬────┐
+│ R1 │ R2 │ R3 │ R4 │
+├────┼────┼────┼────┤
+│ R5 │ R6 │ R7 │ R8 │
+└────┴────┴────┴────┘
+       ↑
+   Garbage regions
+       ↓
+    Collect them
+Designed for a balance between throughput and predictable pauses.
+Suitable for typical Spring Boot/backend applications.
+Handles large heaps better than older collectors.
+You can specify a target pause goal, e.g.:
+-XX:+UseG1GC
+-XX:MaxGCPauseMillis=200
+
+For a normal Java/Spring Boot backend, G1 is often the natural starting point.
+
+3. ZGC
+
+ZGC is designed for very low pause times, even with very large heaps.
+
+The important idea is that much of the GC work happens concurrently while the application continues running.
+
+Application ──────────────────────────────→
+             ↓       ↓       ↓
+ZGC       concurrent concurrent concurrent
+             cleanup / relocation
+Extremely low pause times.
+Good for latency-sensitive services.
+Particularly useful when the JVM has a very large heap.
+You trade some throughput/CPU overhead for latency characteristics.
+-XX:+UseZGC
+Interview answer 🎯
+
+If interviewer asks:
+
+"Which GC would you choose for a Spring Boot backend?"
+
+You can say:
+
+"For a typical backend service, I would start with G1 GC because it provides a good balance between throughput and predictable pause times.
+If the application is highly latency-sensitive and has a large heap, I would consider ZGC.
+For batch or CPU-heavy workloads where maximum throughput is more important than pause time, Parallel GC can be appropriate."
+
+Easy way to remember
+Parallel → Throughput
+G1       → Balance
+ZGC      → Low Latency
+
+One important point: Don't say "ZGC is always better than G1." GC choice depends on the application's heap size, latency requirements,
+allocation rate, CPU availability, and workload pattern.

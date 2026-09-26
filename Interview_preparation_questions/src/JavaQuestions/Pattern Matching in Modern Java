@@ -1,0 +1,106 @@
+Pattern matching makes Java code shorter, safer, and easier to read, especially when checking an object's type and then extracting/casting its value.
+
+1. Old Java — instanceof + casting
+Object obj = "Hello";
+
+if (obj instanceof String) {
+    String str = (String) obj;
+    System.out.println(str.length());
+}
+
+You had to:
+
+Check the type.
+Cast manually.
+Create a variable.
+2. Modern Java — Pattern Matching
+Object obj = "Hello";
+
+if (obj instanceof String str) {
+    System.out.println(str.length());
+}
+
+Here:
+
+obj instanceof String str
+
+means:
+
+"If obj is a String, automatically cast it and store it in str."
+
+3. Pattern Matching with switch
+
+Modern Java also allows pattern matching in switch:
+
+static String process(Object obj) {
+
+    return switch (obj) {
+        case String s -> "String: " + s.length();
+        case Integer i -> "Integer: " + (i * 2);
+        case Double d -> "Double: " + d;
+        case null -> "Null value";
+        default -> "Unknown type";
+    };
+}
+
+Instead of:
+
+if (obj instanceof String) {
+    ...
+} else if (obj instanceof Integer) {
+    ...
+} else if (obj instanceof Double) {
+    ...
+}
+
+The switch version is more declarative and easier to extend.
+
+4. Record Pattern
+
+Modern Java can also deconstruct records.
+
+record User(String name, int age) {}
+
+Instead of:
+
+if (obj instanceof User user) {
+    String name = user.name();
+    int age = user.age();
+
+    System.out.println(name + " " + age);
+}
+
+You can use:
+
+if (obj instanceof User(String name, int age)) {
+    System.out.println(name + " " + age);
+}
+
+It directly extracts the record components.
+
+Why is this useful in Spring Boot?
+
+You may encounter different request/response objects, events, exceptions, or domain types.
+
+For example:
+
+Object response = getResponse();
+
+return switch (response) {
+    case SuccessResponse s -> s.getData();
+    case ErrorResponse e -> handleError(e);
+    default -> throw new IllegalStateException("Unknown response");
+};
+
+This reduces:
+
+Manual casting
+Boilerplate
+Repeated type checks
+Casting-related mistakes
+Nested if/else
+Interview answer
+
+Pattern matching in modern Java combines type checking, casting, and variable extraction into a single expression.
+Features like pattern matching with instanceof, switch, and record patterns make code more concise, readable, and type-safe.
+In Spring Boot applications, it can be useful when handling different domain objects, API responses, events, or exception types.
