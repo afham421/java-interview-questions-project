@@ -2,9 +2,7 @@
 Mutable means you can change the internal state (fields) of the object after it's created — just like StringBuilder.
 
 📦 Example: Custom Mutable Class
-java
-Copy
-Edit
+
 public class Person {
     private String name;
 
@@ -23,9 +21,7 @@ public class Person {
     }
 }
 ✅ Usage:
-java
-Copy
-Edit
+
 Person p = new Person("Talha");
 System.out.println(p.getName());  // Output: Talha
 

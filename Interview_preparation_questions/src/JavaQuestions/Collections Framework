@@ -28,36 +28,29 @@ All classes are part of java.util package.
 
 📘 Common Classes and Usage
 ✅ List
-java
-Copy
-Edit
+
 List<String> names = new ArrayList<>();
 names.add("Ali");
 names.add("Ahmed");
 System.out.println(names.get(0)); // Ali
 ✅ Set
-java
-Copy
-Edit
+
 Set<Integer> numbers = new HashSet<>();
 numbers.add(10);
 numbers.add(10); // Duplicate, ignored
 System.out.println(numbers.size()); // 1
 ✅ Map
-java
-Copy
-Edit
+
 Map<String, Integer> ages = new HashMap<>();
 ages.put("Ali", 25);
 System.out.println(ages.get("Ali")); // 25
 ✅ Queue
-java
-Copy
-Edit
+
 Queue<String> queue = new LinkedList<>();
 queue.add("Task1");
 queue.add("Task2");
 System.out.println(queue.poll()); // Task1
+
 📊 Differences at a Glance
 | Feature    | **List**        | **Set**                         | **Map**                       |
 | ---------- | --------------- | ------------------------------- | ----------------------------- |
@@ -81,9 +74,7 @@ System.out.println(queue.poll()); // Task1
 🔁 Utility Class: Collections
 Java provides a helper class: java.util.Collections with methods like:
 
-java
-Copy
-Edit
+
 Collections.sort(list);
 Collections.reverse(list);
 Collections.shuffle(list);

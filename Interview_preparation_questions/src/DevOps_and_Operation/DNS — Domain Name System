@@ -1,0 +1,160 @@
+DNS — Domain Name System
+
+DNS translates a human-readable domain name into an IP address.
+
+For example:
+
+www.google.com
+       ↓
+DNS
+       ↓
+142.250.x.x
+
+Instead of remembering an IP address, we use google.com.
+
+How DNS works — step by step
+
+Suppose you enter:
+
+https://api.example.com/users
+
+Your browser needs the IP address of api.example.com.
+
+1. Browser cache
+
+First, browser checks whether it already knows the IP.
+
+2. OS cache
+
+If not, the operating system checks its DNS cache.
+
+3. DNS Resolver
+
+The request goes to a recursive DNS resolver, usually provided by your ISP or a service such as Google/Cloudflare.
+
+Client
+  ↓
+DNS Resolver
+
+4. Root DNS Server
+
+If the resolver doesn't know the answer, it asks a root server:
+
+Who handles .com?
+
+Root responds roughly:
+
+Ask the .com TLD server
+
+5. TLD Server
+
+The .com server tells the resolver which authoritative nameserver handles example.com.
+
+.com
+ ↓
+Authoritative DNS for example.com
+
+6. Authoritative DNS Server
+
+The authoritative server has the actual DNS record:
+
+api.example.com → 192.168.10.50
+
+7. Resolver returns the IP
+
+Browser
+   ↓
+192.168.10.50
+
+Now the browser can establish the HTTP/HTTPS connection.
+
+Important DNS record types
+| Record    | Purpose                       | Example                     |
+| --------- | ----------------------------- | --------------------------- |
+| **A**     | Domain → IPv4                 | `example.com → 1.2.3.4`     |
+| **AAAA**  | Domain → IPv6                 | `example.com → IPv6`        |
+| **CNAME** | Alias → another domain        | `www → example.com`         |
+| **MX**    | Mail server                   | `example.com → mail server` |
+| **TXT**   | Text/verification information | SPF, domain verification    |
+| **NS**    | Authoritative nameserver      | `ns1.example.com`           |
+| **PTR**   | IP → domain                   | Reverse DNS                 |
+| **SRV**   | Service location              | `_sip._tcp.example.com`     |
+
+Very important for interviews
+
+A vs CNAME:
+
+A:
+api.example.com → 10.10.10.5
+
+CNAME:
+www.example.com → example.com
+
+A points directly to an IP.
+
+CNAME points to another domain name.
+
+What is TTL?
+
+TTL = Time To Live
+
+It tells DNS resolvers how long they can cache a DNS response.
+
+For example:
+
+api.example.com
+A → 10.10.10.5
+TTL = 300 seconds
+
+The resolver can cache it for 5 minutes.
+
+This is important when changing servers:
+
+Old IP: 10.10.10.5
+New IP: 20.20.20.5
+
+If the old DNS record is cached, users may continue reaching the old server until the TTL expires.
+
+DNS in a microservices architecture
+
+This is especially important for your backend interviews.
+
+Suppose you have:
+
+API Gateway
+     ↓
+payment-service
+     ↓
+notification-service
+
+Instead of hardcoding:
+
+http://10.10.20.15:8080
+
+you can use:
+
+http://payment-service:8080
+
+DNS/service discovery resolves:
+
+payment-service
+       ↓
+10.10.20.15
+
+In Kubernetes, for example:
+
+payment-service.default.svc.cluster.local
+
+can resolve to the Kubernetes Service IP.
+
+So DNS is often part of service discovery.
+
+Interview answer
+
+If interviewer asks "What is DNS?", you can say:
+
+DNS, or Domain Name System, is responsible for resolving human-readable domain names into IP addresses.
+When a client requests a domain, the DNS resolver checks its cache and, if necessary, queries the DNS hierarchy—root,
+TLD, and authoritative nameservers—to find the corresponding record.
+DNS also supports records such as A, AAAA, CNAME, MX and TXT, and TTL controls how long responses are cached.
+In microservices, DNS can also be used for service discovery.

@@ -1,0 +1,341 @@
+If you mean “How would I upload/process a 100 GB file in a backend system?”, you should not upload it as one normal HTTP request.
+
+For an interview, the ideal answer is:
+
+Use chunked/multipart upload, store the chunks in object storage, track upload state, and process the file asynchronously after upload completes.
+
+1. Basic architecture
+Client
+   |
+   | 1. Initiate upload
+   v
+Backend API
+   |
+   | Generate upload ID + pre-signed URLs
+   v
+Object Storage (S3 / MinIO / Azure Blob)
+   |
+   | 2. Upload 100 GB in chunks
+   |
+   | chunk 1  ──┐
+   | chunk 2    |
+   | chunk 3    | ---> Object Storage
+   | ...        |
+   | chunk N  ──┘
+   |
+   | 3. Complete upload
+   v
+Backend
+   |
+   | Publish event
+   v
+Kafka / Queue
+   |
+   v
+Processing Service
+   |
+   | Stream/read file
+   v
+Database / Output Storage
+2. Why not one 100 GB request?
+
+If you do:
+
+POST /upload
+Content-Type: multipart/form-data
+
+with the entire 100 GB file, you can have problems with:
+
+Network failure → restart from 0
+Request timeout
+Huge memory/disk usage
+Load balancer/proxy limits
+Connection interruption
+Difficult retry mechanism
+Multiple users uploading simultaneously
+
+So instead, divide it into chunks.
+
+For example:
+
+100 GB file
+
+Chunk size = 100 MB
+
+100 GB / 100 MB
+≈ 1000 chunks
+
+Each chunk is independently uploaded.
+
+3. Multipart upload
+
+Suppose the client starts:
+
+POST /files/initiate
+
+Backend returns:
+
+{
+  "uploadId": "abc-123",
+  "fileName": "large-data.zip",
+  "chunkSize": 104857600
+}
+
+Then the client uploads:
+
+chunk 1
+chunk 2
+chunk 3
+...
+chunk 1000
+
+Each chunk can be retried independently.
+
+For example:
+
+chunk 1  ✓
+chunk 2  ✓
+chunk 3  ✓
+chunk 4  ✗
+chunk 5  ✓
+chunk 6  ✓
+
+Only chunk 4 needs to be uploaded again.
+
+4. Very important: don't send the 100 GB through your Java server
+
+This is a common interview point.
+
+Bad architecture:
+
+Client
+   |
+   | 100 GB
+   v
+Spring Boot
+   |
+   v
+S3
+
+Your Spring Boot server becomes a bottleneck.
+
+Better:
+
+Client
+   |
+   | chunks
+   v
+S3 / MinIO
+
+Your Spring Boot service only handles:
+
+initiate upload
+       ↓
+generate pre-signed URLs
+       ↓
+track metadata
+       ↓
+complete upload
+
+So the actual 100 GB doesn't need to pass through your application server.
+
+5. Parallel uploads
+
+You can upload multiple chunks simultaneously.
+
+For example:
+
+              ┌── chunk 1
+              ├── chunk 2
+Client ───────┼── chunk 3
+              ├── chunk 4
+              └── chunk 5
+
+Maybe 5–10 concurrent uploads depending on bandwidth and infrastructure.
+
+This makes the upload much faster.
+
+But don't blindly create 1000 threads.
+
+Use a bounded concurrency mechanism:
+
+ExecutorService
+        ↓
+10 concurrent uploads
+        ↓
+remaining chunks wait
+6. Resume support
+
+This is another major advantage.
+
+Suppose:
+
+1000 chunks
+
+900 uploaded
+100 remaining
+
+Internet connection breaks.
+
+When the user reconnects:
+
+Client → Backend
+
+"What chunks are already uploaded?"
+
+Backend/object storage can tell:
+
+1 ✓
+2 ✓
+3 ✓
+...
+900 ✓
+901 ✗
+902 ✗
+...
+1000 ✗
+
+The client resumes from chunk 901.
+
+It doesn't start the 100 GB upload again.
+
+7. Integrity checking
+
+You also need to make sure chunks/file aren't corrupted.
+
+You can calculate checksums:
+
+chunk 1 → SHA-256
+chunk 2 → SHA-256
+...
+
+Then verify them on upload.
+
+At the end:
+
+All chunks uploaded
+       ↓
+Verify
+       ↓
+Complete multipart upload
+       ↓
+Final file
+8. After upload: don't process synchronously
+
+Suppose the 100 GB file needs processing.
+
+Don't do:
+
+POST /upload
+
+upload 100GB
+     ↓
+process 100GB
+     ↓
+return response
+
+The request could remain open for hours.
+
+Instead:
+
+Upload completed
+      ↓
+Create event
+      ↓
+Kafka
+      ↓
+Processing service
+
+For example:
+
+{
+  "fileId": "abc-123",
+  "bucket": "large-files",
+  "objectKey": "uploads/abc-123/data.zip"
+}
+
+Then:
+
+Kafka
+  ↓
+File Processing Service
+  ↓
+Read file as stream
+  ↓
+Process
+9. Don't load 100 GB into memory
+
+This is extremely important.
+
+Bad:
+
+byte[] data = Files.readAllBytes(path);
+
+For a 100 GB file, this is obviously impossible/unacceptable.
+
+Instead:
+
+try (InputStream inputStream =
+         Files.newInputStream(path)) {
+
+    byte[] buffer = new byte[8 * 1024 * 1024];
+
+    int bytesRead;
+
+    while ((bytesRead = inputStream.read(buffer)) != -1) {
+        process(buffer, bytesRead);
+    }
+}
+
+Conceptually:
+
+100 GB file
+
+[8 MB] → process
+[8 MB] → process
+[8 MB] → process
+[8 MB] → process
+...
+
+Memory remains roughly constant.
+
+10. What if processing is CPU-intensive?
+
+Then I'd separate upload and processing:
+
+                ┌───────────────┐
+Client ────────>│ Object Storage│
+                └───────┬───────┘
+                        │
+                        │ event
+                        ↓
+                    Kafka
+                        │
+              ┌─────────┴─────────┐
+              ↓                   ↓
+       Processor 1          Processor 2
+              ↓                   ↓
+          chunks/data         chunks/data
+
+You can scale processing workers horizontally:
+
+Processor 1
+Processor 2
+Processor 3
+Processor 4
+
+
+Interview answer
+
+If the interviewer asks:
+
+"How would you handle uploading a 100 GB file?"
+
+You can answer:
+
+"I wouldn't upload the entire file through a single HTTP request. I would use multipart or chunked upload.
+The client would split the file into reasonably sized chunks, for example 100 MB, and upload them directly to object storage such as S3 using pre-signed URLs.
+I'd maintain an upload ID and track completed chunks so failed chunks can be retried and interrupted uploads can resume.
+After all chunks are uploaded, I'd complete the multipart upload and publish an event to Kafka.
+A separate processing service would then process the file asynchronously using streaming rather than loading the entire 100 GB into memory.
+I'd also use checksums for integrity, bounded parallel uploads, authentication/authorization, and lifecycle/cleanup for abandoned uploads."

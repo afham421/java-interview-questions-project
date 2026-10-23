@@ -1,0 +1,203 @@
+CDN — Content Delivery Network
+
+A CDN (Content Delivery Network) is a network of servers distributed across different geographical locations that delivers content
+to users from a server close to them.
+
+Simple example
+
+Suppose your Spring Boot application is hosted in Germany, but a user is in Pakistan.
+
+Without CDN:
+
+User (Pakistan)
+      |
+      | HTTP Request
+      ↓
+Server (Germany)
+      |
+      ↓
+Response
+
+Every request travels to Germany → higher latency.
+
+With CDN:
+
+                    ┌── CDN Server (Pakistan)
+                    │
+User (Pakistan) ────┤
+                    │
+                    └── Origin Server (Germany)
+
+The CDN can serve cached content from a nearby server.
+
+What does a CDN usually cache?
+
+Mostly static content:
+
+Images
+CSS
+JavaScript
+Videos
+Fonts
+PDFs
+Static HTML
+Sometimes API responses
+
+For example:
+
+https://example.com/images/logo.png
+
+First request:
+
+User → CDN → Origin Server
+              ↓
+          logo.png
+              ↓
+          CDN caches it
+
+Next users:
+
+User → CDN → logo.png
+
+The origin server doesn't need to handle every request.
+
+CDN vs your backend
+
+Imagine you have:
+
+React/Angular frontend
+        ↓
+      CDN
+        ↓
+Spring Boot APIs
+        ↓
+      MySQL
+
+The CDN is mainly responsible for fast delivery of cacheable content.
+
+Your Spring Boot application handles:
+
+POST /login
+POST /payment
+GET /customer
+POST /order
+
+while CDN can handle things like:
+
+GET /app.js
+GET /style.css
+GET /logo.png
+GET /product-image.jpg
+How does CDN know where to get content?
+
+There are two important concepts:
+
+1. Origin Server
+
+Your actual server:
+
+Spring Boot Server
+        ↑
+   Origin Server
+2. Edge Server
+
+CDN's geographically distributed server:
+
+Pakistan Edge
+Dubai Edge
+Singapore Edge
+London Edge
+US Edge
+...
+
+The user is routed to an appropriate edge location.
+
+Cache HIT vs Cache MISS
+
+This is an important interview concept.
+
+Cache HIT
+
+Content already exists in CDN:
+
+User
+ ↓
+CDN
+ ↓
+Cached image
+
+Very fast.
+
+Cache MISS
+
+Content isn't cached:
+
+User
+ ↓
+CDN
+ ↓
+Origin Server
+ ↓
+CDN caches response
+ ↓
+User
+
+The next request can become a cache hit.
+
+Why use CDN?
+
+Main benefits:
+
+1. Lower latency
+
+User gets content from a geographically closer server.
+
+2. Reduced backend load
+
+Instead of:
+
+100,000 users
+      ↓
+Spring Boot
+
+you can have:
+
+100,000 users
+      ↓
+     CDN
+      ↓
+   only some requests
+      ↓
+Spring Boot
+3. Better scalability
+
+CDN absorbs a large amount of traffic.
+
+4. DDoS protection
+
+Many CDN providers also provide traffic filtering and DDoS protection.
+
+5. Faster static content
+
+Images, JS, CSS, videos etc. can be served much faster.
+
+Interview answer
+
+If interviewer asks "What is a CDN?", you can say:
+
+A CDN is a geographically distributed network of edge servers that caches and delivers content closer to users.
+It reduces latency, decreases load on the origin server, improves scalability, and can also provide features like DDoS protection and TLS termination.
+
+One important distinction
+
+CDN does not replace your backend.
+
+Think:
+
+             ┌── Static content
+             │
+User → CDN ──┤
+             │
+             └── API → Load Balancer → Spring Boot → DB
+
+The CDN is primarily the fast delivery/cache layer, while your Spring Boot services remain responsible for business logic.

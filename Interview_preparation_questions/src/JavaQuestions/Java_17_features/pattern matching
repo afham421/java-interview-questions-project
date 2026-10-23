@@ -11,17 +11,13 @@ Pehle sirf int, enum ya String type use hoti thi, ab objects ka bhi direct use h
 Pattern Matching makes it easier to check an object’s type and extract values in a single step — instead of writing boilerplate instanceof and casting code.
 
 🔹 Old Way (Before Java 14)
-java
-Copy
-Edit
+
 if (obj instanceof String) {
     String s = (String) obj;  // manual cast
     System.out.println(s.toUpperCase());
 }
 🔹 New Way (Pattern Matching for instanceof)
-java
-Copy
-Edit
+
 if (obj instanceof String s) {
     // 's' is already casted
     System.out.println(s.toUpperCase());
@@ -34,9 +30,6 @@ if (obj instanceof String s) {
 🔹 Pattern Matching + Sealed Classes + switch
 Here’s where sealed classes shine:
 
-java
-Copy
-Edit
 sealed interface Shape permits Circle, Rectangle, Square {}
 
 final class Circle implements Shape {
@@ -55,9 +48,6 @@ final class Square implements Shape {
 }
 Now use Pattern Matching in a switch:
 
-java
-Copy
-Edit
 static double area(Shape shape) {
     return switch (shape) {
         case Circle c    -> Math.PI * c.radius * c.radius;
@@ -81,9 +71,7 @@ Each case directly binds the type (Circle c) and variable (c).
 🔹 Record + Pattern Matching (Super Powerful)
 With records, pattern matching can destructure objects:
 
-java
-Copy
-Edit
+
 record Point(int x, int y) {}
 
 static String printPoint(Object obj) {

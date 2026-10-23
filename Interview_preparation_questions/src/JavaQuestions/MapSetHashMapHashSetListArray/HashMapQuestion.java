@@ -18,6 +18,7 @@ public class HashMapQuestion {
         // If you want to make thread safe, then
         // 1.ConcurrentHashMap:
         // Designed for concurrent use, ConcurrentHashMap allows multiple threads to read and write without locking the entire map.
+        // It uses techniques such as CAS (Compare-And-Swap) and synchronized operations on individual bins instead of locking the entire map for every update.
         // It achieves thread safety by dividing the map into segments and locking only the necessary segments during updates.
         ConcurrentHashMap<String, Integer> concurrentMap = new ConcurrentHashMap<>();
         // 2.Collections.synchronizedMap():

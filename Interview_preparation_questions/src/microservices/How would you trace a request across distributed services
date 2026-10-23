@@ -1,0 +1,158 @@
+In a microservices architecture, a single request may travel through multiple services:
+
+Client
+  ↓
+API Gateway
+  ↓
+Order Service
+  ↓
+Payment Service
+  ↓
+Notification Service
+
+The main challenge is: if something fails, how do I know which service caused the problem?
+
+I would use distributed tracing + correlation/trace IDs.
+
+1. Generate a Trace ID
+
+When the request enters the system, we assign a unique Trace ID.
+
+Example:
+
+Trace ID = 8f7a91c2
+
+This ID should travel with the request across all services.
+
+Client
+  |
+  | Trace-ID: 8f7a91c2
+  ↓
+API Gateway
+  |
+  | Trace-ID: 8f7a91c2
+  ↓
+Order Service
+  |
+  | Trace-ID: 8f7a91c2
+  ↓
+Payment Service
+
+Now I can search logs using:
+
+8f7a91c2
+
+and see the complete request journey.
+
+2. Use Span IDs
+
+A trace represents the complete request.
+
+A span represents one operation inside that trace.
+
+For example:
+
+Trace: 8f7a91c2
+
+API Gateway
+   Span A
+      ↓
+Order Service
+   Span B
+      ↓
+Payment Service
+   Span C
+      ↓
+Database
+   Span D
+
+So we get:
+
+Trace ID: 8f7a91c2
+
+Span A → API Gateway → 20ms
+Span B → Order Service → 100ms
+Span C → Payment Service → 800ms
+Span D → Database → 750ms
+
+Immediately we can see that the database/payment operation is causing most of the latency.
+
+3. Propagate the Trace Context
+
+For HTTP communication, I would propagate the tracing information through request headers.
+
+Modern tracing commonly uses W3C Trace Context, for example:
+
+traceparent: 00-8f7a91c2...-a123...-01
+
+If using Kafka or another messaging system, the trace context should also be propagated through message headers.
+
+This is important because otherwise the trace gets broken when communication moves from:
+
+REST → Kafka → Consumer → REST
+4. Add Structured Logging
+
+I would include trace information in application logs:
+
+timestamp
+service
+traceId
+spanId
+level
+message
+
+For example:
+
+2026-09-26 17:20:10
+service=payment-service
+traceId=8f7a91c2
+spanId=a123
+INFO Payment initiated
+
+Then I can search all services using the same traceId.
+
+5. Use a Distributed Tracing System
+
+In a Spring Boot microservices environment, I would typically use:
+
+Spring Boot
+   ↓
+Micrometer Tracing / OpenTelemetry
+   ↓
+Collector
+   ↓
+Jaeger / Grafana Tempo / Zipkin
+
+The tracing system gives a visual representation such as:
+
+Trace 8f7a91c2
+│
+├── API Gateway       20ms
+│
+├── Order Service    100ms
+│   └── DB Query       30ms
+│
+└── Payment Service  850ms
+    └── External API  800ms
+
+This makes debugging much easier.
+
+Interview answer 🎯
+
+"I would use distributed tracing with a Trace ID and Span IDs. When a request enters the system,
+the trace context is generated and propagated across HTTP calls, Kafka messages, and other service-to-service communication.
+Each service creates its own span and includes the trace and span IDs in structured logs.
+I would use OpenTelemetry or Micrometer Tracing with a backend such as Jaeger or Grafana Tempo to visualize the complete request flow, identify failures,
+and find latency bottlenecks across services."
+
+Easy way to remember
+
+Trace ID = complete journey
+
+Span ID = individual step
+
+Logs = detailed information
+
+OpenTelemetry = collects tracing information
+
+Jaeger/Tempo = helps visualize the journey
