@@ -82,7 +82,7 @@ CSRF vs XSS
 CSRF in Spring Security
 
 Spring Security enables CSRF protection by default for web applications.
-
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {

@@ -1,0 +1,186 @@
+Filtering And Pagination
+
+What are they?
+
+Filtering → Return only records that match given conditions
+            Example: only employees whose name is "Ali"
+
+Pagination → Don’t return all records at once; return them page by page
+            Example: page 0 with 10 records, then page 1 with next 10
+
+Why do we need them?
+
+Without filtering → client gets unwanted data
+Without pagination → fetching thousands of rows is slow and heavy on memory/DB
+
+Example API call:
+
+GET /employees?name=Ali&page=0&size=10
+
+→ Filter by name = Ali
+→ Return first page (records 1–10)
+
+
+1. Entity
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
+@Entity
+public class Employee {
+
+    @Id
+    private Long id;
+    private String name;
+    private String email;
+    private String employeeType;
+
+    // getters and setters
+}
+
+
+2. Repository
+
+Must extend JpaSpecificationExecutor to support Specification-based filtering.
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+public interface EmployeeRepository extends JpaRepository<Employee, Long>,
+                                            JpaSpecificationExecutor<Employee> {
+}
+
+JpaRepository          → basic CRUD
+JpaSpecificationExecutor → enables findAll(Specification, Pageable)
+
+
+3. Creating Specifications for Filtering
+
+Specification = a reusable condition used to build dynamic WHERE clauses.
+
+If a filter value is null → that condition is skipped (not applied).
+
+import org.springframework.data.jpa.domain.Specification;
+
+public class EmployeeSpecification {
+
+    public static Specification<Employee> hasName(String name) {
+        return (root, query, criteriaBuilder) ->
+                name != null ? criteriaBuilder.equal(root.get("name"), name) : null;
+    }
+
+    public static Specification<Employee> hasEmail(String email) {
+        return (root, query, criteriaBuilder) ->
+                email != null ? criteriaBuilder.equal(root.get("email"), email) : null;
+    }
+
+    public static Specification<Employee> hasEmployeeType(String employeeType) {
+        return (root, query, criteriaBuilder) ->
+                employeeType != null ? criteriaBuilder.equal(root.get("employeeType"), employeeType) : null;
+    }
+}
+
+What each parameter means:
+
+root            → the Employee entity (like FROM Employee)
+criteriaBuilder → used to build conditions (equal, like, greaterThan, etc.)
+null return     → means “ignore this filter”
+
+
+4. Applying Filters and Pagination in the Service Layer
+
+Combine multiple filters with .and()
+Pass Pageable so Spring returns only one page of results.
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+
+@Service
+public class EmployeeService {
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
+    public Page<Employee> getEmployeesWithFilters(String name, String email, String employeeType, Pageable pageable) {
+        Specification<Employee> spec = Specification.where(EmployeeSpecification.hasName(name))
+                                                    .and(EmployeeSpecification.hasEmail(email))
+                                                    .and(EmployeeSpecification.hasEmployeeType(employeeType));
+
+        return employeeRepository.findAll(spec, pageable);
+    }
+}
+
+Example:
+
+name = "Ali", email = null, employeeType = "FULL_TIME"
+
+Generated idea of SQL:
+
+SELECT * FROM employee
+WHERE name = 'Ali' AND employee_type = 'FULL_TIME'
+LIMIT 10 OFFSET 0;
+
+(email filter skipped because it was null)
+
+
+5. Controller Layer
+
+Client sends filter + page + size as query params.
+Controller builds Pageable and calls the service.
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class EmployeeController {
+
+    @Autowired
+    private EmployeeService employeeService;
+
+    @GetMapping("/employees")
+    public Page<Employee> getEmployees(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String employeeType,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        return employeeService.getEmployeesWithFilters(name, email, employeeType, pageable);
+    }
+}
+
+Request examples:
+
+GET /employees
+→ all employees, page 0, size 10
+
+GET /employees?name=Ali
+→ only name = Ali, page 0, size 10
+
+GET /employees?employeeType=FULL_TIME&page=1&size=5
+→ FULL_TIME employees, page 1 (records 6–10), size 5
+
+What Page returns:
+
+content       → list of employees on this page
+totalElements → total matching records
+totalPages    → total number of pages
+number        → current page number
+size          → page size
+
+
+Summary:
+
+Filtering  → Specification builds dynamic WHERE conditions (skip null filters)
+Pagination → Pageable / PageRequest controls page number and size
+Together   → efficient APIs that return only needed data, in small chunks
+Flow       → Controller (params) → Service (Specification + Pageable) → Repository → DB

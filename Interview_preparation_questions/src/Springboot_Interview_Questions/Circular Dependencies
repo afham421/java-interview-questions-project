@@ -7,6 +7,7 @@ B depends on A
 
 Example
 
+
 @Service
 class A {
    @Autowired B b;
@@ -16,12 +17,78 @@ class A {
 class B {
    @Autowired A a;
 }
+
+
 Solutions
 
 1️⃣ Use Setter Injection
 
-2️⃣ Use
+Constructor injection fails because both beans need each other at creation time.
+Setter injection creates the beans first, then injects dependencies.
 
-@Lazy
+Example:
 
-3️⃣ Redesign architecture.
+
+@Service
+class A {
+    private B b;
+
+    @Autowired
+    public void setB(B b) {
+        this.b = b;
+    }
+}
+
+@Service
+class B {
+    private A a;
+
+    @Autowired
+    public void setA(A a) {
+        this.a = a;
+    }
+}
+
+
+2️⃣ Use @Lazy
+
+@Lazy delays creation of one bean until it is first used, so the cycle is broken at startup.
+
+Example:
+
+
+@Service
+class A {
+    @Autowired
+    @Lazy
+    private B b;
+}
+
+@Service
+class B {
+    @Autowired
+    private A a;
+}
+
+
+3️⃣ Redesign architecture
+
+Best long-term fix: extract shared logic into a third service (C) so A and B both depend on C instead of each other.
+
+Example:
+
+
+@Service
+class C {
+    // shared logic used by both A and B
+}
+
+@Service
+class A {
+    @Autowired C c;
+}
+
+@Service
+class B {
+    @Autowired C c;
+}

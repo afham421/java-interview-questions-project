@@ -65,7 +65,8 @@ In REST APIs, it directly returns JSON/XML instead of a view.
 
 
 
-Great question 👍 In Spring Boot you rarely need to touch the DispatcherServlet directly because Boot configures it automatically. But if you do want to customize it, here are the ways:
+Great question 👍 In Spring Boot you rarely need to touch the DispatcherServlet directly because Boot configures it automatically.
+But if you do want to customize it, here are the ways:
 
 1. Access and configure the existing DispatcherServlet
 
@@ -99,6 +100,17 @@ Add init parameters
 
 Control startup order
 
+So “change URL mapping (/api/* instead of /)” means: don’t let the dispatcher catch every URL — only URLs that start with /api/.
+Example
+Request: GET /api/users   → DispatcherServlet handles it → your @RestController
+Request: GET /home        → Not under /api/* → DispatcherServlet ignores it
+
+
+
+
+
+
+
 2. Register multiple DispatcherServlets
 
 You can even have multiple dispatchers handling different URL patterns:
@@ -115,6 +127,12 @@ public ServletRegistrationBean<DispatcherServlet> adminDispatcherServlet() {
 
 Here /admin/* requests are handled by a separate DispatcherServlet.
 
+
+
+
+
+
+
 3. Customize DispatcherServlet properties
 
 Spring Boot exposes DispatcherServlet properties in application.properties:
@@ -122,6 +140,14 @@ Spring Boot exposes DispatcherServlet properties in application.properties:
 spring.mvc.dispatch-options-request=true
 spring.mvc.throw-exception-if-no-handler-found=true
 spring.mvc.servlet.load-on-startup=1
+
+
+
+
+
+
+
+
 
 4. Programmatic customization with WebMvcConfigurer
 

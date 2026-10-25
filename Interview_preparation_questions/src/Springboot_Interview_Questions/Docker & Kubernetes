@@ -43,9 +43,9 @@ A shipping port manager that helps organize, run, scale, and monitor all the con
 
 🔁 Docker vs Kubernetes:
 Feature	                                        Docker	                                        Kubernetes
-What it does	                                        Creates and runs containers	                                        Manages containers at scale
-Focus	                                        Single app environment	                                        Multi-app, multi-server orchestration
-Simple analogy	                                        Packing boxes	                                        Managing a warehouse of boxes
+What it does	                                Creates and runs containers	                    Manages containers at scale
+Focus	                                        Single app environment	                        Multi-app, multi-server orchestration
+Simple analogy	                                Packing boxes	                                Managing a warehouse of boxes
 
 🔧 How They Work Together:
 You use Docker to build and run containers.
@@ -54,9 +54,7 @@ You use Kubernetes to manage and scale them in production.
 
 
 ✅ Project Structure (Spring Boot)
-css
-Copy
-Edit
+
 springboot-demo/
 ├── .github/
 │   └── workflows/

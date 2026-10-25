@@ -60,6 +60,9 @@ Uses shared secret key
 👉 Example flow:
 
 HMAC = H(secret + message)
+
+
+
 2️⃣ JWT (JSON Web Token)
 
 👉 What it is:
@@ -87,6 +90,9 @@ eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEyM30.signature
 Can be signed using:
 HMAC (shared key)
 RSA (public/private key)
+
+
+
 3️⃣ OAuth (Authorization Framework)
 
 👉 What it is:
@@ -110,6 +116,10 @@ Your app uses token to access user data
 👉 Key point:
 
 Uses tokens (often JWT) internally
+
+
+
+
 🧠 Simple Comparison Table
 | Feature   | HMAC          | JWT                      | OAuth         |
 | --------- | ------------- | ------------------------ | ------------- |

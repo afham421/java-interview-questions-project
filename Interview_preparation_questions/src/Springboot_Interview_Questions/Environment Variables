@@ -7,31 +7,21 @@
 ✅ How to Set
 Linux/macOS Terminal:
 
-bash
-Copy
-Edit
 export SERVER_PORT=9090
+
 Windows Command Prompt:
 
-cmd
-Copy
-Edit
 set SERVER_PORT=9090
 Spring Boot automatically maps environment variables like SERVER_PORT to server.port.
 
 ✅ How to Get in Java
 You can access environment variables using:
 
-java
-Copy
-Edit
 @Value("${server.port}")
 private int port;
+
 OR use Spring’s Environment API:
 
-java
-Copy
-Edit
 @Autowired
 private Environment env;
 
@@ -46,18 +36,12 @@ public void getEnvValue() {
 ✅ How to Set
 When running your JAR:
 
-bash
-Copy
-Edit
 java -jar myapp.jar --server.port=8085 --spring.datasource.username=admin
 Spring Boot treats them just like environment variables and binds them automatically.
 
 ✅ How to Get
 Same as above:
 
-java
-Copy
-Edit
 @Value("${server.port}")
 private int port;
 Spring Boot merges command-line args > env vars > config file, so this overrides anything in application.yml.
@@ -67,9 +51,6 @@ Spring Boot merges command-line args > env vars > config file, so this overrides
 🟢 3. Default Values in Code
 If a config is not present from any source, you can provide a default value directly using:
 
-java
-Copy
-Edit
 @Value("${myapp.mode:default-mode}")
 private String mode;
 If myapp.mode is missing, this will fall back to "default-mode".
@@ -85,21 +66,15 @@ Default value in code using @Value(...:default)
 
 🔁 Real Example (All Together)
 🔹 application.yml
-yaml
-Copy
-Edit
+
 myapp:
   title: "Default App"
   port: 8080
 🔹 You override via command-line:
-bash
-Copy
-Edit
+
 java -jar app.jar --myapp.title="CLI App"
 🔹 You access it like:
-java
-Copy
-Edit
+
 @Value("${myapp.title:Untitled App}")
 private String title;
 
@@ -116,9 +91,6 @@ Else → "Untitled App"
 💡 Pro Tip
 You can also use @ConfigurationProperties and set defaults directly in the class:
 
-java
-Copy
-Edit
 @ConfigurationProperties(prefix = "myapp")
 @Component
 public class AppConfig {

@@ -1,3 +1,81 @@
+What is AOP?
+
+AOP = Aspect-Oriented Programming
+
+It is a way to add extra behavior (logging, security, timing, transactions)
+to your methods WITHOUT putting that code inside every method.
+
+Normal OOP → put logic inside the class/method
+AOP       → put common logic outside, and Spring applies it automatically
+
+Think of it like this:
+
+Your business method = the main work (create user, place order)
+AOP aspect           = extra work around it (log, check auth, measure time)
+
+Without AOP (messy):
+
+public String getUsers() {
+    log.info("API called");          // extra
+    // business logic
+    log.info("API finished");        // extra
+    return "Users list";
+}
+
+With AOP (clean):
+
+public String getUsers() {
+    return "Users list";             // only business logic
+}
+// logging happens automatically via Aspect
+
+
+Key AOP Terms (simple)
+
+Aspect     → the class that holds the extra logic (@Aspect)
+Advice     → when to run that logic (@Before, @After, @Around, etc.)
+Pointcut   → which methods to target (e.g. all controller methods)
+JoinPoint  → the actual method being intercepted
+
+
+Simple flow:
+
+Client calls API
+      ↓
+Aspect runs (@Before / @Around...)
+      ↓
+Controller / Service method runs
+      ↓
+Aspect runs again (if @After / @Around)
+      ↓
+Response returned
+
+
+Why AOP exists:
+
+Some concerns are needed in many places:
+- Logging
+- Security
+- Performance timing
+- Transactions
+- Auditing
+
+These are called Cross-Cutting Concerns
+(they cut across many classes).
+
+AOP lets you write them once and apply them everywhere.
+
+
+🔑 Interview One-Liner
+
+AOP (Aspect-Oriented Programming) allows you to separate cross-cutting concerns
+like logging and security from business logic, and apply them automatically
+to selected methods using aspects and advice.
+
+
+--------------------------------------------------
+
+
 Here is a real production example used in microservices built with Spring Boot to log every HTTP request automatically using AOP.
 
 This is very common in backend systems.
