@@ -200,18 +200,22 @@ Cache refreshes before expiration.
 Good for:
 
 frequently accessed data
-
+>>>>>>>>>>>>>>
 Cache Concepts (Interview Important)
+
 Cache Hit
 
 Data found in cache.
 
 Request → Cache → Data returned
+
+
 Cache Miss
 
 Data not found in cache.
 
 Request → Cache → Database → Cache update
+
 TTL (Time To Live)
 
 Time after which cache expires.
@@ -219,6 +223,7 @@ Time after which cache expires.
 Example:
 
 userCache TTL = 10 minutes
+
 Real Example (Spring Boot Microservice)
 
 User service:

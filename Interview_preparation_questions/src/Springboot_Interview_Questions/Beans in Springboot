@@ -1,5 +1,6 @@
 Key Concepts of Beans in Spring Boot
 
+
 Bean Definition:  // you can say bean is a object of class like object of service class ,object of DAO class etc.
 Beans are the objects that form the backbone of a Spring application and are managed by the Spring IoC container.
 A bean can be defined using annotations or XML configuration (though XML is less common in Spring Boot).
@@ -65,7 +66,7 @@ Bean Autowiring:
 Spring Boot provides several ways to automatically inject beans into other beans using dependency injection. Common methods include:
 Field Injection: Using @Autowired on fields.
 Constructor Injection: Using @Autowired(optional) or just relying on Spring Boot’s constructor injection without the annotation (preferred for mandatory dependencies).
-Setter Injection: Using @Autowired on setter methods.
+Setter Injection: Using @Autowired on setter methods.(preferred for optional dependencies)
 
 Using @Autowired to Inject Beans
 @Controller

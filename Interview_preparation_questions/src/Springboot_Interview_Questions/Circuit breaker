@@ -1,5 +1,6 @@
 🛑 Circuit Breaker in Spring Boot — Complete Guide
-A Circuit Breaker is a resilience pattern used in microservices to prevent repeated calls to a failing service, protecting your application from cascading failures.
+A Circuit Breaker is a resilience pattern used in microservices to prevent repeated calls to a failing service, protecting your application from
+cascading failures.
 
 🔧 Why Use Circuit Breaker?
 Without it:
@@ -28,6 +29,7 @@ Use Resilience4j — the recommended lightweight library supported by Spring Boo
     <groupId>io.github.resilience4j</groupId>
     <artifactId>resilience4j-spring-boot3</artifactId>
 </dependency>
+
 🧪 Basic Usage Example
 2. Service Class with Circuit Breaker
 

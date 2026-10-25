@@ -20,7 +20,7 @@ public class BeanDemo {
     public static void main(String[] args) {
         //    var container = SpringApplication.run()............ // now we take it as a container
 //        BeanDemo beanDemo = container.getBean(BeanDemo.class);
-//        System.out.println(beanDemo); // it will firs initialize beanDemo then it prints its sout
+//        System.out.println(beanDemo); // it will first initialize beanDemo then it prints its sout
 
     }
 

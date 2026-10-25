@@ -31,8 +31,7 @@ public void transfer() {
     accountRepo.credit(100);
 }
 
-Result:
-❌ Transaction ROLLBACK
+Result: Transaction ROLLBACK
 
 2. When You Use try-catch
 @Transactional

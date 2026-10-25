@@ -1,6 +1,6 @@
 
 The issue you're encountering is due to the fact that Spring's @Value annotation doesn't work directly with static fields. In your AppConstant class,
- if you try to assign a value to a static variable using @Value, it will result in a null value because Spring injects values into instance fields, not static ones.
+if you try to assign a value to a static variable using @Value, it will result in a null value because Spring injects values into instance fields, not static ones.
 
 
  Solution: Use a Non-Static Field or Provide a Getter Method
