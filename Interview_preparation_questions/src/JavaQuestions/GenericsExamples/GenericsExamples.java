@@ -1,5 +1,6 @@
 package JavaQuestions.GenericsExamples;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -8,67 +9,112 @@ public class GenericsExamples {
 //    Generics in Java are a powerful feature that allows you to write flexible, reusable, and type-safe code. Introduced in Java 5, generics enable classes,
 //    interfaces, and methods to operate on types specified by the client code while maintaining compile-time type safety.
 
-    public static void main(String[] args) {
-        Box<String> stringBox = new Box<String>();// here we assign the string value
-        stringBox.setContent("Hello");
-        String content = stringBox.getContent();
-        System.out.println(content);
+//    KEY IDEA (easy memory):
+//    Without generics:  List list = ...;  String s = (String) list.get(0);  // cast + runtime ClassCastException risk
+//    With generics:     List<String> list = ...;  String s = list.get(0);   // compile-time type safety
+//
+//    Generics = one class/method, many types, checked at COMPILE time.
+//
+//    Forms:
+//    1) Generic class:     class Box<T>
+//    2) Generic interface: interface Pair<K,V>
+//    3) Generic method:    public static <T> void printArray(T[] array)
+//    4) Bounded type:      <T extends Number>
+//    5) Wildcards:         <?>, <? extends T>, <? super T>
+//
+//    TYPE ERASURE (very common interview question):
+//    Generics exist mainly at compile time. At runtime, type parameters are erased.
+//    Box<String> and Box<Integer> become just Box after compilation (roughly).
+//    That is why:
+//    - you cannot use primitives: Box<int> ❌  -> use Box<Integer> ✅
+//    - you cannot create new T() or new T[] easily
+//    - List<String> and List<Integer> share the same runtime class: List
+//
+//    PECS: Producer Extends, Consumer Super
+//    - reading FROM a collection (producer) -> <? extends T>
+//    - writing INTO a collection (consumer) -> <? super T>
 
-        Box<Integer> intBox = new Box<Integer>(); //here we assign int value
+    public static void main(String[] args) {
+        // diamond <> infers type from left side (Java 7+)
+        Box<String> stringBox = new Box<>(); // assign String
+        stringBox.setContent("Hello");
+        String content = stringBox.getContent(); // no cast needed
+        System.out.println("1) String box: " + content);
+
+        Box<Integer> intBox = new Box<>(); // assign Integer (not int — generics need reference types)
         intBox.setContent(123);
-        int value = intBox.getContent();
-        System.out.println(value);
+        int value = intBox.getContent(); // auto-unboxing Integer -> int
+        System.out.println("2) Integer box: " + value);
 
 
         String[] words = {"Hello", "World"};
+        System.out.println("3) printArray(String[]):");
         printArray(words);
-        Integer[] keys = {23,45}; //  here we can't pas int[] because generics wants wrapper class
+        Integer[] keys = {23, 45}; // cannot pass int[] — type parameter T must be a reference type
+        System.out.println("4) printArray(Integer[]):");
         printArray(keys);
 
 
-        addNumbers(5, 10); // Both are Integers, which are subclasses of Number we can restrict here only numbers
+        System.out.println("5) bounded <T extends Number>:");
+        addNumbers(5, 10); // Integers (subclasses of Number)
 
 
-
-        // Usage
+        // <? extends Number> = list of Number or any subtype (Integer, Double...)
         List<Integer> intList = Arrays.asList(1, 2, 3);
+        System.out.println("6) upper bound <? extends Number> (READ):");
         printNumbers(intList);
-//    <? extends Number> means the method accepts a list of any type that extends Number.
+        printNumbers(Arrays.asList(1.5, 2.5)); // Double also OK
+
+        // <? super Integer> = list that can HOLD Integer (Integer, Number, Object)
+        List<Number> numberList = new ArrayList<>();
+        System.out.println("7) lower bound <? super Integer> (WRITE):");
+        addIntegers(numberList);
+        System.out.println(numberList);
 
 
-
-
-// we can use in interface and classes  look his interface and classes are below
+        // generic interface + class
         Pair<String, Integer> p1 = new OrderedPair<>("One", 1);
+        System.out.println("8) Pair: " + p1.getKey() + " -> " + p1.getValue());
 
-
+        // RAW type (avoid) — no <Type>, loses type safety (legacy pre-Java 5 style)
+        // Box raw = new Box(); raw.setContent(1); String bad = (String) raw.getContent(); // ClassCastException risk
     }
-    // Example of a generic method that takes an array of any type and prints its elements
+
+    // generic method: <T> before return type declares the type parameter
     public static <T> void printArray(T[] array) {
         for (T element : array) {
-            System.out.println(element);
+            System.out.println("   " + element);
         }
     }
-    //You can restrict the types that can be used with generics by specifying bounds:
-    public static  <T extends Number> void addNumbers(T num1, T num2) {
-        System.out.println(num1.doubleValue() + num2.doubleValue());
+
+    // bounded type parameter: only Number or its subclasses
+    public static <T extends Number> void addNumbers(T num1, T num2) {
+        System.out.println("   sum = " + (num1.doubleValue() + num2.doubleValue()));
     }
 
-//    Wildcards are used to handle unknown types:
-//
-//    Unbounded Wildcard: <?>
-//    Upper-Bounded Wildcard: <? extends T>
-//    Lower-Bounded Wildcard: <? super T>       //////read below
-//    Example of an upper-bounded wildcard:
+//    Wildcards = unknown type:
+//    Unbounded:      <?>              any type
+//    Upper-bounded:  <? extends T>    T or subclass  -> good for READING (producer)
+//    Lower-bounded:  <? super T>      T or superclass -> good for WRITING (consumer)
 
     public static void printNumbers(List<? extends Number> list) {
         for (Number n : list) {
-            System.out.println(n);
+            System.out.println("   " + n);
         }
+        // list.add(1); // ❌ cannot add — exact subtype unknown (could be List<Double>)
+    }
+
+    public static void addIntegers(List<? super Integer> list) {
+        list.add(10); // ✅ can write Integer
+        list.add(20);
+        // Integer x = list.get(0); // ❌ not safe — may be Object/Number; read only as Object
+        Object first = list.get(0);
+        System.out.println("   first as Object: " + first);
     }
 
 }
- class Box<T> {
+
+class Box<T> {
     private T content;
 
     public void setContent(T content) {
@@ -80,12 +126,12 @@ public class GenericsExamples {
     }
 }
 
- interface Pair<K, V> {
+interface Pair<K, V> {
     K getKey();
     V getValue();
 }
 
- class OrderedPair<K, V> implements Pair<K, V> {
+class OrderedPair<K, V> implements Pair<K, V> {
     private K key;
     private V value;
 
@@ -94,95 +140,50 @@ public class GenericsExamples {
         this.value = value;
     }
 
-    public K getKey() { return key; }
-    public V getValue() { return value; }
+    public K getKey() {
+        return key;
+    }
+
+    public V getValue() {
+        return value;
+    }
 }
 
 
 //✅ Upper-Bounded Wildcard: <? extends T>
 //Meaning: Accepts any type that is T or a subclass of T.
+//Used when you want to READ data from a generic structure.
+//You cannot add elements (exact type unknown) — only reading is safe.
 //
-//It is used when you want to read data from a generic structure.
+//printNumbers(List<Integer>) ✅
+//printNumbers(List<Double>)  ✅
+//list.add(5) ❌
+//list.add(null) ✅ (only null)
 //
-//You cannot add elements, because the exact type is unknown — only reading is safe.
-//
-//📦 Example Use Case: Reading a List of Numbers
-
-//public class WildcardExample {
-//    public static void printNumbers(List<? extends Number> list) {
-//        for (Number num : list) {
-//            System.out.println(num);
-//        }
-//    }
-//
-//    public static void main(String[] args) {
-//        List<Integer> intList = Arrays.asList(1, 2, 3);
-//        List<Double> doubleList = Arrays.asList(1.1, 2.2, 3.3);
-//
-//        printNumbers(intList);     // ✅ Allowed (Integer extends Number)
-//        printNumbers(doubleList);  // ✅ Allowed (Double extends Number)
-//    }
-//}
-//⚠️ Important Notes:
-//You can read elements as type Number.
-//
-//You cannot add elements to the list — because the exact subtype is unknown.
-
-//list.add(5);       // ❌ Compilation error
-//list.add(null);    // ✅ Allowed
-//📌 When to use <? extends T>?
-//When you need to consume (read) data from a collection.
-//
-//You don’t need to write/add data to it.
-//
-//You want to ensure the items are at least of type T.
-
-
-
-
-
+//When: consume/read; items are at least type T.
 
 
 //✅ Lower-Bounded Wildcard: <? super T>
 //Meaning: Accepts any type that is T or a superclass of T.
+//Used when you want to WRITE (add) data into a generic structure.
+//You cannot safely read as T — only as Object.
 //
-//It is used when you want to write (add) data into a generic structure.
+//addIntegers(List<Object>) ✅
+//addIntegers(List<Number>) ✅
+//list.add(10) ✅ Integer
+//list.add(2.5) ❌ Double not Integer
 //
-//You cannot safely read specific types, except Object.
-//
-//📦 Example Use Case: Adding Integers to a List
-//java
-//Copy
-//Edit
-//public class LowerBoundExample {
-//    public static void addNumbers(List<? super Integer> list) {
-//        list.add(10);      // ✅ Allowed
-//        list.add(20);      // ✅ Allowed
-//        // list.add(2.5);  // ❌ Not allowed, 2.5 is Double
-//
-//        // Reading elements - only as Object
-//        for (Object obj : list) {
-//            System.out.println(obj);
-//        }
-//    }
-//
-//    public static void main(String[] args) {
-//        List<Object> objList = new ArrayList<>();
-//        List<Number> numList = new ArrayList<>();
-//
-//        addNumbers(objList);  // ✅ Object is a super of Integer
-//        addNumbers(numList);  // ✅ Number is a super of Integer
-//    }
-//}
-//⚠️ Key Rules:
-//You can add Integer or its subclasses into the list.
-//
-//You can only read as Object — not as Integer or Number.
-//
-//🔁 Summary: PECS Principle
-//PECS: Producer Extends, Consumer Super
-//
+//When: produce/write T into the collection.
+
+
+//🔁 PECS: Producer Extends, Consumer Super
 //| Wildcard        | Usage    | Add Elements?        | Read Elements?           |
 //| --------------- | -------- | -------------------- | ------------------------ |
-//| `<? extends T>` | Producer | ❌ No                 | ✅ Yes (as `T`)           |
-//| `<? super T>`   | Consumer | ✅ Yes (T or subtype) | ✅ Yes (only as `Object`) |
+//| <? extends T>   | Producer | No                   | Yes (as T)               |
+//| <? super T>     | Consumer | Yes (T or subtype)   | Yes (only as Object)     |
+
+
+// One-Line Summary
+// Generics = compile-time type safety + reusable code (Box<T>, methods, wildcards)
+// Erasure = type info mostly gone at runtime (no primitives as type args)
+// PECS = extends to read, super to write

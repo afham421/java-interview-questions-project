@@ -42,6 +42,21 @@ public class DynamicProxy {
 //      1) classLoader  -> usually target.getClass().getClassLoader()
 //      2) interfaces[] -> which interface(s) the proxy should implement
 //      3) handler      -> InvocationHandler that intercepts every method call
+//
+//    Static Proxy vs Dynamic Proxy (common interview question):
+//    Feature          Static Proxy                         Dynamic Proxy
+//    Created          Compile time (you write a class)     Runtime (Proxy.newProxyInstance)
+//    Code             One proxy class per target type      One InvocationHandler for many
+//    Flexibility      Low (new proxy class each time)      High (generic interception)
+//    Used in          Simple manual wrappers               Spring AOP, mocking frameworks
+//
+//    Static example (concept only):
+//      class LoggingMap implements Map { Map real; put(){ log; real.put(); } }
+//    Dynamic = same idea, but JVM generates the proxy class for you at runtime.
+//
+//    NOTE when you System.out.println(fees):
+//    println calls fees.toString() → that ALSO goes through invoke()
+//    so you will see before/after for "toString" as well (not only put).
 
     public static void main(String[] args) {
 
