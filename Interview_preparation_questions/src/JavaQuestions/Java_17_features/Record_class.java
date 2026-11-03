@@ -1,57 +1,87 @@
 package JavaQuestions.Java_17_features;
 
 public class Record_class {
-    // Records were introduced as a preview feature in Java 14 and became a standard feature in Java 16 and stable in java 17. They provide a new, compact way to declare classes
-// that are primarily used to store data. By using records, you can avoid the boilerplate code typically associated with data classes,
-// such as defining constructors, equals(), hashCode(), and toString() methods.
-//Benefits of Using Records
-// Reduced Boilerplate Code: Less code to write and maintain.
-// Immutability by Default: Encourages good programming practices by making the data immutable.
-// Automatic Method Generation: Simplifies the creation of data classes.
-// Limitations
-// No Inheritance: Records cannot extend other classes. They implicitly extend java.lang.Record.
-// Immutable Fields: Once a record is created, its fields cannot be modified.
+    // 📌 Version: Records → Java 14 (preview) → Java 16 (standard). Java 17 LTS mein commonly use.
+    // Record = compact data-carrier class. Compiler auto-generate karta hai:
+    //   - private final fields (components)
+    //   - canonical constructor = the main constructor whose parameters match the record’s components, in the same order.
+    //   - accessors: name()  (NOT getName() — Bean style nahi)
+    //   - equals(), hashCode(), toString()  (sab components pe based)
 
-//    DTOs k liye best practice Java 17 mein
-//    Use Records agar DTO immutable chahiye (jo ke zyada secure aur safe hota hai).
-//    Agar aapko mutable DTO chahiye (jisme setters ka use karna ho), to phir normal class hi use karni hogi.
-//            👉 Matlab simple lafzon mein:
-//    Immutable DTOs → Record use karo
-//    Mutable DTOs → Normal Class use karo
+    // ✅ Benefits
+    // - Less boilerplate (no manual getters/equals/hashCode/toString)
+    // - Immutable by default (components private final)
+    // - Great for DTOs, keys, value objects
+
+    // ❌ Limitations / Rules (interview-important)
+    // - Cannot extend another class (implicitly extends java.lang.Record)
+    // - Record itself is implicitly final → cannot be subclassed
+    // - Can implement interfaces
+    // - Extra instance fields NOT allowed (sirf header components)
+    // - Shallow immutability: agar component mutable object hai (e.g. List), uska content change ho sakta hai
+
+    // 🔹 What is Canonical constructor?
+    // Canonical = main / full constructor jiske params record components se match karte hain (same order).
+    // Example: record Person1(String name, int age) {}
+    // Compiler auto-generate karta hai:
+    //   public Person1(String name, int age) {
+    //       this.name = name;
+    //       this.age = age;
+    //   }
+    // Isi ko call karta hai: new Person1("Alice", 30)
+    // “Canonical” = official all-args constructor for every component.
+    // Koi bhi extra constructor MUST eventually this(...) se isi ko call kare:
+    //   public Person1(String name) { this(name, 0); }  // → canonical
+
+    // 🔹 Compact vs Canonical constructor
+    // |              | Canonical                                              | Compact                                      |
+    // | Shape        | Person1(String name, int age) { this.name = name; ... } | Person1 { /* only logic */ }                 |
+    // | Params listed? | Yes                                                  | No (header se infer)                         |
+    // | Field assign?| You write this.x = x (ya compiler)                     | Compiler assigns AFTER your body             |
+    // | Typical use  | Full control / rarely write by hand                    | Validation (if age < 0 ...)                  |
+
+    // Canonical: public Person1(String name, int age) { this.name = name; this.age = age; }  // auto
+    // Compact:   public Person1 { /* validation */ }  // no params, no this.x = x; assignment auto
+
+    // DTOs best practice:
+    // Immutable DTO → Record
+    // Mutable DTO (setters) → normal class
+
+    // 🧠 Interview one-liner
+    // “A record is an immutable data carrier with auto equals/hashCode/toString and name()-style accessors.”
 
     public static void main(String[] args) {
         Point point = new Point(10, 20);
 
-        // Accessing the fields
-        System.out.println("X: " + point.x()); //x() are getters
-        System.out.println("Y: " + point.y()); //there is no need for setters because record is immutable and final keyword when you create a new record and pass the values then you don't update.'
+        // Accessors are x() / y() — not getX() / getY()
+        System.out.println("X: " + point.x());
+        System.out.println("Y: " + point.y());
+        // No setters — record components are final; update = new instance banao
 
-        // Using the toString() method
-        System.out.println("JavaQuestions.Java_17_features.Point: " + point);
+        // Auto toString → Point[x=10, y=20]
+        System.out.println("Point: " + point);
 
-        // Comparing records
+        // equals/hashCode components pe based → true
         Point anotherPoint = new Point(10, 20);
         System.out.println("Points are equal: " + point.equals(anotherPoint));
-
 
         Person1 person1 = new Person1("joki", 21);
         System.out.println(person1.greet());
 
-        // Using the canonical constructor
+        // Canonical constructor (compact validation bhi chalega)
         Person1 person = new Person1("Alice", 30);
         System.out.println(person);
 
-        // Using the overloaded constructor with name only
+        // Overloaded constructors → must delegate to canonical via this(...)
         Person1 person2 = new Person1("Bob");
         System.out.println(person2);
 
-        // Using the default constructor
         Person1 person3 = new Person1();
         System.out.println(person3);
 
-        // Attempting to create a person with invalid age
+        // Compact constructor validation
         try {
-            Person1 person4 = new Person1("Charlie", -5); // This will throw an exception
+            Person1 person4 = new Person1("Charlie", -5);
         } catch (IllegalArgumentException e) {
             System.out.println("Caught an exception: " + e.getMessage());
         }
@@ -60,43 +90,36 @@ public class Record_class {
 }
 
 record Point(int x, int y) {
-
+    // Empty body OK — sab auto-generated
 }
 
-//class fdf extends JavaQuestions.Java_17_features.Point{ // can't extend record class because it final keyword
-//}
+// class fdf extends Point {}  // ❌ compile error — record is implicitly final
 
 record Person1(String name, int age) {
 
-    // Canonical constructor (automatically generated, shown here for clarity)
-//    public JavaQuestions.Java_17_features.Person1(String name, int age) {
-//        this.name = name;
-//        this.age = age;
-//    }
-
-    // Custom constructor with validation logic
+    // Compact constructor — validation ke liye best place
+    // Params already in scope; field assignment compiler karta hai
     public Person1 {
         if (age < 0) {
             throw new IllegalArgumentException("Age cannot be negative.");
         }
     }
 
-    // Additional custom constructor (overloaded)
+    // Extra constructors MUST call this(...) → canonical/compact
     public Person1(String name) {
-        this(name, 0); // Default age to 0 if not provided
+        this(name, 0);
     }
 
-    // Custom constructor for another initialization method
     public Person1() {
-        this("Unknown", 0); // Default name to "Unknown" and age to 0
+        this("Unknown", 0);
     }
 
-    // Custom method
+    // Custom instance methods allowed
     public String greet() {
         return "Hello, my name is " + name + " and I am " + age + " years old.";
     }
 
-    // Overriding the toString() method
+    // Auto toString override optional
     @Override
     public String toString() {
         return name + " (" + age + " years old)";

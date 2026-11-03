@@ -1,11 +1,10 @@
 Got it 👍 You’re asking about Pattern Matching in Java.
 This is tightly connected to sealed classes and newer Java features (Java 16+).
 
-Pattern Matching for Switch (Preview)
-Switch statements mein pattern matching introduce kiya gaya.
-Pehle sirf int, enum ya String type use hoti thi, ab objects ka bhi direct use ho sakta hai.
-
-
+📌 Version timeline (interview-important)
+- Pattern Matching for instanceof → Java 14 (preview) → Java 16 (standard)
+- Pattern Matching for switch → Java 17 (preview) → Java 21 (standard)
+- Record patterns → Java 19 (preview) → Java 21 (standard)
 
 🔹 What is Pattern Matching?
 Pattern Matching makes it easier to check an object’s type and extract values in a single step — instead of writing boilerplate instanceof and casting code.
@@ -16,14 +15,94 @@ if (obj instanceof String) {
     String s = (String) obj;  // manual cast
     System.out.println(s.toUpperCase());
 }
+
 🔹 New Way (Pattern Matching for instanceof)
 
 if (obj instanceof String s) {
     // 's' is already casted
     System.out.println(s.toUpperCase());
 }
+
 ✅ No explicit cast needed.
-✅ Variable s is scoped only inside the if.
+✅ Variable s is scoped only inside the if (flow scoping).
+
+🔹 Flow scoping example
+
+if (!(obj instanceof String s)) {
+    return;
+}
+// yahan s use ho sakta hai — compiler jaanta hai type String hai
+System.out.println(s.length());
+
+🔹 Guarded patterns (when clause)
+
+Guarded pattern = type match + extra condition (`when`).
+Matlab: pehle type check, phir usi variable pe condition.
+
+Syntax:
+  case Type variable when condition -> ...
+
+Example:
+
+static void printLength(Object obj) {
+    switch (obj) {
+        case String s when s.length() > 5 -> System.out.println("Long text: " + s);
+        case String s                     -> System.out.println("Short text: " + s);
+        default                           -> System.out.println("Not a String");
+    }
+}
+
+Dry run (samajhne ke liye):
+  printLength("HelloWorld");  // String + length 10 > 5  → "Long: HelloWorld"
+  printLength("Hi");          // String + length 2 ≤ 5   → "Short: Hi"
+  printLength(42);            // not a String             → "Not a String"
+
+Bina `when` ke aapko aisa likhna padta:
+
+case String s -> {
+    if (s.length() > 5) System.out.println("Long: " + s);
+    else System.out.println("Short: " + s);
+}
+
+`when` us if ko case ke andar hi fold kar deta hai.
+
+⚡ Dominance rule — case order matters
+Cases top → bottom try hote hain. Specific (guarded) pehle, general baad mein.
+
+✅ Correct order:
+
+switch (obj) {
+    case String s when s.length() > 5 -> System.out.println("Long");  // specific
+    case String s                     -> System.out.println("Short"); // general
+    default                           -> System.out.println("Other");
+}
+
+❌ Wrong order (compile error — unreachable case):
+
+switch (obj) {
+    case String s                     -> System.out.println("Short"); // sab Strings catch
+    case String s when s.length() > 5 -> System.out.println("Long");  // kabhi nahi chalega
+}
+
+Reason: unguarded `case String s` already covers EVERY String,
+so guarded case ke neeche rehna impossible → compiler reject.
+
+Ek aur example (Integer):
+
+static String checkNumber(Object obj) {
+    return switch (obj) {
+        case Integer i when i > 0  -> "Positive: " + i;
+        case Integer i when i < 0  -> "Negative: " + i;
+        case Integer i             -> "Zero";          // i == 0
+        case String s              -> "Not a number: " + s;
+        default                    -> "Unknown";
+    };
+}
+
+// checkNumber(10)   → "Positive: 10"
+// checkNumber(-3)   → "Negative: -3"
+// checkNumber(0)    → "Zero"
+// checkNumber("hi") → "Not a number: hi"
 
 
 
@@ -46,6 +125,7 @@ final class Square implements Shape {
     double side;
     Square(double s) { this.side = s; }
 }
+
 Now use Pattern Matching in a switch:
 
 static double area(Shape shape) {
@@ -56,21 +136,14 @@ static double area(Shape shape) {
     };
 }
 
-
-
 ⚡ Notice:
-
-No default is required because compiler knows all subtypes (Circle, Rectangle, Square) from the sealed hierarchy.
-
-Each case directly binds the type (Circle c) and variable (c).
-
-
+- No default is required because compiler knows all subtypes (Circle, Rectangle, Square) from the sealed hierarchy.
+- Each case directly binds the type (Circle c) and variable (c).
 
 
 
 🔹 Record + Pattern Matching (Super Powerful)
 With records, pattern matching can destructure objects:
-
 
 record Point(int x, int y) {}
 
@@ -83,14 +156,27 @@ static String printPoint(Object obj) {
     };
 }
 
+✅ Nested record patterns bhi possible hain:
 
+record Point(int x, int y) {}
+record Rectangle(Point topLeft, Point bottomRight) {}
+
+static int width(Object obj) {
+    return switch (obj) {
+        case Rectangle(Point(int x1, int y1), Point(int x2, int y2)) -> x2 - x1;
+        default -> 0;
+    };
+}
+
+
+
+🧠 Interview one-liner
+“Pattern Matching lets you test a type and bind a variable in one step — with instanceof (Java 16)
+and switch (Java 21) — cutting cast boilerplate and enabling exhaustive matching with sealed types.”
 
 ✅ Summary
-
-Pattern Matching simplifies instanceof + casting.
-
-Works with switch expressions for sealed classes.
-
-Combined with records, it enables destructuring.
-
-Removes boilerplate and makes code more concise + type-safe.
+- Pattern Matching simplifies instanceof + casting.
+- Works with switch expressions for sealed classes (exhaustive, no default needed).
+- Combined with records, it enables destructuring.
+- Guarded patterns (when) add conditions on cases.
+- Removes boilerplate and makes code more concise + type-safe.

@@ -1,4 +1,10 @@
-🔹 Before (Traditional switch statement)
+
+📌 Version: Switch expressions → Java 12 (preview) → Java 14 (standard). Java 17 LTS mein common.
+(Pattern matching for switch → Java 17 preview → Java 21 standard — alag topic, pattern matching file dekho.)
+
+
+🔹 Before (Traditional switch STATEMENT)
+
 String day = "MONDAY";
 int num;
 
@@ -14,25 +20,102 @@ switch (day) {
 }
 
 ❌ Problems with old style
+- Required break (forget → fall-through bugs)
+- More boilerplate
+- Not an expression (can’t assign / return directly)
+- Less readable
 
-Required break (easy to forget → bugs)
 
-More boilerplate
-
-Not an expression (can’t assign directly)
-
-Less readable
-
-🔹 After (Java 12+ / 14+ / 17+)
-
-Your modern version (switch expression):
+🔹 After — Switch EXPRESSION (arrow form)
 
 int num = switch (day) {
-    case "MONDAY" -> 1;
+    case "MONDAY"  -> 1;
+    case "TUESDAY" -> 2;
+    default        -> 0;
+};
+
+✅ Returns a value → assign / return kar sakte ho
+✅ Arrow `->` = NO fall-through (break ki zaroorat nahi)
+✅ Cleaner
+
+
+🔹 Statement vs Expression (interview diff)
+
+|                    | Switch STATEMENT           | Switch EXPRESSION              |
+|--------------------|----------------------------|--------------------------------|
+| Returns value?     | No                         | Yes                            |
+| Fall-through?      | Yes (colon `:` + break)    | No with `->`                   |
+| Exhaustive?        | Optional default           | MUST cover all cases (or default) |
+| Introduced modern  | Classic Java               | Java 14 standard               |
+
+
+🔹 Multiple labels (comma)
+
+int num = switch (day) {
+    case "MONDAY", "FRIDAY", "SUNDAY" -> 1;   // weekends/week start style grouping
+    case "TUESDAY"                     -> 2;
+    default                            -> 0;
+};
+
+
+🔹 Block + yield (jab multi-line logic chahiye)
+
+int num = switch (day) {
+    case "MONDAY" -> {
+        System.out.println("Start of week");
+        yield 1;          // yield = return value from switch expression block
+    }
     case "TUESDAY" -> 2;
     default -> 0;
 };
 
-🧠 Interview one-liner
+⚡ `yield` sirf switch EXPRESSION ke block mein.
+   Old `break` value return nahi karta — `yield` karta hai.
 
-“Switch expressions allow switch to return a value, eliminate fall-through, and improve readability using arrow syntax.”
+
+🔹 Colon form with yield (bhi valid expression)
+
+int num = switch (day) {
+    case "MONDAY":
+        yield 1;
+    case "TUESDAY":
+        yield 2;
+    default:
+        yield 0;
+};
+
+Prefer `->` for clarity; colon+yield jab intentional grouping/fall-through-style structure chahiye (rare).
+
+
+🔹 Exhaustiveness
+
+Switch expression MUST produce a value for every possible input:
+
+// enum — saari constants cover OR default
+enum Day { MON, TUE, WED }
+int n = switch (day) {
+    case MON -> 1;
+    case TUE -> 2;
+    case WED -> 3;     // default optional if all enum constants covered
+};
+
+// String / int etc. → usually default REQUIRED
+int n2 = switch (day) {
+    case "MONDAY" -> 1;
+    default -> 0;      // warna compile error
+};
+
+
+🔹 Quick link: Pattern Matching for switch (Java 21)
+Sealed types + type patterns:
+
+return switch (shape) {
+    case Circle c    -> Math.PI * c.radius * c.radius;
+    case Rectangle r -> r.length * r.width;
+    case Square s    -> s.side * s.side;
+};
+
+
+🧠 Interview one-liner
+“Switch expressions allow switch to return a value, eliminate fall-through with arrow syntax,
+and require exhaustiveness — use yield when the case is a multi-line block.”

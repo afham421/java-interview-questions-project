@@ -1,78 +1,108 @@
-In Java 15 (preview) → Java 17 (standard), the concept of sealed classes was introduced.
+📌 Version: Sealed classes → Java 15 (preview) → Java 17 (standard).
 
 🔹 What is a Sealed Class?
-A sealed class lets you restrict which classes can extend or implement it.
+A sealed class/interface lets you restrict which types can extend or implement it.
 
-Normally, any class can extend another class (if not final).
+Normally: any class can extend another (if not final).
+With sealed: you explicitly list allowed subclasses → controlled inheritance.
 
-With sealed, you explicitly list the allowed subclasses.
+vs final:
+  final  → 0 subclasses allowed
+  sealed → ONLY the listed subclasses allowed (finite, known set)
 
-This gives you controlled inheritance.
 
 🔹 Syntax
-java
-Copy
-Edit
+
 public sealed class Shape permits Circle, Rectangle, Square {
-    // common fields & methods
+    // common fields & methods — often abstract sealed class
 }
 
 final class Circle extends Shape {
-    // Only final - cannot be extended further
+    // final → cannot be extended further
 }
 
 final class Rectangle extends Shape {
-    // Only final - cannot be extended further
+    // final → cannot be extended further
 }
 
 non-sealed class Square extends Shape {
-    // non-sealed - can be extended by others
+    // non-sealed → anyone can extend Square again
 }
 
 
-🔹 Rules
-A sealed class must declare its permitted subclasses using permits.
+🔹 Rules (interview-important)
+1. Sealed type must declare permitted subtypes with `permits`
+   (Exception: agar saari subclasses SAME file mein hain → `permits` optional, compiler infer kar leta hai)
 
-All subclasses must be in the same module (or package if no modules).
+2. Every permitted subtype MUST be in the same module
+   (agar no module → same package)
 
-Each subclass must declare itself as either:
+3. Har subclass MUST declare itself as ONE of:
+   - final      → inheritance band
+   - sealed     → inheritance further restrict (apna permits likho)
+   - non-sealed → inheritance dobara open
 
-final → cannot be extended further.
+4. Subclass must DIRECTLY extend/implement the sealed type
+   (indirect extend allowed nahi bina middle type ke permitted hone ke)
 
-sealed → further restrict inheritance.
+5. Sealed class khud abstract ho sakti hai (common pattern)
 
-non-sealed → open it up again.
+
+🔹 Same-file shortcut (permits skip)
+
+public sealed class Shape {          // no permits — same file
+    final class Circle extends Shape {}
+    final class Rectangle extends Shape {}
+}
+
 
 🔹 Example with Interfaces
-java
-Copy
-Edit
+
 public sealed interface Vehicle permits Car, Bike {}
 
 final class Car implements Vehicle {}
 final class Bike implements Vehicle {}
-🔹 Why use Sealed Classes?
-✔ Helps enforce domain modeling (only valid subtypes exist).
-✔ Makes switch expressions exhaustive (compiler knows all possible subtypes).
-✔ Improves code safety and readability.
 
-🔹 Example: Pattern Matching
-java
-Copy
-Edit
+
+🔹 Nested sealed (further restrict)
+
+public sealed class Shape permits Polygon, Circle {}
+
+public sealed class Polygon extends Shape permits Triangle, Rectangle {}
+// Polygon sealed → sirf Triangle, Rectangle extend kar sakte hain
+
+public final class Triangle extends Polygon {}
+public final class Rectangle extends Polygon {}
+public final class Circle extends Shape {}
+
+
+🔹 Why use Sealed Classes?
+✔ Domain modeling — only valid subtypes exist (e.g. Result = Success | Failure)
+✔ Exhaustive switch — compiler jaanta hai saari subtypes → default optional
+✔ Safer than open inheritance; more flexible than enum (har subtype alag fields/behavior)
+
+
+🔹 Example: Pattern Matching + exhaustive switch
+
 static String getShapeType(Shape shape) {
     return switch (shape) {
-        case Circle c -> "It's a Circle";
+        case Circle c    -> "It's a Circle";
         case Rectangle r -> "It's a Rectangle";
-        case Square s -> "It's a Square";
+        case Square s    -> "It's a Square";
+        // no default needed — sealed hierarchy complete
     };
 }
-👉 No default case needed, because compiler knows all Shape types.
 
-⚡ So:
+👉 Nayi subtype add ki (permits mein) aur switch update nahi kiya → compile error.
+   Yeh intentional safety hai.
 
-sealed → restricts inheritance.
 
-final → closes inheritance.
+⚡ Modifier cheat-sheet
 
-non-sealed → re-opens inheritance.
+sealed     → restricts inheritance (permits list)
+final      → closes inheritance (no children)
+non-sealed → re-opens inheritance (anyone can extend)
+
+
+🧠 Interview one-liner
+“Sealed classes give controlled inheritance: only permitted subtypes can extend them, enabling exhaustive pattern-matching switches without a default.”

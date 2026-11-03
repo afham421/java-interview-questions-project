@@ -1,0 +1,128 @@
+🔹 Canonical vs Compact Constructor (Java Records)
+
+Dono record constructors hain — kaam related hai, style alag.
+
+
+═══════════════════════════════════════
+1) Canonical Constructor
+═══════════════════════════════════════
+
+Kya hai?
+→ Record ka MAIN / FULL constructor.
+→ Parameters EXACTLY record components jaisi (same names, same order).
+→ Compiler usually auto-generate karta hai.
+
+Example record:
+  record Person(String name, int age) {}
+
+Auto-generated canonical:
+  public Person(String name, int age) {
+      this.name = name;
+      this.age = age;
+  }
+
+Call:
+  new Person("Alice", 30);   // → canonical constructor
+
+Agar khud likho (rarely needed — jab normalize/copy karna ho):
+
+  record Person(String name, int age) {
+      // Explicit CANONICAL constructor — params MUST match header
+      public Person(String name, int age) {
+          this.name = name.trim();
+          this.age = age;
+      }
+  }
+
+Rules:
+- Params = components (same type + order)
+- Aap KHUD assign karte ho: this.name = name;
+- Extra constructors MUST isko call karein via this(...)
+
+
+═══════════════════════════════════════
+2) Compact Constructor
+═══════════════════════════════════════
+
+Kya hai?
+→ Canonical ka SHORT form — sirf logic/validation likhte ho.
+→ Parameters list NAHI likhte (header se aa jati hain).
+→ Field assignment compiler AFTER your body auto karta hai.
+
+Syntax:
+  record Person(String name, int age) {
+      public Person {                    // ← no (String name, int age)
+          if (age < 0) {
+              throw new IllegalArgumentException("Age cannot be negative");
+          }
+          // name / age already in scope
+          // NO this.name = name;  ← compiler karega baad mein
+      }
+  }
+
+Call same hi:
+  new Person("Alice", 30);   // compact body chalti hai, phir fields assign
+
+Typical use → validation / normalization BEFORE fields set:
+
+  public Person {
+      Objects.requireNonNull(name);
+      name = name.trim();   // param reassign OK — assigned value field mein jayegi
+      if (age < 0) throw new IllegalArgumentException("bad age");
+  }
+
+
+═══════════════════════════════════════
+3) Side-by-side
+═══════════════════════════════════════
+
+|                    | Canonical                              | Compact                                |
+|--------------------|----------------------------------------|----------------------------------------|
+| Params written?    | Yes: Person(String name, int age)      | No: Person { ... }                     |
+| this.x = x ?       | YOU write                              | Compiler writes after body             |
+| Best for           | Full control, rare manual assign       | Validation / normalize (common)        |
+| Same call site?    | Yes — new Person("A", 30)              | Yes — new Person("A", 30)              |
+
+Important:
+- Compact = shortcut for the canonical constructor (replace karta hai, alag 2nd constructor nahi).
+- Ek waqt pe ya to compact likho YA explicit canonical — dono ek saath nahi.
+
+
+═══════════════════════════════════════
+4) Extra constructors (overloads)
+═══════════════════════════════════════
+
+Extra constructors MUST eventually canonical/compact ko call karein:
+
+  record Person(String name, int age) {
+      public Person {                 // compact = canonical
+          if (age < 0) throw new IllegalArgumentException("bad age");
+      }
+
+      public Person(String name) {    // overload
+          this(name, 0);              // → canonical/compact
+      }
+
+      public Person() {
+          this("Unknown", 0);
+      }
+  }
+
+
+═══════════════════════════════════════
+5) Dry run
+═══════════════════════════════════════
+
+  new Person("Bob", 25);
+  1) Compact/canonical body chalti hai (validation)
+  2) Fields assign: this.name = "Bob"; this.age = 25;
+  3) Object ready → person.name() == "Bob"
+
+  new Person("Bob", -1);
+  1) Compact: age < 0 → exception
+  2) Fields assign nahi hoti
+
+
+🧠 Interview one-liner
+“Canonical constructor is the all-args constructor matching record components; compact constructor is its short form
+used mainly for validation without writing field assignments.”
