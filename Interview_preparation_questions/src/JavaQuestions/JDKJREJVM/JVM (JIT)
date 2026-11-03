@@ -1,0 +1,106 @@
+✅ What is JIT (Just-In-Time Compiler)?
+JIT is part of the JVM Execution Engine.
+It compiles “hot” bytecode → native machine code at runtime, so that code runs faster next times.
+
+Without JIT: JVM mostly interprets bytecode (slower)
+With JIT: frequently used methods become native → much faster
+
+
+🔹 Why “Just-In-Time”?
+Compilation happens during program execution (not ahead like javac).
+javac  → .java to bytecode   (before run)
+JIT    → bytecode to native  (while running, for hot paths)
+
+
+🧠 How JIT Works (flow)
+
+1) Class loaded, methods start running
+2) Interpreter executes bytecode initially
+3) JVM profiles: counts how often methods/loops run
+4) When a method becomes “hot” → JIT compiles it to native code
+5) Later calls jump to that native code (fast)
+6) Optionally re-optimizes / de-optimizes if assumptions break
+
+
+🔁 Full pipeline
+
+.java
+  ↓ javac
+.class (bytecode)     ← platform-independent
+  ↓
+JVM Execution Engine
+  ├─ Interpreter     → start fast, run slower
+  └─ JIT Compiler    → compile hot code → native machine code
+         ↓
+   CPU runs native instructions (platform-dependent)
+
+
+🔹 Interpreter vs JIT
+
+|                 | Interpreter              | JIT                              |
+| --------------- | ------------------------ | -------------------------------- |
+| When            | Immediately              | After code is hot                |
+| Output          | Executes bytecode step by step | Native machine code         |
+| Startup         | Faster startup           | Extra compile cost               |
+| Peak speed      | Slower                   | Much faster for hot paths        |
+| Best for        | Cold / rarely used code  | Loops, frequent methods          |
+
+
+🔹 HotSpot compilers (common interview detail)
+HotSpot JVM often uses tiered compilation:
+
+- C1 (Client compiler) → faster compile, lighter optimizations (quick warmup)
+- C2 (Server compiler) → slower compile, heavier optimizations (peak performance)
+
+Typical path: interpret → C1 → C2 for very hot methods
+
+
+🔹 What makes code “hot”?
+- Method called many times
+- Loop iterated many times
+JVM uses invocation/back-edge counters (exact thresholds are JVM-internal / tunable)
+
+
+🔹 Optimizations JIT may do (high level)
+- Inlining (replace method call with body)
+- Dead code elimination
+- Loop optimizations
+- Escape analysis (sometimes stack-allocate / scalar replace)
+- Speculative opts based on observed types (can de-optimize if wrong later)
+
+
+⚡ Important interview points
+1) JIT ≠ javac
+   javac = source → bytecode
+   JIT  = bytecode → native (at runtime)
+
+2) Bytecode portable; JIT output is NOT
+   Native code is for that OS/CPU — that’s why each platform needs its own JVM
+
+3) Warmup matter
+   Long-running servers benefit most (JIT has time to optimize)
+   Short CLI tools may stay mostly interpreted
+
+4) You don’t call JIT yourself
+   It’s automatic inside the JVM
+
+
+🧪 How to “see” related behavior (optional)
+- javap -c MyClass          → view bytecode (not JIT native)
+- JVM flags exist for JIT logging (e.g. PrintCompilation) — interview-level awareness enough
+
+
+💬 Common Q&A
+
+Q: Does JVM always use JIT?
+A: HotSpot can use interpreter + JIT. Cold code may never be JIT-compiled.
+
+Q: Is JIT mandatory in Java spec?
+A: JVM must execute bytecode; JIT is an implementation performance feature (HotSpot has it).
+
+Q: Why is Java sometimes slow at start then faster?
+A: Warmup — interpreter first, then JIT optimizes hot paths.
+
+
+🧠 Interview one-liner
+“JIT compiles frequently executed bytecode into native machine code at runtime, improving peak performance after warmup while keeping Java portable via bytecode.”

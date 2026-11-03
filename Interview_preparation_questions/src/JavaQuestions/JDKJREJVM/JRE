@@ -1,43 +1,87 @@
 ✅ What is JRE (Java Runtime Environment)?
-JRE stands for Java Runtime Environment. It provides everything needed to run Java programs — but not develop them.
+JRE = everything needed to RUN Java programs — but NOT to develop/compile them.
 
-🔹 Key Points:
-JRE = JVM + Core Java Libraries
+Interview formula:
+  JRE = JVM + Core Libraries (+ config / supporting runtime files)
 
-It does not include tools like javac, javadoc, etc.
-
-It’s mainly used by end-users or environments where you only need to run Java apps (not compile).
-
-📦 JRE Contains:
-| Component                                | Purpose                                                            |
-| ---------------------------------------- | ------------------------------------------------------------------ |
-| **JVM (Java Virtual Machine)**           | Executes `.class` files (Java bytecode)                            |
-| **Core Libraries** (`rt.jar` or modules) | Provides essential Java APIs (like `java.lang`, `java.util`, etc.) |
-| **Deployment Libraries**                 | For running applets, Java Web Start (older)                        |
-| **Property Files & Configs**             | Timezones, security policies, etc.                                 |
+Nested picture:
+  JDK
+   └── JRE
+        └── JVM
 
 
-🧠 How JRE Works:
-
-Java Bytecode (.class)
-         ↓
-       JRE
-   ↙           ↘
-JVM        Core Libraries
-         ↓
-    Program Runs
-⚠️ Difference Between JDK and JRE:
-| Feature            | **JDK**                | **JRE**            |
-| ------------------ | ---------------------- | ------------------ |
-| For                | Develop + Run          | Only Run           |
-| Includes           | JRE + Compiler + Tools | JVM + Libraries    |
-| Tools like `javac` | ✅ Yes                  | ❌ No               |
-| Used By            | Developers             | End-users, servers |
+🔹 Key Points
+- Runs .class / JAR files
+- Does NOT include javac, javadoc, jdb, etc.
+- Used by end-users / servers where you only need to execute apps
+- JDK already contains a JRE (install JDK → you can also run)
 
 
-✅ Real-World Use:
-You install JDK to develop apps.
+📦 JRE Contains
 
-Your users install JRE (or it’s bundled in the app) to run those apps.
+| Component                         | Purpose                                              |
+| --------------------------------- | ---------------------------------------------------- |
+| **JVM**                           | Executes bytecode (.class)                           |
+| **Core Libraries**                | APIs: java.lang, java.util, java.io, …               |
+| **Configs / policies**            | Security, timezones, logging, etc.                   |
+| **Deployment bits (legacy)**      | Applets / Java Web Start — obsolete, ignore in 2020s |
 
-☑️ Since Java 11, Oracle no longer distributes a separate JRE — everything is part of the JDK.
+Libraries note:
+  Pre–Java 9 → rt.jar
+  Java 9+    → modules (no rt.jar)
+
+
+🧠 How JRE Works
+
+  Java Bytecode (.class / JAR)
+              ↓
+             JRE
+        ↙           ↘
+      JVM      Core Libraries
+              ↓
+         Program Runs
+
+Flow in words:
+1) `java MyApp` starts
+2) JRE launches JVM
+3) ClassLoader loads classes from libraries + your app
+4) JVM executes bytecode (interpret + JIT)
+
+
+⚠️ JDK vs JRE
+
+| Feature            | JDK                      | JRE                |
+| ------------------ | ------------------------ | ------------------ |
+| Purpose            | Develop + Run            | Only Run           |
+| Includes           | JRE + Compiler + Tools   | JVM + Libraries    |
+| `javac`            | ✅ Yes                    | ❌ No               |
+| Used by            | Developers               | End-users, servers |
+
+
+✅ Real-World Use
+- Developer machine → install JDK (compile + run)
+- Production / user machine → need a runtime only
+  - historically: separate JRE install
+  - today: often JDK, or a custom runtime via `jlink`, or runtime bundled with the app
+
+
+☑️ Modern note (important in interviews)
+Since Java 11, Oracle stopped shipping a separate JRE download —
+runtime comes with the JDK (or you build a minimal image with jlink).
+Concept of JRE still exists and is still asked: “run-only environment.”
+
+
+💬 Quick interview Qs
+
+Q: Can JRE compile code?
+A: No — no javac.
+
+Q: Can we run without JDK?
+A: Yes — if .class/JAR already exists and a JRE/runtime is present.
+
+Q: Relation?
+A: JDK ⊃ JRE ⊃ JVM
+
+
+🧠 Interview one-liner
+“JRE is the run-only layer: JVM + class libraries. It runs bytecode but cannot compile; the JDK adds development tools on top of the JRE.”

@@ -1,70 +1,101 @@
 🧰 Core Java Command-Line Tools
 
-These tools — like javac, javap, jar, javadoc, jdb, etc. — are part of the:
-
+These tools (javac, javap, jar, javadoc, jdb, …) ship with the:
 ✅ JDK (Java Development Kit)
 
+Quick split:
+  JDK  → development tools (javac, jar, javadoc, jdb, javap, …) + JRE
+  JRE  → runtime only → mainly `java` (run apps)
+  JVM  → inside JRE → actually executes bytecode
 
 
 1. 🛠️ javac — Java Compiler
-Usage: Compiles .java files to .class bytecode.
+Usage: Compiles .java → .class (bytecode)
 
-Example:
+  javac HelloWorld.java          → HelloWorld.class
+  javac -d out HelloWorld.java   → put .class into out/ folder
+  javac -cp lib/* App.java       → compile with classpath
 
+Interview: javac does NOT run the program — only compiles.
 
-javac HelloWorld.java
-Output: HelloWorld.class
 
 2. 🔎 javap — Java Class File Disassembler
-Usage: Displays bytecode-level method signatures and other class details.
-Why javap is called a Disassembler?
-Java source code → compiled into bytecode >>>>>>>>>>>
-javap disassembles that bytecode into a human-readable format >>>>>>>>>
-Example:
+Usage: Shows what’s inside a .class (signatures / bytecode)
 
-javap HelloWorld
-or to see method internals:
+Why “disassembler”?
+  .java  --javac-->  bytecode (.class)
+  javap  --reads-->  human-readable form of that bytecode
 
+  javap HelloWorld          → public methods / fields
+  javap -c HelloWorld       → bytecode instructions (iload, invokevirtual…)
+  javap -v HelloWorld       → verbose (constant pool, etc.)
 
-javap -c HelloWorld
-Use case: Debugging compiled code, checking bytecode, reverse-engineering classes
+⚡ Disassembler ≠ Decompiler
+  Disassembler (javap) → bytecode mnemonics
+  Decompiler (JD-GUI…) → approximate .java source
+
+Use: debug compiled code, verify compiler output, peek libraries
+
 
 3. 🧪 java — Java Runtime Launcher
-Usage: Runs a compiled .class file or JAR.
+Usage: Runs compiled .class or a JAR (starts the JVM)
 
-Example:
+  java HelloWorld                 → run class (needs HelloWorld.class on classpath)
+  java -cp out HelloWorld         → class from out/
+  java -jar app.jar               → run executable JAR (needs Main-Class in manifest)
+  java -Xmx512m HelloWorld        → set max heap
 
-java HelloWorld
+Interview: `java` is in JRE/JDK; `javac` only in JDK.
+
 
 4. 📦 jar — Java Archive Tool
-Usage: Creates and manages .jar files (Java archives).
+Usage: Create / list / extract .jar (zip of .class + resources + META-INF)
 
-Example:
+  jar cf  app.jar *.class         → c=create, f=file
+  jar tf  app.jar                 → t=list (table), f=file
+  jar xf  app.jar                 → x=extract
+  jar cfe app.jar MainClass *.class → e=entry/Main-Class in manifest
 
-jar cf app.jar *.class
-cf = create, file name
+JAR ≈ ZIP with Java metadata (manifest).
+
 
 5. 🧬 javadoc — Documentation Generator
-Usage: Generates HTML documentation from Javadoc comments.
+Usage: HTML docs from /** Javadoc */ comments
 
-Example:
+  javadoc MyClass.java
+  javadoc -d docs src/*.java      → output folder docs/
 
-javadoc MyClass.java
 
 6. 🕵️‍♂️ jdb — Java Debugger
-Usage: Command-line debugger for Java programs.
+Usage: Command-line debugger (breakpoints, step, print vars)
 
-Example:
+  jdb HelloWorld
 
-jdb HelloWorld
+(Most people use IDE debugger; jdb = CLI equivalent.)
 
-7. 📈 jconsole, jvisualvm, jstat, jmap, jstack
-These tools are for monitoring, profiling, and debugging running Java applications:
 
-| Tool        | Purpose                              |
-| ----------- | ------------------------------------ |
-| `jconsole`  | GUI monitoring (heap, threads, etc.) |
-| `jvisualvm` | Advanced profiling & monitoring      |
-| `jstack`    | Prints thread dump                   |
-| `jmap`      | Prints memory map (heap info)        |
-| `jstat`     | JVM statistics (GC, class loading)   |
+7. 📈 Monitoring / profiling tools
+
+| Tool        | Purpose                                      | Typical “when”              |
+| ----------- | -------------------------------------------- | --------------------------- |
+| `jps`       | List running Java process IDs                | Find PID first              |
+| `jconsole`  | GUI monitor (heap, threads, CPU)             | Live health check           |
+| `jvisualvm` | Profiling, heap dump analysis, sampling      | Find CPU/memory hotspots    |
+| `jstack`    | Thread dump (what each thread is doing)      | Deadlock / hung app         |
+| `jmap`      | Heap summary / heap dump                     | Memory leak investigation   |
+| `jstat`     | GC & class-loading stats over time           | GC tuning / watch GC pauses |
+
+Common flow for hung app:
+  jps  →  get PID
+  jstack <pid>  →  thread dump (look for deadlock)
+
+
+🧠 Interview one-liner
+“JDK tools: javac compiles, java runs, jar packages, javap disassembles bytecode, javadoc docs, jdb debugs; jstack/jmap/jstat/jconsole diagnose live JVMs.”
+
+Quick recall:
+  Source → javac → Bytecode → java (JVM) → Run
+  Peek bytecode → javap -c
+  Package → jar
+  Hang/deadlock → jstack
+  Memory → jmap / jstat

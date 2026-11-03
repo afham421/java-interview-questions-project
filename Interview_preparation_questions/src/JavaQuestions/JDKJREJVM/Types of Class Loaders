@@ -1,47 +1,93 @@
-In Java, class loaders are responsible for dynamically loading classes at runtime. There are several types of class loaders, each with a specific purpose in the class-loading hierarchy.
+✅ What are Class Loaders?
+Class loaders dynamically load .class bytecode into the JVM at runtime.
+Every class is identified by: fully qualified name + its ClassLoader
+(same name, different loaders → different Class objects).
 
-🔄 Types of Class Loaders in Java
-1. Bootstrap ClassLoader
-Loads: Core Java classes (java.lang.*, java.util.*, etc.) from the $JAVA_HOME/jre/lib directory.
 
-Part of JVM and written in native code (not Java).
+🔄 Types of Class Loaders
 
-Parent of all other class loaders.
+1) Bootstrap ClassLoader
+- Loads core JDK classes: java.lang.*, java.util.*, …
+- Written in native code (C/C++), part of JVM
+- Parent of all other loaders (its parent is null)
+- getClassLoader() for String.class → null  (bootstrap)
 
-2. Extension ClassLoader (Platform ClassLoader in Java 9+)
-Loads: Classes from the $JAVA_HOME/lib/ext/ directory or specified by the java.ext.dirs system property.
+Where it loads from:
+  Old story: jre/lib
+  Modern (Java 9+): modular runtime image / JDK modules
 
-Child of Bootstrap ClassLoader.
 
-From Java 9 onward, replaced by Platform ClassLoader, which loads classes from platform modules.
+2) Extension → Platform ClassLoader (Java 9+)
+- Old (pre-9): Extension ClassLoader → lib/ext or java.ext.dirs
+- Java 9+: Platform ClassLoader → platform modules
+  (e.g. java.sql, java.desktop, …)
+- Child of Bootstrap
 
-3. System ClassLoader (Application ClassLoader)
-Loads: Classes from the classpath, typically the -cp or CLASSPATH environment variable.
 
-Child of Extension/Platform ClassLoader.
+3) System / Application ClassLoader
+- Loads your app classes from classpath:
+  -cp, CLASSPATH, or application module path
+- Child of Platform ClassLoader
+- Most application classes load here
+- ClassLoader.getSystemClassLoader() returns this
 
-Most of your application classes are loaded by this loader.
 
-🧰 Custom Class Loaders
-4. User-defined (Custom) ClassLoader
-Created by extending java.lang.ClassLoader.
+4) Custom ClassLoader
+- Extend java.lang.ClassLoader (often override findClass)
+- Use cases:
+  - load from encrypted / remote / DB sources
+  - isolate apps (Tomcat webapps, OSGi)
+  - hot reload (Spring Boot DevTools)
 
-Used for:
 
-Custom class loading policies
+🔁 Hierarchy + Parent Delegation Model
 
-Loading encrypted or remote classes
+        Bootstrap          (parent = null)
+            ↑
+   Extension / Platform
+            ↑
+   System (Application)
+            ↑
+      Custom (if any)
 
-Dynamic reloading in frameworks (e.g., OSGi, Tomcat, Spring Boot DevTools)
+How loading works (parent first):
+1) ClassLoader receives request for class X
+2) Delegate to parent first
+3) Parent delegates upward …
+4) If Bootstrap/parent finds X → use that
+5) Only if parents fail → current loader tries to find/load X itself
 
-🔁 ClassLoader Hierarchy (Parent Delegation Model)
+Why parent delegation?
+- Security / consistency: app cannot “replace” java.lang.String with a fake one
+- Avoids duplicate loading of core classes
 
-Bootstrap
-   ↑
-Extension / Platform
-   ↑
-System (Application)
-   ↑
-Custom ClassLoader (if defined)
 
-Each class loader delegates class loading to its parent first, and only tries to load the class itself if the parent cannot find it (known as the parent delegation model).
+⚡ Interview extras
+
+Phases (when a class is first actively used):
+  Loading → Linking (verify, prepare, resolve) → Initialization (statics)
+
+Breaking / bypassing delegation (real world):
+  Some containers load webapp classes first (child-first) for isolation —
+  opposite of default parent-first. Know that default Java model is parent delegation.
+
+Visibility:
+  Child can see classes loaded by parent
+  Parent generally cannot see classes loaded by child
+
+
+💬 Quick Q&A
+
+Q: Which loader loads your Main class?
+A: Application (System) ClassLoader (usually).
+
+Q: Why is String’s class loader null?
+A: Loaded by Bootstrap → represented as null in Java APIs.
+
+Q: Can two loaders load the same class name?
+A: Yes → two different runtime Class types (can cause ClassCastException across boundaries).
+
+
+🧠 Interview one-liner
+“Java uses a hierarchy of class loaders with parent delegation: Bootstrap → Platform → Application → custom;
+a loader asks its parent first so core classes stay safe and unique.”
