@@ -1,0 +1,114 @@
+✅ What is WAF?
+
+WAF = Web Application Firewall
+
+A security layer that sits in front of your web app / API and filters
+HTTP/HTTPS traffic to block common web attacks — before they hit your Spring Boot (or other) servers.
+
+Traditional firewall  → mostly IP / port / protocol (network layer)
+WAF                   → understands HTTP requests (URL, headers, body, cookies)
+
+
+Where it sits
+
+  User / Internet
+        ↓
+     CDN (optional)
+        ↓
+       WAF              ← inspects HTTP
+        ↓
+  Load Balancer / Ingress
+        ↓
+  Application (Pods / VMs)
+        ↓
+       DB
+
+
+🎯 What does a WAF protect against? (OWASP-style)
+
+Common examples:
+  - SQL Injection (SQLi)
+  - Cross-Site Scripting (XSS)
+  - Remote file inclusion / path traversal
+  - Bad bots / scrapers (partly)
+  - Some Layer-7 abuse (known bad patterns, rate rules)
+  - CSRF / protocol violations (depending on rules)
+  - Known attack signatures / CVE patterns
+
+It does NOT replace:
+  - Secure coding
+  - AuthN/AuthZ in the app
+  - Network DDoS scrubbing for huge volumetric floods (need CDN/DDoS service)
+
+
+🛡️ How it works (simple)
+
+1) Request arrives
+2) WAF checks against rules / signatures / anomaly models
+3) Decision:
+     ALLOW  → forward to app
+     BLOCK  → 403 / challenge
+     LOG    → monitor (detection mode)
+     RATE-LIMIT / CAPTCHA → slow down bots
+
+Modes:
+  Detection / monitoring → log only (safe to start)
+  Prevention / blocking  → actively deny bad traffic
+
+
+🧰 Rule types (interview)
+
+  Signature-based  → match known bad patterns (e.g. ' OR 1=1 --)
+  Allow / deny lists → IP, geo, user-agent
+  Rate limiting    → too many requests from one IP
+  Bot management   → JS challenge, CAPTCHA, bot score
+  Custom rules     → protect /login, /otp, admin paths
+
+
+🔄 WAF vs Firewall vs DDoS protection
+
+Traditional Firewall
+  → ports, IPs, network protocols (L3/L4 mostly)
+
+WAF
+  → HTTP application attacks (L7)
+
+DDoS protection / scrubbing
+  → absorb massive floods (bandwidth / connection exhaustion)
+  → WAF helps some L7 floods; big volumetric attacks need edge/CDN
+
+
+Cloud examples (names only)
+  AWS WAF, Azure WAF, Cloudflare WAF, Akamai, Imperva
+  Often combined with CDN + DDoS
+
+
+🔹 For Java / backend interviews (practical)
+
+- Put public APIs behind CDN + WAF when exposed to internet
+- Extra strict rules on sensitive routes: /login, /otp, /admin
+- App still needs:
+    parameterized queries (against SQLi)
+    output encoding (against XSS)
+    auth, validation, rate limits
+- WAF is defense-in-depth — not the only control
+- False positives: tune rules so real users aren’t blocked
+- Logs from WAF help incident investigation
+
+
+⚠️ Important points
+- WAF ≠ antivirus for servers
+- Encrypted HTTPS: WAF must terminate TLS (or see decrypted traffic) to inspect bodies
+- Internal-only services may not need a public WAF
+- Misconfigured WAF can block legit traffic or miss attacks
+
+
+✍️ Sample Interview Answer
+"A WAF is a Web Application Firewall that filters HTTP/HTTPS traffic in front of the app.
+It blocks common attacks like SQL injection and XSS using rules and signatures.
+We usually place it at the edge with a CDN. It complements — not replaces — secure coding,
+and for large volumetric DDoS we still rely on CDN/scrubbing, while the WAF handles application-layer threats."
+
+
+🧠 Interview one-liner
+“A WAF is an HTTP-aware firewall in front of your web app that blocks OWASP-style attacks like SQLi and XSS before they reach the application.”

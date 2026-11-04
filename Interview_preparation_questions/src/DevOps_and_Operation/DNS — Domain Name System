@@ -12,149 +12,195 @@ DNS
 
 Instead of remembering an IP address, we use google.com.
 
+DNS only resolves name → IP. After that, the browser opens TCP/TLS and makes the HTTP request.
+
+
 How DNS works — step by step
 
 Suppose you enter:
 
 https://api.example.com/users
 
-Your browser needs the IP address of api.example.com.
+Your browser needs the IP of api.example.com.
 
 1. Browser cache
-
-First, browser checks whether it already knows the IP.
+   Checks if it already knows the IP.
 
 2. OS cache
+   If not, OS DNS cache is checked.
 
-If not, the operating system checks its DNS cache.
-
-3. DNS Resolver
-
-The request goes to a recursive DNS resolver, usually provided by your ISP or a service such as Google/Cloudflare.
+3. DNS Resolver (recursive resolver)
+   Request goes to ISP resolver or public one (e.g. Google 8.8.8.8, Cloudflare 1.1.1.1).
+   This resolver does the heavy lifting for the client.
 
 Client
   ↓
 DNS Resolver
 
 4. Root DNS Server
+   Resolver asks root: who handles .com?
+   Root: ask the .com TLD servers.
+   >>>>>>>>>>>>>>  TLD = the LAST part of a domain name (rightmost label) — the “branch” under the DNS root. e.g  google.com     → TLD = .com
 
-If the resolver doesn't know the answer, it asks a root server:
 
-Who handles .com?
-
-Root responds roughly:
-
-Ask the .com TLD server
-
-5. TLD Server
-
-The .com server tells the resolver which authoritative nameserver handles example.com.
+5. TLD Server (.com)
+   Points to authoritative nameservers for example.com.
 
 .com
  ↓
 Authoritative DNS for example.com
 
 6. Authoritative DNS Server
-
-The authoritative server has the actual DNS record:
+   Holds the real records for the zone:
 
 api.example.com → 192.168.10.50
 
-7. Resolver returns the IP
+7. Resolver returns the IP (and caches it per TTL)
+>>>>>>>>>>>> TTL = how long (in seconds) a DNS answer may be CACHED before asking again.
 
 Browser
    ↓
 192.168.10.50
+   ↓
+TCP + TLS + HTTPS to that IP
 
-Now the browser can establish the HTTP/HTTPS connection.
+Resolver vs Authoritative (interview):
+  Recursive resolver → finds the answer on behalf of the client (asks around, caches)
+  Authoritative server → source of truth for that domain’s records
+
+
+═══════════════════════════════════════
+What is TLD? (Top-Level Domain)
+═══════════════════════════════════════
+
+TLD = the LAST part of a domain name (rightmost label) — the “branch” under the DNS root.
+
+Examples:
+  google.com     → TLD = .com
+  example.org    → TLD = .org
+  shop.pk        → TLD = .pk
+
+Break a full name (right → left):
+
+  api . example . com
+   │       │       │
+   │       │       └── TLD (Top-Level Domain)
+   │       └── second-level domain (registered name)
+   └── subdomain
+
+In the lookup chain, root does NOT know example.com’s IP.
+Root only says: “for .com, go ask the .com TLD servers.”
+TLD servers then point to the authoritative nameservers for example.com.
+
+Types (quick):
+  gTLD  — generic: .com, .org, .net, .app
+  ccTLD — country: .pk, .uk, .de
+
+One-liner: TLD = suffix like .com — which top branch of DNS handles this name.
+
+
+═══════════════════════════════════════
+What is TTL? (Time To Live)
+═══════════════════════════════════════
+
+TTL = how long (in seconds) a DNS answer may be CACHED before asking again.
+
+TLD ≠ TTL  (easy mix-up!)
+  TLD → part of the domain name hierarchy (.com)
+  TTL → cache lifetime of a DNS record (300 seconds, etc.)
+
 
 Important DNS record types
-| Record    | Purpose                       | Example                     |
-| --------- | ----------------------------- | --------------------------- |
-| **A**     | Domain → IPv4                 | `example.com → 1.2.3.4`     |
-| **AAAA**  | Domain → IPv6                 | `example.com → IPv6`        |
-| **CNAME** | Alias → another domain        | `www → example.com`         |
-| **MX**    | Mail server                   | `example.com → mail server` |
-| **TXT**   | Text/verification information | SPF, domain verification    |
-| **NS**    | Authoritative nameserver      | `ns1.example.com`           |
-| **PTR**   | IP → domain                   | Reverse DNS                 |
-| **SRV**   | Service location              | `_sip._tcp.example.com`     |
 
-Very important for interviews
+| Record   | Purpose                    | Example                      |
+| -------- | -------------------------- | ---------------------------- |
+| **A**    | Domain → IPv4              | example.com → 1.2.3.4        |
+| **AAAA** | Domain → IPv6              | example.com → 2001:…         |
+| **CNAME**| Alias → another name       | www → example.com            |
+| **MX**   | Mail servers               | example.com → mail provider  |
+| **TXT**  | Text / verification         | SPF, DKIM, domain verify     |
+| **NS**   | Who is authoritative       | ns1.example.com              |
+| **PTR**  | IP → domain (reverse DNS)  | used in reverse lookups      |
+| **SRV**  | Service host + port        | _sip._tcp.example.com        |
 
-A vs CNAME:
+
+Very important for interviews — A vs CNAME
 
 A:
-api.example.com → 10.10.10.5
+  api.example.com → 10.10.10.5     (direct to IP)
 
 CNAME:
-www.example.com → example.com
+  www.example.com → example.com    (alias to another name; then that name’s A/AAAA is used)
 
-A points directly to an IP.
+Rules of thumb:
+- A/AAAA → IP
+- CNAME → another domain name (not an IP)
+- Apex/root domain (example.com) usually should be A/AAAA (or ALIAS/ANAME at some providers),
+  not a normal CNAME, because CNAME at apex conflicts with other required records (MX, NS, …)
 
-CNAME points to another domain name.
 
-What is TTL?
+What is TTL? (details + example)
 
-TTL = Time To Live
-
-It tells DNS resolvers how long they can cache a DNS response.
-
-For example:
+TTL = Time To Live — how long resolvers may cache the answer.
 
 api.example.com
 A → 10.10.10.5
-TTL = 300 seconds
+TTL = 300          → cache up to 5 minutes
 
-The resolver can cache it for 5 minutes.
+Dry run (samajhne ke liye):
+  0:00  resolver learns IP 10.10.10.5 (TTL 300)
+  0:01–4:59  same question → answer from CACHE (no root/TLD trip)
+  5:00  cache expired → resolver asks again
 
-This is important when changing servers:
+High TTL (e.g. 3600):
+  ✅ fewer DNS queries
+  ❌ IP change / failover slow to propagate
 
-Old IP: 10.10.10.5
-New IP: 20.20.20.5
+Low TTL (e.g. 60):
+  ✅ users pick up new IP faster
+  ❌ more DNS lookups
 
-If the old DNS record is cached, users may continue reaching the old server until the TTL expires.
+Migration tip:
+  Lower TTL ahead of a cutover (e.g. to 60s), wait for old TTL to expire,
+  then change IP — users flip faster.
+
+One-liner: TTL = how long resolvers may remember the IP.
+
+
+Extra interview bits
+- Multiple A records → simple DNS load distribution / failover (client picks one)
+- DNS does not replace a load balancer for smart health-based routing by itself
+- Private DNS inside VPC/cluster for internal service names
+
 
 DNS in a microservices architecture
-
-This is especially important for your backend interviews.
-
-Suppose you have:
-
-API Gateway
-     ↓
-payment-service
-     ↓
-notification-service
 
 Instead of hardcoding:
 
 http://10.10.20.15:8080
 
-you can use:
+use a name:
 
 http://payment-service:8080
 
-DNS/service discovery resolves:
+DNS / service discovery resolves:
 
-payment-service
-       ↓
-10.10.20.15
+payment-service → 10.10.20.15 (or a virtual Service IP)
 
-In Kubernetes, for example:
+Kubernetes example:
 
 payment-service.default.svc.cluster.local
+  → ClusterIP of the Service
 
-can resolve to the Kubernetes Service IP.
+So DNS is often part of service discovery (CoreDNS in K8s).
 
-So DNS is often part of service discovery.
 
 Interview answer
 
-If interviewer asks "What is DNS?", you can say:
+"DNS resolves human-readable names to IP addresses.
+The client asks a recursive resolver, which uses cache or walks root → TLD → authoritative servers to get records like A/AAAA/CNAME.
+TTL controls cache duration. In microservices and Kubernetes, DNS is also used for service discovery so we call services by name instead of hardcoding IPs."
 
-DNS, or Domain Name System, is responsible for resolving human-readable domain names into IP addresses.
-When a client requests a domain, the DNS resolver checks its cache and, if necessary, queries the DNS hierarchy—root,
-TLD, and authoritative nameservers—to find the corresponding record.
-DNS also supports records such as A, AAAA, CNAME, MX and TXT, and TTL controls how long responses are cached.
-In microservices, DNS can also be used for service discovery.
+
+🧠 Interview one-liner
+“DNS is the internet’s phonebook: resolvers look up names via root/TLD/authoritative servers and cache answers according to TTL.”

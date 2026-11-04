@@ -1,0 +1,95 @@
+✅ What is DDoS?
+DDoS = Distributed Denial of Service.
+Attackers use many machines (botnet) to flood a target so real users cannot get service.
+
+Goal: make app / API / website unavailable (exhaust bandwidth, connections, CPU, or app capacity).
+
+DoS vs DDoS:
+  DoS  → attack from one source
+  DDoS → attack from many distributed sources (harder to block)
+
+
+🎯 Common Attack Types (interview)
+
+1) Volumetric (Layer 3/4) — flood bandwidth
+   - UDP flood, ICMP flood, DNS amplification
+   - Symptom: network pipe full
+
+2) Protocol / Connection (Layer 4)
+   - SYN flood, TCP connection exhaustion
+   - Symptom: firewalls/load balancers / servers run out of connections
+
+3) Application layer (Layer 7)
+   - HTTP flood, slowloris, expensive API spam (login, search)
+   - Looks more like “real” traffic → harder to filter
+   - Symptom: high app CPU, DB overload, 5xx, slow responses
+
+
+🛡️ What is DDoS Protection?
+Controls that detect + absorb/mitigate malicious traffic so legitimate users still get through.
+
+Typical layers of defense:
+
+Internet traffic
+      ↓
+CDN / DNS / Anycast scrubbing network   ← absorb big floods far from origin
+      ↓
+WAF / L7 rules / bot management         ← block bad HTTP patterns
+      ↓
+Load balancer / rate limits
+      ↓
+App (Spring Boot) + DB                  ← last line; keep expensive endpoints protected
+
+
+🧰 Common Protection Techniques
+
+| Technique | What it does |
+| --------- | ------------ |
+| **CDN / Anycast** | Spread & absorb traffic at edge (Cloudflare, Akamai, AWS CloudFront) |
+| **Traffic scrubbing** | Clean malicious packets in cloud scrubbing centers, forward good traffic |
+| **Rate limiting** | Cap requests per IP / user / API key |
+| **WAF** | Block SQLi/XSS patterns + some L7 floods / bad bots |
+| **SYN cookies / TCP protections** | Mitigate(kam kerna) SYN floods at network edge |
+| **Geo / IP blocklists** | Drop known bad ranges (careful with false positives) |
+| **Autoscaling** | Survive spikes (helps but costly against huge floods alone) |
+| **Challenge / CAPTCHA / bot score** | Separate humans from bots on L7 |
+| **Blackhole / null route** | Last resort: drop traffic to IP (site goes down but protects upstream) |
+
+
+🔹 For Java / backend interviews (practical)
+- Put APIs behind CDN/API Gateway + WAF when public
+- Rate-limit sensitive endpoints (login, OTP, search) — gateway or Bucket4j/Redis
+- Timeouts, connection pools, circuit breakers → fail fast under load
+- Cache (CDN/Redis) reduces origin hits
+- Health checks + scale-out behind load balancer
+- Never expose DB/admin ports to the public internet
+- Monitor: sudden RPS spike, bandwidth, 5xx, latency, connection counts
+
+
+🔄 Simple flow (under attack)
+
+Normal:
+  Users → CDN/LB → App → OK
+
+DDoS:
+  Botnet flood → Edge scrubbing/CDN absorbs most
+               → WAF/rate-limit filters L7 junk
+               → Only cleaner traffic reaches origin
+
+
+⚠️ Important points
+- App-only fixes cannot stop a massive volumetric flood → need edge/network providers
+- Autoscaling alone can burn money during an attack
+- Distinguish traffic spike (marketing) vs attack (use metrics + patterns)
+- Have a runbook: provider contacts, enable “under attack” mode, scale, communicate
+
+
+💬 Sample Interview Answer
+"DDoS is a distributed flood aimed at making a service unavailable. We mitigate at multiple layers:
+CDN/anycast and scrubbing for volumetric attacks, WAF and rate limits for Layer-7 floods,
+and application hardening (timeouts, caching, protecting expensive APIs).
+For public APIs I’d place the service behind a CDN/API gateway with rate limiting rather than exposing the origin directly."
+
+
+🧠 Interview one-liner
+“DDoS protection absorbs or filters malicious multi-source traffic—usually at the CDN/edge with WAF and rate limits—so the origin stays available for real users.”
