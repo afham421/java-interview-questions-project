@@ -1,0 +1,212 @@
+📣 Pub/Sub vs Event Streaming
+
+Both are event-driven styles.
+Difference is mainly: fire-and-forget distribution vs durable, replayable log.
+
+
+═══════════════════════════════════════
+1) Pub/Sub (Publish-Subscribe)
+═══════════════════════════════════════
+
+What it is:
+  Publishers send messages to a topic/exchange.
+  Subscribers receive copies via a broker.
+  Publisher and subscriber don’t know each other (decoupled).
+
+Core ideas:
+  - Decoupled services
+  - One-to-many (one event → many subscribers)
+  - Focus: “notify others that something happened”
+  - Retention often short (queue/topic drained after consume)
+    unless durable subscriptions are configured
+
+Classic mental model:
+  Message delivered → consumed → often gone (not a long history to replay)
+
+Tools (examples):
+  Google Cloud Pub/Sub
+  Amazon SNS (+ SQS for fan-out)
+  RabbitMQ (fanout / topic exchanges)
+  Kafka can ALSO be used in a pub/sub style (consumer groups)
+    but Kafka’s storage model is streaming/log-based
+
+Example:
+  UserService publishes UserRegistered
+    → EmailService     (welcome mail)
+    → AnalyticsService (track signup)
+    → CRMService       (create lead)
+
+
+═══════════════════════════════════════
+2) Event Streaming
+═══════════════════════════════════════
+
+What it is:
+  Continuous stream of events written to an append-only log.
+  Events are stored, ordered, and can be re-read (replay).
+
+Core ideas:
+  - Durable retention (hours/days/forever by config)
+  - Ordered per partition/shard
+  - Replayable (reprocess from offset / timestamp)
+  - High throughput, many independent consumers
+  - Focus: “keep a history of facts and process the stream”
+
+Mental model:
+  Events append to a log → consumers track their position (offset)
+  New consumer can start from earliest / latest / specific offset
+
+Tools (examples):
+  Apache Kafka (most common in interviews)
+  Apache Pulsar
+  Amazon Kinesis
+  Redpanda
+
+Example:
+  Click events → Kafka topic
+    → FraudDetectionService   (real-time)
+    → RecommendationService   (real-time)
+    → DataLakeIngestor        (same stream → S3 / analytics)
+
+
+═══════════════════════════════════════
+3) Side-by-side (readable)
+═══════════════════════════════════════
+
+Purpose
+  Pub/Sub         → distribute messages / trigger work
+  Event Streaming → process + store continuous event history
+
+Retention
+  Pub/Sub         → usually short-lived (unless durable)
+  Event Streaming → long-lived, configurable retention
+
+Replay
+  Pub/Sub         → limited / not the main design goal
+  Event Streaming → first-class (rewind offsets)
+
+Ordering
+  Pub/Sub         → often not guaranteed globally
+  Event Streaming → ordered per partition/shard
+
+Consumers
+  Pub/Sub         → subscribers (push or pull)
+  Event Streaming → consumer groups reading a log at their own pace
+
+Typical use
+  Pub/Sub         → emails, notifications, simple microservice triggers
+  Event Streaming → analytics, audit, event sourcing, CQRS, clickstreams
+
+Example tools
+  Pub/Sub         → SNS, RabbitMQ, Google Pub/Sub
+  Event Streaming → Kafka, Pulsar, Kinesis
+
+
+═══════════════════════════════════════
+4) Important interview nuance(bareeki) (Kafka)
+═══════════════════════════════════════
+
+Kafka is an event streaming platform (commit log).
+You can implement pub/sub ON TOP of Kafka:
+  - one topic
+  - multiple consumer groups
+  - each group gets all messages (fan-out)
+
+>>>>>>>>>>Fan-out = one message goes out to MANY consumers (1 → N).
+          Like a fan opening: one center point, many blades.
+
+So:
+  Pattern “pub/sub”     = how you route to many consumers
+  Model “event stream”  = durable ordered log you can replay
+
+Don’t say “Kafka is only pub/sub” or “Kafka can’t do pub/sub”.
+Say: Kafka is log-based streaming; pub/sub is a usage pattern on it.
+
+
+═══════════════════════════════════════
+5) When to use which
+═══════════════════════════════════════
+
+Use Pub/Sub when:
+  - simple notify / trigger other services
+  - you don’t need long history or replay
+  - classic microservice fan-out (email, push, webhooks)
+
+Use Event Streaming when:
+  - real-time processing + analytics on the same data
+  - need replay / rebuild state / event sourcing / CQRS
+  - high throughput, many independent consumers at different speeds
+  - audit trail of what happened
+
+
+═══════════════════════════════════════
+6) What is Fan-out?
+═══════════════════════════════════════
+
+Fan-out = one message goes out to MANY consumers (1 → N).
+Like a fan opening: one center point, many blades.
+
+Picture:
+
+         UserRegistered event
+                  │
+                  ▼
+               Broker
+             /   |   \
+            ▼    ▼    ▼
+         Email Analytics CRM
+
+One publish → every interested subscriber gets a copy (or sees the same event).
+
+
+Fan-out vs competing consumers:
+
+  Fan-out (broadcast)
+    Goal     → notify MANY different services
+    Each msg → Email AND Analytics AND CRM all process it
+    Example  → UserRegistered → 3 systems
+
+  Competing / work queue
+    Goal     → share work among SAME type of workers
+    Each msg → only ONE worker processes it
+    Example  → 1000 email jobs → 5 email-worker instances split the load
+
+
+Where you hear “fan-out”:
+  - RabbitMQ fanout exchange → every bound queue gets a copy
+  - Amazon SNS fan-out → one topic → many SQS / HTTP / email targets
+  - Kafka → one topic + multiple consumer groups = fan-out between groups
+    (inside ONE group, partitions are shared = competing, not full fan-out)
+
+
+One-liner:
+  Fan-out = broadcast one event to many independent subscribers,
+  each doing its own job.
+
+
+═══════════════════════════════════════
+7) Tiny flow pictures
+═══════════════════════════════════════
+
+Pub/Sub:
+
+  Publisher → Broker/Topic → Subscriber A
+                           → Subscriber B
+                           → Subscriber C
+
+Event Streaming (log):
+
+  Producer → [ e1 e2 e3 e4 e5 ... ] topic/partition log
+                ↑         ↑
+         Consumer group A reads…   Consumer group B can replay from e1
+
+
+✍️ Sample Interview Answer
+"Pub/Sub is a messaging pattern for decoupled one-to-many delivery—publishers emit events and subscribers react, often with short retention.
+Event streaming, like Kafka, stores events in a durable ordered log so consumers can process in real time and replay history.
+I use pub/sub for notifications and simple triggers; I use streaming when I need retention, ordering per partition, replay, or event-sourcing style processing.
+Kafka can serve pub/sub-style fan-out via consumer groups, but its core model is the event stream."
+
+
+🧠 Interview one-liner
+“Pub/Sub distributes events to subscribers; event streaming stores a durable, ordered, replayable log of events—Kafka is the usual streaming example.”
