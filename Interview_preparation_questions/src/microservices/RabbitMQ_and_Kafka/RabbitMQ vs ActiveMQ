@@ -40,7 +40,7 @@ Don’t memorize “Rabbit always wins.” Depends on workload, persistence, con
 | Message Ordering | Per queue (with competing-consumer caveats)   | Per queue / destination          |
 | Durability       | Durable queue + persistent message (mode=2)   | Persistent destinations/messages |
 
-Important (RabbitMQ nuance you already learned):
+Important (RabbitMQ nuance(bareekian) you already learned):
 Durable queue alone is not enough — message persistence also matters.
 
 

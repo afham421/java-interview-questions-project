@@ -18,7 +18,7 @@ Core mental model:
 | **Retention**                | Usually until consumed/acked (or TTL/DLQ)                 | Keep for hours/days/longer even after consume                 |
 | **Replay**                   | Not natural                                               | Easy (rewind offsets)                                         |
 | **Throughput**               | High for many apps, usually lower than Kafka at extreme scale | Very high (designed for massive streams)                   |
-| **Delivery**                 | At-most / at-least (exactly-once not the common strength) | At-least-once common; EOS possible but complex                |
+| **Delivery**                 | At-most / at-least (exactly-once not the common strength) | At-least-once common; Exactly-once (EOS) possible but complex  |
 | **Consumer model**           | Competing consumers on one queue; pub/sub via multi-queue | Consumer groups (share partitions); different groups = fan-out |
 | **Ordering**                 | Per queue                                                 | Per partition                                                 |
 | **Protocol**                 | AMQP (+ MQTT/STOMP/etc.)                                  | Kafka protocol over TCP                                       |
@@ -29,6 +29,12 @@ Core mental model:
 
 *With persistence configured, RabbitMQ can keep unacked messages on disk across restarts.
 Do NOT say “RabbitMQ is only in-memory.”
+
+| Semantic            | Meaning                                      | Typical how                                      |
+| ------------------- | -------------------------------------------- | ------------------------------------------------ |
+| At-most-once        | Message may be lost, never duplicated        | Commit offset before processing                  |
+| At-least-once       | Message never lost, may duplicate            | Process then commit offset (default mindset)     |
+| Exactly-once (EOS)  | Effectively once (harder)                    | Idempotent producer + transactions (complex)     |
 
 
 🧩 When to Use What?
@@ -60,6 +66,55 @@ Kafka is great to stream those events into analytics/DB/Elasticsearch.
 3) Same Kafka topic + different groups = every service gets full stream (fan-out).
    RabbitMQ fan-out = multiple queues bound to fanout/topic exchange.
 4) Kafka replay = change offsets. RabbitMQ replay = usually not natural.
+
+
+📈 How do we scale RabbitMQ and Kafka?
+
+Core line:
+Kafka scales mainly by partitions.
+RabbitMQ scales mainly by more consumers (and more queues).
+
+### Scale RabbitMQ
+1) Add competing consumers on the same queue → work is shared (1 message → 1 consumer)
+2) Set prefetch (e.g. 1) so slow workers don’t hoard jobs
+3) Split work into multiple queues (sms-queue, obd-queue, email-queue)
+4) Run more app instances (horizontal scale of workers)
+5) Broker side: cluster + quorum queues for HA
+   (more nodes help availability; throughput still often limited by queue design)
+6) For very large load: shard queues (jobs.1, jobs.2…) or consistent-hash style routing
+
+```text
+Exchange → demo_queue
+            ├── Worker1
+            ├── Worker2
+            └── Worker3   ← scale consumers
+```
+
+Limit: one hot queue can still bottleneck.
+Kafka-style partition parallelism is stronger for huge streams.
+
+### Scale Kafka
+1) Add partitions to the topic (parallelism unit)
+2) Add consumers in the same group (ideal: consumers ≈ partitions)
+3) Add brokers so partitions/replicas spread across the cluster
+4) Use a good key (balance + per-entity order)
+5) Fan-out scale: new services = new groupIds (each gets full stream)
+
+```text
+Topic (3 partitions)
+Group fraud-service: C1→P0  C2→P1  C3→P2   ← scale with partitions
+```
+
+Rule: consumers > partitions → extras sit idle.
+
+### Interview one-liners
+| System     | How you scale                                              |
+| ---------- | ---------------------------------------------------------- |
+| RabbitMQ   | More consumers (+ more queues); prefetch; cluster/HA       |
+| Kafka      | More partitions + consumers in group + brokers             |
+
+OTP/SMS/OBD jobs → usually RabbitMQ consumer scale.
+Huge event streams / many services reading same events → Kafka partition + consumer-group scale.
 
 
 📦 Spring Boot Integration (quick)
@@ -110,6 +165,11 @@ the same events independently (fraud + notify + ledger style).
 
 Q: Can both be used in one system?
 A: Yes. Common pattern: RabbitMQ for command/job execution; Kafka for domain event streaming/audit/analytics.
+
+Q: How do you scale RabbitMQ vs Kafka?
+A: RabbitMQ → add competing consumers (+ split queues, prefetch, cluster/HA).
+Kafka → add partitions, then consumers in the same group (and brokers to place them).
+Kafka fan-out scales with new groupIds; RabbitMQ fan-out scales with more bound queues.
 
 
 🧾 Resume / LinkedIn style points (edit to match real experience)
