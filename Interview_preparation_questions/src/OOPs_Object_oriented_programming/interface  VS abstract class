@@ -1,0 +1,122 @@
+✅ Interfaces vs Abstract Classes in Java
+
+| Property                  | **Interface**                                                                 | **Abstract Class**                                                  |
+| ------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| **Keyword**               | `interface`                                                                   | `abstract class`                                                    |
+| **Method Implementation** | Until Java 7: abstract only. Java 8+: `default` + `static`. Java 9+: `private` | Can have both **abstract** and **concrete** methods                |
+| **Multiple Inheritance**  | A class can **implement multiple** interfaces                                 | A class can **extend only one** class (abstract or concrete)        |
+| **Constructor**           | ❌ Cannot have constructors                                                    | ✅ Can have constructors (used by subclasses via `super(...)`)      |
+| **Variables/Fields**      | Only constants → implicitly `public static final`                             | Can have instance variables with any access modifier                |
+| **Access Modifiers**      | Abstract methods are `public`. Also `default` / `static` / `private` (Java 9+) | Can use `public`, `protected`, `private`, package-private          |
+| **Usage Purpose**         | Define a **contract** / **capability**                                        | Define a **base type with shared code** for related classes         |
+| **Instantiation**         | ❌ Cannot be instantiated                                                      | ❌ Cannot be instantiated                                            |
+| **Extends/Implements**    | Class **implements** interface; interface can **extend** other interfaces     | Class **extends** abstract class; abstract class can **implement** interfaces |
+
+────────────────────────────────────────
+❌ Can you create an object of an abstract class?
+No. An abstract class is incomplete (may have abstract methods with no body), so Java does not allow `new AbstractClass()`.
+Subclasses that implement all abstract methods **can** be instantiated.
+
+
+────────────────────────────────────────
+✅ When to Use an Interface
+
+1) You want to define a contract
+"Any class that implements this must provide these methods."
+Think of it as a job description — what to do, not how.
+
+```java
+interface Printable {
+    void print(); // rule only — no body
+}
+
+class Invoice implements Printable {
+    @Override
+    public void print() {
+        System.out.println("Printing invoice...");
+    }
+}
+
+class Document implements Printable {
+    @Override
+    public void print() {
+        System.out.println("Printing document...");
+    }
+}
+```
+
+2) Unrelated classes need the same behavior
+`Bird`, `Drone`, and `Airplane` can all fly, but are not in one inheritance tree:
+
+```java
+interface Flyable {
+    void fly();
+}
+```
+
+All of them can `implements Flyable`.
+
+
+────────────────────────────────────────
+✅ When to Use an Abstract Class
+
+1) Share common code among related classes
+Abstract class can hold shared logic + force subclasses to fill gaps:
+
+```java
+abstract class Animal {
+    void sleep() {
+        System.out.println("Sleeping...");
+    }
+
+    abstract void makeSound(); // each animal defines its own sound
+}
+
+class Dog extends Animal {
+    @Override
+    void makeSound() {
+        System.out.println("Bark");
+    }
+}
+
+class Cat extends Animal {
+    @Override
+    void makeSound() {
+        System.out.println("Meow");
+    }
+}
+```
+
+2) You need constructors or instance variables
+Interfaces cannot have instance fields or constructors; abstract classes can:
+
+```java
+abstract class Shape {
+    int sides;
+
+    Shape(int sides) {
+        this.sides = sides;
+    }
+
+    abstract void draw();
+}
+```
+
+
+────────────────────────────────────────
+🧠 Quick decision table
+
+| Situation                                  | Interface | Abstract Class |
+| ------------------------------------------ | --------- | -------------- |
+| Unrelated classes sharing behavior         | ✅ Yes     | ❌ Poor fit     |
+| Shared code among related classes          | Partial (`default` methods) | ✅ Best fit |
+| Need constructors / instance variables     | ❌ No      | ✅ Yes          |
+| Need multiple inheritance of type          | ✅ Yes     | ❌ No           |
+| Define capability/contract only            | ✅ Best    | Possible, but heavier |
+
+
+🎤 Quick interview traps
+1) Interface after Java 8 is **not** always 100% abstract (`default` / `static` / `private`).
+2) Abstract class **can** have constructors — still cannot be instantiated directly.
+3) “Shared code only in abstract class” is outdated — interfaces can share code via `default` methods.
+4) A class can implement many interfaces, but extend only **one** class.

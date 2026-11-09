@@ -1,17 +1,19 @@
-❓ Why can't constructors be final in Java?
-Because constructors are never inherited by child classes.
+❓ Why can't constructors be `final` in Java?
+Because constructors are **never inherited** — and therefore **cannot be overridden**.
 
-🔹 What does that mean?
-When you create a subclass, it does not get the parent class's constructor. Instead, the subclass must define its own constructor, even if it calls the parent’s constructor using super().
+`final` on a method means “cannot be overridden.”
+That idea doesn’t apply to constructors, so Java **disallows** `final` on them.
 
-So, there's no point in marking a constructor final, because:
+────────────────────────────────────────
+🔹 What that means
+A subclass does **not** inherit the parent constructor as a method.
+It defines its **own** constructor, and may call the parent one with `super(...)`.
+That is a call, not an override.
 
-final is used to stop something from being overridden.
+────────────────────────────────────────
+🧪 Example
 
-But constructors can't be overridden anyway — they're not inherited like methods.
-
-🧪 Example:
-
+```java
 class Parent {
     Parent() {
         System.out.println("Parent constructor");
@@ -20,21 +22,38 @@ class Parent {
 
 class Child extends Parent {
     Child() {
-        super();  // Calls Parent's constructor, but doesn't override it
+        super(); // calls Parent constructor — does NOT override it
         System.out.println("Child constructor");
     }
 }
-If you try:
+```
 
+Illegal:
 
-final Parent() {  // ❌ ERROR: Illegal modifier for the constructor
-    ...
+```java
+class Parent {
+    final Parent() { // ❌ compile error: illegal modifier for constructor
+        // ...
+    }
 }
-Java will show a compile-time error.
+```
 
-✅ Summary:
-final is for stopping inheritance/overriding.
+────────────────────────────────────────
+🧠 Related (common follow-ups)
+Constructors also **cannot** be:
+- `final` — nothing to override
+- `abstract` — abstract means “no body / must implement in subclass”; constructors always have a body purpose and aren’t inherited that way
+- `static` — constructors belong to instance creation, not the class as a static member
+- `native` / `synchronized` — not allowed on constructors
 
-Constructors are not inherited or overridden.
+Constructors **can** be: `public`, `protected`, `private`, or package-private (default).
 
-So, marking a constructor as final is not allowed.
+────────────────────────────────────────
+✅ Summary (Interview Answer)
+"`final` prevents overriding. Constructors are not inherited and cannot be overridden, so marking a constructor `final` is meaningless and illegal in Java."
+
+🎤 Quick interview traps
+1) `super()` in child ≠ overriding the parent constructor.
+2) Parent and child constructors can share the same “shape,” but they are still separate constructors.
+3) Making a class `final` stops inheritance of the class — that is different from a `final` constructor (which doesn’t exist).
+4) `private` constructor is valid (e.g. singleton / utility) — `final` constructor is not.

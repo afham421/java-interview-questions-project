@@ -1,13 +1,13 @@
-Great question! When a class implements multiple interfaces that contain default methods with the same signature,
-Java requires the class to override the conflicting method to resolve the ambiguity. This avoids confusion about which method to use.
+⚠️ Resolve Default Method Conflict in Java
+When a class implements **multiple interfaces** that have `default` methods with the **same signature**,
+Java cannot decide which one to use → **compile-time conflict**.
 
-✅ Correct way to resolve the conflict:
-You must override the display() method in MyClass and explicitly choose which interface's default method to call (if desired).
+✅ Fix: Override the method in the class and resolve it yourself (call one/both, or write custom logic).
 
-✅ Example: Explicitly calling a specific interface's method
-java
-Copy
-Edit
+────────────────────────────────────────
+✅ Example
+
+```java
 interface A {
     default void display() {
         System.out.println("Display from A");
@@ -23,11 +23,9 @@ interface B {
 class MyClass implements A, B {
     @Override
     public void display() {
-        // Option 1: Choose one interface to call
-        A.super.display();  // or B.super.display();
-
-        // Option 2: Add custom logic
-        System.out.println("MyClass resolving display");
+        A.super.display();                 // call A's default
+        // B.super.display();              // or call B's default
+        System.out.println("MyClass resolving display"); // custom logic
     }
 
     public static void main(String[] args) {
@@ -35,7 +33,37 @@ class MyClass implements A, B {
         obj.display();
     }
 }
-🔑 Notes:
-A.super.display() means: Call the default method from interface A.
+```
 
-You can only use InterfaceName.super.method() syntax inside the implementing class, not from outside.
+Output (with only `A.super.display()`):
+```
+Display from A
+MyClass resolving display
+```
+
+────────────────────────────────────────
+🔑 Notes
+- `A.super.display()` = call the default method from interface `A`
+- `InterfaceName.super.method()` is allowed **only inside** the implementing class (not from outside)
+- If you don’t override → **compilation error**
+
+────────────────────────────────────────
+🧠 Related rules (interview favorites)
+
+| Situation                                                         | Result                                      |
+| ----------------------------------------------------------------- | ------------------------------------------- |
+| Two interfaces, both have same **abstract** method                | No conflict — class implements once         |
+| Two interfaces, both have same **default** method                 | Conflict — class must override              |
+| Class provides its own method + interface has default             | Class method wins                           |
+| Sub-interface overrides default; class implements sub-interface   | More specific interface wins                |
+
+────────────────────────────────────────
+✅ Summary (Interview Answer)
+"If two interfaces provide the same default method and a class implements both, Java forces the class to override that method to resolve ambiguity.
+Inside the override you can call `A.super.method()` or `B.super.method()`, or provide fully custom logic."
+
+🎤 Quick interview traps
+1) Conflict is for **default vs default**, not for two abstract methods with same signature.
+2) You **must** override — choosing is not automatic.
+3) `A.super.display()` works only in the implementing class.
+4) Class implementation always beats inherited interface defaults.

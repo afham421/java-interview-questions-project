@@ -1,10 +1,13 @@
-🔁 Why We Use Method Overloading and Overriding in Java
-✅ 1. Method Overloading – Same method name, different parameters (in the same class)
+🔁 Method Overloading vs Overriding in Java
+
+────────────────────────────────────────
+✅ 1. Method Overloading – same name, different parameters (same class)
+Also called: **compile-time / static polymorphism**
+
 🔹 Why use it?
-To perform similar tasks with different types or numbers of inputs.
+Perform similar tasks with different types or numbers of inputs — one clean name instead of many (`addInt`, `addDouble`, …).
 
-🧪 Example:
-
+```java
 class Calculator {
     int add(int a, int b) {
         return a + b;
@@ -18,17 +21,20 @@ class Calculator {
         return a + b + c;
     }
 }
-✅ Benefit:
-Code readability: One method name for similar operations.
+```
 
-Flexibility: Accept different data types or argument counts.
+✅ Benefits:
+- Code readability — one method name for similar operations
+- Flexibility — different types / argument counts
 
-🔄 2. Method Overriding – Same method name and parameters in a subclass
+────────────────────────────────────────
+🔄 2. Method Overriding – same name + same parameters in a subclass
+Also called: **runtime / dynamic polymorphism**
+
 🔹 Why use it?
-To provide a specific implementation of a method that is already defined in the parent class.
+Provide a specific implementation of a method already defined in the parent class.
 
-🧪 Example:
-
+```java
 class Animal {
     void sound() {
         System.out.println("Animal makes a sound");
@@ -41,16 +47,34 @@ class Dog extends Animal {
         System.out.println("Dog barks");
     }
 }
-✅ Benefit:
-Run-time polymorphism: Decide at runtime which version of the method to call.
 
-Custom behavior: Subclass can have its own way of doing things.
+// Animal a = new Dog();
+// a.sound(); // "Dog barks" — decided at runtime by object type
+```
 
-📌 Summary:
-| Feature         | Overloading       | Overriding                  |
-| --------------- | ----------------- | --------------------------- |
-| Location        | Same class        | Parent-child (inheritance)  |
-| Parameters      | Must be different | Must be same                |
-| Return Type     | Can be different  | Should be same (or subtype) |
-| When it happens | Compile time      | Runtime                     |
-| Main purpose    | Code flexibility  | Custom behavior in subclass |
+✅ Benefits:
+- Runtime polymorphism — correct method chosen at runtime
+- Custom behavior in subclass while keeping a common API
+
+────────────────────────────────────────
+📌 Summary
+
+| Feature            | Overloading                         | Overriding                                      |
+| ------------------ | ----------------------------------- | ----------------------------------------------- |
+| Also called        | Compile-time polymorphism           | Runtime polymorphism                            |
+| Location           | Same class (or related)             | Parent–child (inheritance)                      |
+| Parameters         | Must be different                   | Must be same                                    |
+| Return type        | Can differ (with different params)  | Same or **covariant** (subtype)                 |
+| Access modifier    | Can be anything                     | Cannot be more restrictive                      |
+| Binding            | Compile time                        | Runtime (actual object type)                    |
+| `@Override`        | Not used                            | Recommended                                     |
+| `static`/`private`/`final` | Can overload                  | Cannot override (no runtime poly)               |
+| Main purpose       | Flexible similar APIs               | Custom subclass behavior                        |
+
+🎤 Quick interview traps
+1) Changing **only return type** is **not** overloading.
+2) Overriding needs inheritance; overloading does not.
+3) `static` methods are **hidden**, not overridden.
+4) `private` / `final` methods cannot be overridden.
+5) Overridden method cannot throw **broader checked** exceptions than the parent.
+6) Which overridden method runs depends on **object type**, not reference type.

@@ -1,10 +1,11 @@
-Great question! If two interfaces have the same method signature (e.g., display()), and a class implements both interfaces,
-there’s no conflict as long as the class provides its own implementation of the method.
+✅ Same Abstract Method in Multiple Interfaces
+If two interfaces declare the **same abstract method signature** (same name + same parameters + compatible return type),
+and a class implements both, there is **no conflict** — implement the method **once**.
 
-✅ Example:
-java
-Copy
-Edit
+────────────────────────────────────────
+✅ Example
+
+```java
 interface A {
     void display();
 }
@@ -14,23 +15,81 @@ interface B {
 }
 
 class MyClass implements A, B {
+    @Override
     public void display() {
         System.out.println("Display from MyClass");
     }
-}
-👇 Usage:
-java
-Copy
-Edit
-public class Main {
+
     public static void main(String[] args) {
         MyClass obj = new MyClass();
-        obj.display();  // Output: Display from MyClass
+        obj.display(); // Output: Display from MyClass
+
+        A a = obj;
+        B b = obj;
+        a.display(); // same method
+        b.display(); // same method
     }
 }
-✅ Only one method is implemented in the class, and it satisfies both interfaces.
+```
 
-🧠 Why No Conflict?
-Interfaces only declare methods (no body).
+One implementation satisfies both interfaces.
 
-So, as long as the class implements display() once, it's valid for both.
+────────────────────────────────────────
+🧠 Why no conflict?
+Abstract interface methods are only a **contract** (no body).
+The class supplies a single body that fulfills both contracts.
+
+────────────────────────────────────────
+⚠️ When it DOES conflict
+
+| Situation | Result |
+| --------- | ------ |
+| Same name + params + same/compatible return (abstract) | ✅ OK — implement once |
+| Same name + params but **incompatible return types** (e.g. `int` vs `String`) | ❌ Compile error |
+| Both interfaces have same method as **`default`** | ❌ Conflict — must override (see *Resolve default method conflict*) |
+
+```java
+interface A {
+    int get();
+}
+
+interface B {
+    String get(); // incompatible return type
+}
+
+// class X implements A, B {} // ❌ cannot implement both
+```
+
+Why?
+- To satisfy `A`, class needs: `public int get()`
+- To satisfy `B`, class needs: `public String get()`
+- In Java you **cannot** have two methods with the same name + same parameters that differ only by return type
+- So one class cannot fulfill both contracts → compile error
+
+Contrast with the OK case (`void display()` in both): one method body works for both.
+
+❓ “What if I override/implement both `get()` methods in `X`?”
+Still ❌ impossible.
+
+```java
+class X implements A, B {
+    public int get() { return 1; }
+    public String get() { return "hi"; } // ❌ duplicate method — differs only by return type
+}
+```
+
+Java sees both as the same method signature (`get()` with no params). Return type alone cannot distinguish them,
+so the class itself won’t compile — implementing both doesn’t solve it.
+
+Workaround: redesign (different method names, or one interface, or a wrapper type).
+
+────────────────────────────────────────
+✅ Summary (Interview Answer)
+"If two interfaces have the same abstract method, a class can implement both and provide that method once — one implementation covers both.
+Conflict happens with default methods of the same signature, or when return types are incompatible."
+
+🎤 Quick interview traps
+1) Abstract + abstract (same signature) → no conflict.
+2) Default + default (same signature) → conflict; must override.
+3) Incompatible return types → cannot implement both interfaces.
+4) Implementing once is enough; you don’t write `display()` twice.

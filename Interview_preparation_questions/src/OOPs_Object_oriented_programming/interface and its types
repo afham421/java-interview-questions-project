@@ -1,0 +1,254 @@
+In Java, an **interface** defines a contract that classes can implement.
+Interviewers often ask about “types of interfaces” by usage. Common categories:
+
+────────────────────────────────────────
+🔹 1. Marker Interface (also called Tagging Interface)
+Definition: Interface with **no methods** (and typically no fields).
+
+Purpose: “Mark” a class so JVM/frameworks can treat it specially (via `instanceof` / type checks).
+
+Examples:
+- `Serializable` → object can be serialized
+- `Cloneable` → class allows cloning behavior
+- `Remote` (`java.rmi.Remote`) → marker that object can be used remotely
+
+```java
+class MyClass implements Serializable {
+    // no methods required; just the mark
+}
+```
+
+Note:
+Tagging interface = same idea as marker interface (synonym).
+
+
+────────────────────────────────────────
+🔹 2. Functional Interface (SAM = Single Abstract Method)
+Definition: Interface with **exactly one abstract method**.
+
+Purpose: Used with lambdas and method references.
+
+Annotation: `@FunctionalInterface` (optional, but recommended; compiler enforces SAM rule)
+
+Important:
+- May also have `default` methods and `static` methods
+- Still functional if only **one abstract** method remains
+
+Examples:
+- `Runnable` → `run()`
+- `Callable<V>` → `call()`
+- `Comparator<T>` → `compare(...)`
+- `Comparable<T>` → `compareTo(...)`  (yes, it is functional)
+- `java.util.function.*` → `Function`, `Predicate`, `Consumer`, `Supplier`
+
+```java
+@FunctionalInterface
+interface MyFunctionalInterface {
+    void performAction(); // only abstract method
+}
+```
+
+
+────────────────────────────────────────
+🔹 3. Normal / Regular Interface
+Definition: General contract interface, usually with **multiple abstract methods**.
+
+Examples: `List`, `Map`, `Set`, `Vehicle` (custom)
+
+```java
+interface Vehicle {
+    void start();
+    void stop();
+}
+```
+
+Interview nuance:
+If an interface has exactly one abstract method, it is both a normal contract and a functional interface.
+“Normal” usually means “not marker / not specially SAM-focused.”
+
+
+────────────────────────────────────────
+🔹 4. Nested Interface
+Interface declared inside a class or another interface.
+
+```java
+class Outer {
+    interface InnerInterface {   // nested interface
+        void display();
+    }
+}
+```
+
+Important Java rule:
+Nested interfaces are **implicitly static**.
+(There is no true non-static nested interface.)
+
+Access example:
+```java
+Outer.InnerInterface obj = () -> System.out.println("hi");
+```
+
+
+────────────────────────────────────────
+🔹 5. Remote Interface (RMI style)
+Used in Java RMI (Remote Method Invocation) so a client can call methods on an object running in another JVM.
+
+Pattern:
+- Marker `java.rmi.Remote` has no methods
+- Your service interface **extends Remote** and declares remote methods
+- Each remote method typically throws `RemoteException`
+- Implementation usually extends `UnicastRemoteObject`
+- Server binds the object in RMI Registry; client looks it up and calls methods
+
+```java
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+
+// 1) Remote interface (shared contract — client + server both need this)
+public interface Calculator extends Remote {
+    int add(int a, int b) throws RemoteException;
+    int subtract(int a, int b) throws RemoteException;
+}
+
+// 2) Remote implementation (runs on the SERVER)
+public class CalculatorImpl extends UnicastRemoteObject implements Calculator {
+    public CalculatorImpl() throws RemoteException {
+        super();
+    }
+
+    @Override
+    public int add(int a, int b) throws RemoteException {
+        return a + b;
+    }
+
+    @Override
+    public int subtract(int a, int b) throws RemoteException {
+        return a - b;
+    }
+}
+
+// 3) Server — creates object and registers it
+public class CalculatorServer {
+    public static void main(String[] args) throws Exception {
+        CalculatorImpl calc = new CalculatorImpl();
+
+        // Start registry on port 1099 (default RMI port)
+        Registry registry = LocateRegistry.createRegistry(1099);
+
+        // Bind remote object with a name clients will look up
+        registry.rebind("CalculatorService", calc);
+
+        System.out.println("Calculator server is ready...");
+    }
+}
+
+// 4) Client — looks up remote object and calls methods
+public class CalculatorClient {
+    public static void main(String[] args) throws Exception {
+        // Connect to registry on server machine
+        // Use "localhost" if same machine; otherwise use server IP e.g. "192.168.1.10"
+        Registry registry = LocateRegistry.getRegistry("localhost", 1099);
+
+        // Lookup by the same name used in rebind(...)
+        Calculator calc = (Calculator) registry.lookup("CalculatorService");
+
+        // These calls look local, but execute on the SERVER
+        int sum = calc.add(10, 5);
+        int diff = calc.subtract(10, 5);
+
+        System.out.println("add(10, 5) = " + sum);        // 15
+        System.out.println("subtract(10, 5) = " + diff);  // 5
+    }
+}
+```
+
+How it works:
+1. Start `CalculatorServer` → object lives on server JVM and is registered as `"CalculatorService"`
+2. Start `CalculatorClient` → looks up that name, gets a stub/proxy
+3. `calc.add(10, 5)` on client → RMI sends call over network → `CalculatorImpl.add` runs on server → result returns to client
+
+So:
+- `Remote` itself = marker
+- `Calculator` = remote interface (your RMI API)
+- `CalculatorImpl` = server-side class that actually performs the work
+- Client never runs `CalculatorImpl`; it only holds a stub and calls through `Calculator`
+
+Same idea with Payment example:
+- Server 1 = Payment service (has `PaymentServiceImpl` logic)
+- Server 2 = your app (looks up by Server 1 IP and calls remote methods)
+- Work runs on Server 1; Server 2 only gets results
+
+
+────────────────────────────────────────
+🔹 RMI vs REST (interview comparison)
+
+Both let Server 2 call logic on Server 1. Difference is **how** they talk.
+
+| Point              | RMI                                      | REST                                      |
+| ------------------ | ---------------------------------------- | ----------------------------------------- |
+| Style              | Remote **method call** (looks like Java method) | Remote **HTTP API** (URL + HTTP verbs) |
+| Protocol           | Java RMI / JRMP                          | HTTP (GET, POST, PUT, DELETE)             |
+| Data format        | Java serialized objects                  | Usually JSON / XML                        |
+| Language           | Mostly **Java-to-Java**                  | Any language (Java, JS, Python, etc.)     |
+| Contract           | Java interface extending `Remote`        | URL paths + request/response body         |
+| Discovery          | RMI Registry (`lookup("PaymentService")`) | Service URL (`http://server1/api/pay`)  |
+| Coupling           | Tight (shared Java interface + stubs)    | Loose (only HTTP + JSON contract)         |
+| Firewall / web     | Harder (special ports, Java-specific)    | Easy (standard HTTP/HTTPS ports)          |
+| Modern usage       | Rare / legacy in new systems             | Very common for microservices             |
+
+Payment example mentally:
+
+```text
+RMI:
+  payment.pay(orderId, amount);   // Java method call over network
+
+REST:
+  POST http://server1:8080/api/payments
+  Body: { "orderId": 101, "amount": 500 }
+```
+
+Interview takeaway:
+- Same goal: call another server’s logic
+- RMI = Java object/method style
+- REST = HTTP + JSON style (preferred today for microservices)
+
+
+────────────────────────────────────────
+🔹 6. Common Java 8 built-in functional interfaces
+Under `java.util.function`:
+
+| Interface        | Abstract method idea        | Example use              |
+| ---------------- | --------------------------- | ------------------------ |
+| `Predicate<T>`   | `test(T)` → boolean         | filter conditions        |
+| `Function<T,R>`  | `apply(T)` → R              | map/transform            |
+| `Consumer<T>`    | `accept(T)` → void          | forEach / side-effects   |
+| `Supplier<T>`    | `get()` → T                 | lazy create/provide value|
+| `UnaryOperator<T>` | Function T→T              | same-type transform      |
+| `BinaryOperator<T>`| apply(T,T)→T              | reduce-style ops         |
+
+
+────────────────────────────────────────
+🔹 Extra modern notes (good for interviews)
+- Java 8+: `default` + `static` methods in interfaces
+- Java 9+: `private` methods in interfaces (shared helper code)
+- Java 17+: `sealed` interfaces (control which types may implement)
+
+
+🔹 Summary Table
+| Type                    | Key point                                      | Example                      |
+| ----------------------- | ---------------------------------------------- | ---------------------------- |
+| Marker / Tagging        | No methods; marks capability                   | `Serializable`               |
+| Functional (SAM)        | Exactly one abstract method                    | `Runnable`, `Function<T,R>`  |
+| Normal / Regular        | Multi-method contract (typical APIs)           | `List`, `Map`                |
+| Nested                  | Declared inside class/interface (implicitly static) | `Outer.InnerInterface`  |
+| Remote (RMI)            | Extends `Remote`, methods throw `RemoteException` | `Calculator`              |
+
+
+🎤 Quick interview traps
+1) `Comparable` is a functional interface (one abstract method).
+2) Marker ≠ Remote service interface; `Remote` is marker, your API methods are separate.
+3) Functional interfaces can still have default/static methods.
+4) Nested interfaces are implicitly static.

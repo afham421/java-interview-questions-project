@@ -1,0 +1,80 @@
+🧠 What is Abstraction in Java?
+Abstraction is one of the four core OOP concepts (others: Encapsulation, Inheritance, Polymorphism).
+It means hiding complex internal implementation details and showing only the essential features of an object.
+
+🎯 Simple Definition:
+Abstraction lets you focus on **what** an object does, not **how** it does it.
+
+📦 Real-Life Example:
+A car has methods like `start()`, `drive()`, `stop()`.
+You don't care how the engine starts — you just use `start()`.
+
+🧱 In Java, Abstraction is achieved using:
+
+────────────────────────────────────────
+🔹 1. Abstract Classes
+- Can have **abstract** (unimplemented) and **concrete** (implemented) methods
+- Can have fields, constructors, and non-abstract methods
+- **Cannot be instantiated** (`new Animal()` is illegal)
+- Subclass **must** implement all abstract methods (unless subclass is also abstract)
+
+```java
+abstract class Animal {
+    abstract void makeSound(); // abstract method — no body
+
+    void eat() {
+        System.out.println("Animal is eating"); // concrete method
+    }
+}
+
+class Dog extends Animal {
+    @Override
+    void makeSound() {
+        System.out.println("Bark");
+    }
+}
+```
+
+────────────────────────────────────────
+🔹 2. Interfaces
+- Before Java 8: methods were **fully abstract** (contract only)
+- Java 8+: can have `default` and `static` methods
+- Java 9+: can have `private` methods (helper code inside interface)
+- Class uses `implements` and must provide method bodies for abstract methods
+
+```java
+interface Vehicle {
+    void drive(); // abstract by default
+}
+
+class Car implements Vehicle {
+    @Override
+    public void drive() {
+        System.out.println("Car is driving");
+    }
+}
+```
+
+────────────────────────────────────────
+🔹 Abstraction vs Encapsulation (common interview trap)
+| Concept         | Focus                                      |
+| --------------- | ------------------------------------------ |
+| Abstraction     | Hide **complexity** → show only essentials |
+| Encapsulation   | Hide **data** → bundle + protect with access modifiers |
+
+Both hide something, but:
+- Abstraction → design level (`what` to expose)
+- Encapsulation → implementation level (`how` data is protected)
+
+────────────────────────────────────────
+✅ Benefits of Abstraction:
+- Hides implementation logic
+- Improves code readability and reusability
+- Helps achieve loose coupling
+- Encourages design flexibility (swap implementations easily)
+
+🎤 Quick interview traps
+1) Abstract class ≠ cannot have concrete methods (it can).
+2) Interface is not always “100% abstract” after Java 8.
+3) Private methods in interfaces = Java 9+, not Java 8.
+4) Abstraction ≠ Encapsulation (related but different).

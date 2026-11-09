@@ -1,0 +1,113 @@
+🧩 Delegate vs Interface in Java
+
+| Concept             | **Delegate**                                                             | **Interface**                                                                        |
+| ------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| **Definition**      | Design approach where one object **hands off** a task to another object  | A **contract** (methods) that a class must implement                                 |
+| **Purpose**         | **Behavior reuse** – reuse functionality by delegating to another object | **Abstraction** – define shared behaviors multiple classes must follow               |
+| **Main Use**        | Code reuse without inheritance (composition / HAS-A)                     | Polymorphism, loose coupling, testability                                            |
+| **How it works**    | One class **uses another class/object** internally to perform a task     | Class `implements` the interface and provides method bodies                          |
+| **Language level**  | Design pattern / technique (Java has **no** `delegate` keyword like C#)  | First-class Java construct (`interface`)                                             |
+| **Example in Java** | `LoggerService` delegates logging to a `FileLogger`                      | A `Vehicle` interface implemented by `Car`, `Bike`                                   |
+
+
+────────────────────────────────────────
+🔁 Simple Example: Delegation
+
+```java
+class Printer {
+    void print(String text) {
+        System.out.println("Printing: " + text);
+    }
+}
+
+class Document {
+    private final Printer printer = new Printer(); // Delegation (HAS-A)
+
+    void printDocument() {
+        printer.print("Hello from Document!");
+    }
+}
+```
+
+➡️ `Document` doesn't implement printing itself. It delegates to `Printer`.
+
+────────────────────────────────────────
+🔁 Simple Example: Interface
+
+```java
+interface Printer {
+    void print(String text);
+}
+
+class FilePrinter implements Printer {
+    public void print(String text) {
+        System.out.println("File Print: " + text);
+    }
+}
+
+class ScreenPrinter implements Printer {
+    public void print(String text) {
+        System.out.println("Screen Print: " + text);
+    }
+}
+```
+
+➡️ Callers depend on `Printer` (contract), not a concrete class.
+
+────────────────────────────────────────
+✅ When to Use
+
+| Scenario                                                     | Use                                      |
+| ------------------------------------------------------------ | ---------------------------------------- |
+| You want **code reuse without inheritance**                  | Use **Delegation**                       |
+| You want to **define shared behavior** for different classes | Use **Interfaces**                       |
+| You want a pattern like **Strategy**                         | Use **Interfaces + Delegation** together |
+| You want to **swap behaviors at runtime**                    | Use **Delegation** with **interfaces**   |
+
+
+────────────────────────────────────────
+🎯 Bonus: Use Both Together (best practice)
+
+```java
+interface PaymentProcessor {
+    void process(double amount);
+}
+
+class PayPalProcessor implements PaymentProcessor {
+    public void process(double amount) {
+        System.out.println("Processing with PayPal: $" + amount);
+    }
+}
+
+class PaymentService {
+    private final PaymentProcessor processor;
+
+    public PaymentService(PaymentProcessor processor) {
+        this.processor = processor; // Delegation to interface type
+    }
+
+    public void pay(double amount) {
+        processor.process(amount);
+    }
+}
+```
+
+➡️ Here:
+- `PaymentProcessor` = interface (contract + polymorphism)
+- `PaymentService` = delegates work to the processor (can swap PayPal/Stripe at runtime)
+
+────────────────────────────────────────
+✅ Summary
+
+| Feature            | Delegate                        | Interface                             |
+| ------------------ | ------------------------------- | ------------------------------------- |
+| Concept            | One object uses another         | Class agrees to a contract            |
+| Goal               | Reuse, avoid inheritance        | Define structure, enable polymorphism |
+| Real-world Analogy | Manager gives task to assistant | Job description everyone must follow  |
+
+🎤 Quick interview traps
+1) Delegation ≠ inheritance. It is closer to **composition** (HAS-A).
+2) Java has **no** `delegate` keyword (unlike C#); it’s a design technique.
+3) Interface alone doesn’t “delegate” — delegation happens when an object **forwards** a call.
+4) Best design often uses **both**: depend on an interface, delegate to a concrete implementation.
+5) After Java 8, interfaces can have `default`/`static` methods — not always “implement every method from scratch.”

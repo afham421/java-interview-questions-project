@@ -2,30 +2,29 @@
 Inheritance is the mechanism in OOP that allows a class to acquire the properties and behaviors (methods) of another class.
 
 📖 In simple terms:
-"Child class inherits from Parent class"
+"Child class inherits from Parent class" → **IS-A** relationship (`Dog` IS-A `Animal`)
 
 🔑 Why Use Inheritance?
-✅ Reusability of code
+- ✅ Reusability of code
+- ✅ Reduces redundancy
+- ✅ Enables polymorphism (parent reference → child object)
+- ✅ Organizes classes hierarchically (IS-A relationship)
 
-✅ Reduces redundancy
-
-✅ Enables polymorphism
-
-✅ Organizes classes hierarchically (IS-A relationship)
-
+────────────────────────────────────────
 🧱 Types of Inheritance in Java
+
 | Type             | Supported in Java? | Example                        |
 | ---------------- | ------------------ | ------------------------------ |
 | **Single**       | ✅ Yes              | One class inherits another     |
 | **Multilevel**   | ✅ Yes              | Class A → Class B → Class C    |
 | **Hierarchical** | ✅ Yes              | One class → many child classes |
 | **Multiple**     | ❌ Not with classes | Supported via **interfaces**   |
+| **Hybrid**       | ❌ Not with classes | Mix of types; use interfaces   |
 
-
+────────────────────────────────────────
 📦 Java Syntax
-java
-Copy
-Edit
+
+```java
 class Animal {
     void eat() {
         System.out.println("Eating...");
@@ -37,42 +36,51 @@ class Dog extends Animal {
         System.out.println("Barking...");
     }
 }
-Usage:
-java
-Copy
-Edit
+
 public class Test {
     public static void main(String[] args) {
         Dog d = new Dog();
         d.eat();   // from Animal
         d.bark();  // from Dog
+
+        Animal a = new Dog(); // polymorphism
+        a.eat();
     }
 }
-➡️ Dog is a child of Animal
-➡️ Dog inherits the eat() method from Animal
+```
 
+➡️ `Dog` is a child of `Animal`
+➡️ `Dog` inherits the `eat()` method from `Animal`
+
+────────────────────────────────────────
 📘 Real-World Analogy
-Imagine:
+- `Vehicle` = parent class
+- `Car`, `Bike`, `Bus` = child classes
+- They share common features (like `start()`), but have their own specific behaviors
 
-Vehicle is a parent class
-
-Car, Bike, Bus are child classes
-They all share common features (like speed), but have their own specific behaviors.
-
+────────────────────────────────────────
 🧠 Important Notes
-Use extends keyword for class inheritance
+- Use `extends` for class inheritance; use `implements` for interfaces
+- Constructors are **not inherited**, but can be called using `super()`
+- `private` members are not accessible in subclass (still exist in object, just not visible)
+- Every class implicitly extends `Object` (root of the Java class hierarchy)
+- Java does **not** support multiple inheritance with classes (avoids diamond problem)
+- A class **can** implement multiple interfaces
 
-Constructors are not inherited, but can be called using super()
-
-Java does not support multiple inheritance with classes (to avoid diamond problem)
-
-But you can implement multiple interfaces
-
+────────────────────────────────────────
 ✅ Interview-Ready Summary
+
 | Question                                | Answer                                                           |
 | --------------------------------------- | ---------------------------------------------------------------- |
 | What is inheritance?                    | Mechanism where one class inherits properties/methods of another |
 | Keyword used?                           | `extends`                                                        |
 | Does Java support multiple inheritance? | ❌ Not with classes, ✅ with interfaces                            |
-| What is "super"?                        | Used to call parent class constructor or methods                 |
+| What is `super`?                        | Used to call parent class constructor or methods                 |
 | What is IS-A relationship?              | `Dog` IS-A `Animal` — classic inheritance relationship           |
+
+🎤 Quick interview traps
+1) Multiple inheritance with **classes** is illegal; with **interfaces** is allowed.
+2) Constructors / static initializers are not “inherited” like instance methods.
+3) Inheritance is IS-A; composition/delegation is HAS-A (prefer composition when reuse alone is the goal).
+4) Diamond problem is why Java blocked multiple class inheritance.
+5) `private` fields/methods of parent are not directly accessible in child.

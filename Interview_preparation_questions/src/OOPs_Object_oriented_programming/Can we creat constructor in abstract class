@@ -1,37 +1,122 @@
+❓ Can we create a constructor in an abstract class?
 Yes, you can create a constructor in an abstract class in Java!
 
-🔹 Why?
-Even though you can’t create objects of an abstract class, its constructor is still called when a subclass object is created — to initialize the abstract class’s fields.
+🔹 Why do we use a constructor in an abstract class?
+Not to create `new AbstractClass()`, but to:
+1. Initialize **common fields** shared by all subclasses
+2. Force subclasses to pass required data via `super(...)`
+3. Put shared setup/validation in **one place** (DRY — don’t repeat in every subclass)
 
-✅ Example:
-java
-Copy
-Edit
+Constructors exist to initialize state, not to create standalone instances of that exact type.
+
+────────────────────────────────────────
+💡 Practical example (why it matters)
+
+Every bank account needs an account number + balance.
+Put that common init in the abstract class once:
+
+```java
+abstract class BankAccount {
+    private final String accountNumber;
+    private double balance;
+
+    // Abstract-class constructor = shared initialization
+    protected BankAccount(String accountNumber, double balance) {
+        if (accountNumber == null || accountNumber.isBlank()) {
+            throw new IllegalArgumentException("Account number required");
+        }
+        this.accountNumber = accountNumber;
+        this.balance = balance;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    protected void setBalance(double balance) {
+        this.balance = balance;
+    }
+
+    abstract void calculateInterest(); // each account type decides how
+}
+
+class SavingsAccount extends BankAccount {
+    private final double interestRate;
+
+    SavingsAccount(String accountNumber, double balance, double interestRate) {
+        super(accountNumber, balance); // initialize common fields in parent
+        this.interestRate = interestRate;
+    }
+
+    @Override
+    void calculateInterest() {
+        setBalance(getBalance() + getBalance() * interestRate);
+    }
+}
+
+class CurrentAccount extends BankAccount {
+    CurrentAccount(String accountNumber, double balance) {
+        super(accountNumber, balance); // same shared setup
+    }
+
+    @Override
+    void calculateInterest() {
+        // usually no interest for current accounts
+    }
+}
+
+// Usage:
+// BankAccount a = new BankAccount("A1", 100); // ❌ illegal
+BankAccount s = new SavingsAccount("SA-101", 1000, 0.05); // ✅
+```
+
+Without the abstract constructor, every subclass would repeat accountNumber/balance setup and validation.
+
+────────────────────────────────────────
+✅ Simple call-order example
+
+```java
 abstract class Animal {
-    Animal() {
+    String type;
+
+    Animal(String type) {
+        this.type = type;
         System.out.println("Animal constructor called");
     }
 }
 
 class Dog extends Animal {
     Dog() {
+        super("Dog"); // calls abstract class constructor
         System.out.println("Dog constructor called");
     }
 }
 
 public class Main {
     public static void main(String[] args) {
-        Dog d = new Dog();  // Output:
-                            // Animal constructor called
-                            // Dog constructor called
+        Dog d = new Dog();
+        // Output:
+        // Animal constructor called
+        // Dog constructor called
     }
 }
+```
 
+Call order: abstract parent constructor → then subclass constructor.
 
-
+────────────────────────────────────────
 ✅ Summary:
-Yes, abstract classes can have constructors.
+- Yes, abstract classes can have constructors.
+- Use them to initialize **common fields / shared logic** for subclasses.
+- They are called **before** subclass constructors via `super(...)`.
+- You still cannot do `new AbstractClass()`.
 
-They are used to initialize common fields or logic.
-
-Constructors of abstract classes are called before subclass constructors.
+🎤 Quick interview traps
+1) “No constructor because abstract can’t be instantiated” → ❌ wrong. Constructor still exists for subclasses.
+2) `new Animal()` / `new BankAccount()` is still illegal even if a constructor exists.
+3) If the abstract class only has a parameterized constructor, subclass **must** call `super(...)`.
+4) Abstract class constructors are commonly `protected` (for subclasses, not public creation of the abstract type).
