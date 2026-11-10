@@ -1,47 +1,62 @@
 ✅ HashMap vs Hashtable in Java
-| Feature              | **HashMap**                                                                         | **Hashtable**                                       |
-| -------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------- |
-| **Thread Safety**    | ❌ Not thread-safe (needs manual sync)                                               | ✅ Thread-safe (methods are synchronized)            |
-| **Performance**      | ✅ Faster (no synchronization overhead)                                              | ❌ Slower due to method-level synchronization        |
-| **Null keys/values** | ✅ Allows **1 null key** and **multiple null values**                                | ❌ **Does not allow** any null key or value          |
-| **Introduced in**    | Java 1.2 (part of the Collections Framework)                                        | Java 1.0 (legacy class)                             |
-| **Use case**         | For **single-threaded** or manually synchronized apps                               | For **legacy multithreaded** applications           |
-| **Iterator type**    | **Fail-fast** – throws `ConcurrentModificationException` on concurrent modification | **Fail-safe** – no exception (but weak consistency) |
-| **Extends**          | `AbstractMap`                                                                       | `Dictionary` (old abstract class)                   |
 
+| Feature              | **HashMap**                                              | **Hashtable**                                              |
+| -------------------- | -------------------------------------------------------- | ---------------------------------------------------------- |
+| **Thread Safety**    | ❌ Not thread-safe                                        | ✅ Thread-safe (methods synchronized)                       |
+| **Performance**      | ✅ Faster (no sync overhead)                              | ❌ Slower (locks whole table per method)                    |
+| **Null keys/values** | ✅ **1 null key** + multiple null values                  | ❌ No null key or null value                                |
+| **Introduced in**    | Java 1.2 (Collections Framework)                         | Java 1.0 (legacy)                                          |
+| **Order**            | ❌ No insertion/sorted order                              | ❌ No insertion/sorted order                                |
+| **Iterator**         | **Fail-fast** (`ConcurrentModificationException`)        | **Fail-fast** Iterator; older **Enumeration** is not fail-fast |
+| **Extends / parent** | `AbstractMap`                                            | `Dictionary` (legacy) + also implements `Map`              |
+| **Use case**         | Default map for most apps                                | Legacy only — prefer `ConcurrentHashMap` today             |
 
-🔍 Example:
-✅ HashMap:
+────────────────────────────────────────
+🔍 Examples
+
+```java
+// HashMap — nulls allowed
 Map<String, String> map = new HashMap<>();
-map.put(null, "value");       // ✔ Allowed
-map.put("key", null);         // ✔ Allowed
+map.put(null, "value");   // ✔
+map.put("key", null);     // ✔
 
-✅ Correct version:
-"Insertion order can be preserved by using LinkedHashMap, which is a subclass of HashMap."
-
-🧠 Explanation:
-HashMap itself does not maintain insertion order.
-
-But its subclass LinkedHashMap adds a doubly linked list to maintain the order in which entries were inserted.
-
-So if you want the features of a HashMap + insertion order, use LinkedHashMap.
-
-
-❌ Hashtable:
+// Hashtable — nulls forbidden
 Map<String, String> table = new Hashtable<>();
-table.put(null, "value");     // ❌ Throws NullPointerException
+table.put(null, "value"); // ❌ NullPointerException
+table.put("key", null);   // ❌ NullPointerException
+```
 
-🔐 When to use what?
-| Scenario                              | Recommendation                                 |
-| ------------------------------------- | ---------------------------------------------- |
-| Multithreaded application             | ✅ Use `ConcurrentHashMap` instead of Hashtable |
-| General-purpose use (single-threaded) | ✅ Use `HashMap`                                |
-| Legacy code compatibility             | Use `Hashtable` only if required               |
+────────────────────────────────────────
+📌 HashMap + insertion order → `LinkedHashMap`
+`HashMap` does **not** keep insertion order.
+`LinkedHashMap` (subclass of `HashMap`) keeps insertion order via a doubly linked list.
 
+```java
+Map<String, String> ordered = new LinkedHashMap<>();
+ordered.put("b", "2");
+ordered.put("a", "1");
+// iteration order: b, a
+```
 
-✅ Summary:
-Use HashMap in most modern Java applications.
+────────────────────────────────────────
+🔐 When to use what
 
-Avoid Hashtable unless you're maintaining very old code.
+| Scenario                              | Recommendation                                  |
+| ------------------------------------- | ----------------------------------------------- |
+| Single-threaded / general use         | ✅ `HashMap`                                     |
+| Need insertion order                  | ✅ `LinkedHashMap`                               |
+| Multithreaded modern app              | ✅ `ConcurrentHashMap` (not Hashtable)           |
+| Legacy code only                      | `Hashtable` if you must                         |
 
-For thread safety, use ConcurrentHashMap instead — it's more efficient and modern.
+────────────────────────────────────────
+✅ Summary
+- Prefer **`HashMap`** in modern apps.
+- Avoid **`Hashtable`** except legacy maintenance.
+- For concurrency, use **`ConcurrentHashMap`** — finer locking / CAS, better throughput than Hashtable.
+
+🎤 Quick interview traps
+1) Hashtable Iterator is **fail-fast** (like HashMap). Don’t say “Hashtable iterator is fail-safe.” Older `Enumeration` is the non-fail-fast one.
+2) Hashtable is synchronized but still weaker than ConcurrentHashMap for high concurrency (whole-table lock).
+3) HashMap allows nulls; Hashtable and ConcurrentHashMap do **not**.
+4) Neither HashMap nor Hashtable maintains insertion order — use LinkedHashMap for that.
+5) Synchronized ≠ always enough for compound actions (`check-then-act` still needs care).

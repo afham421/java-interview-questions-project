@@ -1,55 +1,72 @@
 ✅ HashMap vs HashSet
-| Feature              | **HashMap**                                                | **HashSet**                                   |
-| -------------------- | ---------------------------------------------------------- | --------------------------------------------- |
-| **Stores**           | Key–Value pairs (e.g., `Map<K, V>`)                        | Only **unique values**                        |
-| **insertion order**  | NO                                                         | No                             |// because both take hash of value and then decide the index of key
-| **Implements**       | `Map` interface                                            | `Set` interface                               |
-| **Duplicates**       | ❌ Keys must be unique, values can repeat                   | ❌ No duplicate elements                       |
-| **Null values**      | ✅ One null key, multiple null values                       | ✅ One null element allowed                    |
-| **Use case**         | When you need to store **mapping** between keys and values | When you need **a unique set of elements**    |
-| **Internal working** | Uses **hashing** via `HashMap` structure                   | Internally uses **HashMap** to store elements |
 
+| Feature              | **HashMap**                                      | **HashSet**                                         |
+| -------------------- | ------------------------------------------------ | --------------------------------------------------- |
+| **Stores**           | Key–Value pairs (`Map<K,V>`)                     | Only unique elements (`Set<E>`)                     |
+| **Insertion order**  | ❌ No                                             | ❌ No (both hash to decide bucket index)             |
+| **Implements**       | `Map`                                            | `Set`                                               |
+| **Duplicates**       | Keys unique; values can repeat                   | No duplicate elements                               |
+| **Null**             | ✅ 1 null key + multiple null values              | ✅ 1 null element                                    |
+| **Main methods**     | `put`, `get`, `containsKey`                      | `add`, `contains`, `remove`                         |
+| **Use case**         | Mapping keys → values                            | Unique collection of values                         |
+| **Internal working** | Hash table of entries                            | Backed by a **HashMap** internally                  |
+| **Performance**      | Average `O(1)` get/put                           | Average `O(1)` add/contains                         |
 
-🔧 How they work internally:
-HashSet is actually backed by a HashMap:
+────────────────────────────────────────
+🔧 How HashSet works internally
+HashSet is backed by a HashMap:
 
+```java
+private transient HashMap<E, Object> map;
+// each added element becomes a KEY in that map
+// value is a shared dummy object (often called PRESENT)
+```
 
-private transient HashMap<E,Object> map;
-Each value you add in HashSet is stored as a key in a HashMap with a dummy value.
+- `set.add(x)` → `map.put(x, PRESENT)`
+- Duplicate add is ignored (`add` returns `false`)
+- Uniqueness comes from key uniqueness of HashMap (`equals`/`hashCode`)
 
-🧠 Code Examples:
-✅ HashMap:
+────────────────────────────────────────
+🧠 Code examples
 
+```java
+// HashMap
 Map<Integer, String> map = new HashMap<>();
 map.put(1, "Apple");
 map.put(2, "Banana");
-map.put(1, "Orange"); // Overwrites "Apple"
+map.put(1, "Orange"); // overwrites "Apple"
 
 System.out.println(map); // {1=Orange, 2=Banana}
-✅ HashSet:
 
+// HashSet
 Set<String> set = new HashSet<>();
 set.add("Apple");
 set.add("Banana");
-set.add("Apple"); // Ignored
+set.add("Apple"); // ignored (duplicate)
 
-System.out.println(set); // [Apple, Banana]
+System.out.println(set); // [Apple, Banana]  (order not guaranteed)
+```
 
-
-✅ Summary:
-Use HashMap when you want to associate keys with values.
-
-Use HashSet when you only care about unique values, not key-value relationships.
+────────────────────────────────────────
+✅ When to use what
+- Need key → value association → **HashMap**
+- Need only unique values → **HashSet**
 
 ✅ Want insertion order?
-Use these alternatives:
-| Interface | Preserves Insertion Order | Class to Use    |
-| --------- | ------------------------- | --------------- |
-| `Map`     | ✅ Yes                     | `LinkedHashMap` |
-| `Set`     | ✅ Yes                     | `LinkedHashSet` |
 
-🧠 Summary
-| Collection | Maintains Insertion Order? | Use Instead       |
+| Need              | Use              |
+| ----------------- | ---------------- |
+| Ordered Map       | `LinkedHashMap`  |
+| Ordered Set       | `LinkedHashSet`  |
+
+| Collection | Maintains insertion order? | Use instead       |
 | ---------- | -------------------------- | ----------------- |
 | `HashMap`  | ❌ No                       | `LinkedHashMap` ✅ |
 | `HashSet`  | ❌ No                       | `LinkedHashSet` ✅ |
+
+🎤 Quick interview traps
+1) HashSet does **not** store “only values with no map” — internally it **is** a HashMap with dummy values.
+2) Neither preserves insertion order; Linked* versions do.
+3) Custom objects in HashSet/HashMap keys need proper `equals` + `hashCode`.
+4) HashMap duplicate **key** overwrites; HashSet duplicate `add` is ignored.
+5) Both are **not** thread-safe.

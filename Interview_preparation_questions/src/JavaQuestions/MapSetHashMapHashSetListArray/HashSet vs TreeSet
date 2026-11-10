@@ -1,32 +1,68 @@
-✅ HashSet vs TreeSet:
-| Feature                  | **HashSet**                        | **TreeSet**                                               |
-| ------------------------ | ---------------------------------- | --------------------------------------------------------- |
-| **Ordering**             | ❌ No guaranteed order              | ✅ Sorted in **natural order** or with a comparator        |
-| **Performance**          | ✅ Faster (O(1) for basic ops)      | ❗ Slower (O(log n) for basic ops)                         |
-| **Underlying structure** | Uses a **HashMap** internally      | Uses a **Red-Black Tree** internally                      |
-| **Null elements**        | ✅ Allows **one** null element      | ❌ Does **not** allow null (throws `NullPointerException`) |
-| **Implements**           | `Set`, `Cloneable`, `Serializable` | `NavigableSet`, `SortedSet`, `Set`, etc.                  |
-| **Use case**             | When you need **fast access**      | When you need **sorted elements**                         |
+✅ HashSet vs TreeSet
 
+| Feature                  | **HashSet**                                   | **TreeSet**                                              |
+| ------------------------ | --------------------------------------------- | -------------------------------------------------------- |
+| **Ordering**             | ❌ No guaranteed order                         | ✅ Sorted (natural order or `Comparator`)                 |
+| **Performance**          | ✅ Average `O(1)` add/contains/remove          | `O(log n)` add/contains/remove                           |
+| **Underlying structure** | **HashMap** internally                        | **TreeMap** / Red-Black Tree internally                  |
+| **Null elements**        | ✅ One null                                    | ❌ Null → `NullPointerException` (natural ordering)       |
+| **Element requirement**  | Good `equals`/`hashCode`                      | Must be `Comparable` **or** provide `Comparator`         |
+| **Implements**           | `Set`                                         | `NavigableSet` → `SortedSet` → `Set`                     |
+| **Thread-safe?**         | ❌ No                                          | ❌ No                                                     |
+| **Use case**             | Fast unique collection                        | Sorted unique collection / range ops                     |
 
-🧠 Simple Example:
-✅ HashSet:
+────────────────────────────────────────
+🧠 Examples
 
+```java
+// HashSet — unordered
 Set<String> hashSet = new HashSet<>();
 hashSet.add("Banana");
 hashSet.add("Apple");
 hashSet.add("Orange");
+System.out.println(hashSet); // order unpredictable
 
-System.out.println(hashSet); // Output order is unpredictable
-✅ TreeSet:
-
+// TreeSet — sorted by natural order
 Set<String> treeSet = new TreeSet<>();
 treeSet.add("Banana");
 treeSet.add("Apple");
 treeSet.add("Orange");
+System.out.println(treeSet); // [Apple, Banana, Orange]
 
-System.out.println(treeSet); // Output: [Apple, Banana, Orange]
-✅ Summary:
-Use HashSet if you don’t care about order and want fast operations.
+// Navigable helpers (TreeSet implements NavigableSet)
+// Sorted set: [Apple, Banana, Orange]
+TreeSet<String> nav = new TreeSet<>(treeSet);
+nav.lower("Banana");   // greatest element < "Banana"  → "Apple"
+nav.higher("Banana");  // least element > "Banana"     → "Orange"
+nav.floor("Banana");   // greatest element <= "Banana" → "Banana"
+nav.ceiling("Banana"); // least element >= "Banana"    → "Banana"
+```
 
-Use TreeSet if you need elements in sorted order.
+Why this matters:
+HashSet cannot do “give me the next/previous sorted value” efficiently.
+TreeSet can, because elements are kept sorted in a tree.
+
+Custom comparator:
+
+```java
+Set<String> byLength = new TreeSet<>(Comparator.comparingInt(String::length));
+```
+
+────────────────────────────────────────
+✅ Summary
+- Don’t care about order + want speed → **HashSet**
+- Need **sorted** unique elements / range queries → **TreeSet**
+- Need **insertion order** → **LinkedHashSet** (not TreeSet)
+
+| Need                 | Use              |
+| -------------------- | ---------------- |
+| Fast, unordered set  | `HashSet`        |
+| Insertion-order set  | `LinkedHashSet`  |
+| Sorted set           | `TreeSet`        |
+
+🎤 Quick interview traps
+1) TreeSet sorts elements; LinkedHashSet keeps insertion order — different goals.
+2) `treeSet.add(null)` → NPE with natural ordering.
+3) Elements must be mutually comparable (or supply Comparator) — otherwise `ClassCastException`.
+4) HashSet uniqueness uses `equals`/`hashCode`; TreeSet uniqueness uses compare (`compareTo` / Comparator) — inconsistent compare/equals can surprise you.
+5) Both are not thread-safe.

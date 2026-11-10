@@ -1,67 +1,83 @@
 🧩 What is a List?
-Ordered collection of elements.
-
+Ordered collection of elements (positional / index-based).
 Allows duplicates.
+Elements can be accessed by index (`get(i)`).
 
-Elements can be accessed by index.
-
-✅ Example:
-java
-Copy
-Edit
+```java
 List<String> names = new ArrayList<>();
 names.add("Ali");
-names.add("Ali");  // Duplicate allowed
-System.out.println(names.get(0));  // Ali
+names.add("Ali");  // duplicate allowed
+System.out.println(names.get(0)); // Ali
+System.out.println(names);        // [Ali, Ali]
+```
+
+────────────────────────────────────────
 🧩 What is a Set?
-Unordered collection of unique elements.
+Collection of **unique** elements (no duplicates).
+No index-based access.
+Order depends on implementation:
+- `HashSet` → no guaranteed order
+- `LinkedHashSet` → insertion order
+- `TreeSet` → sorted order
 
-Duplicates not allowed.
-
-Does not support indexing.
-
-✅ Example:
-java
-Copy
-Edit
+```java
 Set<String> names = new HashSet<>();
 names.add("Ali");
-names.add("Ali");  // Duplicate ignored
-System.out.println(names.size());  // 1
+names.add("Ali");  // duplicate ignored
+System.out.println(names.size()); // 1
+System.out.println(names.contains("Ali")); // true
+```
 
+────────────────────────────────────────
+🔍 List vs Set – Key Differences
 
-🔍 Set vs List – Key Differences
-| Feature          | **List**                      | **Set**                                                                                    |
-| ---------------- | ----------------------------- | ------------------------------------------------------------------------------------------ |
-| **Order**        | Maintains **insertion order** | ❌ No guaranteed order (`HashSet`)<br>✅ Ordered in `LinkedHashSet`<br>✅ Sorted in `TreeSet` |
-| **Duplicates**   | ✅ Allowed                     | ❌ Not allowed                                                                              |
-| **Index-based**  | ✅ Yes (`list.get(0)`)         | ❌ No                                                                                       |
-| **Performance**  | Slower lookup (`O(n)`)        | Faster lookup (`O(1)` for `HashSet`)                                                       |
-| **Common Types** | `ArrayList`, `LinkedList`     | `HashSet`, `LinkedHashSet`, `TreeSet`                                                      |
+| Feature          | **List**                         | **Set**                                                    |
+| ---------------- | -------------------------------- | ---------------------------------------------------------- |
+| Duplicates       | ✅ Allowed                        | ❌ Not allowed                                              |
+| Order            | ✅ Positional / insertion order   | ❌ `HashSet`<br>✅ `LinkedHashSet`<br>✅ sorted `TreeSet`   |
+| Index access     | ✅ Yes (`get(0)`)                 | ❌ No                                                       |
+| Lookup (`contains`) | `ArrayList`: `O(n)`           | `HashSet`: avg `O(1)`                                      |
+| Null             | Multiple nulls allowed           | `HashSet`: 1 null<br>`TreeSet`: no null                    |
+| Common types     | `ArrayList`, `LinkedList`        | `HashSet`, `LinkedHashSet`, `TreeSet`                      |
 
+────────────────────────────────────────
+🚀 When to use what
 
-🚀 When to Use What?
-| Use Case                                 | Use **List** | Use **Set**           |
-| ---------------------------------------- | ------------ | --------------------- |
-| Need duplicates                          | ✅ Yes        | ❌ No                  |
-| Access by index                          | ✅ Yes        | ❌ No                  |
-| Fast lookups & uniqueness                | ❌ No         | ✅ Yes                 |
-| Maintain insertion order with uniqueness | ❌ No         | ✅ Use `LinkedHashSet` |
-| Need sorted data                         | ❌ No         | ✅ Use `TreeSet`       |
+| Use case                                      | Prefer                         |
+| --------------------------------------------- | ------------------------------ |
+| Need duplicates / index access                | **List** (`ArrayList`)         |
+| Unique elements + fast membership checks      | **Set** (`HashSet`)            |
+| Unique + preserve insertion order             | `LinkedHashSet`                |
+| Unique + sorted                               | `TreeSet`                      |
 
-🧪 Code Comparison
-java
-Copy
-Edit
+────────────────────────────────────────
+🧪 Code comparison
+
+```java
 List<String> list = new ArrayList<>();
-list.add("A"); list.add("A");  // [A, A]
+list.add("A");
+list.add("A");
+System.out.println(list); // [A, A]
 
 Set<String> set = new HashSet<>();
-set.add("A"); set.add("A");    // [A]
+set.add("A");
+set.add("A");
+System.out.println(set);  // [A]
+```
+
+────────────────────────────────────────
 ✅ Summary
-| Aspect       | List                      | Set          |
-| ------------ | ------------------------- | ------------ |
-| Duplicates   | ✅ Yes                     | ❌ No         |
-| Order        | ✅ Maintains               | ❌ Not always |
-| Index Access | ✅ Yes                     | ❌ No         |
-| Use Case     | Ordered & duplicate items | Unique items |
+
+| Aspect       | List                         | Set                |
+| ------------ | ---------------------------- | ------------------ |
+| Duplicates   | ✅ Yes                        | ❌ No               |
+| Order        | ✅ Maintains                  | ❌ Not always       |
+| Index access | ✅ Yes                        | ❌ No               |
+| Best for     | Ordered / duplicate items    | Unique items       |
+
+🎤 Quick interview traps
+1) “Set is unordered” is incomplete — `LinkedHashSet` / `TreeSet` have order.
+2) Performance: compare **membership** (`contains`), not index `get`. `ArrayList.get(i)` is `O(1)`; `contains` is `O(n)`.
+3) Uniqueness in Set uses `equals` + `hashCode` (or `Comparable`/`Comparator` for `TreeSet`).
+4) List can hold many nulls; `HashSet` allows one null; `TreeSet` rejects null.
+5) Need unique + insertion order → `LinkedHashSet`, not `HashSet` or plain `List`.

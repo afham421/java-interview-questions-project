@@ -1,60 +1,108 @@
-🔁 Overview
-| Feature       | `Collections.synchronizedMap`                 | `ConcurrentHashMap`                                    |
-| ------------- | --------------------------------------------- | ------------------------------------------------------ |
-| Thread Safety | ✅ Yes (synchronized)                          | ✅ Yes (internally concurrent)                          |
-| Performance   | ❌ Slower (locks entire map)                   | ✅ Faster (locks only portions)                         |
-| Locking       | Locks the **entire map**                      | Uses **segment-level locking** or fine-grained locking |
-| Iteration     | Must **manually synchronize**                 | Safe iteration **without extra sync**                  |
-| Null Support  | ✅ Allows **one null key** and **null values** | ❌ **Does not allow** null keys or null values          |
-| Introduced In | Java 1.2 (`Collections`)                      | Java 5 (`java.util.concurrent`)                        |
-| Best For      | Simple, low-concurrency apps                  | High-concurrency, performance-critical apps            |
+🔁 ConcurrentHashMap vs Collections.synchronizedMap
 
+| Feature       | `Collections.synchronizedMap`                 | `ConcurrentHashMap`                                         |
+| ------------- | --------------------------------------------- | ----------------------------------------------------------- |
+| Thread Safety | ✅ Yes (wrapper synchronizes every call)      | ✅ Yes (built for concurrency)                               |
+| Performance   | ❌ Slower (locks **entire map**)               | ✅ Faster (fine-grained locking / CAS)(locks only portions)                        |
+| Locking       | One lock on the whole map                     | Java 8+: CAS + lock per bin (not whole map)                 |
+| Iteration     | Must **manually synchronize**                 | Weakly consistent — **no extra sync** needed                |
+| Null Support  | ✅ One null key + null values (like HashMap)  | ❌ No null keys or null values                               |
+| Introduced In | Java 1.2 (`Collections`)                      | Java 5 (`java.util.concurrent`)                             |
+| Best For      | Simple / low concurrency                      | High concurrency, servers, shared caches                    |
 
-🔧 1. Collections.synchronizedMap Example
-java
-Copy
-Edit
+────────────────────────────────────────
+🔧 1. `Collections.synchronizedMap`
+
+```java
 Map<String, String> map = Collections.synchronizedMap(new HashMap<>());
 
-synchronized (map) { // manual sync required for iteration
+// Single put/get are synchronized by the wrapper
+map.put("a", "1");
+
+// Compound actions / iteration still need external sync
+synchronized (map) {
     for (String key : map.keySet()) {
         System.out.println(key + " = " + map.get(key));
     }
 }
-🚀 2. ConcurrentHashMap Example
-java
-Copy
-Edit
+```
+
+────────────────────────────────────────
+🚀 2. `ConcurrentHashMap`
+
+```java
 Map<String, String> map = new ConcurrentHashMap<>();
 
-// No manual sync needed
+map.put("a", "1");
+
+// No manual sync needed for iteration
 for (String key : map.keySet()) {
     System.out.println(key + " = " + map.get(key));
 }
-🔍 Internal Working
-| Feature     | `synchronizedMap`          | `ConcurrentHashMap`                   |
-| ----------- | -------------------------- | ------------------------------------- |
-| Locking     | One lock for entire map    | Locks **only buckets (segments)**     |
-| Scalability | Poor under high threads    | Excellent under high threads          |
-| Blocking    | All threads block on write | Threads block only on affected bucket |
 
+// Useful atomic APIs
+map.putIfAbsent("a", "2");
+map.computeIfAbsent("b", k -> "value");
+```
 
-⚠️ Null Handling
+────────────────────────────────────────
+🧠 What is CAS? (Compare-And-Swap)
+CAS is a low-level atomic CPU operation used for lock-free updates:
+
+1. Read current value
+2. Compare it with the value you **expected**
+3. If it still matches → **swap** in the new value (success)
+4. If someone else changed it → fail → retry
+
+```text
+expected = 10
+newValue = 11
+
+CAS(address, expected=10, newValue=11)
+  → if memory still has 10, set to 11 (OK)
+  → if memory is already 12, do nothing (FAIL, retry)
+```
+
+In Java: `AtomicInteger.compareAndSet()`, `Unsafe`/`VarHandle` CAS, used inside `ConcurrentHashMap`.
+
+Why CHM uses it:
+- Many updates can succeed **without locking the whole map**
+- If CAS fails (another thread won), retry or fall back to locking that bin
+
+────────────────────────────────────────
+🔍 Internal working
+
+| Feature     | `synchronizedMap`               | `ConcurrentHashMap`                                      |
+| ----------- | ------------------------------- | -------------------------------------------------------- |
+| Locking     | One lock for entire map         | Java 5–7: **segments**; Java 8+: **CAS + bin lock**      |
+| Scalability | Poor under many threads         | Excellent under many threads                             |
+| Reads       | Also synchronized               | Generally non-blocking / highly concurrent               |
+| Blocking    | All threads contend on one lock | Contention limited to affected bin                       |
+
+────────────────────────────────────────
+⚠️ Null handling
+
 | Map Type            | Null Key | Null Value |
 | ------------------- | -------- | ---------- |
 | `HashMap`           | ✅ Yes    | ✅ Yes      |
 | `synchronizedMap`   | ✅ Yes    | ✅ Yes      |
 | `ConcurrentHashMap` | ❌ No     | ❌ No       |
 
+`concurrentMap.put(null, "x")` / `put("x", null)` → `NullPointerException`
 
-Trying to insert null into ConcurrentHashMap will throw NullPointerException.
+────────────────────────────────────────
+✅ When to use what
 
-✅ Summary: When to Use What?
-| Scenario                                            | Use This                       |
-| --------------------------------------------------- | ------------------------------ |
-| Simple app, low concurrency                         | `Collections.synchronizedMap`  |
-| High-concurrency app (e.g. web server, thread pool) | `ConcurrentHashMap`            |
-| You need null keys/values                           | `HashMap` or `synchronizedMap` |
-| You need high throughput under heavy load           | `ConcurrentHashMap`            |
+| Scenario                                  | Use This                      |
+| ----------------------------------------- | ----------------------------- |
+| Simple app, low concurrency               | `Collections.synchronizedMap` |
+| High concurrency / web / thread pools     | `ConcurrentHashMap`           |
+| Need null keys/values                     | `HashMap` or `synchronizedMap`|
+| Need atomic ops (`putIfAbsent`, etc.)     | `ConcurrentHashMap`           |
 
-
+🎤 Quick interview traps
+1) `synchronizedMap` makes each method call safe — **not** multi-step logic (`check-then-act`) unless you sync yourself.
+2) Don’t say “always segment locking” — that was Java 5–7; **Java 8+** uses CAS + synchronized bins.
+3) `ConcurrentHashMap` iterators are **weakly consistent** (may reflect some updates; no `ConcurrentModificationException` like fail-fast HashMap).
+4) Nulls are forbidden in `ConcurrentHashMap` (ambiguity with “missing” vs null under concurrency).
+5) Prefer `ConcurrentHashMap` for modern concurrent apps.

@@ -1,70 +1,78 @@
 🧩 What is a Set?
-A collection of unique elements (no duplicates).
+A collection of **unique elements** (no duplicates).
+Does **not** store key–value pairs.
+Looks like: `[A, B, C]`
 
-Does not store key-value pairs.
-
-Elements are stored like: [A, B, C]
-
-✅ Example:
-java
-Copy
-Edit
+```java
 Set<String> fruits = new HashSet<>();
 fruits.add("Apple");
 fruits.add("Banana");
-fruits.add("Apple"); // Duplicate, ignored
+fruits.add("Apple"); // duplicate ignored
 
-System.out.println(fruits); // Output: [Apple, Banana]
+System.out.println(fruits); // [Apple, Banana] (order not guaranteed)
+System.out.println(fruits.contains("Apple")); // true — access by value, not only iteration
+```
+
+────────────────────────────────────────
 🧩 What is a Map?
-A collection of key-value pairs.
+A collection of **key–value pairs**.
+Keys are unique; values may repeat.
+Looks like: `{A=1, B=2}`
 
-Each key is unique, but values can be duplicated.
-
-Stored like: {A=1, B=2}
-
-✅ Example:
-java
-Copy
-Edit
+```java
 Map<String, Integer> scores = new HashMap<>();
 scores.put("Ali", 90);
 scores.put("Sara", 85);
-scores.put("Ali", 95); // Replaces previous value for key "Ali"
+scores.put("Ali", 95); // replaces previous value for key "Ali"
 
-System.out.println(scores); // Output: {Ali=95, Sara=85}
+System.out.println(scores); // {Ali=95, Sara=85}
+System.out.println(scores.get("Ali")); // 95
+```
 
-
+────────────────────────────────────────
 🔍 Map vs Set – Key Differences
+
 | Feature       | **Set**                               | **Map**                                          |
 | ------------- | ------------------------------------- | ------------------------------------------------ |
-| Stores        | **Only values**                       | **Key-value pairs**                              |
-| Duplicates    | ❌ Not allowed                         | ✅ Values can repeat, keys can't                  |
-| Access        | Only via iteration                    | Access via key (`map.get(key)`)                  |
+| Stores        | Only values                           | Key–value pairs                                  |
+| Duplicates    | ❌ Not allowed                         | Keys unique; values can repeat                   |
+| Access        | By element (`contains`) / iteration   | By key (`get(key)`)                              |
 | Example Class | `HashSet`, `LinkedHashSet`, `TreeSet` | `HashMap`, `LinkedHashMap`, `TreeMap`            |
-| Null Handling | Allows one `null` value               | Allows one `null` key and multiple `null` values |
+| Null (Hash*)  | `HashSet`: one null                   | `HashMap`: one null key + null values            |
+| Null (Tree*)  | `TreeSet`: no null                    | `TreeMap`: no null key                           |
 
-
+────────────────────────────────────────
 ✅ Summary
-| Type  | Purpose                                            |
-| ----- | -------------------------------------------------- |
-| `Set` | Collection of **unique values**                    |
-| `Map` | Collection of **unique keys** mapped to **values** |
 
+| Type  | Purpose                                         |
+| ----- | ----------------------------------------------- |
+| `Set` | Unique values                                   |
+| `Map` | Unique keys mapped to values                    |
 
+Note: `HashSet` is backed by a `HashMap` internally (elements stored as keys).
 
-////if you want insertion order then use linkedHashMap or linkedHashSet
+────────────────────────────────────────
+✅ Want insertion order?
+
+```java
 Map<String, Integer> map = new LinkedHashMap<>();
 Set<String> set = new LinkedHashSet<>();
+```
 
-✅ Want insertion order?
-Use these alternatives:
-| Interface | Preserves Insertion Order | Class to Use    |
-| --------- | ------------------------- | --------------- |
-| `Map`     | ✅ Yes                     | `LinkedHashMap` |
-| `Set`     | ✅ Yes                     | `LinkedHashSet` |
+| Interface | Preserves insertion order | Class            |
+| --------- | ------------------------- | ---------------- |
+| `Map`     | ✅ Yes                     | `LinkedHashMap`  |
+| `Set`     | ✅ Yes                     | `LinkedHashSet`  |
 
-🧠 Summary
-| Collection | Maintains Insertion Order? | Use Instead       |
-| ---------- | -------------------------- | ----------------- |
-| `HashMap`  | ❌ No                       | `LinkedHashMap` ✅ |
-| `HashSet`  | ❌ No                       | `LinkedHashSet` ✅ |
+| Collection | Insertion order? | Use instead       |
+| ---------- | ---------------- | ----------------- |
+| `HashMap`  | ❌ No             | `LinkedHashMap` ✅ |
+| `HashSet`  | ❌ No             | `LinkedHashSet` ✅ |
+| Need sorted| —                | `TreeMap` / `TreeSet` |
+
+🎤 Quick interview traps
+1) Set ≠ Map: Set has no keys; Map has key→value.
+2) Set access is not “iteration only” — `contains()` is O(1) average for HashSet.
+3) Null rules depend on implementation (Hash* vs Tree*).
+4) Duplicate key in Map overwrites; duplicate in Set is ignored.
+5) Insertion order ≠ sorted order (Linked* vs Tree*).
