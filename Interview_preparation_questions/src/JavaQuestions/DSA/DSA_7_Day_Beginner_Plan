@@ -76,7 +76,7 @@ Focus: precompute to avoid recomputation
 
 Do / revise deeply:
 - ProductOfArrayExceptSelf.java  ← master this
-- CountStep.java
+- ClimbingStairsWays.java
 
 Practice tasks:
 1) Prefix sum array: prefix[i] = arr[0]+...+arr[i]
