@@ -1,4 +1,4 @@
-package JavaQuestions.sorting_In_Java;
+package JavaQuestions.DSA;
 
 import java.util.Arrays;
 import java.util.Collections;
