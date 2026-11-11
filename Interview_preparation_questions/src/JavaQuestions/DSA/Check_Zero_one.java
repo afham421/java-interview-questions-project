@@ -1,4 +1,4 @@
-package JavaQuestions.Logical_programs;
+package JavaQuestions.DSA;
 
 import java.util.Arrays;
 

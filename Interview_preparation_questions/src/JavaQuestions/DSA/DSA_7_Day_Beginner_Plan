@@ -1,0 +1,162 @@
+🗓️ 7-Day Beginner DSA Plan (from scratch)
+Goal: learn the habit → Brute force → dry run → find repeated work → optimize → remember pattern
+
+Daily rule (every problem):
+1) Restate problem in 1 line
+2) Write brute force
+3) Dry-run on a tiny example
+4) Say time complexity (O(n), O(n²), …)
+5) Ask: “What work is repeated?”
+6) Write smarter version only if needed
+7) Save both methods in one Java file (like ProductOfArrayExceptSelf)
+
+────────────────────────────────────────
+✅ Day 1 — Warm-up + complexity intuition
+Focus: loops, arrays, O(n) vs O(n²)
+
+Do / revise in your folder:
+- Factorial.java
+- Fibonacci.java
+- PrimeEvenOdd.java
+- ArmstrongNumber.java
+- ElementWiseArraySum.java
+
+Learn today:
+- O(1), O(n), O(n²) meaning with examples
+- Nested loop over same array ≈ usually O(n²)
+- Read: Time_Complexity_BigO
+
+Practice tasks:
+1) Sum of array
+2) Find max/min
+3) Reverse array in-place
+
+Interview question to answer aloud:
+“Why is nested loop often O(n²)?”
+
+────────────────────────────────────────
+✅ Day 2 — Strings + simple scanning
+Focus: char arrays, two-end thinking
+
+Do / revise:
+- ReverseString.java
+- Palindrome.java
+- Whitespace_Uppercase_LowerCase.java
+
+Practice tasks:
+1) Count vowels
+2) Check anagram (brute: sort both; smart later with count array/HashMap)
+3) First non-repeating character (brute first)
+
+Pattern seed:
+- Two pointers from start/end (palindrome/reverse)
+
+────────────────────────────────────────
+✅ Day 3 — HashSet / HashMap basics (very important)
+Focus: uniqueness + frequency counting
+
+Do / revise:
+- FindCommonElementBetweenTwoArrays.java
+- IBMissingNumberProblem.java
+
+Practice tasks:
+1) Contains duplicate?
+2) Two Sum (brute O(n²), then HashMap O(n))
+3) Majority / frequency of elements
+
+Pattern:
+- “Need fast lookup / count” → HashMap/HashSet
+
+When to choose HashMap smart way:
+If brute checks every pair / rescans array for each element.
+
+────────────────────────────────────────
+✅ Day 4 — Prefix idea (your ProductExceptSelf day)
+Focus: precompute to avoid recomputation
+
+Do / revise deeply:
+- ProductOfArrayExceptSelf.java  ← master this
+- CountStep.java
+
+Practice tasks:
+1) Prefix sum array: prefix[i] = arr[0]+...+arr[i]
+2) Range sum query using prefix (brute vs O(1) after preprocess)
+3) Running product from left
+
+Pattern:
+- Answer at i needs “all left” and/or “all right” → prefix/suffix
+
+Decision rule:
+Brute recomputes left/right many times → use prefix/suffix.
+
+────────────────────────────────────────
+✅ Day 5 — Two pointers + sliding window intro
+Focus: sorted arrays / subarrays
+
+Practice tasks:
+1) Pair with given sum in sorted array (two pointers)
+2) Remove duplicates from sorted array
+3) Max sum of subarray of size k (brute, then sliding window)
+
+Pattern:
+- Sorted + pair/search from ends → two pointers
+- Contiguous window of size k → sliding window
+
+────────────────────────────────────────
+✅ Day 6 — Searching + sorting mindset
+Focus: why sorting helps
+
+Practice tasks:
+1) Linear search vs binary search (on sorted array)
+2) Merge two sorted arrays
+3) Intersection of two arrays (brute, then sort+two pointers or HashSet)
+
+Learn:
+- Binary search only on sorted data
+- Sorting costs O(n log n), then many problems become easier
+
+────────────────────────────────────────
+✅ Day 7 — Recursion basics + revision
+Focus: think in smaller subproblems
+
+Do / revise:
+- Fibonacci.java (recursive + iterative)
+- Factorial.java
+
+Practice tasks:
+1) Print 1..n with recursion
+2) Sum of digits recursively
+3) Climb stairs (1 or 2 steps) — brute recursion first
+
+Then revision day:
+- Re-solve ProductOfArrayExceptSelf without looking
+- Re-solve Two Sum brute + HashMap
+- Explain out loud: when brute is enough vs when optimize
+
+────────────────────────────────────────
+🧠 How to decide “smart way” (cheat sheet)
+
+| You notice this...                         | Try this pattern      |
+| ------------------------------------------ | --------------------- |
+| Nested loops recalculating same values     | Prefix / suffix       |
+| Searching if value exists many times       | HashSet               |
+| Counting frequency / pairs                 | HashMap               |
+| Sorted array + pair from ends              | Two pointers          |
+| Contiguous subarray of fixed/variable size | Sliding window        |
+| Need sorted order repeatedly               | Sort first            |
+| Problem size n ≤ 1000 and no constraint    | Brute is OK to start  |
+| n = 10^5 or asked O(n)                     | Must optimize         |
+
+Beginner golden rule:
+If you cannot explain brute force dry-run, do NOT jump to smart solution.
+
+────────────────────────────────────────
+📋 Weekly checklist
+- [ ] 2–3 problems/day minimum
+- [ ] Every file has brute + smart (when smart exists)
+- [ ] Complexity written in comment
+- [ ] One tiny dry-run comment block
+- [ ] Can explain solution in 60 seconds
+
+Next after 7 days:
+Arrays/HashMap medium → Sliding window → Binary search → LinkedList → Stack/Queue → Trees

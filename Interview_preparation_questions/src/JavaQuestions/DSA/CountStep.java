@@ -1,4 +1,4 @@
-package JavaQuestions.Logical_programs;
+package JavaQuestions.DSA;
 
 public class CountStep {
     // A simple recursive program to find

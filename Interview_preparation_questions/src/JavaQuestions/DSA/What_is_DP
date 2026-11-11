@@ -1,0 +1,53 @@
+📘 What is DP? (Dynamic Programming)
+DP = Dynamic Programming
+
+Simple meaning:
+Solve a big problem by combining answers of smaller subproblems,
+and **store** those answers so you never recalculate the same thing.
+
+────────────────────────────────────────
+🧠 In one line
+DP = recursion idea + memory (don’t repeat work)
+
+────────────────────────────────────────
+🔹 Why we need it
+Naive Fibonacci recalculates fib(2), fib(3), … many times → very slow O(2^n).
+
+DP says:
+“Calculate each sub-answer once, save it, reuse it.”
+
+────────────────────────────────────────
+🔹 Two common DP styles
+
+1) Top-down (Memoization) — like fibMemo
+- Start from the big problem (n)
+- Recursively go to smaller problems
+- Save results in memo[]
+- If already saved → return immediately
+
+2) Bottom-up (Tabulation) — like fibDp
+- Start from smallest answers (0, 1)
+- Fill a table/array dp[] up to n
+- Usually uses loops, not recursion
+
+Both are DP. Same goal: compute each state once → usually O(n) for Fibonacci.
+
+────────────────────────────────────────
+🔹 Fibonacci mapping
+- Subproblem: fib(i)
+- Relation: fib(i) = fib(i-1) + fib(i-2)
+- Store: memo[i] or dp[i]
+
+────────────────────────────────────────
+🔹 When a problem smells like DP
+- Big problem breaks into smaller similar problems
+- Same subproblem appears many times (overlapping)
+- You can define answer using previous answers
+
+Examples later: Climbing stairs, House robber, Knapsack, LCS
+
+────────────────────────────────────────
+🎤 Interview answer
+“DP is an optimization technique where we solve overlapping subproblems once,
+store their results, and reuse them. It can be done top-down with memoization
+or bottom-up by filling a dp table.”
