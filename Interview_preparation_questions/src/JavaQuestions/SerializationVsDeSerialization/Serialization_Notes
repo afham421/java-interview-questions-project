@@ -1,0 +1,38 @@
+📘 Serialization vs Deserialization (Interview Notes)
+
+| Term | Meaning |
+| ---- | ------- |
+| Serialization | Object → byte stream |
+| Deserialization | Byte stream → object |
+
+────────────────────────────────────────
+🔹 Why use it?
+- Persistence (save to file/DB)
+- Networking (send objects)
+- Caching
+
+────────────────────────────────────────
+🔹 Requirements
+1) Class implements `Serializable` (marker interface — no methods)
+2) Prefer explicit `serialVersionUID`
+3) Non-serializable referenced fields also need care (or mark `transient`)
+
+────────────────────────────────────────
+🔹 Key keywords
+- `Serializable` → allow serialization
+- `serialVersionUID` → version compatibility during deserialize
+- `transient` → skip field (e.g. password) → becomes default (`null`/0) after deserialize
+
+────────────────────────────────────────
+🔹 Marker interface
+Interface with no methods/fields used only as a tag.
+Examples: `Serializable`, `Cloneable`, `Remote`
+Modern alternative in some cases: annotations.
+
+────────────────────────────────────────
+🎤 Interview traps
+1) Without `Serializable` → `NotSerializableException`
+2) Changing class without updating/keeping UID can cause `InvalidClassException`
+3) `transient` fields are not restored
+4) `static` fields are not part of object state serialization (class-level)
+5) Constructor is not called during normal deserialization (object rebuilt from stream)

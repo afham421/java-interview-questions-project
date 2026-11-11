@@ -1,65 +1,77 @@
 package JavaQuestions.SerializationVsDeSerialization;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serial;
+import java.io.Serializable;
 
+/**
+ * Serialization   = object → byte stream (save/send)
+ * Deserialization = byte stream → object (read/rebuild)
+ *
+ * Uses:
+ * - save object to file
+ * - send object over network
+ * - cache/persist object state
+ *
+ * Rules:
+ * 1) Class must implement Serializable (marker interface)
+ * 2) serialVersionUID keeps class versions compatible
+ * 3) transient fields are NOT saved
+ */
 public class SerializationVsDeSerialization {
-//    Serialization and deserialization are mechanisms in Java that allow you to convert an object into a byte stream (serialization)
-//    and then back into an object (deserialization).
-//    This process is useful for saving objects to a file, sending them over a network, or persisting them in databases.
-//    When to Use Serialization/Deserialization
-//    Persistence: Saving an object's state to a file or database.
-//    Networking: Sending objects over a network (e.g., RMI, messaging systems).
-//    Caching: Storing objects temporarily in memory or disk.
-    public static void main(String[] args) {
 
-        Testing testing = new Testing("Afham", 25);
-        System.out.println("serialization started");
-        try (FileOutputStream fileOut = new FileOutputStream("testing.ser");
-             ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
-            out.writeObject(testing);
-            System.out.println("Serialization completed");
+    public static void main(String[] args) {
+        String file = "testing.ser";
+
+        // ---------- Serialization (object → file) ----------
+        Testing original = new Testing("Afham", 25, "secret123");
+        System.out.println("Before serialize: " + original);
+
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
+            out.writeObject(original); // write full object graph (that is serializable)
+            System.out.println("Serialization completed → " + file);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        System.out.println("De-serialization started");
-
-        try (FileInputStream fileIn = new FileInputStream("testing.ser");
-             ObjectInputStream in = new ObjectInputStream(fileIn)) {
-            Testing testing1 = (Testing) in.readObject();
-            System.out.println("De-serialization completed");
-            System.out.println("Name: " + testing1.name);
-            System.out.println("Age: " + testing1.age);
+        // ---------- Deserialization (file → object) ----------
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
+            Testing restored = (Testing) in.readObject();
+            System.out.println("Deserialization completed");
+            System.out.println("After deserialize: " + restored);
+            // name/age restored; password is null because it was transient
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 }
 
-////////////////////////////Marker interface////////////////
-//A marker interface is a special type of interface in Java that does not contain any methods or fields. Instead, it is used to "mark" or "tag" a class with specific properties
-// or behavior, allowing the Java runtime or other code to recognize that the class has certain capabilities or should be treated in a certain way.
-//Marker Interface: An interface with no methods, used to mark classes with special properties or behavior.
-//Common Examples: Serializable, Cloneable, Remote.
-//Purpose: To signal to the Java runtime or other code that a class has specific capabilities or should be treated in a certain way.
-//Modern Usage: Marker interfaces are still used, but annotations offer a more flexible alternative in some cases.
-
-//Implementing Serializable: To serialize an object, the class must implement the Serializable interface. This is a marker interface,
-// meaning it doesn't have any methods to implement, but it tells the Java Virtual Machine (JVM) that the object can be serialized.
-//Serializing an Object: Use the ObjectOutputStream to write the object to an OutputStream, such as a file.
+/**
+ * Marker interface reminder:
+ * Serializable has NO methods. It only marks: "this class can be serialized".
+ * Other markers: Cloneable, Remote.
+ */
 class Testing implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L; //The serialVersionUID is used to ensure that the same class (or a compatible version) is being used during deserialization.
-    // If the serialVersionUID does not match, an InvalidClassException will be thrown.
-    //⚠️ What If You Don’t Define It?
-    //JVM will auto-generate one at runtime.
-    //If you change the class later (add/remove fields), a different serialVersionUID is generated → ❌ breaks deserialization.
-    public String name; //transient Keyword: Fields marked as transient will not be serialized.This is useful for sensitive data or fields that do not need to be persisted.
-    public int age;
-    private transient String password; // This field will not be serialized
 
-    public Testing(String name, int age) {
+    @Serial
+    private static final long serialVersionUID = 1L;
+    // Keep this stable. If missing, JVM generates one; class changes can break old .ser files.
+
+    public String name;
+    public int age;
+    private transient String password; // NOT written to stream
+
+    public Testing(String name, int age, String password) {
         this.name = name;
         this.age = age;
+        this.password = password;
+    }
+
+    @Override
+    public String toString() {
+        return "Testing{name='" + name + "', age=" + age + ", password='" + password + "'}";
     }
 }
