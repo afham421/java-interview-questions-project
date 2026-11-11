@@ -1,105 +1,77 @@
 package JavaQuestions.method_and_constructor_referance;
 
+/**
+ * Constructor Reference
+ * Syntax: ClassName::new
+ *
+ * Meaning:
+ * Instead of writing a lambda/anonymous class that only does `new Person(...)`,
+ * you can point directly to the constructor.
+ *
+ * Equivalent forms:
+ *   () -> new Person()           →  Person::new
+ *   name -> new Person(name)     →  Person::new
+ *
+ * Java picks the matching constructor from the functional interface method signature.
+ *
+ * When to use:
+ * - You need to pass object-creation logic to a functional interface / stream / factory
+ * - Lambda would only call a constructor (no extra logic)
+ */
 public class ConstructorReference {
-    //    Reference to a Constructor
-//    Syntax: ClassName::new
-    // Traditional lambda expression
-//    Supplier<List<String>> lambda = () -> new ArrayList<>();
-    // Constructor reference
-//    Supplier<List<String>> constructorRef = ArrayList::new;
 
     public static void main(String[] args) {
-//        When to Use Method and Constructor References
-//        When you need to pass a method or constructor as an argument to a higher-order function.
-//        When your lambda expression simply calls an existing method or constructor without additional logic.
 
-        // No-argument constructor reference // basically it is an alternative if lambda expression
+        // ---------- 1) Old way: anonymous class ----------
+        // Step A: create an implementation of Provider
+        // Step B: getPerson() manually returns new Person()
         Provider provider1 = new Provider() {
             @Override
             public Person getPerson() {
-                return new Person();
+                return new Person(); // no-arg constructor
             }
         };
         Person person1 = provider1.getPerson();
-        System.out.println(person1.displayName());
-        //2nd way
-        Provider provider = Person::new;
-        Person person = provider.getPerson(); // Creates a new Person using the no-arg constructor
-        System.out.println(person.displayName());
-        // Constructor reference with an argument
-        // Use constructor reference to bind to our custom functional interface
-        PersonFactory personFactory = Person::new;
-        // Create a new Person using the constructor reference
-        Person personWithName = personFactory.create("Alice");
-        System.out.println(personWithName.toString());
+        System.out.println("Anonymous: " + person1.displayName()); // John Doe
 
+        // ---------- 2) Constructor reference (no-arg) ----------
+        // Provider.getPerson() takes NO args and returns Person
+        // So Person::new binds to Person()
+        // Same as: Provider provider = () -> new Person();
+        Provider provider = Person::new;
+        Person person = provider.getPerson();
+        System.out.println("Ctor ref:  " + person.displayName()); // John Doe
+
+        // ---------- 3) Constructor reference (with arg) ----------
+        // PersonFactory.create(String) takes 1 String and returns Person
+        // So Person::new binds to Person(String name)
+        // Same as: PersonFactory f = name -> new Person(name);
+        PersonFactory personFactory = Person::new;
+        Person personWithName = personFactory.create("Alice");
+        System.out.println("Ctor+arg:  " + personWithName); // Person{name='Alice'}
+
+        // ---------- 4) Lambda vs constructor reference ----------
+        PersonFactory lambdaWay = name -> new Person(name);
+        PersonFactory refWay = Person::new; // cleaner, same behavior
+        System.out.println("Lambda:    " + lambdaWay.create("Bob"));
+        System.out.println("Reference: " + refWay.create("Bob"));
     }
 }
-//✅ Types of Method References
-//| Type                                        | Syntax                      | Equivalent Lambda                         |
-//| ------------------------------------------- | --------------------------- | ----------------------------------------- |
-//| 1. **Static method**                        | `ClassName::staticMethod`   | `(args) -> ClassName.staticMethod(args)`  |
-//| 2. **Instance method of an object**         | `object::instanceMethod`    | `(args) -> object.instanceMethod(args)`   |
-//| 3. **Instance method of a class (unbound)** | `ClassName::instanceMethod` | `(obj, args) -> obj.instanceMethod(args)` |
-//| 4. **Constructor reference**                | `ClassName::new`            | `() -> new ClassName()`                   |
-//
-//📘 Examples
-//1️⃣ Static Method Reference
 
-//class Util {
-//    public static void print(String msg) {
-//        System.out.println(msg);
-//    }
-//}
-//
-//Consumer<String> printer = Util::print;  // instead of msg -> Util.print(msg)
-//printer.accept("Hello");  // Output: Hello
-
-//2️⃣ Instance Method of an Object
-
-//List<String> list = Arrays.asList("a", "b", "c");
-//list.forEach(System.out::println);  // instead of s -> System.out.println(s)
-
-//3️⃣ Instance Method of a Class (Unbound)
-
-//Function<String, Integer> strLength = String::length;  // str -> str.length()
-//System.out.println(strLength.apply("Java")); // Output: 4
-
-//4️⃣ Constructor Reference
-
-//Supplier<List<String>> listSupplier = ArrayList::new;  // () -> new ArrayList<>()
-//List<String> list = listSupplier.get();  // creates a new ArrayList
-
-//✅ Benefits
-//Cleaner, more concise than lambda expressions
-
-//Improves readability
-
-//Useful when the lambda just calls a method
-
-//
-//✅ Summary
-//| You Use                  | When...                                                         |
-//| ------------------------ | --------------------------------------------------------------- |
-//| `Class::staticMethod`    | You want to refer to a static method                            |
-//| `object::instanceMethod` | You already have an object and want to call its method          |
-//| `Class::instanceMethod`  | You want to call an instance method on any object of that class |
-//| `Class::new`             | You want to create a new object (constructor reference)         |
-
+/** Functional interface: no-arg factory → matches Person() */
+@FunctionalInterface
 interface Provider {
     Person getPerson();
-
 }
 
-// Define a custom functional interface with a single abstract method that takes a String and returns a Person
+/** Functional interface: String → Person → matches Person(String) */
 @FunctionalInterface
 interface PersonFactory {
     Person create(String name);
 }
 
-
 class Person {
-    private String name;
+    private final String name;
 
     public Person() {
         this.name = "John Doe";
@@ -110,13 +82,11 @@ class Person {
     }
 
     String displayName() {
-        return "i am a person";
+        return name;
     }
 
     @Override
     public String toString() {
-        return "Person{" +
-                "name='" + name + '\'' +
-                '}';
+        return "Person{name='" + name + "'}";
     }
 }

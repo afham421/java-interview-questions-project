@@ -1,0 +1,53 @@
+📘 Method & Constructor References (Interview Notes)
+
+Syntax idea: use `::` instead of a lambda that only calls an existing method/constructor.
+
+────────────────────────────────────────
+✅ Types
+
+| Type | Syntax | Equivalent Lambda |
+| ---- | ------ | ----------------- |
+| Static method | `ClassName::staticMethod` | `(args) -> ClassName.staticMethod(args)` |
+| Instance method of object | `object::instanceMethod` | `(args) -> object.instanceMethod(args)` |
+| Instance method of class (unbound) | `ClassName::instanceMethod` | `(obj, args) -> obj.instanceMethod(args)` |
+| Constructor | `ClassName::new` | `() -> new ClassName()` / `(a) -> new ClassName(a)` |
+
+────────────────────────────────────────
+📘 Quick examples
+
+1) Static
+`Consumer<String> printer = Util::print;`
+same as `msg -> Util.print(msg)`
+
+2) Instance of object
+`list.forEach(System.out::println);`
+same as `s -> System.out.println(s)`
+
+3) Unbound instance
+`Function<String, Integer> len = String::length;`
+same as `str -> str.length()`
+
+4) Constructor
+`Supplier<List<String>> s = ArrayList::new;`
+same as `() -> new ArrayList<>()`
+
+`PersonFactory f = Person::new;`
+same as `name -> new Person(name)`
+(Java chooses constructor by functional method signature)
+
+────────────────────────────────────────
+✅ When to use
+- Passing method/constructor into stream / factory / higher-order API
+- Lambda has no extra logic (only calls method/ctor)
+
+✅ Benefits
+- Shorter than lambda
+- More readable
+- Same behavior as the matching lambda
+
+────────────────────────────────────────
+🎤 Interview traps
+1) `Person::new` can mean no-arg OR 1-arg — depends on target functional interface.
+2) Constructor/method reference cannot contain extra logic (then use lambda).
+3) Unbound `String::length` still needs an instance at call time (`apply("Java")`).
+4) Target must be a functional interface (one abstract method).

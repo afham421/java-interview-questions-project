@@ -1,60 +1,80 @@
 package JavaQuestions.method_and_constructor_referance;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
+/**
+ * Method Reference
+ * Syntax: ClassName::methodName  OR  object::methodName
+ *
+ * Meaning:
+ * A short form of a lambda that ONLY calls an existing method.
+ * You pass a reference to the method — you do NOT call it yet (no ()).
+ *
+ * Examples:
+ *   str -> Integer.parseInt(str)   →  Integer::parseInt
+ *   e -> System.out.println(e)     →  System.out::println
+ *
+ * Also see: Method_and_Constructor_Reference_Notes
+ */
 public class MethodReference {
-//    In Java, method references and constructor references are special kinds of lambda expressions used to refer to methods or constructors without actually invoking them.
-//    They are more concise and readable than using traditional lambda expressions. Both are part of the Java Stream API and functional programming enhancements introduced in Java 8.
-// Traditional lambda expression
-//Function<String, Integer> lambda = str -> Integer.parseInt(str);
-// Method reference //Syntax: ClassName::methodName
-//    Function<String, Integer> methodRef = Integer::parseInt;
 
     public static void main(String[] args) {
-        //we can implement functional interface method
-        TaskInterface taskInterface = new TaskInterface() {
+
+        // ---------- 1) Old way: anonymous class ----------
+        TaskInterface task1 = new TaskInterface() {
             @Override
             public void performTask() {
                 System.out.println("Performing task...");
             }
         };
-        taskInterface.performTask();
+        task1.performTask();
 
-        //static method reference  // double colon :: use for refer only static methods  // it is used in the place of anonymous class or lambda expression
-        TaskInterface doStuff = Stuff::doStuff; // here we refer not calling static method that's why we dont write .doStuff() we write only doStuff because we pass only reference
-        doStuff.performTask();// here we pass reference so it takes body of doStuff in performTask()
+        // ---------- 2) Static method reference ----------
+        // TaskInterface.performTask() takes no args
+        // Stuff.doStuff() is static and also takes no args → signatures match
+        // Same as: TaskInterface t = () -> Stuff.doStuff();
+        // Note: Stuff::doStuff  → reference (not calling)
+        //       Stuff.doStuff() → actual call
+        TaskInterface task2 = Stuff::doStuff;
+        task2.performTask(); // now it runs Stuff.doStuff() body
 
-        //object can refer non-static method
+        // ---------- 3) Instance method reference (bound to an object) ----------
+        // Need an object because doStuff2 is non-static
+        // Same as: TaskInterface t = () -> stuff.doStuff2();
         Stuff stuff = new Stuff();
-        TaskInterface doStuff2 = stuff::doStuff2;
-        doStuff2.performTask(); // here we pass object reference so it takes the body of doStuff2 in performTask()
+        TaskInterface task3 = stuff::doStuff2;
+        task3.performTask(); // runs stuff.doStuff2()
 
-// for example
-        List<Integer> list = List.of(1, 2, 3,54,532,34);
-        list.stream().forEach(e-> System.out.println(e));
-        //we can do the same with method reference without using lambda by only refer the method
-        list.stream().forEach(System.out::println); // the main purpose is the code reusability //, and it is an alternative of lambda expression
+        // ---------- 4) Practical stream example ----------
+        List<Integer> list = List.of(1, 2, 3, 54, 532, 34);
 
+        // lambda
+        list.forEach(e -> System.out.print(e));
+        System.out.println();
 
+        // method reference (cleaner, same behavior)
+        list.forEach(System.out::print);
+        System.out.println();
 
-
-
+        // ---------- 5) Another common static reference ----------
+        // Function<String,Integer> f = str -> Integer.parseInt(str);
+        Function<String, Integer> parse = Integer::parseInt;
+        System.out.println("Parsed: " + parse.apply("123")); // 123
     }
-
-
 }
+
 @FunctionalInterface
- interface TaskInterface {
+interface TaskInterface {
     void performTask();
 }
 
- class Stuff {
+class Stuff {
     public static void doStuff() {
-        System.out.println("I am doing stuff");
+        System.out.println("I am doing stuff (static)");
     }
 
-    public void doStuff2( ){
-        System.out.println("its non static method");
+    public void doStuff2() {
+        System.out.println("I am doing stuff (instance)");
     }
 }
