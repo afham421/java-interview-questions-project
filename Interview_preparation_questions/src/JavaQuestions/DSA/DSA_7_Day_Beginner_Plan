@@ -41,15 +41,16 @@ Focus: char arrays, two-end thinking
 Do / revise:
 - ReverseString.java
 - Palindrome.java
-- Whitespace_Uppercase_LowerCase.java
+- CountCharCategories.java
 
 Practice tasks:
-1) Count vowels
-2) Check anagram (brute: sort both; smart later with count array/HashMap)
-3) First non-repeating character (brute first)
+1) Count vowels → CountVowels.java
+2) Check anagram (brute: sort both; smart: count/HashMap) → CheckAnagram.java
+3) First non-repeating character (brute first) → FirstNonRepeatingCharacter.java
 
 Pattern seed:
 - Two pointers from start/end (palindrome/reverse)
+- Read: Two_Pointers_Pattern
 
 ────────────────────────────────────────
 ✅ Day 3 — HashSet / HashMap basics (very important)

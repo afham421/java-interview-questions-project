@@ -1,0 +1,59 @@
+📘 Two Pointers Pattern (Beginner)
+Idea: use two indexes that move through the array/string,
+usually from both ends (or same direction), instead of nested loops.
+
+────────────────────────────────────────
+🔹 Classic form: start + end
+```text
+left = 0
+right = n - 1
+
+while left < right:
+    // compare / swap / check
+    left++
+    right--
+```
+
+────────────────────────────────────────
+🔹 Where you already used it
+
+1) Reverse array / string
+- swap arr[left] and arr[right]
+- move inward
+- Example [1,2,3,4,5] → swap to [5,4,3,2,1]
+
+2) Palindrome check
+- compare s[left] and s[right]
+- if unequal → not palindrome
+- if equal → move inward
+- Example "1221": 1==1, 2==2 → true
+
+Files:
+- ReverseArray.java / ReverseString.java
+- Palindrome.java
+
+────────────────────────────────────────
+🔹 Why it’s smart
+Brute reverse often uses extra array O(n) space.
+Two pointers can do many tasks in O(n) time and O(1) extra space.
+
+Compared to nested loop O(n²), one inward pass is usually O(n).
+
+────────────────────────────────────────
+🔹 When to think “two pointers”
+- Need both ends (reverse, palindrome)
+- Array is sorted and you look for a pair/sum (Day 5)
+- Remove duplicates from sorted array
+- Compare left/right characters or values
+
+────────────────────────────────────────
+🔹 Mini dry-run (palindrome "abba")
+left=0 'a', right=3 'a' → equal
+left=1 'b', right=2 'b' → equal
+left=2, right=1 → stop → true
+
+────────────────────────────────────────
+🎤 Interview answer
+“Two pointers means maintaining two indexes, often at start and end,
+moving them based on conditions. It helps solve reverse/palindrome/pair problems
+efficiently in O(n) time with low extra space.”
