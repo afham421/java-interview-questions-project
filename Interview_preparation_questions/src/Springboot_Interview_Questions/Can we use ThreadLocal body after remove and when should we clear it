@@ -1,0 +1,98 @@
+Q: Can we use ThreadLocal body after remove()? When can we re-read it?
+
+One line answer:
+Re-read while the request is processing; after remove(), ThreadLocal body is gone (and that request is already finished).
+
+────────────────────────────────────────
+✅ Correct understanding (order matters)
+
+No. After clear (remove()), you cannot use the ThreadLocal body anymore.
+
+Order:
+1. set(body)                    ← body available
+2. filterChain.doFilter(...)    ← controller + business run HERE
+   (getRawBodyOrNull() / get() works)
+3. finally → remove()           ← cleared AFTER request finishes
+
+So:
+• During the request (inside doFilter) → yes, can re-read
+  ◦ from wrapper (cachedBody)
+  ◦ from ThreadLocal (getRawBodyOrNull() / get())
+• After remove() → ThreadLocal is empty
+  ◦ remove() runs only when the whole request is done, to clean up that thread
+
+────────────────────────────────────────
+✅ True / False
+
+| Statement                                                         | True? |
+| ----------------------------------------------------------------- | ----- |
+| Body available after set(), before remove()                       | Yes   |
+| Controller / services inside doFilter can call get()              | Yes   |
+| After finally remove(), ThreadLocal still has body                | No    |
+| remove() runs in the middle of controller execution               | No — only after doFilter returns |
+| Wrapper cachedBody also disappears after ThreadLocal remove()     | No — different storage; wrapper lives for that request object |
+
+────────────────────────────────────────
+✅ Timeline (draw this)
+
+Filter starts
+    │
+    ├─ set(json)                 ★ ThreadLocal HAS body
+    │
+    ├─ doFilter(wrapper, resp)   ★ still HAS body
+    │     ├─ Controller runs
+    │     ├─ Service / validation may call get()
+    │     └─ returns
+    │
+    └─ finally remove()          ★ ThreadLocal EMPTY (cleanup)
+
+Next request on same pooled thread starts clean (no leaked old JSON).
+
+────────────────────────────────────────
+✅ Example code (same filter pattern)
+
+try {
+    RequestBodyHolder.set(wrapper.getCachedBodyAsString()); // 1) available
+
+    filterChain.doFilter(wrapper, response);                // 2) use HERE
+    // inside this call:
+    //   RequestBodyHolder.get()           → works
+    //   wrapper.getInputStream() again    → works (cachedBody)
+
+} finally {
+    RequestBodyHolder.clear(); // 3) remove() — AFTER request finished
+}
+
+// AFTER finally:
+// RequestBodyHolder.get() → null  (cannot use anymore)
+
+────────────────────────────────────────
+✅ Why remove() in finally?
+
+Tomcat/Jetty reuse threads from a pool.
+If you skip remove(), Thread A may still hold Request-1 JSON
+when it later handles Request-2 → wrong body / memory leak.
+
+Rule: set at start of request, remove in finally when request ends.
+
+────────────────────────────────────────
+✅ Wrapper vs ThreadLocal after remove()
+
+| Storage        | During doFilter | After remove()                          |
+| -------------- | --------------- | --------------------------------------- |
+| ThreadLocal    | readable        | gone                                    |
+| Wrapper cache  | readable        | still on wrapper object, but request is done — you normally don’t use it anymore |
+
+Interview tip:
+Don’t say “remove kills re-read forever during the request.”
+Say: “remove runs after the request; during doFilter both wrapper and ThreadLocal work.”
+
+────────────────────────────────────────
+✅ Related
+
+See → How can we read request again and again as request stream is one time readable
+
+────────────────────────────────────────
+✅ 30-second answer (memorize)
+
+“We set the body in ThreadLocal before doFilter. While the request runs inside doFilter, get() works for validation. In finally we remove() so the pooled thread is clean. After remove you cannot use ThreadLocal body — and you don’t need to, because that request is already finished.”

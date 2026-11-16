@@ -1,0 +1,338 @@
+Q: How can we read request again and again as request stream is one time readable?
+
+One line answer:
+Original body is one-time; wrapper copies it once, then controller + validation can use it again.
+
+────────────────────────────────────────
+✅ Correct understanding (say this in interview)
+
+1. Original request body stream = can be read only once
+2. Wrapper reads it once and keeps a copy in cachedBody
+3. Controller reads from the wrapper (not the original stream)
+4. Because of the copy, wrapper body can be read again (multiple times)
+
+So:
+Original request  → one-time stream
+Wrapper           → copies bytes once, then re-serves them
+Controller        → reads from wrapper (re-readable)
+ThreadLocal       → also keeps JSON string for validation business (if your design uses it)
+
+In your filter:
+filterChain.doFilter(wrapper, response)  // controller gets WRAPPER
+Not the original request.
+
+────────────────────────────────────────
+✅ True / False table
+
+| Statement                                      | True? |
+| ---------------------------------------------- | ----- |
+| Controller reads from wrapper                  | Yes   |
+| Wrapper got data from original request         | Yes (first read) |
+| Original stream is one-time                    | Yes   |
+| Wrapper is also one-time only                  | No — wrapper cache allows re-read |
+
+────────────────────────────────────────
+✅ Why is the original body one-time?
+
+HttpServletRequest.getInputStream() / getReader() is a stream.
+Once bytes are consumed, the stream is empty — second read gets nothing.
+
+Problem without wrapper:
+Filter reads body for logging / HMAC / custom validation
+→ Controller @RequestBody tries to read again
+→ empty body / binding fails
+
+────────────────────────────────────────
+✅ Flow (draw this in interview)
+
+Client JSON
+    ↓
+Original HttpServletRequest  (stream: read once)
+    ↓
+Filter creates Wrapper
+    - reads original stream ONCE
+    - stores bytes in cachedBody (byte[])
+    - optionally puts JSON string in ThreadLocal for business validation
+    ↓
+filterChain.doFilter(wrapper, response)
+    ↓
+Controller / @RequestBody
+    - calls wrapper.getInputStream()
+    - wrapper returns NEW stream from cachedBody
+    - can be read again safely
+
+────────────────────────────────────────
+✅ What does the wrapper do? (concept)
+
+Custom CachedBodyHttpServletRequest (or similar) extends HttpServletRequestWrapper:
+
+1) In constructor:
+   - read all bytes from request.getInputStream()
+   - store in private byte[] cachedBody
+
+2) Override getInputStream() / getReader():
+   - return a stream/reader built FROM cachedBody
+   - each call can create a fresh stream over the same bytes
+
+So: first read fills the cache; later reads do not touch the original stream.
+
+Spring alternative (built-in):
+ContentCachingRequestWrapper — same idea (cache after content is read).
+
+────────────────────────────────────────
+✅ Example 1 — PROBLEM (no wrapper): second read fails
+
+Imagine filter reads body for logging, then controller needs same body.
+
+// BAD — filter consumes original stream
+String body = new String(request.getInputStream().readAllBytes());
+log.info("body = {}", body);
+
+filterChain.doFilter(request, response);  // original request passed
+
+// Later in controller:
+// @RequestBody LoginRequest dto  → EMPTY / fails
+// because InputStream was already consumed in filter
+
+Dry-run:
+Request body bytes: {"username":"afham"}
+Filter reads stream → stream pointer at END
+Controller reads stream → no bytes left → broken
+
+────────────────────────────────────────
+✅ Example 2 — SOLUTION pieces (interview-friendly code)
+
+Think of 4 small classes:
+1) CachedBodyHttpServletRequest  → holds copy of body
+2) CachedBodyServletInputStream  → re-opens stream from that copy
+3) RequestBodyHolder (ThreadLocal) → optional JSON string for validation
+4) CachedBodyFilter               → wrap + doFilter(wrapper) + clear ThreadLocal
+
+────────────────────────────────────────
+// 1) Wrapper — copies original stream ONCE, then re-serves
+
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+
+public class CachedBodyHttpServletRequest extends HttpServletRequestWrapper {
+
+    private final byte[] cachedBody; // the re-usable copy
+
+    public CachedBodyHttpServletRequest(HttpServletRequest request) throws IOException {
+        super(request);
+        // ONLY place we touch the ORIGINAL one-time stream
+        this.cachedBody = request.getInputStream().readAllBytes();
+    }
+
+    public String getCachedBodyAsString() {
+        return new String(cachedBody, StandardCharsets.UTF_8);
+    }
+
+    @Override
+    public ServletInputStream getInputStream() {
+        // every call creates a NEW stream over the SAME cached bytes
+        return new CachedBodyServletInputStream(cachedBody);
+    }
+
+    @Override
+    public BufferedReader getReader() {
+        return new BufferedReader(
+                new InputStreamReader(getInputStream(), StandardCharsets.UTF_8));
+    }
+}
+
+────────────────────────────────────────
+// 2) InputStream backed by byte[] (so it can be opened again)
+
+import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
+public class CachedBodyServletInputStream extends ServletInputStream {
+
+    private final ByteArrayInputStream buffer;
+
+    public CachedBodyServletInputStream(byte[] cachedBody) {
+        this.buffer = new ByteArrayInputStream(cachedBody);
+    }
+
+    @Override
+    public int read() throws IOException {
+        return buffer.read(); // -1 when finished
+    }
+
+    @Override
+    public boolean isFinished() {
+        return buffer.available() == 0;
+    }
+
+    @Override
+    public boolean isReady() {
+        return true;
+    }
+
+    @Override
+    public void setReadListener(ReadListener readListener) {
+        // not needed for simple sync example
+    }
+}
+
+────────────────────────────────────────
+// 3) Optional ThreadLocal — same JSON text for business validation on this thread
+
+public class RequestBodyHolder {
+
+    private static final ThreadLocal<String> BODY = new ThreadLocal<>();
+
+    public static void set(String body) {
+        BODY.set(body);
+    }
+
+    public static String get() {
+        return BODY.get();
+    }
+
+    public static void clear() {
+        BODY.remove(); // MUST call after request (thread pool reuse)
+    }
+}
+
+────────────────────────────────────────
+// 4) Filter — wrap request, store JSON, pass WRAPPER downstream
+
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+import java.io.IOException;
+
+@Component
+public class CachedBodyFilter extends OncePerRequestFilter {
+
+    @Override
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain) throws ServletException, IOException {
+
+        // Step A: wrap → original stream read once into cachedBody
+        CachedBodyHttpServletRequest wrapper = new CachedBodyHttpServletRequest(request);
+
+        try {
+            // Step B: optional — keep JSON string for validation / HMAC / logging
+            String json = wrapper.getCachedBodyAsString();
+            RequestBodyHolder.set(json);
+
+            // Example business use inside filter (still does NOT break controller):
+            // if (json.contains("\"password\":\"\"")) { ... reject ... }
+
+            // Step C: IMPORTANT — pass WRAPPER, not original request
+            filterChain.doFilter(wrapper, response);
+        } finally {
+            // Step D: always clear ThreadLocal
+            RequestBodyHolder.clear();
+        }
+    }
+}
+
+────────────────────────────────────────
+// 5) Controller — @RequestBody still works (reads from WRAPPER)
+
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api")
+public class AuthController {
+
+    @PostMapping("/login")
+    public String login(@RequestBody LoginRequest dto) {
+        // Spring reads body via wrapper.getInputStream()
+        // which returns FRESH stream from cachedBody → works
+        return "hello " + dto.getUsername();
+    }
+}
+
+// Another place on SAME request thread can also use:
+// String rawJson = RequestBodyHolder.get();
+
+────────────────────────────────────────
+✅ Dry-run with real JSON
+
+Client sends:
+POST /api/login
+{"username":"afham","password":"secret"}
+
+1) Filter creates CachedBodyHttpServletRequest
+   cachedBody = [123, 34, 117, ... ]  // bytes of the JSON (read original ONCE)
+
+2) RequestBodyHolder.set("{\"username\":\"afham\",\"password\":\"secret\"}")
+
+3) filterChain.doFilter(wrapper, response)
+
+4) Controller @RequestBody:
+   wrapper.getInputStream() → new ByteArrayInputStream(cachedBody)
+   Jackson reads JSON → LoginRequest{username=afham, password=secret}
+
+5) If something else calls wrapper.getInputStream() again:
+   → ANOTHER new ByteArrayInputStream(cachedBody) → still works
+
+6) finally → RequestBodyHolder.clear()
+
+────────────────────────────────────────
+✅ Role of ThreadLocal (if used in your project)
+
+Purpose: keep the JSON string available on the same request thread
+for validation / HMAC / audit WITHOUT reading the stream again.
+
+Rules:
+- Set in filter after caching body
+- Use only for that request’s thread
+- Always clear in finally (avoid leak across pooled threads)
+
+ThreadLocal is NOT the re-read mechanism.
+The wrapper cache is. ThreadLocal is just convenient access to the same JSON text.
+
+Quick compare:
+| Need                         | Use                          |
+| ---------------------------- | ---------------------------- |
+| Controller @RequestBody      | Wrapper (cachedBody stream)  |
+| Filter/service wants raw JSON string | ThreadLocal (optional) |
+| Re-read stream many times    | Wrapper only                 |
+
+Order matters for ThreadLocal (important correction):
+1. set(body)                 ← available
+2. filterChain.doFilter(...) ← get() works HERE (controller + business)
+3. finally → remove()        ← AFTER request finishes; then ThreadLocal is empty
+
+During request → re-read from wrapper AND ThreadLocal.
+After remove() → ThreadLocal body is gone (request already done).
+
+Related Q → Can we use ThreadLocal body after remove and when should we clear it
+
+────────────────────────────────────────
+✅ Interview Q&A
+
+Q: Can the controller read the original request body after the filter already read it?
+A: No. Original stream is consumed. Controller must get the WRAPPER.
+
+Q: Is the wrapper also one-time?
+A: No. Wrapper holds cachedBody and can re-open a stream from those bytes.
+
+Q: Why doFilter(wrapper, response) not doFilter(request, response)?
+A: So downstream (DispatcherServlet → Controller) sees the re-readable request.
+
+Q: Filter vs Interceptor for reading body?
+A: Body wrapping is usually done in a Filter (before Spring MVC fully binds @RequestBody).
+   Interceptor preHandle often runs after the request is already being processed; for body cache, Filter is safer/common.
+
+────────────────────────────────────────
+✅ 60-second answer (memorize)
+
+“Servlet request body is an InputStream — readable once. If a filter consumes it, @RequestBody breaks.
+We wrap the request, copy bytes into cachedBody once, then pass the wrapper down the filter chain.
+Controller reads from the wrapper, which re-serves the cached bytes. ThreadLocal may hold the same JSON for validation on that thread, and must be cleared after the request.”

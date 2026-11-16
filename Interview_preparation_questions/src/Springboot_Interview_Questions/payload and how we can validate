@@ -84,3 +84,7 @@ Payload = data sent in request body.
 Validate using @Valid and annotations from jakarta.validation.
 
 Handle validation failures with @ControllerAdvice.
+
+Related (filter / re-read body):
+See → How can we read request again and again as request stream is one time readable
+(Why filter + controller both need the same JSON body.)

@@ -1,0 +1,72 @@
+🎤 Interview Self-Introduction — Muhammad Afham
+Based on resume + key project: Ufone B-SMS (BSMS)
+
+────────────────────────────────────────
+✅ MAIN INTRO (45–60 seconds) — memorize this
+
+"Good morning / Good afternoon.
+
+My name is Muhammad Afham.
+I am a Backend Java Developer with over 5 years of experience building scalable enterprise systems, mainly in telecom and banking domains.
+
+I currently work at Evamp & Saanga as a Software Engineer Integration. My core stack is Java, Spring Boot, Microservices, REST APIs, and MySQL/MariaDB,
+along with security using JWT and RBAC, and messaging tools like Kafka and RabbitMQ.
+
+My key project is Ufone Business SMS, also called B-SMS.
+It is a corporate SMS platform for transactional alerts, promotional messages, and OBD voice services.
+In this project, I worked on migrating the legacy Vaadin system to Spring Boot, developed modules for SMS/OBD campaigns, billing and charging, invoicing,
+and reporting, and implemented security features like JWT, OTP, CAPTCHA, and role-based access.
+I also improved reporting with cursor-based pagination and automated invoice/email workflows using Cron and SMTP,
+which helped reduce manual effort significantly and improved system usability.
+
+I enjoy building clean, secure, and high-performance backend services,and I’m excited about this opportunity to contribute and grow further.
+Thank you."
+
+────────────────────────────────────────
+✅ SHORT INTRO (30–40 seconds)
+
+"Hi, I’m Muhammad Afham, a Backend Java Developer with 5+ years of experience.
+I work with Java, Spring Boot, Microservices, and MySQL, mainly on telecom platforms.
+My key project is Ufone B-SMS, where I migrated legacy modules to Spring Boot and built features for
+SMS/OBD, billing, security, and reporting.
+I’m looking forward to discussing how I can contribute to your team. Thank you."
+
+────────────────────────────────────────
+✅ BSMS PROJECT FOLLOW-UP (if they ask “Tell me about BSMS”)
+
+"Ufone B-SMS is a business SMS platform for corporate customers.
+It supports transactional OTP/alerts, promotional SMS, notifications, and OBD voice campaigns.
+
+My contributions:
+- Migrated legacy Vaadin 7 modules to Spring Boot
+- Built SMS/OBD features: contacts, groups, templates, campaign scheduling, quotas
+- Implemented billing/charging flows including reverse charging and MO charging
+- Added JWT, OTP, CAPTCHA, RBAC, IP whitelisting for secure access
+- Improved reporting using cursor-based pagination and JPA Specifications
+- Automated invoices/reports with Cron jobs and SMTP
+- Added production readiness with rate limiting, Actuator/Prometheus, Docker, and CI/CD
+
+Impact:
+- Reduced manual invoicing/reporting effort significantly
+- Improved reporting/UX by about 30% after the Spring Boot revamp"
+
+────────────────────────────────────────
+📐 Structure used
+1) Name + role + experience
+2) Current company + stack
+3) Key project = BSMS (what + your work + impact)
+4) Closing
+
+────────────────────────────────────────
+⚠️ Delivery tips
+- Speak slowly; aim for ~55 seconds for main intro
+- Don’t list every technology from resume
+- If asked deeper, then mention Salam DMS / WhiteLabel / Citi reporting
+- Keep BSMS as your hero project in the first answer
+
+────────────────────────────────────────
+❓ Prepare next (2–3 lines each)
+1) Why do you want to leave / join us?
+2) What was the hardest challenge in BSMS?
+3) Explain one API or module you owned in BSMS
+4) Difference between Monolith and Microservices (you used both styles)

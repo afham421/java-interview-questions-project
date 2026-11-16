@@ -58,7 +58,7 @@ Focus: uniqueness + frequency counting
 
 Do / revise:
 - FindCommonElementBetweenTwoArrays.java
-- IBMissingNumberProblem.java
+- MissingNumber.java
 
 Practice tasks:
 1) Contains duplicate?

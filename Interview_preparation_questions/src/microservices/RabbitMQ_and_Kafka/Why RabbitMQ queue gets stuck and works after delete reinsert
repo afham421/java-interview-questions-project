@@ -1,0 +1,139 @@
+Q: Queue is often stuck; after deleting records and re-inserting data it processes again; after some days same issue. Why?
+
+One line answer:
+Usually unacked / poison messages or bad DB-linked data blocks consumers — delete+reinsert “resets” state so work flows again; root cause is still in ACK, retry, DLQ, or data handling.
+
+────────────────────────────────────────
+✅ What “stuck” usually means in RabbitMQ UI
+
+Open Management UI → Queues → your queue. Check:
+
+| Column / metric     | Meaning                                      | Red flag                          |
+| ------------------- | -------------------------------------------- | --------------------------------- |
+| Ready               | Waiting to be delivered                      | Growing forever                   |
+| Unacked             | Given to consumer, waiting ACK               | High / never goes to 0            |
+| Consumers           | Active listeners                             | 0 = nobody processing             |
+| Message rates       | publish / deliver / ack                      | deliver without ack = hang        |
+
+If Unacked stays high → consumer took messages but did not ACK (crash, hang, bug).
+If Ready grows and Consumers = 0 → consumer down.
+If Ready grows and Consumers > 0 but rate ~0 → consumer blocked / slow / failing loop.
+
+────────────────────────────────────────
+✅ Why delete records + re-insert “fixes” it (important clue)
+
+That pattern usually means processing depends on DB records, not only on the queue.
+
+Common stories:
+1) Consumer reads message → loads DB row → row in bad state → throws / hangs
+2) Infinite retry of same bad message(s) → queue looks stuck
+3) Delete rows + insert fresh data → publisher sends new messages OR consumer can succeed again
+4) Days later bad/corrupt/locked/stale data returns → same symptom
+
+So: RabbitMQ is often the symptom; bad message + bad data + missing DLQ is the disease.
+
+────────────────────────────────────────
+✅ Top root causes (check in this order)
+
+1) Unacked messages (most common)
+- Manual ACK, but exception path never acks/nacks
+- Consumer thread blocked (DB lock, HTTP timeout, deadlock)
+- Prefetch too high → one slow consumer holds many messages
+
+2) Poison message (bad payload) without DLQ
+- Same message fails forever → requeue → stuck loop
+- Fix: retry limit + Dead Letter Queue
+
+3) Consumer crash / connection half-dead
+- Process alive but listener stuck
+- TCP connection open, no progress
+
+4) DB-related hang (matches delete/reinsert)
+- Row lock / long transaction
+- Unique constraint / duplicate processing
+- Status field never moves (e.g. stuck in PROCESSING)
+- Consumer waits on missing FK / null required field
+
+5) Single active consumer / exclusive consumer
+- One stuck consumer owns the queue; others idle
+
+6) Publisher confirms / consumer ACK mismatch
+- App thinks work done, broker still waiting ack (or opposite)
+
+────────────────────────────────────────
+✅ What to check RIGHT NOW (colleague checklist)
+
+A) RabbitMQ Management
+1. Ready vs Unacked counts
+2. Consumer count
+3. Message rates (deliver vs ack)
+4. Get messages (if safe) — inspect payload of stuck ones
+
+B) Application logs
+1. Exceptions on @RabbitListener
+2. Threads blocked on DB / HTTP
+3. Same message id repeating forever
+
+C) DB
+1. Rows stuck in PROCESSING / PENDING forever
+2. Locks: long running transactions
+3. After “delete + reinsert” — which status/fields change?
+
+D) Code
+1. AcknowledgeMode: MANUAL or AUTO?
+2. On exception: nack(requeue=true) forever? → poison loop
+3. Prefetch setting
+4. Idempotency: reprocessing same record safe?
+
+────────────────────────────────────────
+✅ Healthy consumer pattern (Spring AMQP idea)
+
+@RabbitListener(queues = "job-queue")
+public void handle(JobMessage msg, Channel channel,
+                   @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
+    try {
+        process(msg);                 // may touch DB
+        channel.basicAck(tag, false); // success
+    } catch (RetryableException e) {
+        channel.basicNack(tag, false, true);  // requeue carefully / better: retry + DLQ
+    } catch (Exception e) {
+        channel.basicNack(tag, false, false); // do NOT requeue forever → send to DLQ setup
+    }
+}
+
+Better than endless requeue:
+- retry 3 times (Spring Retry / x-death)
+- then Dead Letter Queue
+- alert on DLQ depth
+
+Prefetch example:
+factory.setPrefetchCount(1); // heavy jobs: don’t hoard
+
+────────────────────────────────────────
+✅ Why it comes back “after some days”
+
+Because the trigger returns:
+- bad/partial records accumulate again
+- one poison message lands again
+- DB locks / load grow over time
+- memory / connection leak → consumer freezes
+- disk alarm / flow control on broker (less common but possible)
+
+Delete+reinsert is a temporary reset, not a fix.
+
+────────────────────────────────────────
+✅ Real fix plan
+
+1) Identify: Unacked vs Ready vs no consumers
+2) Fix ACK paths (always ack/nack; never swallow exception silently)
+3) Add DLQ + max retry (stop poison loops)
+4) Fix DB status machine (don’t leave rows stuck in PROCESSING)
+5) Make consumer idempotent
+6) Lower prefetch for heavy jobs
+7) Monitor: Unacked, Ready, DLQ depth, consumer count, listener errors
+8) Stop using “purge queue / delete all rows” as the recovery procedure
+
+────────────────────────────────────────
+✅ 30-second answer (interview / team discussion)
+
+“If a RabbitMQ queue looks stuck but works after deleting and reinserting DB data, I check Ready vs Unacked first. Usually consumers hold unacked messages or keep retrying poison messages tied to bad records. Delete-reinsert resets data so processing succeeds again. The real fix is correct ACK/NACK, retry limits with DLQ, and fixing the DB/business state that makes certain messages fail.”

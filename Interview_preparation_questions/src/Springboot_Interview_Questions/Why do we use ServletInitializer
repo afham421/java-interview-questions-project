@@ -1,0 +1,91 @@
+Q: Why do we use ServletInitializer (SpringBootServletInitializer)?
+
+One line answer:
+So a Spring Boot app packaged as a WAR can start inside an external server (Tomcat/WildFly) — without it,
+only `main()` / embedded JAR style works.
+
+────────────────────────────────────────
+✅ Why it exists
+
+Default Spring Boot:
+- You run `main()` → `SpringApplication.run(...)`
+- Embedded Tomcat starts with the JAR
+
+But sometimes production says:
+- Deploy WAR on external Tomcat / WildFly / WebLogic
+- Server owns the lifecycle (not your `main()`)
+
+Problem:
+External servlet container does NOT call your `main()` method.
+It looks for a Servlet 3.0+ initializer to boot the web app.
+
+Solution:
+Extend `SpringBootServletInitializer` and override `configure(...)`.
+Container calls this → Spring Boot application context starts.
+
+────────────────────────────────────────
+✅ What ServletInitializer does
+
+`SpringBootServletInitializer` bridges:
+External Servlet Container  →  Spring Boot Application
+
+It creates a `SpringApplicationBuilder`, registers your `@SpringBootApplication` class,
+and starts the Spring context when the WAR is deployed.
+
+────────────────────────────────────────
+✅ Minimal example
+
+@SpringBootApplication
+public class MyApp extends SpringBootServletInitializer {
+
+    // Used when deployed as WAR on external server
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+        return builder.sources(MyApp.class);
+    }
+
+    // Used when you run locally as JAR / IDE
+    public static void main(String[] args) {
+        SpringApplication.run(MyApp.class, args);
+    }
+}
+
+Also usually:
+- `<packaging>war</packaging>`
+- embedded Tomcat scope `provided` (or excluded)
+- servlet API `provided`
+
+────────────────────────────────────────
+✅ When do you NEED it?
+
+| Scenario                              | Need SpringBootServletInitializer? |
+| ------------------------------------- | ---------------------------------- |
+| Run as JAR with embedded Tomcat       | No                                 |
+| Deploy WAR to external Tomcat/WildFly | Yes                                |
+| Spring Boot + Docker fat JAR          | No                                 |
+| Traditional company server (WAR only) | Yes                                |
+
+────────────────────────────────────────
+✅ Interview Q&A
+
+Q: Can I deploy a Spring Boot WAR without ServletInitializer?
+A: Not reliably for Servlet 3.x programmatic boot — container won’t start your Spring Boot app via `main()`.
+
+Q: Does ServletInitializer replace main()?
+A: No. Keep both: `main()` for local/JAR, `configure()` for external WAR deploy.
+
+Q: Is this the same as web.xml?
+A: Related idea (app startup hook). Servlet 3.0+ can boot without web.xml using `WebApplicationInitializer`; SpringBootServletInitializer is Spring Boot’s implementation of that bridge.
+
+────────────────────────────────────────
+✅ Related
+
+See → If dont use tomcat on production i use wildFly
+(WAR packaging + exclude embedded Tomcat + ServletInitializer)
+
+────────────────────────────────────────
+✅ 30-second answer (memorize)
+
+“ServletInitializer is used when we deploy Spring Boot as a WAR on an external server.
+That server does not run main(), so SpringBootServletInitializer hooks into the servlet container startup and launches the Spring Boot application.
+For normal JAR + embedded Tomcat we don’t need it.”
