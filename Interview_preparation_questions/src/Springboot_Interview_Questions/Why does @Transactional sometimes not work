@@ -1,226 +1,80 @@
-This is a very common Spring interview question:
-“Why does @Transactional sometimes not work in Spring Framework / Spring Boot?”
+Q: Why does @Transactional sometimes not work?
 
-The main reason is Spring uses Proxy-based AOP.
+Main reason: Spring applies transactions with **proxy-based AOP**.
+The transactional advice runs only when the call goes **through the Spring proxy**.
 
-1️⃣ How @Transactional Works
-
-When you write:
+────────────────────────────────────────
+1️⃣ How it works
 
 @Transactional
-public void createUser() {
-    // database operations
-}
+public void createUser() { ... }
 
-Spring does not modify the method directly.
-Instead it creates a proxy around the bean.
+Client → Proxy (begin) → real method → Proxy (commit/rollback)
 
-Flow:
-
-Client
- ↓
-Proxy (transaction start)
- ↓
-createUser()
- ↓
-Proxy (commit / rollback)
-
-So the transaction logic runs inside the proxy.
-
-2️⃣ Problem: Internal Method Calls
-
-Example:
+────────────────────────────────────────
+2️⃣ Classic failure: self-invocation (internal call)
 
 @Service
 public class UserService {
 
     public void methodA() {
-        methodB();   // internal call
+        methodB(); // ❌ this.methodB() — bypasses proxy
     }
 
     @Transactional
-    public void methodB() {
-        // database operation
-    }
+    public void methodB() { ... }
 }
 
-Client calls:
+userService.methodA() from outside:
+Client → Proxy → methodA → direct methodB (no proxy) → @Transactional ignored
 
-userService.methodA();
+Fix options:
+1) Move @Transactional method to another Spring bean (best/clear)
+2) Self-inject the proxy and call through it (advanced; avoid unless needed)
+3) AspectJ weave mode (rare setup)
 
-Flow:
+────────────────────────────────────────
+3️⃣ Other common reasons it “doesn’t work”
 
-Client
- ↓
-Proxy
- ↓
-methodA()
- ↓
-methodB()   ❌ Direct call (proxy bypassed)
+| Issue                         | Why                                      |
+| ----------------------------- | ---------------------------------------- |
+| private / package-private*    | Proxy can’t advise properly (*public required for Spring proxy) |
+| final method / final class    | CGLIB can’t override                     |
+| Calling from constructor      | Bean/proxy not ready                     |
+| Not a Spring bean             | `new UserService()` → no proxy           |
+| Checked exception             | Default rollback is RuntimeException/Error only; use `rollbackFor = Exception.class` |
+| Wrong proxy type expectations | Same-class call still bypasses           |
+| DB engine without txn         | e.g. non-InnoDB quirks                   |
 
-Because methodA and methodB are inside the same class, the call does not go through the proxy.
+Default rollback rule:
+- RuntimeException / Error → rollback
+- checked Exception → commit unless rollbackFor set
 
-Result:
+────────────────────────────────────────
+4️⃣ Propagation (quick)
 
-@Transactional will NOT work
-3️⃣ Correct Way
+| Propagation   | Behavior                                      |
+| ------------- | --------------------------------------------- |
+| REQUIRED      | Join existing or create new (**default**)     |
+| REQUIRES_NEW  | Always new txn; suspend current               |
+| SUPPORTS      | Join if present, else non-tx                  |
+| MANDATORY     | Must already have txn, else exception         |
+| NOT_SUPPORTED | Suspend txn; run non-tx                       |
+| NEVER         | Fail if txn exists                            |
+| NESTED        | Nested txn via JDBC savepoints (if supported) |
 
-Move transactional method to another service.
+Most used in interviews: **REQUIRED**, **REQUIRES_NEW**.
+Remember: propagation also only applies when called **through a proxy**.
 
-Example:
+Example interview contrast:
+- REQUIRED → same txn; child fail can roll back parent
+- REQUIRES_NEW → separate txn; child fail doesn’t automatically undo parent
 
-Service 1
-@Service
-public class UserService {
+────────────────────────────────────────
+5️⃣ Best interview answer
 
-    @Autowired
-    private OrderService orderService;
+“@Transactional is proxy-based. If a method calls another @Transactional method in the same class, the call doesn’t go through the proxy,
+so no transaction starts. It also won’t work on non-public methods, non-Spring beans, or when exceptions don’t match rollback rules.
+Fix by putting transactional methods on another bean (or calling via proxy) and using public methods.”
 
-    public void methodA() {
-        orderService.methodB();
-    }
-}
-Service 2
-@Service
-public class OrderService {
-
-    @Transactional
-    public void methodB() {
-        // database operation
-    }
-}
-
-Now flow becomes:
-
-Client
- ↓
-UserService Proxy
- ↓
-OrderService Proxy
- ↓
-methodB() (transaction works)
-4️⃣ Other Reasons @Transactional May Not Work
-1️⃣ Method is private
-@Transactional
-private void saveUser()
-
-Proxy cannot intercept private methods.
-
-2️⃣ Method is final
-
-CGLIB cannot override final methods.
-
-3️⃣ Called inside constructor
-
-Spring proxy is not fully initialized.
-
-5️⃣ Real Interview Answer
-
-@Transactional sometimes does not work because Spring uses proxy-based AOP. If a transactional method is called internally within the same class,
- the call bypasses the proxy, so transaction management is not applied.
-
-
- Great! Let’s break down Spring’s @Transactional propagation types with simple examples. This is very common in senior Java/Spring interviews.
-
- 1️⃣ REQUIRED (Default)
-
- If a transaction exists, join it.
-
- If no transaction exists, create a new one.
-
- @Transactional(propagation = Propagation.REQUIRED)
- public void methodA() {
-     // part of transaction
- }
- Example
- methodA (REQUIRED) → calls methodB (REQUIRED)
-
- Both run in same transaction.
-
- If methodB fails, everything rolls back.
-
- ✅ Most common and default.
-
- 2️⃣ REQUIRES_NEW
-
- Always suspends current transaction and starts a new transaction.
-
- @Transactional(propagation = Propagation.REQUIRES_NEW)
- public void methodB() { ... }
- Example
- methodA (REQUIRED) → calls methodB (REQUIRES_NEW)
-
- methodB has separate transaction.
-
- If methodB fails, only methodB rolls back, methodA continues.
-
- 3️⃣ SUPPORTS
-
- If a transaction exists, join it.
-
- If no transaction exists, run without transaction.
-
- @Transactional(propagation = Propagation.SUPPORTS)
- public void methodC() { ... }
-
- Useful for read-only operations.
-
- 4️⃣ MANDATORY
-
- Must be called inside an existing transaction.
-
- Throws Exception if no transaction exists.
-
- @Transactional(propagation = Propagation.MANDATORY)
- public void methodD() { ... }
-
- Ensures transaction is already active.
-
- 5️⃣ NOT_SUPPORTED
-
- Do not run in a transaction.
-
- If a transaction exists, suspend it.
-
- @Transactional(propagation = Propagation.NOT_SUPPORTED)
- public void methodE() { ... }
-
- Useful for operations that should never be transactional, e.g., logging.
-
- 6️⃣ NEVER
-
- Throws exception if a transaction exists.
-
- Runs only when no transaction is active.
-
- @Transactional(propagation = Propagation.NEVER)
- public void methodF() { ... }
- 7️⃣ NESTED
-
- Creates a nested transaction using savepoints.
-
- If nested fails, rolls back only nested part, not parent transaction.
-
- @Transactional(propagation = Propagation.NESTED)
- public void methodG() { ... }
-
- Only supported by databases that support savepoints (like MySQL, PostgreSQL).
-
- 🔑 Quick Reference Table
-| Propagation   | Behavior                      |
-| ------------- | ----------------------------- |
-| REQUIRED      | Join existing or create new   |
-| REQUIRES_NEW  | Always new, suspends existing |
-| SUPPORTS      | Join if exists, else no tx    |
-| MANDATORY     | Must exist, else exception    |
-| NOT_SUPPORTED | Suspend existing, run non-tx  |
-| NEVER         | Throw exception if tx exists  |
-| NESTED        | Nested tx with savepoints     |
-
- 🔑 Interview Tip
-
- Most common: REQUIRED and REQUIRES_NEW
-
- Trick question: internal method calls + propagation type
-
- Always mention: “Proxy-based AOP affects transactions”
+Also see: `@Transactional (isolation & propagation)`, `Why can self-invocation bypass Spring AOP`

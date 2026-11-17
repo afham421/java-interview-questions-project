@@ -1,74 +1,84 @@
-Here’s a simple recursive CTE example in SQL (commonly asked in interviews).
+Q: What is a recursive CTE?
 
-✅ Example 1: Generate Numbers from 1 to 5
+CTE = Common Table Expression (`WITH ... AS (...)`).
+A **recursive CTE** can refer to itself to walk hierarchies or build sequences.
+
+Supported in MySQL 8+.
+
+────────────────────────────────────────
+Structure (always 3 ideas)
+
+1) Anchor member — starting rows
+2) Recursive member — query that reads the CTE itself
+3) UNION ALL — combine anchor + recursive steps
+Stops when recursive member returns no rows (or hits recursion limit).
+
+────────────────────────────────────────
+✅ Example 1: Numbers 1 to 5
+
 WITH RECURSIVE numbers AS (
-    -- Anchor member (starting point)
-    SELECT 1 AS num        // base query
+    -- Anchor (base)
+    SELECT 1 AS num
 
     UNION ALL
 
-    -- Recursive member
-    SELECT num + 1   // recursive query
+    -- Recursive
+    SELECT num + 1
     FROM numbers
-    WHERE num < 5     // condition check
+    WHERE num < 5
 )
 SELECT * FROM numbers;
-🔎 Output:
-1
-2
-3
-4
-5
-🧠 How It Works
 
-A recursive CTE has 2 parts:
+Output: 1, 2, 3, 4, 5
 
-Anchor Query → Starting value
+Flow:
+start 1 → add 2 → add 3 → add 4 → add 5 → stop (num < 5 fails)
 
-SELECT 1 AS num
+────────────────────────────────────────
+✅ Example 2: Employee hierarchy (classic interview)
 
-Recursive Query → Refers to itself
+employees:
+| id | name  | manager_id |
+| 1  | CEO   | NULL       |
+| 2  | Ali   | 1          |
+| 3  | Ahmed | 2          |
+| 4  | Sara  | 2          |
 
-SELECT num + 1 FROM numbers WHERE num < 5
-
-UNION ALL → Combines anchor + recursive results.
-
-Stops when condition fails (num < 5).
-
-✅ Real Interview Example (Hierarchy)
-
-Suppose we have an employees table:
-
-id	name	manager_id
-1	CEO	NULL
-2	Ali	1
-3	Ahmed	2
-4	Sara	2
-Query to get employee hierarchy:
 WITH RECURSIVE emp_hierarchy AS (
-    -- Anchor (Top level manager)
-    SELECT id, name, manager_id
+    -- Anchor: top (no manager)
+    SELECT id, name, manager_id, 1 AS level
     FROM employees
     WHERE manager_id IS NULL
 
     UNION ALL
 
-    -- Recursive part
-    SELECT e.id, e.name, e.manager_id
+    -- Recursive: people who report to someone already in the CTE
+    SELECT e.id, e.name, e.manager_id, eh.level + 1
     FROM employees e
-    JOIN emp_hierarchy eh ON e.manager_id = eh.id
+    INNER JOIN emp_hierarchy eh ON e.manager_id = eh.id
 )
-SELECT * FROM emp_hierarchy;
-🎯 When Recursive CTE is Used
+SELECT * FROM emp_hierarchy
+ORDER BY level, id;
 
-Tree / Hierarchy data
+Walks: CEO → Ali → Ahmed/Sara
 
-Organizational structure
+────────────────────────────────────────
+When used
+- Org chart / manager hierarchy
+- Category / folder trees
+- Bill of materials
+- Graph-like parent-child data
+- Generate sequences/dates (carefully)
 
-Category tree
+────────────────────────────────────────
+⚠️ Interview care points
 
-Folder structure
+1) Prefer UNION ALL (usual). UNION would dedupe each step (extra cost).
+2) Must have a termination condition — otherwise recursion error/limit.
+3) MySQL limit: `cte_max_recursion_depth` (default 1000).
+4) Watch cycles in bad data (A→B→A) — may need visited-path guard in advanced cases.
+5) Not for every problem — deep/huge trees may need app-side or nested-set models.
 
-Bill of materials
-
-Generating sequences
+────────────────────────────────────────
+Interview one-liner
+“A recursive CTE has an anchor query plus a recursive query that references itself, combined with UNION ALL — perfect for hierarchies like employee-manager trees.”

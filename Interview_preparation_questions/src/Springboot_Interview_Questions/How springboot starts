@@ -1,34 +1,68 @@
-////////////////////////////////////////////////////////////////////////////////////////
-Summary of How Spring Boot Starts
+Q: How does a Spring Boot application start?
 
-Main Application Class:
-Spring Boot applications typically start with a main class annotated with @SpringBootApplication.
-This annotation combines @Configuration, @EnableAutoConfiguration, and @ComponentScan, setting up the application context.
+Ordered mental model (interview):
 
-SpringApplication.run():
-The SpringApplication.run() method is called in the main class. This method bootstraps the application, initializing the Spring context
- and starting the embedded server if it's a web application.
+main()
+ → SpringApplication.run(...)
+ → create ApplicationContext
+ → auto-configure + component-scan + load properties
+ → create/inject beans
+ → start embedded server (web apps)
+ → app ready (port 8080 by default)
 
-Auto-Configuration:
-During startup, Spring Boot's auto-configuration feature scans the classpath for dependencies and configures beans and services automatically based on what it finds.
-This reduces the need for manual configuration.
+────────────────────────────────────────
+1) Main class + @SpringBootApplication
 
-Embedded Server Start:
-If the application is a web application, Spring Boot starts an embedded server (like Tomcat, Jetty, or Undertow) as part of the initialization process.
-This server runs within the same JVM as your application.
+@SpringBootApplication = 
+@Configuration + @EnableAutoConfiguration + @ComponentScan
 
-Component Scanning:
-Spring Boot automatically scans the package where the main application class resides (and its sub-packages) for Spring components, services, repositories,
-and controllers, wiring them into the application context.
+public static void main(String[] args) {
+    SpringApplication.run(MyApp.class, args);
+}
 
-Externalized Configuration:
-Spring Boot loads configuration properties from external sources (e.g., application.properties or application.yml) and applies them during startup.
-These configurations can be environment-specific, supporting different settings for development, testing, and production.
+────────────────────────────────────────
+2) What SpringApplication.run() does (simplified)
 
-Spring Beans Initialization:
-Beans defined in the application are initialized and managed by the Spring context. Dependency injection is handled automatically,
- wiring up components based on their dependencies.
+1. Create `SpringApplication`
+2. Prepare Environment (profiles, application.properties/yml, env vars, args)
+3. Create ApplicationContext (AnnotationConfigServletWebServerApplicationContext for web)
+4. Load bean definitions
+5. Refresh context:
+   - component scan (main package + subpackages)
+   - auto-configuration (based on classpath starters)
+   - create singleton beans + DI
+6. If web: start embedded Tomcat/Jetty/Undertow
+7. Call runners (`ApplicationRunner` / `CommandLineRunner`) if any
+8. Publish ready events → app accepting traffic
 
-Application Startup Complete:
-Once everything is set up, Spring Boot signals that the application is ready to serve requests.
-If it's a web application, it will be accessible on the configured port (default is 8080).
+────────────────────────────────────────
+3) Auto-configuration
+
+Sees jars on classpath, e.g.:
+- spring-boot-starter-web → DispatcherServlet, Tomcat, MVC
+- spring-boot-starter-data-jpa → DataSource, EntityManagerFactory, etc.
+
+You can override with your own beans/properties.
+
+────────────────────────────────────────
+4) Component scanning
+
+Finds `@Component` / `@Service` / `@Repository` / `@Controller` under the main class package tree and registers them as beans.
+
+────────────────────────────────────────
+5) Externalized config
+
+Loads `application.properties` / `application.yml` (+ profile-specific files).
+Applies to DataSource, server.port, logging, custom `@Value` / `@ConfigurationProperties`.
+
+────────────────────────────────────────
+6) Startup complete
+
+Context is up, beans ready, embedded server listening (web).
+Default: http://localhost:8080
+
+────────────────────────────────────────
+Interview one-liner
+
+“Spring Boot starts from main with SpringApplication.run, builds the ApplicationContext, loads properties,
+scans components, applies auto-configuration from the classpath, wires beans, starts the embedded server for web apps, then the application is ready to serve requests.”

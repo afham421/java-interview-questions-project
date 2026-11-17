@@ -1,108 +1,108 @@
-1️⃣ COUNT UP UNTIL THREE
+Q: Recursive CTE — practice answers (interview favorites)
+
+Recursive CTE = anchor + recursive part + UNION ALL, repeats until no new rows (or hit limit).
+MySQL 8+.
+
+Related: `what is recursive CTE`, `what is CTEs`
+
+────────────────────────────────────────
+1️⃣ COUNT UP UNTIL 3
+
 WITH RECURSIVE counter AS (
-    SELECT 1 AS num          -- Anchor
-    
+    SELECT 1 AS num              -- anchor
+
     UNION ALL
-    
-    SELECT num + 1           -- Recursive
+
+    SELECT num + 1               -- recursive
     FROM counter
     WHERE num < 3
 )
 SELECT * FROM counter;
-✅ Output:
-1
-2
-3
-2️⃣ Finding Bosses and Hierarchical Level for All Employees
-👇 Table Example
-id	name	manager_id
-1	CEO	NULL
-2	Ali	1
-3	Ahmed	2
-4	Sara	2
-✅ Query with Level
+
+Output: 1, 2, 3
+
+────────────────────────────────────────
+2️⃣ Bosses + hierarchy level
+
+employees: CEO(1,NULL) → Ali(2,1) → Ahmed(3,2), Sara(4,2)
+
 WITH RECURSIVE emp_tree AS (
-    -- Anchor (Top boss)
     SELECT id, name, manager_id, 1 AS level
     FROM employees
-    WHERE manager_id IS NULL
-    
+    WHERE manager_id IS NULL          -- top
+
     UNION ALL
-    
-    -- Recursive
+
     SELECT e.id, e.name, e.manager_id, et.level + 1
     FROM employees e
     JOIN emp_tree et ON e.manager_id = et.id
 )
-SELECT * FROM emp_tree;
-🔎 Output:
-id	name	level
-1	CEO	1
-2	Ali	2
-3	Ahmed	3
-4	Sara	3
-3️⃣ Finding Routes Between Cities
-👇 Table Example
-from_city	to_city
-A	B
-B	C
-C	D
-✅ Query
+SELECT * FROM emp_tree
+ORDER BY level, id;
+
+Output idea:
+CEO level 1, Ali 2, Ahmed/Sara 3
+
+────────────────────────────────────────
+3️⃣ Routes between cities (start from A)
+
+city_routes: A→B, B→C, C→D
+
 WITH RECURSIVE routes AS (
-    -- Anchor
-    SELECT from_city, to_city, 
-           CONCAT(from_city, ' -> ', to_city) AS path
+    -- Anchor: start from A only (matches sample output)
+    SELECT from_city, to_city,
+           CONCAT(from_city, ' -> ', to_city) AS path,
+           1 AS hops
     FROM city_routes
-    
+    WHERE from_city = 'A'
+
     UNION ALL
-    
-    -- Recursive
+
     SELECT r.from_city, c.to_city,
-           CONCAT(r.path, ' -> ', c.to_city)
+           CONCAT(r.path, ' -> ', c.to_city),
+           r.hops + 1
     FROM routes r
     JOIN city_routes c ON r.to_city = c.from_city
+    WHERE r.hops < 10                    -- safety stop
+      AND LOCATE(c.to_city, r.path) = 0  -- simple cycle guard
 )
-SELECT * FROM routes;
-🔎 Output:
+SELECT path FROM routes;
+
+Output:
 A -> B
 A -> B -> C
 A -> B -> C -> D
 
-Used for:
+Used for: flights, roads, network path traversal.
 
-Flight connections
+────────────────────────────────────────
+4️⃣ Ancestors (walk UP the parent chain)
 
-Road maps
+family: Grand(1,NULL) → Father(2,1) → Son(3,2)
 
-Network traversal
-
-4️⃣ FINDING ANCESTORS (Parent Chain)
-👇 Table Example
-id	name	parent_id
-1	Grand	NULL
-2	Father	1
-3	Son	2
-✅ Query (Find ancestors of Son)
 WITH RECURSIVE ancestors AS (
-    -- Start from Son
     SELECT id, name, parent_id
     FROM family
-    WHERE name = 'Son'
-    
+    WHERE name = 'Son'                 -- start node
+
     UNION ALL
-    
-    -- Recursive
+
     SELECT f.id, f.name, f.parent_id
     FROM family f
-    JOIN ancestors a ON f.id = a.parent_id
+    JOIN ancestors a ON f.id = a.parent_id   -- go to parent
 )
-SELECT * FROM ancestors;
-🔎 Output:
-Son
-Father
-Grand
-🎯 Interview Short Explanation
+SELECT name FROM ancestors;
 
-Recursive CTE is used when data is hierarchical or sequential.
-It has an anchor query and a recursive query.
-It keeps running until the stopping condition is met.
+Output: Son, Father, Grand
+
+(Downward tree = join child.parent_id = cte.id; upward ancestors = join parent.id = cte.parent_id)
+
+────────────────────────────────────────
+🎯 Short interview explanation
+
+“Recursive CTEs solve hierarchical/sequential data. Anchor gives the start rows; recursive query references the CTE and adds the next level; UNION ALL combines steps until the stop condition. Examples: org chart levels, folder trees, route paths, ancestor chains.”
+
+Care:
+- Need a stop condition
+- Watch cycles in graphs
+- MySQL `cte_max_recursion_depth` (default 1000)

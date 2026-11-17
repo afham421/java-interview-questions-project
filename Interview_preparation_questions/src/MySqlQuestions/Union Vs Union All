@@ -1,36 +1,55 @@
-In MySQL, UNION and UNION ALL are used to combine the results of two or more SELECT queries into a single result set.
- While they are similar, there are key differences between them:
+Q: UNION vs UNION ALL in MySQL?
 
-1. UNION
-Combines the results of two or more SELECT statements and removes duplicate rows from the final result set.
-By default, it performs a DISTINCT operation to eliminate any duplicate records.
-Since it removes duplicates, it may be slower compared to UNION ALL, especially with large datasets.
-Example:
+Both combine results of two or more SELECTs into one result set.
+Difference = **duplicates** (and therefore speed).
+
+────────────────────────────────────────
+1) UNION
+- Combines SELECT results
+- **Removes duplicate rows** (like DISTINCT on the final set)
+- Extra work → often **slower** on large data
+
 SELECT first_name FROM employees
 UNION
 SELECT first_name FROM customers;
 
-Explanation: This query returns a list of unique first names from both the employees and customers tables.
- If a first name appears in both tables, it will only appear once in the result set.
+→ unique first_names only (if same name in both tables → once)
 
+────────────────────────────────────────
+2) UNION ALL
+- Combines SELECT results
+- **Keeps all rows**, including duplicates
+- No dedupe step → usually **faster**
 
-2. UNION ALL
-Combines the results of two or more SELECT statements and includes all rows, including duplicates.
-It does not perform a DISTINCT operation, so it is generally faster than UNION.
-Useful when you want to include duplicates or when you know that the result sets being combined do not have any overlapping rows.
-Example:
 SELECT first_name FROM employees
 UNION ALL
 SELECT first_name FROM customers;
 
-Explanation: This query returns all first names from both the employees and customers tables, including any duplicates.
-If a first name appears in both tables, it will appear twice in the result set.
+→ names from both; overlap appears twice
 
-Performance Considerations
-UNION: The process of removing duplicates (using DISTINCT) adds an extra step, which can impact performance, especially with large datasets.
-UNION ALL: Since it doesn’t remove duplicates, it performs faster and is more efficient when duplicates are not a concern.
+────────────────────────────────────────
+Rules (both)
 
+1) Same number of columns in each SELECT
+2) Compatible data types (by position)
+3) Column names in result usually come from the **first** SELECT
+4) ORDER BY applies to the final combined result (place at the end)
 
-Summary
-UNION: Combines result sets and removes duplicates.
-UNION ALL: Combines result sets without removing duplicates, generally faster than UNION.
+SELECT a FROM t1
+UNION ALL
+SELECT b FROM t2
+ORDER BY a;
+
+────────────────────────────────────────
+When to use which
+
+| Need                         | Use        |
+| ---------------------------- | ---------- |
+| Unique combined rows         | UNION      |
+| Keep duplicates / sure no overlap | UNION ALL |
+| Best performance by default  | UNION ALL (if duplicates OK) |
+
+────────────────────────────────────────
+Summary / interview one-liner
+
+“UNION merges and removes duplicates; UNION ALL merges and keeps duplicates, so it’s usually faster. Prefer UNION ALL unless you truly need distinct rows.”

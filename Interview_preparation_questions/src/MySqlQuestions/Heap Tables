@@ -1,19 +1,62 @@
-Heap tables (also known as Memory tables) in MySQL are tables that store data in memory rather than on disk.
- This makes them very fast for read and write operations, but the data is temporary and lost if the server crashes or is restarted.
+Q: What are Heap (MEMORY) tables in MySQL?
 
-Key Features:
-Storage Engine: Use the MEMORY storage engine.
-Speed: Extremely fast due to data being stored in RAM.
-Volatile: Data is not persisted to disk.
-Table Locking: Uses table-level locking, not row-level locking.
-No BLOB/TEXT: Does not support BLOB or TEXT data types because of memory limitations.
+Heap tables = tables using the **MEMORY** storage engine (old name: HEAP).
+Data lives in **RAM**, not durable disk storage like InnoDB.
 
-Usage: Best for temporary or session-based data.
+Very fast for small temporary datasets — but data is lost on server restart/crash.
 
-Example:
+────────────────────────────────────────
+Key Features
+
+| Feature        | MEMORY / Heap                         |
+| -------------- | ------------------------------------- |
+| Storage        | RAM                                   |
+| Persistence    | Volatile (lost on restart)            |
+| Engine         | ENGINE=MEMORY                         |
+| Locking        | Table-level (not row-level like InnoDB) |
+| BLOB / TEXT    | Not supported                         |
+| Transactions   | No (not InnoDB ACID)                  |
+| Default index  | HASH (BTREE optional)                 |
+| Size limit     | Controlled by max_heap_table_size     |
+
+────────────────────────────────────────
+Example
+
 CREATE TABLE my_heap_table (
     id INT PRIMARY KEY,
     name VARCHAR(100)
 ) ENGINE=MEMORY;
 
-Heap tables are ideal for quick lookups and temporary data storage where persistence is not required.
+-- Optional: BTREE index if you need range queries
+CREATE TABLE t (
+    id INT,
+    name VARCHAR(50),
+    INDEX using BTREE (name)
+) ENGINE=MEMORY;
+
+────────────────────────────────────────
+When to use
+- Session/cache-like temporary data
+- Fast lookup of small working sets
+- Intermediate results where losing data on restart is OK
+
+When NOT to use
+- Important business data (orders, payments, users)
+- Large datasets (RAM pressure / eviction limits)
+- Need row-level locking, transactions, FK, crash recovery → use **InnoDB**
+
+────────────────────────────────────────
+Interview nuances
+
+1) HEAP is just the old name for MEMORY engine.
+2) Default HASH indexes = great for `=` lookups, weak for `BETWEEN` / sorting ranges → use BTREE if needed.
+3) Table lock = concurrent writes can block each other more than InnoDB.
+4) Don’t confuse:
+   - CREATE TEMPORARY TABLE ...     → session-scoped table (engine may be InnoDB/MEMORY)
+   - ENGINE=MEMORY                  → RAM storage engine (can be permanent table definition, still volatile data)
+
+────────────────────────────────────────
+Interview answer
+
+“Heap/MEMORY tables store data in RAM, so they’re fast but volatile — data disappears on restart. They use table-level locking, don’t support BLOB/TEXT,
+and default to HASH indexes. Good for temporary/cache-like data; for durable production data we use InnoDB.”

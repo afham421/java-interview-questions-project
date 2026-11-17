@@ -1,93 +1,93 @@
-✅ 1. persist()
-Belongs to: JPA
+Q: Difference between persist(), merge(), and save()?
 
-Provided by: EntityManager
+────────────────────────────────────────
+✅ 1. persist() — JPA EntityManager
 
-Usage: To insert a new entity into the database.
+Purpose: make a **new transient** entity managed → scheduled INSERT.
 
-It only works for new (transient) objects.
-
-User user = new User();  // transient
+User user = new User();      // transient
 user.setName("Ali");
-entityManager.persist(user);  // now managed and inserted
+entityManager.persist(user); // now managed (INSERT on flush/commit)
 
-Key Points:
+Key points:
+- For new entities
+- Returns void
+- Entity becomes managed in persistence context
+- SQL INSERT usually happens on flush/commit (not always instantly)
+- If already managed/persistent incorrectly → can throw EntityExistsException
 
-Adds the entity to the persistence context
+Use when: you know it’s a new record and you use EntityManager directly.
 
-Entity becomes managed
+────────────────────────────────────────
+✅ 2. merge() — JPA EntityManager
 
-Does not return anything
+Purpose: copy state into persistence context → returns a **managed copy**.
+Common for **detached** entities (e.g. came from another request/session).
 
-If the entity already exists → ❌ throws an error
+User detached = new User();
+detached.setId(1L);
+detached.setName("Updated Name");
 
-✅ 2. merge()
-Belongs to: JPA
+User managed = entityManager.merge(detached);
+// managed is managed; detached stays detached
 
-Provided by: EntityManager
+Key points:
+- Works on detached / existing state
+- Returns managed entity (use the returned instance)
+- Original object remains detached
+- If row exists → UPDATE (on flush)
+- If no matching row → can INSERT
 
-Usage: To insert or update an entity (commonly for detached objects).
+Trap: always continue with the **returned** managed entity from merge().
 
+────────────────────────────────────────
+✅ 3. save() — Spring Data JpaRepository
 
-User detachedUser = new User();  // detached object
-detachedUser.setId(1L);          // existing ID
-detachedUser.setName("Updated Name");
+Convenience API. Internally roughly:
 
-User managedUser = entityManager.merge(detachedUser);
-
-Key Points:
-
-Can be used for existing or detached objects
-
-Returns a managed copy
-
-Original object stays detached
-
-If entity doesn’t exist → it creates new (INSERT)
-
-✅ 3. save()
-Belongs to: Spring Data JPA
-
-Provided by: JpaRepository
-
-Internally uses: persist() or merge() based on entity state
-
+if (entityIsNew)
+    em.persist(entity);
+else
+    em.merge(entity);
 
 User user = new User();
 user.setName("Awais");
-userRepository.save(user);  // Spring will call persist or merge
+userRepository.save(user); // persist or merge
 
-Key Points:
+Key points:
+- Handles insert + update in one method
+- Returns saved entity
+- “Is new?” usually means: id == null (or @Version null / Persistable.isNew())
 
-Simplifies the code in Spring Boot
+🔥 Big Spring interview trap:
+If you manually set id on a new object:
+user.setId(100L);
+repo.save(user);
+→ Spring may treat it as NOT new → calls **merge()** (SELECT then UPDATE/INSERT),
+not persist(). Prefer generated IDs, or implement Persistable carefully.
 
-Handles both new and existing entities
+────────────────────────────────────────
+🔁 Summary
 
-Automatically chooses between persist() and merge()
+| Method      | From            | Best for              | Returns        | SQL idea        |
+| ----------- | --------------- | --------------------- | -------------- | --------------- |
+| persist()   | EntityManager   | new transient         | void           | INSERT          |
+| merge()     | EntityManager   | detached / upserty    | managed copy   | UPDATE/INSERT   |
+| save()      | Spring Data JPA | everyday Spring apps  | saved entity   | persist or merge|
 
-Returns the saved (managed) entity
+Entity states reminder:
+transient → no id/persistence context
+managed  → tracked by persistence context
+detached → had id, no longer in context
+removed  → scheduled delete
 
-🔁 Summary Table
-| Method      | From                  | Works on                      | Return Value   | Purpose               |
-| ----------- | --------------------- | ----------------------------- | -------------- | --------------------- |
-| `persist()` | JPA (`EntityManager`) | New (transient) entities      | `void`         | INSERT new record     |
-| `merge()`   | JPA (`EntityManager`) | Detached or existing entities | Managed entity | UPDATE or INSERT      |
-| `save()`    | Spring Data JPA       | Any (new or existing)         | Saved entity   | Handles persist/merge |
+────────────────────────────────────────
+When to use
 
+- persist(): EntityManager + sure it’s new
+- merge(): re-attach detached DTO/entity graph
+- save(): Spring Boot repositories (most common day-to-day)
 
-⚠️ Example Use Case
-Use persist() when:
-
-You're working directly with EntityManager
-
-You're sure it's a new record
-
-Use merge() when:
-
-You're re-attaching a modified, detached entity
-
-Use save() when:
-
-You're using Spring Boot + Spring Data JPA
-
-You want simple code for both insert/update
+Interview answer:
+“persist inserts a new managed entity and returns void. merge copies a detached entity into the context and returns the managed instance.
+Spring Data save chooses persist for new entities and merge for existing ones based on id/version — with the caveat that a manually assigned id can force merge.”

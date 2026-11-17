@@ -1,14 +1,78 @@
-we implemented JWT and Spring Security for secure authentication and authorization. The flow works like this:
-1.	Login Request: The user enters their username and password on the client (e.g., a React frontend)
-    and sends a POST request to our /api/authenticate endpoint.
-2.	Server Validation: Spring Security's AuthenticationManager validates the credentials against the user data stored in our SQL database.
-3.	JWT Generation: If credentials are valid, the server generates a JSON Web Token (JWT). This token contains a header,
-     a payload (with user info like username, roles, expiration time), and a signature created with a secret key known only to the server.
-4.	Token Response: The server sends this JWT back to the client in the response body.
-5.	Client Storage: The client stores this token securely—typically in localStorage or sessionStorage.
-6.	Authenticated Requests: For all subsequent requests to protected endpoints (e.g., /api/technicians),
-    the client includes the JWT in the Authorization header, formatted as Bearer <token>.
-7.	Server-Side Filtering: We configured a Spring Security filter (JwtRequestFilter) that intercepts every request.
-    It extracts the token from the header, validates the signature using the secret key, and checks the expiration date.
-     If the token is valid, it sets the user's authentication context, allowing the request to proceed to the controller.
-     If not, it returns a 401 Unauthorized error.
+Q: You've implemented JWT for authentication. Walk me through the entire flow.
+
+We use JWT + Spring Security for stateless authn/authz.
+
+────────────────────────────────────────
+End-to-end flow
+
+1) Login request
+Client (React/app) POSTs username/password to `/api/authenticate` (or `/login`).
+
+2) Server validates credentials
+`AuthenticationManager` / `DaoAuthenticationProvider` checks password (e.g. BCrypt) against user in DB (`UserDetailsService`).
+
+3) JWT generation (if valid)
+Server builds JWT:
+- Header: alg (e.g. HS256), typ
+- Payload (claims): sub/username, roles, iat, exp (keep payload minimal — no passwords)
+- Signature: HMAC/RSA with server secret/private key
+
+4) Token response
+Server returns JWT in response body (sometimes also refresh token).
+
+5) Client stores token
+Often memory / sessionStorage / localStorage, or httpOnly cookie (better vs XSS discussion).
+
+6) Authenticated API calls
+Client sends:
+Authorization: Bearer <jwt>
+to protected APIs (`/api/...`).
+
+7) Server filter (JwtAuthenticationFilter / JwtRequestFilter)
+In `SecurityFilterChain`, filter runs before controllers:
+- extract Bearer token
+- verify signature + expiry (+ issuer/audience if used)
+- load/build authorities from claims (or DB if needed)
+- set `SecurityContextHolder.getContext().setAuthentication(...)`
+- continue filter chain → controller
+
+Invalid/missing token on protected route → **401 Unauthorized**
+Authenticated but missing role/authority → **403 Forbidden**
+
+────────────────────────────────────────
+Diagram
+
+Login → AuthManager(DB) → create JWT → client
+Client → API + Bearer JWT → JwtFilter validate → SecurityContext → Controller
+
+Stateless point:
+No server session required for each request; each request carries the token.
+(Server may still use DB for user status/revocation checks if designed that way.)
+
+────────────────────────────────────────
+Interview extras (expect follow-ups)
+
+1) Access vs Refresh
+- Access JWT: short-lived (e.g. 5–15 min)
+- Refresh token: longer; used to get new access token; store more carefully / rotate
+
+2) Storage tradeoff
+- localStorage: easy, vulnerable to XSS
+- httpOnly Secure cookie: safer from JS access, need CSRF strategy
+
+3) Logout
+- Stateless JWT can’t be “deleted” server-side unless blacklist/versioning/short expiry
+- Common: short access TTL + refresh revocation list
+
+4) Authorization
+After auth, use roles/authorities:
+`@PreAuthorize("hasRole('ADMIN')")` / request matchers in SecurityFilterChain
+
+────────────────────────────────────────
+60-second spoken answer
+
+“User logs in with username/password to our authenticate API. AuthenticationManager validates against the DB. On success we issue a signed JWT with username, roles,
+and expiry. Client stores it and sends Authorization Bearer on later calls. A JWT filter validates signature and expiry, sets SecurityContext,
+and the request reaches the controller. Invalid token gets 401; missing permission gets 403. It’s stateless—no server session per request.”
+
+Related: your `JWT` notes file in the same folder.

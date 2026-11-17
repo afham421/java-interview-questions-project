@@ -1,19 +1,80 @@
+Q: What is a Transaction in MySQL?
 
-In MySQL, transactions are used to execute a sequence of operations as a single unit of work.
- Transactions ensure that either all operations are completed successfully or none are applied, which helps maintain data integrity.
+A transaction is a sequence of SQL operations treated as **one unit of work**.
+Either **all** succeed (COMMIT) or **none** stay applied (ROLLBACK) → protects data integrity.
 
-   -- Start a transaction
-   START TRANSACTION;
+Remember ACID:
+- Atomicity  — all or nothing
+- Consistency — valid state → valid state
+- Isolation  — concurrent transactions don’t illegally interfere
+- Durability — after commit, data survives crash (engine-dependent; InnoDB yes)
 
-   BEGIN
-     -- // Perform some operations
-     INSERT INTO accounts (account_id, balance) VALUES (1, 1000);
-     UPDATE accounts SET balance = balance - 100 WHERE account_id = 1;
+────────────────────────────────────────
+MySQL basic syntax (correct)
 
-     --// Check for errors and commit if everything is okay
-     IF @@ERROR = 0 THEN
-       COMMIT; // if auto commit is enabled in mysql then dont need to commit here only rollback
-     ELSE
-       ROLLBACK;
-     END IF;
-   END;
+START TRANSACTION;   -- or: BEGIN;
+
+UPDATE accounts SET balance = balance - 100 WHERE id = 1;
+UPDATE accounts SET balance = balance + 100 WHERE id = 2;
+
+COMMIT;     -- save all changes
+-- or
+ROLLBACK;   -- undo all changes in this transaction
+
+────────────────────────────────────────
+Autocommit (important)
+
+By default MySQL often has **autocommit=1**:
+each statement is its own tiny transaction (auto COMMIT).
+
+When you run START TRANSACTION / BEGIN:
+- autocommit is effectively off until COMMIT or ROLLBACK
+- You **do** need COMMIT to persist the group of statements
+- Comment like “if autocommit enabled don’t need commit” is misleading for multi-statement work
+
+Check/set:
+SHOW VARIABLES LIKE 'autocommit';
+SET autocommit = 0;   -- session
+
+────────────────────────────────────────
+Simple money-transfer example
+
+START TRANSACTION;
+
+UPDATE accounts SET balance = balance - 100 WHERE id = 1 AND balance >= 100;
+-- optional: check ROW_COUNT() in app/procedure
+
+UPDATE accounts SET balance = balance + 100 WHERE id = 2;
+
+COMMIT;
+-- on any failure in app code → ROLLBACK;
+
+────────────────────────────────────────
+⚠️ About the old sample
+
+This is **not** valid MySQL style:
+IF @@ERROR = 0 THEN ...  -- that’s SQL Server style
+
+MySQL error handling in stored programs uses DECLARE HANDLER, etc.
+In apps (Java/Spring), you catch exceptions and rollback the transaction.
+
+────────────────────────────────────────
+Spring Boot side (interview link)
+
+@Transactional
+public void transfer(Long from, Long to, BigDecimal amount) {
+    // both updates in one transaction
+}
+
+- Success → commit
+- RuntimeException → rollback (default)
+- Works best on public methods of Spring beans (proxy)
+
+────────────────────────────────────────
+Engine note
+Use **InnoDB** for real transactions.
+MEMORY/MyISAM are not the transactional choice for durable multi-statement ACID work.
+
+────────────────────────────────────────
+Interview one-liner
+“A transaction groups SQL into one atomic unit — COMMIT keeps all changes, ROLLBACK undoes them — giving ACID guarantees (with InnoDB).”

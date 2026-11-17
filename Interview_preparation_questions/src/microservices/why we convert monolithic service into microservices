@@ -1,0 +1,73 @@
+Q: Why do we convert a monolithic service into microservices?
+
+One line:
+To scale, deploy, and evolve parts of the system independently — when team/size/complexity justify the distributed overhead.
+
+We split a monolith when independent scaling, faster releases, team ownership, and fault isolation become more valuable
+than the simplicity of one deployable app.
+
+────────────────────────────────────────
+🔧 1. Scalability
+Monolith: scale the whole app even if only payments is hot.
+Microservices: scale only the busy service.
+
+🚀 2. Faster / safer deployment
+Monolith: small change → redeploy entire app.
+Microservices: deploy only the changed service (smaller blast radius).
+
+💡 3. Maintainability
+Smaller codebases are easier to understand and change.
+Clearer module boundaries (if designed well).
+
+🧩 4. Technology flexibility (use carefully)
+Different services can use different stacks/DBs when needed.
+Example: Java + Postgres for orders; search service with Elasticsearch.
+Don’t go polyglot “just because” — ops cost rises.
+
+👥 5. Independent team ownership
+Team owns service end-to-end (build, deploy, run).
+Parallel delivery with less merge conflict on one giant repo/app.
+
+🛡 6. Fault isolation (not automatic)
+Email service down should not take checkout down — IF you design timeouts, retries, circuit breakers, fallbacks.
+Without resilience patterns, one slow dependency can still cascade.
+
+🧪 7. Testing & CI/CD per service
+Faster pipelines for a smaller service.
+Still need contract tests / integration tests across services.
+
+⚖ 8. Security & compliance boundaries
+Payment/PII services can have stricter controls, networks, audits.
+
+────────────────────────────────────────
+⚠️ When NOT to use microservices
+
+- Small team / early product / simple CRUD app
+- You don’t yet have CI/CD, monitoring, on-call maturity
+- Domain boundaries are unclear (you’ll create a distributed monolith)
+- You need many strong consistency transactions across modules (harder when split)
+
+Tradeoffs you must mention in interview:
+- Network latency & partial failures
+- Distributed data / eventual consistency
+- More infra: gateway, discovery, tracing, Kafka/REST, K8s
+- Harder debugging across services
+
+────────────────────────────────────────
+Monolith vs Microservices (quick)
+
+| Need                        | Monolith     | Microservices      |
+| --------------------------- | ------------ | ------------------ |
+| Simple start                | ✅            | ❌ more overhead    |
+| Independent scale/deploy    | ❌            | ✅                  |
+| Team autonomy               | ⚠️           | ✅                  |
+| Ops complexity              | Lower        | Higher             |
+| Cross-module transactions   | Easier       | Harder             |
+
+────────────────────────────────────────
+Interview answer
+
+“We move from monolith to microservices when parts of the system need independent scaling and deployment, and multiple teams need to own domains separately. Benefits are independent scale, smaller deploys, clearer ownership, and better isolation — for example scaling payment without scaling the whole app. We don’t split early: microservices add network, data consistency, and ops complexity. In practice many teams start modular monolith, then extract hot/bounded contexts.”
+
+✅ 20-second version
+“Split when independent scale/deploy/team ownership outweigh distributed complexity; otherwise keep a (modular) monolith.”

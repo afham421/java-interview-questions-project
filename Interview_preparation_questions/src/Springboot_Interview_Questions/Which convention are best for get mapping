@@ -1,44 +1,47 @@
-REST API me GET mapping ke liye best convention ka matlab hai ke aapke URL design aur naming clean, consistent, aur industry standards follow karein.
-Main aapko Roman Urdu me best practices bata deta hoon:
+Q: Which conventions are best for GET mapping (REST)?
 
-1. Nouns use karein, Verbs nahi
+REST GET URLs should be clean, consistent, resource-oriented.
+HTTP method already means “read” — URL names the **resource**, not the action.
 
-❌ Galat: /getAllUsers
-✅ Sahi: /users
+────────────────────────────────────────
+1) Nouns use karein, verbs nahi
 
-Reason: HTTP method (GET) already batata hai ke hum data fetch kar rahe hain, isliye URL me verb likhne ki zarurat nahi.
+❌ /getAllUsers  /fetchUser
+✅ /users
 
-2. Plural form use karein
+Reason: GET already = fetch.
 
-Resource names plural hon taki consistent lagein.
-✅ /users → saare users
-✅ /users/10 → sirf ek user
+2) Plural resource names
 
-3. Hierarchy dikhayein (Nested Resources)
+✅ /users
+✅ /users/10
 
-Agar ek resource ka relation dusre se ho, to URL me hierarchy dikhayein.
-Example:
-✅ /users/10/orders → user ID 10 ke saare orders
-✅ /users/10/orders/5 → ek specific order
+3) Hierarchy for relationships (nested resources)
 
-4. Filters aur Parameters ka use karein
+✅ /users/10/orders
+✅ /users/10/orders/5
 
-GET request me search ya filter karne ke liye query params use karein.
+Don’t over-nest (usually 2 levels is enough).
+
+4) Filters / search → query params
+
 ✅ /users?role=admin
-✅ /products?category=mobile&sort=price
+✅ /products?category=mobile&sort=price&page=0&size=20
 
-5. Hyphen (-) ka use karein, underscore (_) nahi
+Path = identity; query = filter/sort/page.
 
-Reason: Hyphen URLs me zyada readable hota hai aur SEO friendly hota hai.
+5) Hyphen preferred over underscore
+
 ✅ /user-profiles
 ❌ /user_profiles
 
-6. Lowercase use karein
+6) Lowercase
 
 ✅ /user-profiles
 ❌ /UserProfiles
 
-Example Best GET Mapping:
+────────────────────────────────────────
+Spring examples
 
 @GetMapping("/users")
 public List<User> getAllUsers() { ... }
@@ -48,3 +51,21 @@ public User getUserById(@PathVariable Long id) { ... }
 
 @GetMapping("/users/{id}/orders")
 public List<Order> getUserOrders(@PathVariable Long id) { ... }
+
+@GetMapping("/users")
+public Page<User> search(
+    @RequestParam(required = false) String role,
+    Pageable pageable) { ... }
+
+────────────────────────────────────────
+Extra interview tips
+
+| Do                              | Don’t                         |
+| ------------------------------- | ----------------------------- |
+| /api/v1/users (versioning)      | verbs in path                 |
+| 200 + body for found            | send body on GET (avoid)      |
+| 404 when resource missing       | encode actions like /doDelete |
+| consistent plural nouns         | mix /user and /users          |
+
+One-liner:
+“GET URLs name resources in plural nouns, use path for IDs, query params for filters, and keep paths lowercase with hyphens — no verbs.”

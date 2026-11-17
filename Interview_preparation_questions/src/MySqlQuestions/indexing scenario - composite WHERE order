@@ -1,0 +1,140 @@
+Q: Composite index on (created_date, role_type, other_col) — if WHERE uses all 3 columns but in different order, does the index still work?
+
+Short answer:
+YES — WHERE clause column **order does not matter** if the needed columns are present (usually with equality).
+What matters is the **index definition order** (leftmost prefix), not the order you type AND conditions.
+
+────────────────────────────────────────
+📌 Index definition
+
+CREATE INDEX idx_date_role_other
+ON my_table (created_date, role_type, other_col);
+
+Index is sorted as: created_date → role_type → other_col (left → right).
+
+────────────────────────────────────────
+✅ All three columns present — any WHERE order is fine
+
+WHERE created_date = '2025-09-12'
+  AND role_type = 'ADMIN'
+  AND other_col = 123;
+
+Same as:
+
+WHERE role_type = 'ADMIN'
+  AND other_col = 123
+  AND created_date = '2025-09-12';
+
+Optimizer reorders conditions internally → can use full composite index the same way.
+
+────────────────────────────────────────
+📊 Leftmost prefix rule (this is what really matters)
+
+Index (A, B, C) can be used well for:
+- (A)
+- (A, B)
+- (A, B, C)
+
+Usually NOT efficiently for:
+- (B)
+- (C)
+- (B, C)   ← skips leading A
+
+So for index (created_date, role_type, other_col):
+
+✅ WHERE created_date = ? AND role_type = ?
+✅ WHERE created_date = ?
+❌ WHERE role_type = ? AND other_col = ?   (no leading created_date)
+
+────────────────────────────────────────
+⚠️ Extra interview nuance: range stops the next columns
+
+Index (A, B, C)
+
+WHERE A = 1 AND B = 2 AND C = 3
+→ can use A,B,C
+
+WHERE A = 1 AND B > 10 AND C = 3
+→ typically uses A and B (range on B); C often not used for lookup in the same tight way
+
+WHERE A > '2025-01-01' AND B = 'ADMIN'
+→ uses A for range; B may not be used as equality prefix after range
+
+Rule: equality on leading columns, then one range column; columns after a range are weaker.
+
+────────────────────────────────────────
+🔎 Practical advice
+
+If queries always filter by created_date (+ optional role/other) →
+index (created_date, role_type, other_col) is good.
+
+If queries often filter by role_type WITHOUT created_date →
+add another index, e.g. (role_type, created_date), matching that pattern.
+
+Always confirm with EXPLAIN (example outputs below).
+
+────────────────────────────────────────
+🧪 EXPLAIN examples (MySQL)
+
+-- Setup idea:
+-- INDEX idx_date_role_other (created_date, role_type, other_col)
+
+1️⃣ Index USED (all 3 columns, any WHERE order)
+
+EXPLAIN SELECT *
+FROM my_table
+WHERE role_type = 'ADMIN'
+  AND other_col = 123
+  AND created_date = '2025-09-12';
+
+Example output (simplified):
+
++----+-------------+----------+------+----------------------+----------------------+---------+-------------------+------+-------+
+| id | select_type | table    | type | possible_keys        | key                  | key_len | ref               | rows | Extra |
++----+-------------+----------+------+----------------------+----------------------+---------+-------------------+------+-------+
+|  1 | SIMPLE      | my_table | ref  | idx_date_role_other  | idx_date_role_other  |     211 | const,const,const |    1 | NULL  |
++----+-------------+----------+------+----------------------+----------------------+---------+-------------------+------+-------+
+
+What to look for:
+- key = idx_date_role_other          → this index was chosen
+- type = ref / range                 → index lookup (good)
+- ref = const,const,const            → all 3 index parts used (equality)
+- rows = small number                → selective
+
+(In MySQL 8 you may prefer: EXPLAIN FORMAT=JSON or EXPLAIN ANALYZE)
+
+2️⃣ Index NOT used well (skipped leading column)
+
+EXPLAIN SELECT *
+FROM my_table
+WHERE role_type = 'ADMIN'
+  AND other_col = 123;
+
+Example output (simplified):
+
++----+-------------+----------+------+---------------+------+---------+------+--------+-------------+
+| id | select_type | table    | type | possible_keys | key  | key_len | ref  | rows   | Extra       |
++----+-------------+----------+------+---------------+------+---------+------+--------+-------------+
+|  1 | SIMPLE      | my_table | ALL  | NULL          | NULL | NULL    | NULL | 100000 | Using where |
++----+-------------+----------+------+---------------+------+---------+------+--------+-------------+
+
+What to look for:
+- type = ALL                         → full table scan
+- key = NULL                         → no index chosen
+- Extra = Using where                → filter after reading many rows
+
+Or sometimes MySQL picks another index / does index scan poorly —
+still: missing leading created_date means idx_date_role_other usually cannot be used from the left.
+
+Quick read cheat-sheet:
+| EXPLAIN field | Good sign              | Bad sign        |
+| ------------- | ---------------------- | --------------- |
+| type          | const / ref / range    | ALL             |
+| key           | your composite index   | NULL            |
+| rows          | small                  | huge            |
+| Extra         | Using index (covering) | Using filesort / temporary (context-dependent) |
+
+────────────────────────────────────────
+Interview one-liner
+
+“For composite indexes, SQL WHERE order doesn’t matter; index column order does. MySQL follows leftmost prefix: (A,B,C) helps (A)/(A,B)/(A,B,C), not (B,C) alone.”

@@ -856,3 +856,50 @@ The 5 things you should remember:
 5. SecurityFilterChain → defines which APIs are protected
 
 If you understand these 5 components + the request flow, you understand JWT authentication in Spring Boot from scratch.
+
+────────────────────────────────────────
+19. Can I expire a JWT if it is stateless?
+
+YES — but distinguish two different goals:
+
+A) Natural expiry (fully stateless) ✅
+Put `exp` in the token when generating it.
+Filter rejects token when `exp < now`.
+No server storage needed.
+
+Example you already have:
+.expiration(new Date(System.currentTimeMillis() + expiration))
++ isTokenExpired(token) in validateToken
+
+Best practice:
+- Access token: short lived (5–15 min, or 1 hour max depending on risk)
+- Refresh token: longer; used only to get new access tokens
+
+B) Immediate revoke / logout before exp (not purely “no state”) ⚠️
+Because JWT is self-contained, server cannot “delete” it from the client’s copy.
+Until `exp`, a stolen/valid token still verifies unless you add a server-side check.
+
+Common patterns:
+1) Short access TTL + refresh tokens
+   Logout = revoke refresh token in DB/Redis; access dies soon anyway.
+
+2) Token blacklist / denylist (jti)
+   On logout, store token id (`jti`) or hash in Redis until its exp.
+   Filter: if jti is blacklisted → reject.
+   Tradeoff: introduces state (usually Redis), but only for revoked tokens.
+
+3) Token version / password-changed-at in DB
+   Put `ver` claim in JWT; user row has `tokenVersion`.
+   Logout/password change → increment version.
+   Filter loads user (or cache) and rejects if claim ver != current.
+   Tradeoff: extra lookup (or cache), but easy global revoke per user.
+
+4) Rotate signing keys
+   Extreme: change secret/keys → all old tokens fail (heavy-handed).
+
+Interview one-liner:
+“Stateless JWT still expires via the exp claim. Instant logout needs extra state — blacklist, refresh-token revoke, or user token version — because you can’t erase a token the client already holds.”
+
+So:
+- Expire automatically? → yes, `exp` (stateless)
+- Kill immediately on logout? → yes, but add a small server-side revoke strategy

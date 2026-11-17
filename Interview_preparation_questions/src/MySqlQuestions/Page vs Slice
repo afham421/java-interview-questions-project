@@ -1,68 +1,88 @@
-🟢 Page vs Slice (Important Interview Point)
-1️⃣ Page
-Page<User> page = repo.findAll(pageable);
+Q: Page vs Slice in Spring Data JPA? Does Spring support cursor pagination?
 
-It:
+Both are pagination result types. Default strategy is **offset-based** (`LIMIT` / `OFFSET`).
 
-Executes main query
+Important correction:
+`jpaRepository.findAll(pageable)` returns **`Page`**.
+For `Slice`, declare the repository method return type as `Slice<...>`.
 
-Executes an extra COUNT(*) query
+────────────────────────────────────────
+🟢 1️⃣ Page
 
-So it gives:
+Page<User> page = userRepository.findAll(pageable);
+// or: Page<User> findByStatus(String status, Pageable pageable);
 
-totalElements
+What it does:
+1) Main data query (LIMIT/OFFSET)
+2) Extra **COUNT(*)** query for totals
 
-totalPages
+Gives:
+- content
+- totalElements
+- totalPages
+- number / size
+- hasNext(), hasPrevious(), etc.
 
-hasNext()
+⚠️ Cost: count query can be expensive on huge tables.
 
-etc.
+Use when: UI needs “Page 3 of 40” / total count.
 
-⚠️ Slightly slower because of count query.
+────────────────────────────────────────
+🟢 2️⃣ Slice
 
+Slice<User> findByStatus(String status, Pageable pageable);
 
+What it does:
+- Runs data query (typically asks for **pageSize + 1** rows)
+- Does **NOT** run COUNT(*)
+- Infers hasNext() from whether an extra row exists
 
-2️⃣ Slice
-Slice<User> slice = repo.findAll(pageable);
+⚡ Faster than Page on large datasets (no total count).
 
-It:
+Does NOT give totalElements / totalPages.
 
-Does NOT run count query
+Use when: infinite scroll, “Load more”, mobile feeds.
 
-Only checks if next page exists
+────────────────────────────────────────
+Page vs Slice
 
-⚡ Faster than Page
+| Feature        | Page                | Slice              |
+| -------------- | ------------------- | ------------------ |
+| Count query    | Yes (extra)         | No                 |
+| totalElements  | Yes                 | No                 |
+| hasNext()      | Yes                 | Yes                |
+| Speed (large)  | Slower              | Faster             |
+| Best for       | Classic page UI     | Infinite scroll    |
+| Method return  | `Page<T>`           | `Slice<T>`         |
 
-Used in:
+────────────────────────────────────────
+🚨 Cursor / keyset pagination in Spring?
 
-Infinite scroll
+Default Spring Data JPA pagination = **offset** (`ORDER BY ... LIMIT ... OFFSET ...`).
 
-Large datasets
+True cursor/keyset pagination is **not** the same as Page/Slice out of the box.
+You usually write a custom query:
 
+@Query("""
+SELECT u FROM User u
+WHERE u.id > :lastId
+ORDER BY u.id ASC
+""")
+List<User> findNext(@Param("lastId") Long lastId, Pageable pageable);
 
+Or manually:
+WHERE (created_at, id) > (:lastCreatedAt, :lastId) ORDER BY created_at, id
 
-🚨 Important: Does Spring Support Cursor Pagination?
+Why cursor?
+OFFSET on page 50,000 is slow (DB still skips many rows).
+Keyset uses indexed “seek” from last seen key → stable & faster for deep pages.
 
-❌ Not automatically.
+(Newer Spring Data also has scrolling APIs in recent versions, but interview-safe answer:
+default is offset Page/Slice; cursor is custom keyset.)
 
-Spring Data JPA does NOT provide built-in cursor pagination.
+────────────────────────────────────────
+🔥 Interview answer
 
-If you want cursor pagination, you must write custom query like:
-
-@Query("SELECT u FROM User u WHERE u.id > :lastId ORDER BY u.id ASC")
-List<User> findNextUsers(@Param("lastId") Long lastId, Pageable pageable);
-
-That is manual keyset pagination.
-
-
-
-🔥 Interview-Level Answer
-
-If interviewer asks:
-
-What pagination strategy does Spring Boot use?
-
-You say:
-
-By default, Spring Data JPA uses offset-based pagination with LIMIT and OFFSET. The Page object also triggers a count query.
- For better performance in large datasets, we can use Slice or implement custom cursor-based pagination.
+“Spring Data JPA defaults to offset pagination with LIMIT/OFFSET. Page runs an extra COUNT and exposes totals;
+Slice skips COUNT and only tells if a next page exists, better for infinite scroll.
+For very large/deep pagination I use custom cursor/keyset queries instead of big OFFSET values.”

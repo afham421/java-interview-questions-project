@@ -1,73 +1,71 @@
-✅ Pros of Native Queries
+Q: Pros and cons of native queries in JPA/Spring Data?
 
-Full SQL Power
+Native query = real SQL of the database (`nativeQuery = true`), not JPQL.
 
-Can use advanced SQL features not available in JPQL (e.g., window functions, CTEs, JSON operators, DB-specific functions).
+@Query(
+  value = "SELECT * FROM users WHERE status = :status",
+  nativeQuery = true
+)
+List<User> findActive(@Param("status") String status);
 
-Performance Tuning
+────────────────────────────────────────
+✅ Pros
 
-Directly leverage database-specific optimizations for faster queries.
+1) Full SQL power
+   Window functions, CTEs, DB JSON operators, hints, vendor functions.
 
-Legacy Support
+2) Performance / tuning
+   Use EXPLAIN-friendly SQL, indexes, DB-specific plans when JPQL is awkward.
 
-Useful when working with existing SQL queries or stored procedures in a legacy database.
+3) Legacy SQL / stored procedures
+   Reuse existing scripts, reporting SQL, procs.
 
-Flexibility
+4) Vendor features
+   Full-text, specific pagination tricks, dialect functions JPQL doesn’t expose cleanly.
 
-Easier to write for developers who are comfortable with raw SQL instead of JPQL/HQL.
+────────────────────────────────────────
+❌ Cons
 
-Direct DB Features
+1) Vendor lock-in
+   MySQL SQL may not run on Postgres/Oracle without changes.
 
-Can use vendor-specific extensions (LIMIT, OFFSET, ROWNUM, partitioning, full-text search, etc.).
+2) Weaker portability & maintainability
+   Table/column renames in entities don’t update native SQL automatically.
 
-❌ Cons of Native Queries
+3) Less ORM safety net
+   Mapping is easier to break (column aliases must match).
+   You can still map to entities/DTOs, but it’s more manual/fragile
+   (`@SqlResultSetMapping`, interface/DTO projections, careful aliases).
 
-Database Vendor Lock-In
+4) Mostly runtime failure
+   Bad native SQL often fails when executed (or on first use),
+   while JPQL is more often validated earlier at startup.
 
-Queries are tied to a specific database dialect.
+5) SQL injection risk IF you concatenate strings
+   Native and JPQL are both safe with `:params` / `?`.
+   Danger is `"WHERE name=" + input` — never do that.
 
-Switching DB means rewriting queries.
+6) Easy to bypass good repository design
+   Huge SQL in Java reduces readability; prefer Flyway views / named queries for complex reporting.
 
-Bypass JPA Benefits
+Nuance (don’t oversell):
+- Native queries are not “no caching always.”
+  If they return managed entities, normal persistence context rules still apply.
+- Lazy-loading issues are about entity graphs, not “native disables lazy” magically.
+- Spring Data `Pageable` often removes need for handwritten LIMIT/OFFSET.
 
-No automatic entity mapping, no caching, no dirty checking.
+────────────────────────────────────────
+When to use what
 
-You lose type-safety and object-relational abstraction.
+| Need                              | Prefer        |
+| --------------------------------- | ------------- |
+| Normal CRUD / entity queries      | JPQL / derived methods / Criteria |
+| Complex report SQL, CTE, windows  | Native        |
+| DB-specific optimization          | Native        |
+| Keep app DB-portable              | JPQL/Criteria |
 
-Harder to Maintain
+────────────────────────────────────────
+⚖️ Conclusion / interview answer
 
-Column/table renames in entities won’t automatically update queries.
-
-Large SQL inside repositories reduces readability.
-
-No Compile-Time Validation
-
-JPQL is validated at startup; native queries only fail at runtime.
-
-SQL Injection Risk
-
-If string concatenation is used instead of parameters.
-
-JPQL handles parameter binding safely.
-
-Manual Mapping Required
-
-For complex joins, you must use @SqlResultSetMapping or DTOs.
-
-With JPQL, entities are automatically mapped.
-
-May Break ORM Optimizations
-
-Hibernate caching, batching, and lazy-loading may not apply to native queries.
-
-⚖️ Conclusion
-
-Use JPQL/Criteria API for most CRUD and entity-based queries.
-
-Use native queries only when:
-
-You need DB-specific features.
-
-You need to optimize performance.
-
-You’re working with a legacy system.
+“Use JPQL/Criteria for most entity work. Use native SQL when you need DB-specific features, heavy reporting SQL, or proven optimized queries.
+Tradeoff is portability and maintainability — always bind parameters, map results carefully, and keep native SQL limited to cases JPQL can’t handle cleanly.”

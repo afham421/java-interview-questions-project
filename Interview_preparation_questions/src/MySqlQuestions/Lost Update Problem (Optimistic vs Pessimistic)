@@ -1,0 +1,98 @@
+Q: What is the Lost Update problem? How do you prevent it?
+
+Lost Update = two transactions read the same row, both change it, and the later write **overwrites** the earlier one — first change is “lost.”
+
+────────────────────────────────────────
+Example
+
+Initial balance = 100
+
+T1 reads 100
+T2 reads 100
+T1 adds 50 → writes 150
+T2 adds 20 → writes 120   ← overwrites T1
+
+Expected: 170
+Actual:   120  (T1’s update lost)
+
+Classic pattern:
+read → compute in app → write absolute value
+(dangerous under concurrency)
+
+────────────────────────────────────────
+Fixes
+
+####### 1) Optimistic Locking
+
+Assume conflicts are rare. No lock on read.
+Before update, check row wasn’t changed (usually a **version** column).
+
+id | balance | version
+1  | 100     | 5
+
+Both read version=5.
+
+T1:
+UPDATE account
+SET balance = 150, version = 6
+WHERE id = 1 AND version = 5;   -- 1 row → success
+
+T2:
+UPDATE account
+SET balance = 120, version = 6
+WHERE id = 1 AND version = 5;   -- 0 rows → conflict
+
+T2 retries (re-read latest) or fails.
+
+Spring/JPA:
+@Version
+private Long version;
+-- update mismatch → OptimisticLockException / ObjectStatusException
+
+Use when: low/medium contention, want high throughput, retries OK.
+
+####### 2) Pessimistic Locking
+
+Assume conflicts happen. Lock the row before changing it.
+
+T1:
+SELECT * FROM account WHERE id = 1 FOR UPDATE;
+-- row locked until T1 commit/rollback
+
+T2 trying FOR UPDATE → waits
+
+Then T2 reads **latest** value and updates safely.
+
+Spring/JPA:
+@Lock(LockModeType.PESSIMISTIC_WRITE)
+Optional<Account> findById(Long id);
+
+Use when: high contention, critical money/stock updates, retries undesirable.
+
+####### 3) Atomic SQL update (simple & powerful)
+
+Don’t read-modify-write in app if you can do:
+
+UPDATE account
+SET balance = balance + 50
+WHERE id = 1;
+
+DB applies increment on current stored value → avoids lost update for this pattern.
+(Still combine with constraints/checks as needed, e.g. balance >= amount.)
+
+────────────────────────────────────────
+Optimistic vs Pessimistic
+
+|                 | Optimistic              | Pessimistic              |
+| --------------- | ----------------------- | ------------------------ |
+| Lock on read    | No                      | Yes (FOR UPDATE)         |
+| Detect conflict | version / row count     | Prevent by waiting       |
+| Best for        | Rare conflicts          | Frequent conflicts       |
+| Downside        | Retries under load      | Blocking / deadlocks     |
+
+────────────────────────────────────────
+Interview Answer ⭐
+
+“Lost update happens when two transactions read the same data and both write back, so one overwrite loses the other’s change.
+Fix with optimistic locking (@Version) when conflicts are rare, pessimistic locking (SELECT … FOR UPDATE) when contention is high,
+or an atomic SQL update like balance = balance + ? when the change is a simple increment.”

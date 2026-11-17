@@ -1,53 +1,69 @@
-What is CTE (Common Table Expression) in SQL?
-A CTE (Common Table Expression) is a temporary result set in SQL that you can reference within a SELECT, INSERT, UPDATE, or DELETE query.
-It makes complex queries more readable and can be used for recursive queries, filtering, or breaking down logic.
+Q: What is a CTE (Common Table Expression) in SQL?
 
-🔹 Syntax:
-sql
-Copy
-Edit
+A CTE is a **named temporary result set** defined with `WITH ... AS (...)`.
+You can reference it in the following SELECT / INSERT / UPDATE / DELETE.
+It exists only for that statement (not permanently stored like a table/view).
+
+Makes complex SQL cleaner; also enables recursive queries (`WITH RECURSIVE`).
+
+MySQL: supported from **MySQL 8+**.
+
+────────────────────────────────────────
+🔹 Syntax
+
 WITH cte_name AS (
     SELECT ...
 )
 SELECT * FROM cte_name;
 
-🔹 Example:
-sql
-Copy
-Edit
+────────────────────────────────────────
+🔹 Example
+
 WITH TopEmployees AS (
     SELECT name, salary
     FROM employees
     WHERE salary > 100000
 )
 SELECT * FROM TopEmployees;
-This creates a virtual table TopEmployees that contains employees with salary > 100K, and then selects from it.
 
-🔹 Uses of CTEs:
-Improve query readability (instead of subqueries)
+`TopEmployees` acts like a short-lived virtual table for the query.
 
+Multiple CTEs:
+WITH
+  high_paid AS (...),
+  by_dept AS (SELECT * FROM high_paid WHERE ...)
+SELECT * FROM by_dept;
 
+────────────────────────────────────────
+🔹 Why use CTEs?
 
+1) Readability — break big SQL into steps (better than nested subqueries)
+2) Reuse the same subquery logic multiple times in one statement
+3) Recursion — hierarchies (org chart, categories) with WITH RECURSIVE
+4) Cleaner than repeating the same derived table
 
-Reuse logic within a single SQL
+CTE vs subquery: same idea often, CTE is named and clearer.
+CTE vs view: view is permanent DB object; CTE lives for one query.
+CTE vs temp table: temp table can persist for the session and be indexed; CTE is inline for the statement.
 
-Recursive operations (e.g., hierarchy/organization trees)
+────────────────────────────────────────
+🔁 Recursive CTE (bonus)
 
-🔁 Recursive CTE Example (Bonus):
-sql
-Copy
-Edit
 WITH RECURSIVE EmployeeHierarchy AS (
     SELECT id, name, manager_id
     FROM employees
-    WHERE manager_id IS NULL
+    WHERE manager_id IS NULL          -- anchor
 
     UNION ALL
 
     SELECT e.id, e.name, e.manager_id
     FROM employees e
-    INNER JOIN EmployeeHierarchy eh ON e.manager_id = eh.id
+    INNER JOIN EmployeeHierarchy eh ON e.manager_id = eh.id  -- recursive
 )
 SELECT * FROM EmployeeHierarchy;
-This builds a full employee hierarchy using a self-join recursively.
 
+See also: `what is recursive CTE`
+
+────────────────────────────────────────
+Interview one-liner
+“A CTE is a WITH clause that names a temporary result set for one SQL statement — improves readability and supports recursive hierarchy queries.”
