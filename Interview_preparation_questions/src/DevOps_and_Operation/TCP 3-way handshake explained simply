@@ -1,0 +1,117 @@
+Q: What is a TCP handshake? (simple)
+
+Handshake = **agree to talk before sending real data**.
+Like calling someone:
+
+1) You: “Can you hear me?”
+2) They: “Yes, I can hear you — can you hear me?”
+3) You: “Yes. Let’s talk.”
+
+Only after that you start the real conversation (HTTP request, etc.).
+
+TCP is **connection-oriented**, so client and server first set up a connection with a **3-way handshake**.
+
+────────────────────────────────────────
+Why needed?
+
+Before HTTP/API data:
+- Both sides confirm they are reachable
+- Agree on starting sequence numbers (for ordered reliable delivery)
+- Connection moves to ESTABLISHED
+
+Without this, TCP wouldn’t know the other side is ready.
+
+────────────────────────────────────────
+The 3 steps (SYN → SYN-ACK → ACK)
+
+Imagine:
+Client = your browser / Postman
+Server = Spring Boot on port 8080
+
+Step 1 — SYN (client → server)
+Client: “I want to connect” (SYNchronize)
+Flags: SYN
+Meaning: please start a TCP connection
+
+Step 2 — SYN-ACK (server → client)
+Server: “OK, I got your request, and I also want to sync”
+Flags: SYN + ACK
+Meaning: I acknowledge you, and here’s my sync too
+
+Step 3 — ACK (client → server)
+Client: “OK, acknowledged”
+Flags: ACK
+Meaning: connection ready
+
+Now connection = **ESTABLISHED**
+Then application data starts (HTTP GET/POST, TLS, etc.)
+
+Diagram:
+
+Client                         Server
+  |                              |
+  | -------- SYN --------------> |
+  |                              |
+  | <----- SYN + ACK ----------- |
+  |                              |
+  | -------- ACK --------------> |
+  |                              |
+  | ===== connection ready ===== |
+  | -------- HTTP request -----> |
+  | <------- HTTP response ----- |
+
+────────────────────────────────────────
+Tiny real-life analogy
+
+Phone call:
+1) You dial (SYN)
+2) They pick up “Hello?” (SYN-ACK)
+3) You say “Hi, it’s Afham” (ACK)
+4) Then you discuss the topic (HTTP data)
+
+UDP has **no** handshake — it just sends (like throwing a letter).
+Details: `How UDP works explained simply`
+
+────────────────────────────────────────
+What is ACK?
+
+ACK = acknowledgment = “I received your packet.”
+TCP uses ACKs later too, for every data segment, so lost data can be resent.
+Handshake is just the **first** use of SYN/ACK to open the connection.
+
+────────────────────────────────────────
+Closing later (don’t confuse)
+
+Opening = 3-way handshake (SYN, SYN-ACK, ACK)
+Closing ≈ FIN/ACK exchange (connection teardown)
+
+Interview usually asks about **opening** handshake.
+
+────────────────────────────────────────
+TCP handshake vs TLS handshake (don’t mix)
+
+1) TCP handshake first → pipe is open
+2) If HTTPS → TLS handshake next → encrypt the pipe
+3) Then HTTP request/response
+
+Order:
+DNS → TCP handshake → (TLS handshake if HTTPS) → HTTP
+
+TLS handshake is different: certificates, keys, cipher agreement.
+TCP handshake is only: “can we open a reliable connection?”
+
+────────────────────────────────────────
+Spring Boot view
+
+When Postman calls `http://localhost:8080/users`:
+1) TCP 3-way handshake to port 8080
+2) HTTP request bytes sent on that connection
+3) Tomcat accepts connection, Spring handles request
+
+If handshake fails (firewall/port closed) → connection refused / timeout
+(your controller never runs)
+
+────────────────────────────────────────
+Interview one-liner
+
+“TCP 3-way handshake is SYN, SYN-ACK, ACK — client and server agree to establish a connection before sending application data like HTTP.”

@@ -1,0 +1,126 @@
+Q: HTTP/1.1 vs HTTP/2 vs HTTP/3?
+
+Very common backend interview comparison.
+Remember: these are **HTTP versions**. HTTPS = any of them + TLS (HTTP/3 encryption is built into QUIC).
+
+Also: “2” ≠ two-way. See `HTTP versions vs HTTPS`.
+
+────────────────────────────────────────
+Quick table
+
+| Feature               | HTTP/1.1                 | HTTP/2                         | HTTP/3                    |
+| --------------------- | ------------------------ | ------------------------------ | ------------------------- |
+| Year                  | 1997                     | 2015                           | ~2022                     |
+| Format                | Text                     | Binary frames                  | Binary                    |
+| Transport             | TCP                      | TCP                            | QUIC over UDP             |
+| Multiplexing          | No (practical)           | Yes (streams on 1 TCP conn)    | Yes (streams on QUIC)     |
+| Head-of-line blocking | App-level HoL            | TCP-level HoL still possible   | Stream HoL largely solved |
+| Header compression    | No                       | HPACK                          | QPACK                     |
+| Connections           | Many TCP conns (browsers)| Usually one TCP connection     | One QUIC connection       |
+| Performance           | Slowest for many assets  | Faster                         | Best on lossy/mobile      |
+
+────────────────────────────────────────
+1️⃣ HTTP/1.1
+
+- Text protocol
+- Browsers open ~6–8 TCP connections per host
+- One connection handles requests mostly one-after-another
+
+HoL example on one connection:
+Request1 waiting (slow)
+Request2 waiting
+Request3 waiting
+
+Workarounds (old web): domain sharding, sprites, many connections — still limited.
+
+────────────────────────────────────────
+2️⃣ HTTP/2
+
+Improvements:
+1) Multiplexing — many streams on **one TCP** connection
+2) Binary frames — faster parsing
+3) HPACK header compression
+4) Server Push (optional; less used now)
+
+Still on TCP → if one TCP packet is lost, TCP holds later data until retransmit
+→ **TCP-level head-of-line blocking** can delay all streams.
+
+Stream1 packet lost ❌
+Stream2 waiting
+Stream3 waiting
+
+────────────────────────────────────────
+3️⃣ HTTP/3
+
+Big change: **QUIC over UDP** (not raw plain UDP app protocol).
+
+QUIC provides:
+- multiplexing
+- encryption (TLS integrated)
+- reliability **per stream**
+- faster setup (TLS+transport combined; 0-RTT possible)
+
+Lost packet in one stream:
+Stream1 lost → retransmit that stream only
+Stream2 continues ✅
+Stream3 continues ✅
+
+Better on mobile / Wi-Fi↔cellular switches.
+
+Stack:
+HTTP/1.1 → TCP → IP  
+HTTP/2   → TCP → IP  
+HTTP/3   → QUIC → UDP → IP  
+
+────────────────────────────────────────
+Head-of-Line Blocking (senior follow-up)
+
+Definition:
+A delay/loss at the “front” blocks work behind it.
+
+| Protocol | HoL? | Notes |
+| -------- | ---- | ----- |
+| HTTP/1.1 | Yes (request queue on connection) | Multiple connections workaround |
+| HTTP/2   | Yes at TCP layer if packet loss | Multiplexing helps until loss |
+| HTTP/3   | Effectively solved at stream layer | Independent QUIC streams |
+
+────────────────────────────────────────
+❓ HTTP/3 uses UDP — do we lose data?
+
+UDP alone is unreliable.
+HTTP/3 does **not** mean “fire and forget like raw UDP.”
+
+QUIC adds reliability on top of UDP:
+- detect loss
+- retransmit
+- order per stream
+
+So interview line:
+“HTTP/3 uses UDP for transport flexibility, but QUIC makes delivery reliable — data isn’t just dropped silently like plain UDP.”
+
+────────────────────────────────────────
+Website loading example
+
+Assets: HTML, CSS, JS, images
+
+HTTP/1.1 → limited parallel TCP connections → waiting  
+HTTP/2 → many streams, one TCP → faster (unless packet loss)  
+HTTP/3 → independent streams + better loss recovery → often best on bad networks  
+
+Modern sites (Google/Cloudflare/etc.) often support HTTP/2 and HTTP/3.
+
+────────────────────────────────────────
+Spring Boot note
+
+Local APIs often HTTP/1.1.
+You can enable HTTP/2 in Spring (usually with TLS):
+server.http2.enabled=true
+
+HTTP/3 support depends on server/proxy (often terminated at Nginx/Cloudflare/load balancer).
+
+────────────────────────────────────────
+Best short interview answer
+
+“HTTP/1.1 is text-based and needs many connections with request HoL issues.
+HTTP/2 is binary, multiplexes streams on one TCP connection with header compression, but TCP packet loss can still block all streams.
+HTTP/3 runs over QUIC/UDP with independent reliable streams, reducing HoL blocking and improving mobile performance.”

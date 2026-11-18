@@ -1,0 +1,62 @@
+Q: IPv4 vs IPv6?
+
+Both are versions of **IP** — they address and route packets on the internet.
+Difference is mainly **address size/format** and related design improvements.
+
+────────────────────────────────────────
+One-liner
+
+IPv4 = 32-bit addresses (≈ 4.3 billion); IPv6 = 128-bit addresses (huge space) to fix IPv4 exhaustion and improve modern networking.
+
+────────────────────────────────────────
+Compare
+
+| Feature        | IPv4                         | IPv6                                      |
+| -------------- | ---------------------------- | ----------------------------------------- |
+| Address size   | 32-bit                       | 128-bit                                   |
+| Example        | `192.168.1.10`               | `2001:0db8:85a3::8a2e:0370:7334`          |
+| How many       | ~4.3 billion                 | ~3.4×10^38 (effectively vast)             |
+| Notation       | Dotted decimal               | Hex groups separated by `:`               |
+| NAT need       | Very common (IP shortage)    | Less need (enough addresses)              |
+| Broadcast      | Yes                          | No broadcast (uses multicast/anycast)     |
+| Config         | Often DHCP / manual          | SLAAC + DHCPv6 common                     |
+| Security       | IPsec optional               | IPsec designed in (still must be enabled) |
+| Adoption       | Still dominant everywhere    | Growing; dual-stack common                |
+
+────────────────────────────────────────
+Examples
+
+IPv4:
+- Public: `8.8.8.8` (Google DNS)
+- Private: `10.x.x.x`, `192.168.x.x`, `172.16–31.x.x`
+
+IPv6:
+- `2001:db8::1` (documentation range example)
+- Shortening: consecutive zeros → `::` (once per address)
+
+────────────────────────────────────────
+Why IPv6 exists
+
+IPv4 addresses ran out for the public internet growth.
+Workarounds: NAT, private ranges, CIDR.
+IPv6 = long-term larger address space + cleaner design for modern networks.
+
+NAT details: `NAT — Network Address Translation`
+
+────────────────────────────────────────
+Backend / practical notes
+
+1) Most apps still work fine — OS/network stack handles IP version.
+2) Servers often run **dual-stack** (IPv4 + IPv6).
+3) DNS: `A` record → IPv4, `AAAA` record → IPv6.
+4) Firewalls/security groups must allow the right IP version.
+5) Localhost:
+   - IPv4: `127.0.0.1`
+   - IPv6: `::1`
+
+────────────────────────────────────────
+Interview answer
+
+“IPv4 uses 32-bit addresses like 192.168.1.10 and is still widely used, but the address space is limited so NAT is common.
+IPv6 uses 128-bit addresses to provide a much larger space and modern networking features. In practice many systems run dual-stack,
+and DNS uses A for IPv4 and AAAA for IPv6.”

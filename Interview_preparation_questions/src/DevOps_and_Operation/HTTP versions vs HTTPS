@@ -1,0 +1,70 @@
+Q: HTTP/1.1 and HTTP/2 — are those HTTP and HTTPS?
+
+No.
+
+────────────────────────────────────────
+Two separate ideas
+
+A) Version of HTTP
+- HTTP/1.0
+- HTTP/1.1  ← classic REST/Postman default feel
+- HTTP/2    ← faster (multiplexing, binary, compressed headers)
+- HTTP/3    ← HTTP over QUIC/UDP
+
+B) Secure or not
+- HTTP  = plain (`http://`, port 80)
+- HTTPS = HTTP + TLS (`https://`, port 443)
+
+────────────────────────────────────────
+Combine them
+
+HTTPS is not “HTTP/2”.
+HTTPS means encrypted channel; inside it you may speak HTTP/1.1 or HTTP/2.
+
+Browser to Google:
+usually HTTPS + HTTP/2 (or HTTP/3)
+
+Local Spring Boot:
+often HTTP/1.1 without TLS (`http://localhost:8080`)
+
+────────────────────────────────────────
+HTTP/1.1 vs HTTP/2 (quick)
+
+| | HTTP/1.1 | HTTP/2 |
+| - | -------- | ------ |
+| Format | text | binary frames |
+| Many requests | often many connections / head-of-line issues | multiplexing on one connection |
+| Headers | repeated, heavier | compressed (HPACK) |
+| Typical web use | still everywhere | usually over HTTPS |
+
+────────────────────────────────────────
+❓ Does HTTP/2 mean “two-way”?
+
+NO. The “2” only means **version 2**, not two-way communication.
+
+Normal REST on HTTP/1.1 or HTTP/2 is still mostly:
+Client request → Server response
+
+What HTTP/2 actually improves:
+1) **Multiplexing** — many requests/responses in parallel on **one** TCP connection
+2) Binary frames (more efficient)
+3) Header compression
+4) Optional **server push** (server can push extra resources — limited use today)
+
+So HTTP/2 is “faster HTTP”, not “WebSocket-style always two-way chat.”
+
+Don’t confuse:
+
+| Term | Meaning |
+| ---- | ------- |
+| HTTP/2 | HTTP version 2 (multiplexed) |
+| Bidirectional streaming | Both sides send streams of messages (gRPC feature on HTTP/2) |
+| WebSocket | Full-duplex persistent messages over an upgraded connection |
+
+gRPC can do bidirectional streaming **because it uses HTTP/2 features**,
+but plain Spring `@GetMapping` / `@PostMapping` over HTTP/2 is still request/response.
+
+────────────────────────────────────────
+One-liner
+
+“HTTP/1.1 and HTTP/2 are versions; HTTP vs HTTPS is encryption (TLS). HTTP/2’s 2 ≠ two-way — it means version 2 with multiplexing.”

@@ -1,0 +1,46 @@
+Q: How does security compare (Spring Security vs Quarkus)?
+
+You already know JWT filters + SecurityFilterChain in Spring.
+Quarkus uses **extensions** + annotation/permission checks instead of Spring Security’s filter chain model.
+
+────────────────────────────────────────
+Common Quarkus options
+
+1) OIDC (Keycloak / OAuth2 provider)
+quarkus-oidc — validate bearer tokens from IdP
+
+2) SmallRye JWT
+Validate JWT locally with public key / secret
+
+3) Role / permission annotations on resources
+@RolesAllowed("admin")
+on JAX-RS methods
+
+────────────────────────────────────────
+Spring mapping (conceptual)
+
+| Spring Boot                         | Quarkus                          |
+| ----------------------------------- | -------------------------------- |
+| spring-boot-starter-security        | quarkus-oidc / smallrye-jwt ...  |
+| JwtAuthenticationFilter             | built-in token validation layers |
+| SecurityFilterChain matchers        | proactive auth + annotations     |
+| `@PreAuthorize` / `hasRole`         | `@RolesAllowed` / permissions    |
+| Stateful session CSRF concerns      | Often bearer token APIs          |
+
+────────────────────────────────────────
+What to say in interview
+
+“In Spring I implemented JWT with a filter and SecurityContext.
+In Quarkus I’d use OIDC or SmallRye JWT extensions and secure JAX-RS endpoints with roles/permissions.
+Flow is the same idea — validate token, establish identity, authorize endpoint — different APIs.”
+
+Prepare to discuss:
+- access token validation
+- roles in claims
+- public vs authenticated `@Path`s
+- same CSRF rule: cookie sessions need CSRF; bearer header APIs usually don’t
+
+────────────────────────────────────────
+One-liner
+
+“Quarkus security is extension-based (OIDC/JWT) with JAX-RS role checks; same authn/authz goals as Spring Security, less of the classic SecurityFilterChain style.”

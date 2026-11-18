@@ -1,0 +1,52 @@
+Q: What is Quarkus?
+
+Quarkus is a **Kubernetes-native Java framework** (Red Hat) for building cloud microservices and serverless apps.
+Tagline often used: “Supersonic Subatomic Java” → **fast startup + low memory**.
+
+Designed so Java works well in containers: many small pods, quick scale-up/down, optional **GraalVM native images**.
+
+────────────────────────────────────────
+Core ideas
+
+1) Build-time first
+Heavy work (DI wiring, metadata, route discovery) happens at **build**, not mainly at runtime startup.
+
+2) Standards-based APIs
+- CDI (dependency injection)
+- JAX-RS / Jakarta REST (REST)
+- JPA / Hibernate (persistence)
+- MicroProfile pieces (config, health, fault tolerance, etc.)
+
+3) Extensions ecosystem
+Like Spring Boot starters: add quarkus-rest, hibernate-orm-panache, redis, kafka, oidc...
+
+4) Great Dev Experience
+`quarkus:dev` → live reload, Dev UI.
+
+────────────────────────────────────────
+Typical stack pieces
+
+| Concern        | Quarkus approach              |
+| -------------- | ----------------------------- |
+| REST           | Jakarta REST (`@Path`)        |
+| DI             | CDI (`@Inject`, scopes)       |
+| DB             | Hibernate ORM + Panache       |
+| Config         | application.properties        |
+| Reactive       | Mutiny (Uni/Multi) + Vert.x   |
+| Security       | OIDC / JWT extensions         |
+| Messaging      | SmallRye Reactive Messaging   |
+| Ops            | /q/health, metrics            |
+
+────────────────────────────────────────
+Why companies adopt it
+
+- Faster cold start than classic Spring Boot (esp. native)
+- Lower RSS memory → denser Kubernetes packing / cost
+- Container & serverless friendly
+- Still “normal Java” skills (REST, DI, JPA)
+
+────────────────────────────────────────
+Interview one-liner
+
+“Quarkus is a cloud-native Java framework that does much of Spring-like wiring at build time,
+giving faster startup and lower memory — ideal for containers — while using CDI, JAX-RS, and Hibernate/Panache.”

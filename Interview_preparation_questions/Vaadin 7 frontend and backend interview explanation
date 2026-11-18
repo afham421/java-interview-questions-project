@@ -1,0 +1,79 @@
+Q: Since you worked with Vaadin 7 on frontend and backend — explain that.
+
+Vaadin 7 is a **Java-based server-side web framework**.
+Most UI is built with **Java components**, not by hand-writing HTML/CSS/JS for every control.
+Vaadin renders the UI in the browser and syncs events with the server (AJAX).
+
+────────────────────────────────────────
+1) What does Vaadin 7 use on the “frontend”?
+
+| Technology | Purpose                                      |
+| ---------- | -------------------------------------------- |
+| Java       | UI components + event handling               |
+| GWT        | Compiles client-side Java widgets → JS       |
+| HTML       | Browser DOM structure                        |
+| CSS        | Styling / themes                             |
+| JavaScript | Browser execution (mostly generated/managed) |
+| AJAX       | Browser ↔ server communication               |
+
+Key idea:
+You write UI in Java on the server side; Vaadin + GWT handle browser rendering/interaction.
+
+────────────────────────────────────────
+2) How frontend work looks in Vaadin 7
+
+Button button = new Button("Submit");
+button.addClickListener(event -> {
+    Notification.show("Button clicked!");
+});
+
+You typically do NOT write:
+<button onclick="submitForm()">Submit</button>
+
+Vaadin:
+- renders component UI in browser
+- sends user actions back to Java listeners on server
+
+Components you can mention from experience:
+Buttons, TextFields, ComboBoxes, Tables/Grids, Forms, Layouts, navigation, validations, CSS theming.
+
+────────────────────────────────────────
+3) Good interview answer (speak this)
+
+“I have worked on both frontend and backend with Vaadin 7.
+On the frontend side, I used Vaadin’s Java UI component model — Buttons, TextFields, ComboBoxes, Tables/Grids, Forms,
+and Layouts — plus listeners, validation, navigation, and CSS-based styling.
+Vaadin 7 is mainly server-driven: UI logic is in Java, and it uses GWT under the hood so client widgets become JavaScript in the browser.
+I also understand HTML/CSS/JS fundamentals through customization, but my primary strength is Java enterprise backend
+and integrating Vaadin UIs with Spring Boot services, security, and DB layers.
+In B-SMS we later migrated legacy Vaadin modules toward Spring Boot APIs/UI modernization.”
+
+────────────────────────────────────────
+4) If asked: Did you work with JavaScript?
+
+Be honest:
+- Primary frontend experience = Vaadin 7 Java components
+- HTML/CSS via Vaadin themes/customization
+- Vaadin/GWT uses JS in the browser internally
+- Do **not** claim deep React/Angular/vanilla JS unless true
+- Core strength = Java backend + enterprise integration
+
+────────────────────────────────────────
+5) Architecture distinction (important)
+
+| Stack              | Style                                      |
+| ------------------ | ------------------------------------------ |
+| Vaadin 7           | Server-side Java UI + GWT client widgets   |
+| Modern Vaadin Flow | Still Java-first UI, newer web components  |
+| React / Angular    | JS/TypeScript SPA frontend                 |
+
+Position yourself as:
+**Java-based frontend with Vaadin 7**, not a pure HTML/CSS/JS SPA frontend developer.
+
+────────────────────────────────────────
+B-SMS link (from your intro)
+
+Legacy: Vaadin 7 UI modules
+Migration: Spring Boot services/APIs, security (JWT/RBAC), billing, reporting, etc.
+
+Related: `interview intro` (BSMS project story)

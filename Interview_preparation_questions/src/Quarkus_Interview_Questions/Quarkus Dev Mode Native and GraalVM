@@ -1,0 +1,170 @@
+Q: Why is Quarkus fast? What is native mode?
+Also: Is JVM used for both? Is GraalVM ≠ JVM?
+
+────────────────────────────────────────
+❓ Is JVM used for both Spring Boot and Quarkus?
+
+YES — in the **normal / most common** way:
+
+| App | Typical run mode | Runs on |
+| --- | ---------------- | ------- |
+| Spring Boot | `java -jar app.jar` | **JVM** |
+| Quarkus (JVM mode) | `java -jar quarkus-app/...jar` or `quarkus:dev` | **JVM** |
+
+So day-to-day:
+Spring Boot → JVM  
+Quarkus → also JVM (unless you build **native**)
+
+Quarkus advantage even on JVM:
+build-time augmentation → often faster startup / less memory than similar Spring Boot app.
+Native mode is an **extra** Quarkus superpower (Spring can do native too now, but Quarkus pioneered(start) it harder).
+
+────────────────────────────────────────
+❓ Confusion: if native needs no JVM, why isn’t GraalVM ≠ JVM?
+
+Because those are **3 different things**:
+
+| Thing | What it is | Needs JVM when app runs? |
+| ----- | ---------- | ------------------------ |
+| 1) JVM | Runtime engine that executes Java bytecode (`java -jar`) | Yes — it IS the runtime |
+| 2) GraalVM | A **toolkit/JDK** that includes a JVM **and** extra tools | Depends how you use it |
+| 3) Native binary | App compiled ahead-of-time by GraalVM’s `native-image` tool | **No** |
+
+So:
+- GraalVM is **not the opposite of JVM**
+- GraalVM is more like a **bigger box** that contains:
+  - a normal Java runtime (JVM mode), AND
+  - a compiler tool that can build native binaries
+
+Kitchen analogy:
+- JVM = gas stove (you cook/run every day on it)
+- GraalVM = whole kitchen brand that has a stove **plus** a factory machine
+- Native binary = ready-made meal from the factory machine       →   when eating that meal, you don’t turn on the stove
+
+Native Quarkus app:
+built **with** GraalVM tools → runs **without** JVM
+
+That does NOT mean “GraalVM = not JVM”.
+It means “this **built output** doesn’t use JVM anymore.”
+
+Wrong sentence:
+“GraalVM ≠ JVM, therefore Quarkus never uses JVM.”
+
+Right sentences:
+1) Quarkus JVM mode → runs on JVM (HotSpot or GraalVM-as-JVM)
+2) Quarkus native mode → built using GraalVM Native Image → runs as OS binary, no JVM
+3) GraalVM can do BOTH jobs (run as JVM, or compile to native)
+
+────────────────────────────────────────
+Simple picture
+
+1) **JVM (HotSpot etc.)**
+- Runs `.class` / JAR bytecode
+- Command: `java -jar app.jar`
+
+2) **GraalVM**
+- JDK/toolkit that can:
+  a) run Java normally (like a JVM), AND
+  b) build native images (`native-image`)
+
+3) **Native image / native binary**
+- Output of option (b)
+- Standalone executable
+- **No** `java -jar` / no JVM process at runtime
+
+Interview wording:
+“GraalVM includes JVM capabilities plus Native Image. Quarkus native apps are compiled by that tool into a binary that does not need a JVM when running.”
+
+Diagram:
+
+Java source
+   ↓
+build → bytecode (jar)
+   │
+   ├─→ run with `java` on a JVM     ← Spring / Quarkus JVM mode
+   │
+   └─→ GraalVM native-image tool
+          ↓
+       ./myapp binary               ← Quarkus native mode (no JVM runtime)
+
+────────────────────────────────────────
+Code / run stage flow (both worlds)
+
+Think in stages: **write → build → run**
+
+A) Quarkus DEV (JVM, live reload)
+./mvnw quarkus:dev
+1) Compile
+2) Build-time augmentation (wire CDI/JAX-RS/JPA metadata)
+3) Start on JVM
+4) Watch files → reload on change
+
+B) Quarkus JVM package (like Spring jar)
+./mvnw package
+java -jar target/quarkus-app/quarkus-run.jar
+1) Build + augmentation
+2) Produce jar
+3) Run on **JVM**
+
+C) Quarkus NATIVE
+./mvnw package -Dnative
+./target/myapp-runner   # example binary name
+1) Build + augmentation
+2) GraalVM native-image compile (slow build)
+3) Run **native binary** (no JVM process)
+
+D) Spring Boot compare
+./mvnw spring-boot:run          → JVM dev
+./mvnw package
+java -jar target/app.jar        → JVM prod typical
+(optional) Spring native build  → native binary (less common historically)
+
+────────────────────────────────────────
+1) Dev Mode
+
+./mvnw quarkus:dev
+
+- Live reload
+- Dev UI
+Huge DX win (similar idea to Spring DevTools).
+
+────────────────────────────────────────
+2) Build-time augmentation (why Quarkus JVM is still fast)
+
+During build, Quarkus:
+- analyzes CDI beans
+- prepares REST routes
+- processes JPA metadata
+- reduces reflection needs
+
+At runtime on JVM: less scanning/proxy work than typical Spring Boot startup.
+
+────────────────────────────────────────
+3) Native image tradeoffs
+
+Pros:
+- startup in tens of ms class
+- very low memory
+- great for containers / scale-to-zero
+
+Cons:
+- longer build
+- closed-world limits (reflection needs config if lib not ready)
+- some dynamic Java patterns harder
+
+────────────────────────────────────────
+Interview framing vs Spring
+
+“Both Spring Boot and Quarkus commonly run on the JVM.
+Quarkus also emphasizes native images via GraalVM: compile ahead-of-time to a binary with no JVM at runtime.
+Even in JVM mode Quarkus does more work at build time, so startup/memory are often better.
+Under long steady load, warmed JVM throughput can be similar; Quarkus shines on startup, RSS, and native/serverless.”
+
+────────────────────────────────────────
+One-liners
+
+JVM for both?
+“Yes normally — Spring Boot and Quarkus JVM mode both run on the JVM.”
+
+GraalVM?
+“GraalVM can run Java like a JVM, and its Native Image tool can compile Quarkus into a native binary that doesn’t need a JVM at runtime.”

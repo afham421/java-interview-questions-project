@@ -1,0 +1,172 @@
+Q: Spring Boot → Quarkus annotation / concept cheat sheet
+
+Memorize this table — interview gold for Spring developers.
+
+────────────────────────────────────────
+Bootstrap / DI
+
+| Spring Boot                      | Quarkus                                      |
+| -------------------------------- | -------------------------------------------- |
+| `@SpringBootApplication`         | (no equivalent bootstrap annotation)         |
+| `@Component` / `@Service`        | `@ApplicationScoped` (or other CDI scope)    |
+| `@Repository`                    | `@ApplicationScoped` + Panache/repo          |
+| `@Autowired`                     | `@Inject`                                    |
+| Constructor injection            | Constructor `@Inject` (preferred)            |
+| `@Value("${x}")`                 | `@ConfigProperty(name="x")`                  |
+| `@ConfigurationProperties`       | `@ConfigMapping`                             |
+| `@Configuration` + `@Bean`       | CDI producer (`@Produces`) / build items     |
+
+────────────────────────────────────────
+REST
+
+| Spring Boot                         | Quarkus                         |
+| ----------------------------------- | ------------------------------- |
+| `@RestController`                   | `@Path` resource class          |
+| `@RequestMapping` / `@GetMapping`   | `@GET` `@POST` `@PUT` `@DELETE` |
+| `@PathVariable`                     | `@PathParam`                    |
+| `@RequestParam`                     | `@QueryParam`                   |
+| `@RequestBody`                      | method arg (JSON provider)      |
+| `ResponseEntity<>`                  | `Response` / entity return      |
+| Spring `RestTemplate`/`WebClient`   | `@RegisterRestClient` interface |
+
+────────────────────────────────────────
+Data / transactions
+
+| Spring Boot                 | Quarkus                                      |
+| --------------------------- | -------------------------------------------- |
+| Spring Data `JpaRepository` | PanacheRepository **or** PanacheEntity       |
+| `@Entity`                   | `@Entity` (same JPA idea)                    |
+| `@Transactional` (Spring)   | `@Transactional` (**jakarta.transaction**)   |
+| `Pageable` / `Page`         | Panache `Page` / manual query + range        |
+| Flyway/Liquibase            | Quarkus Flyway/Liquibase extensions          |
+
+────────────────────────────────────────
+Cross-cutting
+
+| Spring Boot        | Quarkus                                      |
+| ------------------ | -------------------------------------------- |
+| `@Scheduled`       | `@Scheduled` (Quarkus scheduler; attrs differ) |
+| `@Cacheable`       | `@CacheResult` / `@CacheInvalidate`          |
+| `@Async`           | reactive/`@Blocking` patterns / buses        |
+| Actuator           | SmallRye Health/Metrics under `/q/*`         |
+| Spring Security    | Quarkus Security / OIDC / SmallRye JWT       |
+
+────────────────────────────────────────
+Reactive
+
+| Spring            | Quarkus        |
+| ----------------- | -------------- |
+| `Mono<T>`         | `Uni<T>`       |
+| `Flux<T>`         | `Multi<T>`     |
+| Project Reactor   | Mutiny         |
+
+────────────────────────────────────────
+Config files / profiles (Spring Boot vs Quarkus)
+
+Both use `application.properties` / yaml.
+Difference is mostly **how profiles are written**.
+
+Goal example:
+- DEV  → H2 in-memory
+- PROD → PostgreSQL
+
+────────────────────────────────────────
+A) Spring Boot implementation
+
+Option 1 — separate files (most common)
+
+application.properties
+spring.application.name=my-app
+# optional default profile
+# spring.profiles.active=dev
+
+application-dev.properties
+spring.datasource.url=jdbc:h2:mem:dev
+spring.datasource.driver-class-name=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+spring.jpa.hibernate.ddl-auto=update
+
+application-prod.properties
+spring.datasource.url=jdbc:postgresql://db-host:5432/appdb
+spring.datasource.username=app
+spring.datasource.password=${DB_PASSWORD}
+spring.jpa.hibernate.ddl-auto=validate
+
+Activate:
+- IDE/env: SPRING_PROFILES_ACTIVE=dev
+- run: java -jar app.jar --spring.profiles.active=prod
+- or in application.properties: spring.profiles.active=dev
+
+Option 2 — single YAML with documents
+
+application.yml
+spring:
+  application:
+    name: my-app
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:h2:mem:dev
+    username: sa
+    password:
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: jdbc:postgresql://db-host:5432/appdb
+    username: app
+    password: ${DB_PASSWORD}
+
+────────────────────────────────────────
+B) Quarkus implementation
+
+Quarkus prefers **one file** with `%profile.` prefixes
+(also supports application-dev.properties style, but `%dev.` is idiomatic).
+
+application.properties
+quarkus.application.name=my-app
+
+# DEV
+%dev.quarkus.datasource.db-kind=h2
+%dev.quarkus.datasource.jdbc.url=jdbc:h2:mem:dev
+%dev.quarkus.datasource.username=sa
+%dev.quarkus.datasource.password=
+%dev.quarkus.hibernate-orm.database.generation=drop-and-create
+
+# PROD
+%prod.quarkus.datasource.db-kind=postgresql
+%prod.quarkus.datasource.jdbc.url=jdbc:postgresql://db-host:5432/appdb
+%prod.quarkus.datasource.username=app
+%prod.quarkus.datasource.password=${DB_PASSWORD}
+%prod.quarkus.hibernate-orm.database.generation=none
+
+Activate:
+- DEV is often automatic with `quarkus:dev`
+- PROD: quarkus.profile=prod
+  or env: QUARKUS_PROFILE=prod
+
+────────────────────────────────────────
+Side-by-side mental map
+
+| Need              | Spring Boot                         | Quarkus                          |
+| ----------------- | ----------------------------------- | -------------------------------- |
+| Dev DB URL        | application-dev.properties          | %dev.quarkus.datasource.jdbc.url |
+| Prod DB URL       | application-prod.properties         | %prod.quarkus.datasource.jdbc.url|
+| Activate profile  | spring.profiles.active=prod         | quarkus.profile=prod             |
+| Env var style     | SPRING_PROFILES_ACTIVE              | QUARKUS_PROFILE                  |
+| Inject one value  | @Value / @ConfigurationProperties   | @ConfigProperty / @ConfigMapping |
+
+Same idea: different config per environment.
+Different syntax: Spring file-per-profile vs Quarkus `%profile.` keys.
+
+────────────────────────────────────────
+One-liner
+
+“Same layered architecture; different APIs — Autowired→Inject, RestController→Path/GET, JpaRepository→Panache,
+and build-time wiring instead of Spring runtime auto-config.”

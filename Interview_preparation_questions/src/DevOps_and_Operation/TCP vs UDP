@@ -1,0 +1,48 @@
+Q: TCP vs UDP?
+
+| Feature            | TCP                         | UDP                        |
+| ------------------ | --------------------------- | -------------------------- |
+| Connection         | Connection-oriented         | Connectionless             |
+| Reliability        | Reliable (ack/retransmit)   | Best-effort                |
+| Ordering           | Ordered                     | Not guaranteed             |
+| Speed / overhead   | More overhead               | Lower latency/overhead     |
+| Use cases          | HTTP, HTTPS, SSH, DB, Kafka | DNS, video, voice, gaming, QUIC/HTTP/3 |
+
+One-liner:
+TCP = reliable phone call; UDP = sending postcards (fast, may lose some).
+
+────────────────────────────────────────
+❓ Do we code to use TCP or UDP?
+
+Usually **NO** — not in normal Spring Boot API code.
+
+You write:
+@GetMapping("/users")
+public List<User> getUsers() { ... }
+
+Under the hood:
+HTTP → TCP → IP
+
+Tomcat/Netty already uses **TCP**. You didn’t choose it in the controller.
+
+| What you use              | Transport underneath |
+| ------------------------- | -------------------- |
+| Spring REST / Postman HTTP| TCP                  |
+| HTTPS                     | TCP (+ TLS)          |
+| JDBC to MySQL/Postgres    | TCP                  |
+| Kafka client              | TCP                  |
+| Redis client              | TCP                  |
+| RabbitMQ AMQP             | TCP                  |
+
+When would you write TCP/UDP code yourself?
+- Rare low-level networking (`Socket`, `DatagramSocket` in Java)
+- Custom game/IoT/streaming protocols
+- Most business apps: frameworks choose for you
+
+Interview line:
+“In Spring Boot REST we don’t pick TCP/UDP in code — HTTP APIs run on TCP automatically.
+UDP appears in things like DNS or special realtime systems, not typical controllers.”
+
+Simple explainers:
+- `TCP 3-way handshake explained simply`
+- `How UDP works explained simply`

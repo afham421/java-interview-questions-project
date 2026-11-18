@@ -1,0 +1,69 @@
+Q: I already know Spring Boot — what should I prepare for Quarkus interviews?
+
+Goal: map your Spring knowledge → Quarkus equivalents, plus Quarkus-only strengths (startup, memory, native).
+
+────────────────────────────────────────
+P0 — Must speak confidently (tonight/tomorrow)
+
+1) What Quarkus is + why it exists (cloud-native, fast start, low RSS, native images)
+2) Build-time augmentation vs Spring runtime auto-config/reflection
+3) Annotation mapping cheat sheet (Inject/Path/Transactional/Panache)
+4) Similarities to Spring Boot (properties, REST, JPA, Kafka, Docker/K8s)
+5) Differences (CDI/JAX-RS/Panache/Mutiny/extensions, no @SpringBootApplication bootstrap)
+6) One end-to-end REST + DB example in Quarkus style
+7) When choose Quarkus vs when stay on Spring Boot
+
+Files in this folder:
+- What is Quarkus
+- Quarkus vs Spring Boot
+- Spring Boot to Quarkus cheat sheet
+- Quarkus REST API implementation
+- Quarkus CDI and beans
+- Quarkus Hibernate ORM with Panache
+- Quarkus Dev Mode Native and GraalVM
+- Quarkus Security JWT and OIDC (overview)
+
+────────────────────────────────────────
+P1 — Strong follow-ups
+
+- Quarkus extensions ≈ Spring starters
+- application.properties / profiles (%dev, %prod)
+- Health/metrics: /q/health, Micrometer
+- RestClient (@RegisterRestClient)
+- Reactive: Uni/Multi (Mutiny) vs Mono/Flux
+- Transactions: jakarta.transaction.@Transactional
+- Testing: @QuarkusTest
+- Kafka with SmallRye Reactive Messaging (concept)
+
+────────────────────────────────────────
+P2 — Nice extras
+
+- Native image limitations (reflection config, closed world)
+- Quarkus Spring Compatibility extensions (spring-web/di/data-jpa) — migration bridge, not long-term idiomatic
+- Kubernetes-friendly: small image, fast scale-to-zero
+
+────────────────────────────────────────
+Honesty strategy (you are Spring-first)
+
+“I’ve built production systems with Spring Boot (APIs, JPA, Security, Kafka).
+For Quarkus I’ve prepared the programming model mapping — CDI, JAX-RS, Panache —
+and the architectural reasons teams pick Quarkus: build-time processing, faster startup, lower memory, native compilation.
+I can ramp to idiomatic Quarkus quickly because concepts map 1:1 from Spring.”
+
+Do NOT pretend deep production Quarkus unless true.
+Do show you can translate Spring patterns correctly.
+
+────────────────────────────────────────
+60-minute drill plan
+
+0–10  What is Quarkus + why (native/containers)
+10–25 Cheat sheet annotations aloud
+25–40 Speak REST+Panache example end-to-end
+40–50 Quarkus vs Spring compare table
+50–60 Q&A: self-invocation? transactions? Kafka? security?
+
+────────────────────────────────────────
+Quick win sentence
+
+“Quarkus feels familiar if you know Spring Boot — same REST+DI+JPA ideas —
+but it moves configuration and wiring to build time so apps start faster and use less memory, especially in containers and native mode.”

@@ -1,0 +1,28 @@
+Q: What happens when a client calls your Spring Boot API?
+
+Example: GET https://api.example.com/users/1
+
+1) DNS  
+api.example.com → IP address
+
+2) TCP connect  
+Client opens TCP to server IP:443 (HTTPS)
+
+3) TLS handshake  
+Certificates/keys → encrypted channel
+
+4) HTTP request  
+GET /users/1 HTTP/1.1  
+Host: api.example.com  
+Authorization: Bearer ...
+
+5) Server stack  
+Load balancer / reverse proxy (optional) → Tomcat/Netty → Spring DispatcherServlet → Controller → Service → DB
+
+6) HTTP response  
+200 OK + JSON body
+
+7) TCP may stay open (keep-alive) for next requests
+
+Interview tip:
+Separate **transport problems** (DNS/TCP/TLS/timeouts) from **app problems** (4xx/5xx business logic).

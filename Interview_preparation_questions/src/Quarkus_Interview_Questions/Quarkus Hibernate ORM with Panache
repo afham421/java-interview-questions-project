@@ -1,0 +1,64 @@
+Q: What is Panache? (Spring Data JPA alternative sugar)
+
+Panache is Quarkus’s opinionated layer on Hibernate ORM that reduces boilerplate.
+Two styles:
+
+────────────────────────────────────────
+1) Active Record (entity has helpers)
+
+@Entity
+public class Book extends PanacheEntity {
+    public String title;
+    public String author;
+}
+
+// usage
+Book.listAll();
+Book.findById(1L);
+Book.find("author", "Ali").list();
+book.persist();
+book.delete();
+
+Feels different from Spring (where entity is usually “dumb” and repo has methods).
+
+────────────────────────────────────────
+2) Repository style (closer to Spring Data)
+
+@ApplicationScoped
+public class BookRepository implements PanacheRepository<Book> {
+    public List<Book> findByAuthor(String author) {
+        return list("author", author);
+    }
+}
+
+@Inject
+BookRepository bookRepository;
+
+Closer to `JpaRepository` mental model.
+
+────────────────────────────────────────
+Transactions
+
+Use:
+jakarta.transaction.Transactional
+
+@Transactional
+public void create(Book b) {
+    b.persist();
+}
+
+Same idea as Spring `@Transactional`, different package/manager (JTA/Narayana under Quarkus).
+
+────────────────────────────────────────
+Panache vs Spring Data JPA
+
+| Spring Data                      | Panache                          |
+| -------------------------------- | -------------------------------- |
+| `extends JpaRepository`          | `PanacheRepository` or entity AR |
+| Derived query methods            | `find("field", value)` / queries |
+| Entities usually anemic          | Active Record optional           |
+
+────────────────────────────────────────
+Interview one-liner
+
+“Panache simplifies Hibernate in Quarkus with Active Record or repository helpers — less boilerplate than classic JPA, similar role to Spring Data repositories.”

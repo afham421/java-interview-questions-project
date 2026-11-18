@@ -1,0 +1,216 @@
+Q: Explain your understanding of TCP/IP, HTTP, and Internet protocols
+(JD line: “understanding of TCP/IP, HTTP, and Internet protocols”)
+
+────────────────────────────────────────
+One-liner
+
+Internet communication is layered: **IP** routes packets, **TCP** delivers reliable streams, **HTTP** is the application protocol
+your REST APIs use on top (usually over TCP, often with TLS as HTTPS).
+
+────────────────────────────────────────
+1) Big picture — OSI vs TCP/IP (interview view)
+
+Simplified TCP/IP stack:
+
+| Layer        | Examples                         | Job                          |
+| ------------ | -------------------------------- | ---------------------------- |
+| Application  | HTTP, HTTPS, DNS, SMTP, FTP, SSH | What apps speak              |
+| Transport    | TCP, UDP                         | Process-to-process delivery  |
+| Internet     | IP, ICMP                         | Host addressing & routing    |
+| Link/Network | Ethernet, Wi-Fi                  | Local frame delivery         |
+
+Your Spring Boot API:
+Browser/App → HTTP(S) → TCP → IP → network → reverse path to Tomcat/Netty
+
+────────────────────────────────────────
+2) IP (Internet Protocol)
+
+- Addresses devices: IPv4 (`192.168.1.10`) / IPv6
+- Routes **packets** hop by hop (best-effort — can be lost/reordered)
+- Does **not** guarantee delivery by itself
+
+IPv4 vs IPv6 (quick):
+- IPv4 = 32-bit, e.g. `192.168.1.10` (scarce → NAT common)
+- IPv6 = 128-bit, e.g. `2001:db8::1` (huge space)
+Details: `IPv4 vs IPv6`
+
+Related:
+- DNS maps `api.example.com` → IP (see `DNS — Domain Name System`)
+- Private vs public IPs, NAT in real networks
+
+────────────────────────────────────────
+3) TCP (Transmission Control Protocol)
+
+Reliable, connection-oriented transport.
+
+Features:
+- Connection setup (3-way handshake: SYN → SYN-ACK → ACK)
+  Simple explanation: `TCP 3-way handshake explained simply`
+- Guaranteed ordered delivery (retransmit lost segments)
+- Flow control / congestion control
+- Ports identify apps (e.g. `443`, `8080`)
+
+Used by: HTTP/1.1, HTTP/2, HTTPS, SMTP, SSH, most databases clients, Kafka (TCP), etc.
+
+When you say “API on port 8080” → TCP port on the server process.
+
+────────────────────────────────────────
+4) UDP (contrast — know this)
+
+Unreliable, connectionless, lower latency.
+No handshake / no automatic retransmission.
+
+Used by: DNS queries (often), video/voice, gaming, QUIC (HTTP/3 uses QUIC over UDP).
+
+See also: `TCP vs UDP`
+
+────────────────────────────────────────
+5) HTTP (HyperText Transfer Protocol)
+
+Application-layer protocol for request/response between client and server.
+
+Classic request:
+GET /users/1 HTTP/1.1
+Host: api.example.com
+Authorization: Bearer ...
+
+Response:
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{ "id": 1, "name": "Afham" }
+
+Key ideas for backend interviews:
+- Methods: GET, POST, PUT, PATCH, DELETE (idempotency matters)
+- Status codes: 2xx success, 4xx client, 5xx server
+- Headers: Content-Type, Authorization, Cache-Control, Cookie
+- Stateless: each request independent (sessions/JWT add app state)
+- HTTPS = HTTP + TLS encryption (certificates)
+
+────────────────────────────────────────
+❓ Are HTTP/1.1 and HTTP/2 the same as HTTP and HTTPS?
+
+NO — different questions.
+
+1) HTTP/1.1 vs HTTP/2 = **version** of HTTP (how the protocol works)
+2) HTTP vs HTTPS = **with or without TLS** (encrypted or not)
+
+Think of a 2D grid:
+
+|                | No TLS (http://)     | With TLS (https://)      |
+| -------------- | -------------------- | ------------------------ |
+| HTTP/1.1       | possible             | common                   |
+| HTTP/2         | rare (h2c)           | very common in browsers  |
+| HTTP/3         | —                    | over QUIC (UDP)          |
+
+So:
+- `https://api.com` can be HTTP/1.1 **or** HTTP/2 (both are HTTPS)
+- HTTP/2 is still HTTP — newer, faster framing (multiplexing, binary, header compression)
+- HTTPS is not a separate “version”; it means HTTP wrapped with TLS
+
+Examples:
+- http://localhost:8080  → HTTP/1.1 (typical Spring local), no TLS
+- https://google.com     → usually HTTP/2 (or 3) over TLS
+
+Interview one-liner:
+“1.1/2/3 are HTTP versions; HTTP vs HTTPS is whether TLS encryption is used.”
+
+Details: can also remember from your performance notes (HTTP/2 enable in Spring).
+
+────────────────────────────────────────
+❓ Is TCP/TLS the only difference between HTTP and HTTPS?
+
+Short answer:
+**Difference between HTTP and HTTPS = TLS (encryption), NOT TCP.**
+
+Both HTTP and HTTPS (HTTP/1.1 & HTTP/2) usually run on **TCP**.
+
+|                   | HTTP                             | HTTPS |
+| -                 | ----                         | ----- |
+| Application protocol | Same HTTP messages | Same HTTP messages |
+| Transport (typical)  | TCP                | TCP |
+| Encryption            | No (plain text)   | Yes — **TLS** wrapper TLS (encrypt + certificate)|
+| Default port          | 80                | 443 |
+| Certificates          | No                | Yes (server identity) |
+
+So:
+HTTPS ≈ HTTP + TLS (+ usually still TCP underneath)
+
+NOT:
+HTTPS ≠ “HTTP but with TCP”   ← wrong (HTTP already uses TCP)
+
+Flow:
+HTTP:  App → HTTP → TCP → IP
+HTTPS: App → HTTP → TLS → TCP → IP
+
+What TLS adds:
+- Encryption (others can’t read body/headers easily)
+- Integrity (tamper detection)
+- Server authentication (certificate)
+
+Nuance:
+HTTP/3 uses QUIC over **UDP** (still can be encrypted) — so “HTTPS always TCP” is the common interview answer for HTTP/1.1/2, with HTTP/3 as exception.
+
+Related in your Spring notes:
+- REST GET conventions
+- CSRF (cookie auto-send)
+- JWT Bearer header
+
+────────────────────────────────────────
+6) Other internet protocols you should name
+
+| Protocol | Role |
+| -------- | ---- |
+| HTTPS/TLS | Encrypt HTTP |
+| DNS | Name → IP |
+| SMTP | Email send |
+| FTP/SFTP | File transfer |
+| ICMP | Ping / network diagnostics |
+| WebSocket | Full-duplex over HTTP upgrade |
+| HTTP/2 | Multiplexing, binary framing (often on TLS) |
+| HTTP/3 | HTTP over QUIC (UDP-based) |
+
+────────────────────────────────────────
+7) End-to-end path (say this aloud)
+
+1. Client resolves host via **DNS** → IP  
+2. Opens **TCP** connection (handshake) to server:port  
+3. Optional **TLS** handshake (HTTPS)  
+4. Sends **HTTP** request  
+5. Spring DispatcherServlet / controller handles it  
+6. HTTP response back over same TCP connection (keep-alive possible)  
+7. Connection eventually closes  
+
+────────────────────────────────────────
+8) Backend-relevant gotchas
+
+- Connection reset / timeouts → TCP/network path issues
+- Load balancer terminates TLS then forwards HTTP internally
+- HTTP keep-alive reuses TCP connections
+- gRPC usually HTTP/2 over TCP
+- Firewall rules allow TCP ports (80/443/8080)
+
+────────────────────────────────────────
+Interview answer (45–60 sec)
+
+“I understand internet communication as layered protocols. IP handles addressing and routing of packets. TCP provides a reliable,
+ ordered byte stream between client and server using ports and a handshake.
+ HTTP sits on top as the request/response protocol for APIs — methods, headers, status codes — and HTTPS adds TLS.
+ Supporting protocols I use daily include DNS for name resolution and tools like WebSockets or HTTP/2 where needed.
+ In Spring Boot terms, a REST call is HTTP over TCP/IP to our embedded server.”
+
+────────────────────────────────────────
+Prep checklist
+
+[ ] TCP vs UDP differences  
+[ ] HTTP methods + common status codes  
+[ ] What HTTPS/TLS adds  
+[ ] DNS role in a request  
+[ ] Trace one Postman call from laptop to Spring Boot  
+
+Related files:
+- `TCP vs UDP`
+- `IPv4 vs IPv6`
+- `How an HTTP request travels over the network`
+- `DNS — Domain Name System`
+- `CDN — Content Delivery Network`

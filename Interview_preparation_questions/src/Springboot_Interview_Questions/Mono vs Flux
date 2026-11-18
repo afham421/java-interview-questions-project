@@ -1,0 +1,100 @@
+Q: Mono vs Flux in Spring WebFlux / Project Reactor?
+
+Both are reactive types from **Project Reactor** (used by Spring WebFlux).
+They represent **async, non-blocking** data pipelines — not the data itself until subscribed.
+
+────────────────────────────────────────
+One-liner
+
+**Mono** = 0 or 1 result (like `Optional` / single Future).  
+**Flux** = 0..N results (like async Stream / list over time).
+
+────────────────────────────────────────
+1) Mono<T>
+
+- Publishes **at most one** item, then completes (or errors)
+- Use for: findById, save, HTTP call returning one body, void-like ops (`Mono<Void>`)
+
+Mono<User> user = userRepository.findById(1L);
+Mono<String> name = Mono.just("Afham");
+Mono<Void> done = Mono.fromRunnable(() -> log.info("ok"));
+
+────────────────────────────────────────
+2) Flux<T>
+
+- Publishes **0 to many** items
+- Use for: list all, streaming, SSE, multiple DB rows, kafka-like streams
+
+Flux<User> users = userRepository.findAll();
+Flux<Integer> nums = Flux.just(1, 2, 3);
+Flux<String> ticks = Flux.interval(Duration.ofSeconds(1)).map(String::valueOf);
+
+────────────────────────────────────────
+Compare
+
+| Feature        | Mono              | Flux                |
+| -------------- | ----------------- | ------------------- |
+| Cardinality    | 0..1              | 0..N                |
+| Like           | Optional / Future | Stream / List async |
+| Typical API    | getById, save     | findAll, stream     |
+| Spring WebFlux | single JSON body  | collection / stream |
+
+────────────────────────────────────────
+Important reactive rules (interview)
+
+1) Nothing runs until **subscribe** (or WebFlux framework subscribes for you).
+2) Operators are lazy: `map`, `flatMap`, `filter`, `zip`…
+3) Backpressure: consumer can signal how much it can handle (Flux especially).
+4) Don’t block inside reactive chain (`Thread.sleep`, JDBC without boundedElastic) — kills the model.
+5) Error channel: `onErrorResume`, `onErrorReturn` instead of only try/catch around sync code.
+
+────────────────────────────────────────
+Tiny examples
+
+// Mono → transform
+Mono<String> upper = Mono.just("afham").map(String::toUpperCase);
+
+// Flux → filter + map
+Flux<Integer> evenSquares = Flux.range(1, 5)
+    .filter(i -> i % 2 == 0)
+    .map(i -> i * i);  // 4, 16
+
+// Combine
+Mono<User> user = ...;
+Mono<Account> account = ...;
+Mono<Dto> dto = Mono.zip(user, account, Dto::new);
+
+// flatMap (async nested calls)
+Mono<Order> order = userIdMono
+    .flatMap(id -> orderClient.getOrder(id));
+
+map = sync transform  
+flatMap = async nested Publisher (avoid blocking)
+
+────────────────────────────────────────
+Spring MVC vs WebFlux
+
+| Spring MVC (servlet)     | WebFlux              |
+| ------------------------ | -------------------- |
+| blocking threads per req | event-loop style     |
+| return `User` / `List`   | return `Mono`/`Flux` |
+| Tomcat thread per request | Netty (typically)   |
+
+Use WebFlux when you need high concurrency with non-blocking IO.
+If your code is mostly blocking JDBC, plain MVC + thread pool is often simpler.
+
+────────────────────────────────────────
+Quarkus mapping (you studied Quarkus)
+
+| Reactor (Spring) | Mutiny (Quarkus) |
+| ---------------- | ---------------- |
+| `Mono<T>`        | `Uni<T>`         |
+| `Flux<T>`        | `Multi<T>`       |
+
+Same idea: one vs many async results — different API names.
+
+────────────────────────────────────────
+Interview answer
+
+“Mono is a reactive publisher for 0 or 1 element — good for single-resource APIs. Flux is for 0 to N elements — lists and streams.
+In Spring WebFlux we return these types so the framework can subscribe in a non-blocking way. They’re similar to Quarkus Mutiny’s Uni and Multi.”

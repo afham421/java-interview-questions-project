@@ -1,0 +1,80 @@
+Q: What is NAT?
+
+NAT = **Network Address Translation**.
+It rewrites IP addresses (and often ports) as packets cross a router/firewall —
+so many private devices can share **one (or few) public IPv4 address(es)** to reach the internet.
+
+────────────────────────────────────────
+One-liner
+
+NAT lets your home/office private IPs (`192.168.x.x`) talk to the internet using the router’s public IP — because IPv4 public addresses are scarce(rare).
+
+────────────────────────────────────────
+Why NAT exists
+
+IPv4 public addresses are limited.
+Homes/companies use **private** ranges that are not routed on the public internet:
+- `10.0.0.0/8`
+- `172.16.0.0/12`
+- `192.168.0.0/16`
+
+NAT at the edge translates private → public for outbound traffic.
+
+────────────────────────────────────────
+Simple home example
+
+Laptop private IP: `192.168.1.5`
+Router public IP:  `203.0.113.10`
+
+1) Laptop sends request to `8.8.8.8`
+2) Router NAT changes source:
+   `192.168.1.5:50000` → `203.0.113.10:40001`
+3) Internet sees only the public IP
+4) Response comes back to router public IP:40001
+5) Router maps it back to `192.168.1.5:50000`
+
+Many devices inside → one public IP outside (with different ports).
+This common form is **PAT / NAPT** (NAT + port translation), often just called NAT.
+
+────────────────────────────────────────
+Types (know names)
+
+| Type | Idea |
+| ---- | ---- |
+| SNAT / source NAT | Change source IP (outbound to internet) |
+| DNAT / destination NAT | Change destination IP (inbound publish of internal service) |
+| Static NAT | 1:1 private ↔ public |
+| PAT/NAPT/overload | Many private → one public via ports (home Wi-Fi) |
+
+────────────────────────────────────────
+Inbound access (important)
+
+By default, NAT hides internal hosts — internet cannot start a connection to `192.168.1.5` directly.
+
+To expose an internal server:
+- Port forwarding / DNAT (router maps public:8080 → private:8080)
+- Or put service behind cloud load balancer / reverse proxy
+- Or VPN into private network
+
+────────────────────────────────────────
+Cloud / backend angle
+
+- AWS/GCP private subnets + NAT Gateway: private EC2/ECS tasks call internet (patches, APIs) without public IPs
+- Security benefit: internal machines not directly reachable
+- Tradeoff: true end-to-end IP identity is obscured(hide); connection tracking needed
+- IPv6 reduces need for NAT (enough addresses), though NAT64 etc. still exist in transitions
+
+────────────────────────────────────────
+NAT vs proxy vs load balancer (don’t mix)
+
+| Thing | Role |
+| ----- | ---- |
+| NAT | Rewrites IP/port at network layer |
+| HTTP proxy | Understands HTTP, can cache/filter |
+| Load balancer | Distributes traffic to many backends |
+
+────────────────────────────────────────
+Interview answer
+
+“NAT translates private IP addresses to a public IP so many devices can share scarce IPv4 public addresses. Outbound traffic is rewritten by the router;
+replies are mapped back using connection/port state. That’s why home networks work with one public IP, and why cloud private subnets use a NAT gateway to reach the internet.”

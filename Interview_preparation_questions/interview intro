@@ -70,3 +70,8 @@ Impact:
 2) What was the hardest challenge in BSMS?
 3) Explain one API or module you owned in BSMS
 4) Difference between Monolith and Microservices (you used both styles)
+5) Vaadin 7 frontend/backend explanation → see file:
+   `Vaadin 7 frontend and backend interview explanation`
+6) Quarkus (for Spring Boot developers) → folder:
+   `src/Quarkus_Interview_Questions`
+   Start with: `00 - Prep checklist for Spring Boot developers`

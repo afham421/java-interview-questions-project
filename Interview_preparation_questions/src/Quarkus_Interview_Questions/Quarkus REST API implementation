@@ -1,0 +1,109 @@
+Q: Show a simple Quarkus REST + service + DB style implementation (Spring-like layers)
+
+Think Spring Boot structure, Quarkus annotations.
+
+────────────────────────────────────────
+1) Entity (Panache Active Record style)
+
+@Entity
+public class User extends PanacheEntity {
+    public String name;
+    public String email;
+}
+
+// PanacheEntity gives you id + helpers: listAll(), findById(), persist()...
+
+────────────────────────────────────────
+2) Service (CDI bean)
+
+@ApplicationScoped
+public class UserService {
+
+    public List<User> findAll() {
+        return User.listAll();
+    }
+
+    @Transactional
+    public User create(String name, String email) {
+        User u = new User();
+        u.name = name;
+        u.email = email;
+        u.persist();
+        return u;
+    }
+
+    public User find(Long id) {
+        return User.findById(id);
+    }
+}
+
+────────────────────────────────────────
+3) REST resource (≈ @RestController)
+
+@Path("/users")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+public class UserResource {
+
+    @Inject
+    UserService userService;
+
+    @GET
+    public List<User> all() {
+        return userService.findAll();
+    }
+
+    @GET
+    @Path("/{id}")
+    public User byId(@PathParam("id") Long id) {
+        User u = userService.find(id);
+        if (u == null) {
+            throw new NotFoundException();
+        }
+        return u;
+    }
+
+    @POST
+    public Response create(User request) {
+        User saved = userService.create(request.name, request.email);
+        return Response.status(Response.Status.CREATED).entity(saved).build();
+    }
+}
+
+────────────────────────────────────────
+4) Config (application.properties)
+
+quarkus.datasource.db-kind=postgresql
+quarkus.datasource.username=app
+quarkus.datasource.password=secret
+quarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/app
+quarkus.hibernate-orm.database.generation=update
+
+# HTTP
+quarkus.http.port=8080
+
+────────────────────────────────────────
+5) Run
+
+./mvnw quarkus:dev
+# live reload Dev Mode
+
+Native (concept):
+./mvnw package -Dnative
+
+────────────────────────────────────────
+Spring mapping of this example
+
+| This Quarkus piece     | Spring Boot equivalent        |
+| ---------------------- | ----------------------------- |
+| `@Path` resource       | `@RestController`             |
+| `@Inject`              | constructor/`@Autowired`      |
+| `@ApplicationScoped`   | `@Service`                    |
+| `PanacheEntity`        | Entity + JpaRepository        |
+| `quarkus:dev`          | bootRun + optional DevTools   |
+
+────────────────────────────────────────
+Interview tip
+
+Explain layers first (Resource → Service → DB), then say:
+“In Quarkus I use JAX-RS and CDI instead of Spring MVC and Spring DI, and Panache to reduce JPA boilerplate.”

@@ -1,0 +1,58 @@
+Q: How does DI / beans work in Quarkus (vs Spring)?
+
+Quarkus uses **CDI** (Jakarta Contexts and Dependency Injection), implemented by **ArC** (build-time CDI).
+Similar goal to Spring IoC: create beans and inject dependencies — different APIs and lifecycle processing time.
+
+────────────────────────────────────────
+Basic bean
+
+@ApplicationScoped   // ≈ Spring singleton service
+public class OrderService {
+
+    @Inject
+    InventoryService inventoryService;
+
+    public void place() { ... }
+}
+
+Injection:
+@Inject OrderService orderService;   // field
+// or constructor injection (preferred style)
+
+────────────────────────────────────────
+Common scopes (know these)
+
+| CDI scope            | Rough Spring analogy     |
+| -------------------- | ------------------------ |
+| `@ApplicationScoped` | singleton bean           |
+| `@Singleton`         | eager-ish singleton nuance (CDI `@Singleton` ≠ Spring exactly; often prefer ApplicationScoped) |
+| `@RequestScoped`     | request scope            |
+| `@Dependent`         | new instance / dependent |
+
+Interview-safe default for services: **`@ApplicationScoped`**
+
+────────────────────────────────────────
+Spring contrast
+
+| Spring                | Quarkus CDI              |
+| --------------------- | ------------------------ |
+| Component scan + stereotypes | Beans discovered at build |
+| Runtime proxies common | Build-time generated wiring |
+| `@Autowired`          | `@Inject`                |
+| Self-invocation proxy pitfalls | Also be careful with interceptors/self calls |
+
+────────────────────────────────────────
+Producers (≈ @Bean methods)
+
+public class ConfigProducer {
+    @Produces
+    @ApplicationScoped
+    public Clock clock() {
+        return Clock.systemUTC();
+    }
+}
+
+────────────────────────────────────────
+One-liner
+
+“Quarkus DI is CDI with @Inject and scopes like @ApplicationScoped; wiring is largely decided at build time, unlike Spring’s runtime ApplicationContext refresh.”

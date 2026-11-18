@@ -1,0 +1,70 @@
+Q: How is Quarkus similar to Spring Boot, and what’s different?
+
+────────────────────────────────────────
+✅ Similarities (your Spring skills transfer)
+
+| Area              | Both have                                      |
+| ----------------- | ---------------------------------------------- |
+| Goal              | Fast microservice/API development              |
+| REST APIs         | Annotation-based controllers/resources         |
+| DI / IoC          | Container injects dependencies                 |
+| Config            | application.properties / profiles              |
+| Persistence       | Hibernate / JPA style data access              |
+| Transactions      | `@Transactional` concept                       |
+| Messaging         | Kafka / AMQP integrations                      |
+| Security          | JWT / OIDC style auth extensions               |
+| Testing           | `@QuarkusTest` ≈ `@SpringBootTest` idea        |
+| Cloud             | Docker/K8s friendly, health/metrics            |
+| Starters          | Spring starters ≈ Quarkus extensions           |
+
+Mental model:
+If you know “Controller → Service → Repository → DB” in Spring,
+Quarkus is “Resource → Service → Panache entity/repo → DB”.
+
+────────────────────────────────────────
+❌ Key differences
+
+| Topic                | Spring Boot                         | Quarkus                                  |
+| -------------------- | ----------------------------------- | ---------------------------------------- |
+| Philosophy           | Runtime flexibility / reflection    | Build-time augmentation                  |
+| Bootstrap            | `@SpringBootApplication` + run()    | Generated main; no Spring-style bootstrap annotation |
+| DI                   | Spring IoC / `@Autowired`           | CDI / `@Inject`                          |
+| Bean stereotypes     | `@Service` `@Component`             | CDI scopes e.g. `@ApplicationScoped`     |
+| REST                 | Spring MVC `@RestController`        | JAX-RS `@Path` `@GET`                    |
+| Data access sugar    | Spring Data JPA repositories        | Panache (Active Record or Repository)    |
+| Reactive types       | Mono/Flux (Reactor)                 | Uni/Multi (Mutiny)                       |
+| Actuator             | `/actuator/*`                       | `/q/health`, `/q/metrics`, etc.          |
+| Native images        | Improving; historically heavier     | First-class GraalVM native focus         |
+| Ecosystem breadth    | Huge (Batch, Integration, Security…) | Smaller but strong cloud-native set     |
+| Startup / memory     | Higher (typical JVM apps)           | Lower (esp. native / optimized JVM)      |
+
+Biggest interview sentence:
+“Spring Boot does a lot at **runtime** (scan, auto-config, proxies).
+Quarkus moves much of that to **build time**, so runtime is leaner.”
+
+────────────────────────────────────────
+When choose which?
+
+Choose Quarkus when:
+- K8s density / cold start / scale-to-zero matters
+- New services, team OK learning CDI/JAX-RS
+- Native compilation is a goal
+
+Choose Spring Boot when:
+- Existing Spring codebase/team expertise (like you)
+- Need broad Spring ecosystem (Batch, complex Security customizations, etc.)
+- Peak long-running throughput is fine on JVM (gap shrinks after warm-up)
+
+────────────────────────────────────────
+Migration note
+
+Quarkus offers Spring compatibility extensions (spring-di/web/data-jpa) for porting,
+but idiomatic Quarkus = CDI + JAX-RS + Panache.
+
+────────────────────────────────────────
+Interview answer
+
+“Quarkus and Spring Boot both build REST microservices with DI, config, and JPA.
+They’re similar in architecture layers. The difference is Quarkus optimizes for containers by doing bean/config/metadata work
+at build time and using CDI/JAX-RS/Panache instead of Spring MVC/Data.
+I’d pick Quarkus for new cloud-native services needing fast start/low memory; Spring Boot when the team/ecosystem is already Spring-centric.”

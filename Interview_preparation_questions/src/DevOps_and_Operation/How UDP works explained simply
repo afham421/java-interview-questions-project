@@ -1,0 +1,103 @@
+Q: How does UDP work? (simple)
+
+UDP = **User Datagram Protocol**
+It sends data **immediately**, with **no handshake** and **no guarantee** of delivery.
+
+Analogy:
+- TCP = phone call (hello first, then talk, confirm you heard)
+- UDP = throwing postcards / shouting across a room  
+  Fast, but some messages may be lost, duplicated, or arrive out of order
+
+────────────────────────────────────────
+How UDP sends data
+
+No SYN / SYN-ACK / ACK setup.
+
+Client                         Server
+  |                              |
+  | ----- UDP packet (data) ---> |   just send
+  |                              |
+  | (maybe response packet) <--- |   optional, app decides
+  |                              |
+
+That’s it.
+Sender does **not** automatically wait for “did you get it?”
+
+────────────────────────────────────────
+What is a datagram?
+
+A UDP message = **datagram** = one independent packet of data
+with:
+- source IP + port
+- destination IP + port
+- payload (your bytes)
+- checksum (basic error check)
+
+Each datagram is separate — UDP does not maintain a “connection state” like TCP.
+
+────────────────────────────────────────
+What UDP does NOT do (important)
+
+UDP itself does **not**:
+1) Handshake before sending
+2) Retransmit lost packets
+3) Guarantee order
+4) Guarantee delivery
+5) Control congestion the way TCP does
+
+If those are needed, the **application** must handle them
+(or you choose TCP instead).
+
+────────────────────────────────────────
+What if packet is lost?
+
+TCP: resends automatically.
+UDP: packet is just gone (unless your app detects and retries).
+
+Example:
+Video call — missing 1 tiny frame is OK; better skip than wait/retry (lag).
+Bank API — missing data is NOT OK → use TCP/HTTP.
+
+────────────────────────────────────────
+Ports still exist
+
+Like TCP, UDP uses ports.
+Example: DNS often uses UDP port **53**.
+
+So destination is still: IP + UDP port.
+
+────────────────────────────────────────
+Where UDP is used
+
+| Use | Why UDP fits |
+| --- | ------------ |
+| DNS lookup | Small, fast query/response |
+| Video / voice calls | Low latency; losing a bit is OK |
+| Online games | Speed over perfect reliability |
+| Streaming | Prefer live speed |
+| HTTP/3 / QUIC | Built on UDP, but QUIC adds reliability features on top |
+
+────────────────────────────────────────
+TCP vs UDP (super short)
+
+| | TCP | UDP |
+| - | --- | --- |
+| Setup | Handshake first | No handshake |
+| Delivery | Reliable | Best effort |
+| Order | Guaranteed | Not guaranteed |
+| Speed | More overhead | Faster/lighter |
+| Style | Connection stream | Independent packets |
+
+────────────────────────────────────────
+Spring Boot angle
+
+Your normal REST API (`http://localhost:8080/...`) uses **HTTP over TCP**, not UDP.
+
+You rarely write raw UDP in Spring Boot business APIs.
+You may still *depend* on UDP indirectly (e.g. DNS resolution before the HTTP call).
+
+────────────────────────────────────────
+Interview one-liner
+
+“UDP sends datagrams with no connection setup and no delivery guarantee — fast and lightweight, so apps that can tolerate loss (DNS, video, games) use it;
+reliable APIs use TCP.”

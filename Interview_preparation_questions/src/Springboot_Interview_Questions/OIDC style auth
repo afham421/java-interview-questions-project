@@ -1,0 +1,150 @@
+Q: What is OIDC-style auth? How is it different from “homemade JWT login”?
+
+OIDC = **OpenID Connect**.
+Identity layer **on top of OAuth 2.0**.
+Used so apps don’t store/check passwords themselves — an **Identity Provider (IdP)** does (Keycloak, Auth0, Okta, Azure AD, Google…).
+
+You already know JWT. OIDC commonly **delivers identity as JWTs** (ID token / access token), issued and signed by the IdP.
+
+────────────────────────────────────────
+One-liner
+
+“OAuth 2.0 authorizes access to APIs; OpenID Connect adds login/identity (who the user is), usually with an ID token JWT from an IdP like Keycloak.”
+
+────────────────────────────────────────
+❓ Are OAuth 2.0 and OIDC the same?
+
+NO — related, not the same.
+
+| | OAuth 2.0 | OpenID Connect (OIDC) |
+| - | --------- | --------------------- |
+| What | Authorization framework | Authentication / identity layer |
+| Question it answers | “What is this client allowed to access?” | “Who is the user?” |
+| Main token | Access token (optional refresh) | ID token (+ usually access token) |
+| Built on | — | Built **on top of** OAuth 2.0 |
+| Alone enough for login? | Not really (no standard user identity) | Yes — designed for login/SSO |
+
+Simple analogy:
+- OAuth 2.0 = “valet key to use a service” (permission to call APIs)
+- OIDC = “ID card that says who you are” (login), using OAuth machinery
+
+People say “OAuth login” casually, but real standardized login is usually **OIDC** (which uses OAuth 2.0 under the hood).
+
+Remember:
+OIDC = OAuth 2.0 + identity (ID Token + UserInfo)
+
+────────────────────────────────────────
+Core roles
+
+| Role | Meaning |
+| ---- | ------- |
+| User (Resource Owner) | Person logging in |
+| Client (App) | Your SPA / mobile / backend |
+| IdP / Authorization Server | Keycloak etc. — authenticates user, issues tokens |
+| Resource Server (API) | Your Spring/Quarkus API — validates access token |
+
+────────────────────────────────────────
+Typical browser / SPA flow (Authorization Code + PKCE)
+
+1. User opens your app
+2. App redirects to IdP login (Keycloak)
+3. User enters credentials **at IdP** (not at your API)
+4. IdP redirects back with **authorization code**
+5. App (or BFF) exchanges code for tokens:
+   - **ID Token** → who is the user (OIDC)
+   - **Access Token** → call APIs (OAuth)
+   - optional **Refresh Token**
+6. App calls your API:
+   `Authorization: Bearer <access_token>`
+7. API validates token (signature via IdP JWKS, exp, issuer, audience) → allow/deny
+
+────────────────────────────────────────
+OIDC tokens (interview must-know)
+
+1) ID Token
+- Proves authentication
+- JWT with claims: `sub`, `email`, `name`, `iss`, `aud`, `exp`
+- For the **client app** to know who logged in
+
+2) Access Token
+- Used to access **APIs**
+- Often JWT (can be opaque in some setups)
+- API checks this, not the password
+
+3) Refresh Token
+- Get new access tokens without re-login
+- Store carefully; rotate/revoke on logout
+
+────────────────────────────────────────
+Your “custom JWT login” vs OIDC
+
+| Homemade JWT (what you built) | OIDC style |
+| ----------------------------- | ---------- |
+| `/login` checks DB password | IdP checks credentials |
+| Your app signs JWT with your secret | IdP signs tokens (keys from JWKS) |
+| You manage users/password reset/MFA | IdP manages identity features |
+| Simple for one app | Standard for SSO across many apps |
+| Good learning / internal APIs | Enterprise / multi-app / compliance |
+
+Both can use Bearer JWT on APIs.
+Difference is **who issues identity** and **protocol**.
+
+────────────────────────────────────────
+Spring Boot (high level)
+
+Common stack:
+- `spring-boot-starter-oauth2-resource-server` → API validates JWT
+- `spring-boot-starter-oauth2-client` → app logs in via IdP
+
+Resource server idea:
+spring.security.oauth2.resourceserver.jwt.issuer-uri=https://keycloak.../realms/myrealm
+
+Spring fetches IdP metadata/JWKS and validates Bearer tokens automatically
+(vs manual JwtFilter + shared secret in simple demos).
+
+────────────────────────────────────────
+Quarkus (high level)
+
+quarkus-oidc / smallrye-jwt extensions
+Configure IdP URL; protect JAX-RS with roles.
+Same idea: validate bearer token from Keycloak.
+
+See: `Quarkus_Interview_Questions/Quarkus Security JWT and OIDC overview`
+
+────────────────────────────────────────
+Why companies use OIDC/Keycloak
+
+- Single Sign-On (SSO) across apps
+- Central user management
+- MFA, social login, password policies
+- Standard protocols (not custom auth every service)
+- Easier compliance / audit
+
+────────────────────────────────────────
+Security reminders
+
+- Prefer Authorization Code + PKCE for SPAs (not implicit flow)
+- Validate `iss`, `aud`, `exp`, signature
+- Access token in Authorization header (CSRF usually not an issue)
+- If token in cookie → CSRF concerns return
+- Don’t put secrets in frontend; use PKCE / BFF patterns as needed
+
+────────────────────────────────────────
+Interview answers
+
+What is OIDC?
+“OpenID Connect is an identity layer on OAuth 2.0. Users authenticate at an IdP like Keycloak; the app receives ID/access tokens and APIs trust the access token as a Bearer JWT.”
+
+Difference from your Spring JWT filter project?
+“In my JWT demo, my service issued tokens after local password check. In OIDC, Keycloak issues tokens after login; my API is mainly a resource server that validates those tokens.”
+
+OAuth vs OIDC?
+“OAuth 2.0 = delegated authorization (access APIs). OIDC = authentication/identity (who you are), built on OAuth.”
+
+────────────────────────────────────────
+Related
+
+- `JWT` (token structure, filter flow)
+- `Session vs JWT`
+- `You've implemented JWT... entire flow`
+- Keycloak notes if present in folder
