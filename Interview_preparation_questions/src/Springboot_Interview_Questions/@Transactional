@@ -9,21 +9,24 @@ If any part fails or throws an exception, all changes are rolled back
 
 If everything succeeds, the transaction is committed
 
-3️⃣ Spring Boot @Transactional – Deep Flow
 🔁 What happens internally?
+
 @Transactional
 public void transfer() {
     debit();
     credit();
 }
 
-Behind the scenes 🧠
-Spring opens DB transaction
-Auto-commit = OFF
-Executes all SQL
-If no exception → COMMIT
-If RuntimeException → ROLLBACK
-DB ensures ACID
+Behind the scenes:
+Spring proxy intercepts the call
+  → opens DB transaction (auto-commit OFF)
+  → runs method / SQL
+  → no exception → COMMIT
+  → RuntimeException/Error (by default) → ROLLBACK
+DB provides ACID within that transaction
+
+Important: works via Spring AOP proxy → must go through the proxy
+(public method on a Spring bean; self-invocation bypasses it).
 
 🔍 Where is @Transactional Used?
 On service layer methods (recommended)
@@ -62,13 +65,14 @@ If everything is OK → COMMIT.
 If an exception occurs → ROLLBACK.
 
 ✅ Key Options of @Transactional
-| Attribute     | Description                                                     |
-| ------------- | --------------------------------------------------------------- |
-| `readOnly`    | Optimize for read-only queries (no write allowed)               |
-| `rollbackFor` | Define which exceptions should trigger rollback                 |
-| `propagation` | Defines transaction behavior when already in a transaction      |
-| `isolation`   | Controls how transaction handles concurrency (read/write locks) |
-| `timeout`     | Transaction time limit (in seconds)                             |
+| Attribute        | Description                                                     |
+| ---------------- | --------------------------------------------------------------- |
+| `readOnly`       | Optimize for read-only queries                                  |
+| `rollbackFor`    | Which exceptions should trigger rollback                        |
+| `noRollbackFor`  | Which exceptions should NOT roll back                           |
+| `propagation`    | Behavior when a transaction already exists (nested calls)       |
+| `isolation`      | Concurrency visibility (dirty/non-repeatable/phantom reads)     |
+| `timeout`        | Transaction time limit (seconds)                                |
 
 
 ✅ Example with Attributes
@@ -139,21 +143,27 @@ If you accidentally try to perform an update inside this method, some databases 
 | `readOnly = true`               | Optimize for read operations; no data modification allowed | Use for `SELECT` queries   |
 
 
-✅ Propagation Types (Important in Microservices & Nested Calls)
-| Type           | Meaning                                                                |
-| -------------- | ---------------------------------------------------------------------- |
-| `REQUIRED`     | Default. Join existing transaction or create a new one if none exists. |
-| `REQUIRES_NEW` | Always create a new transaction, suspend existing.                     |
-| `NESTED`       | Start nested transaction within current one (requires special setup).  |
-| `SUPPORTS`     | Join existing transaction if available.                                |
+✅ Propagation Types (nested method calls in the SAME app / JVM)
+
+Note: Propagation is NOT cross-microservice. Each service has its own DB transaction
+unless you use distributed transactions (rare). See also "propagation and isolation".
+
+| Type            | Meaning                                                                |
+| --------------- | ---------------------------------------------------------------------- |
+| `REQUIRED`      | Default. Join existing TX or create new if none.                       |
+| `REQUIRES_NEW`  | Always new TX; suspend outer.                                          |
+| `NESTED`        | Nested TX / savepoint inside current (needs JDBC savepoints support).  |
+| `SUPPORTS`      | Join if exists; else run non-transactional.                            |
+| `NOT_SUPPORTED` | Always non-TX; suspend existing.                                       |
+| `MANDATORY`     | Must join existing TX; else exception.                                 |
+| `NEVER`         | Must run without TX; else exception.                                   |
 
 
 ✅ Best Practices
-Use on service methods, not on DAOs or controllers.
-
-Avoid placing it on private methods (proxy-based AOP won't work).
-
-Avoid using it on interfaces if using Spring’s proxy approach.
+- Prefer service-layer methods (not controllers; repos often inherit TX from service).
+- Public methods on Spring beans (proxy-based AOP).
+- Don’t rely on self-invocation (`this.method()`) — call goes around the proxy.
+- Prefer `org.springframework.transaction.annotation.Transactional`.
 
 🧪 Testing @Transactional
 If you annotate a test with @Transactional, Spring will roll back all changes made during the test after it finishes.
@@ -179,7 +189,8 @@ public class MyServiceTest {
 ✅ Why the Change?
 In Spring Boot 3 and Jakarta EE 9, all Java EE packages were migrated from javax.* to jakarta.*.
 
-This change was made because Oracle transferred the Java EE namespace to the Eclipse Foundation (Jakarta EE), and due to licensing, the package names had to change.
+This change was made because Oracle transferred the Java EE namespace to the Eclipse Foundation (Jakarta EE), and due to licensing,
+the package names had to change.
 
 ✅ Imports Based on Version:
 | Scenario                       | You Import From                                                          |
@@ -227,3 +238,12 @@ public class UserService {
 | Using **Spring Boot**           | `org.springframework.transaction.annotation.Transactional` ✅ |
 | Strict **Jakarta EE** only      | `jakarta.transaction.Transactional`                          |
 | Using **older Spring Boot 2.x** | `javax.transaction.Transactional`                            |
+
+────────────────────────────────────────
+✅ Short Interview Answer
+
+@Transactional tells Spring to wrap the method in a DB transaction via a proxy:
+all work commits together or rolls back together.
+By default only unchecked exceptions roll back — use rollbackFor for checked ones.
+Put it on public service methods; avoid self-invocation.
+Use propagation/isolation when nested calls or concurrency matter.

@@ -40,6 +40,11 @@ One transaction’s uncommitted work shouldn’t corrupt another’s view/result
 
 Example: two users booking the last seat → isolation + locking/constraints → only one wins.
 
+Problems isolation levels control:
+- Dirty read → see uncommitted data
+- Non-repeatable read → same row changes on re-read
+- Phantom read → new matching rows appear on re-query
+
 Common levels (MySQL/InnoDB):
 | Level            | Rough idea                                   |
 | ---------------- | -------------------------------------------- |
@@ -47,6 +52,9 @@ Common levels (MySQL/InnoDB):
 | READ COMMITTED   | only committed data                          |
 | REPEATABLE READ  | InnoDB default; stable reads in a txn (MVCC) |
 | SERIALIZABLE     | strongest; more locking / less concurrency   |
+
+Higher isolation → safer concurrency, usually less throughput.
+Use InnoDB for ACID; MyISAM is not fully transactional.
 
 ────────────────────────────────────────
 🔹 4. Durability (Committed data survives failure)

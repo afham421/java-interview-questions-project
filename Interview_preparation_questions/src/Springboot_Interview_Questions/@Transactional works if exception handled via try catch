@@ -1,0 +1,104 @@
+Q: Does @Transactional still roll back if the exception is handled with try-catch?
+
+Short answer: Usually NO.
+If you catch the exception inside the @Transactional method and do not rethrow (and do not mark rollback),
+Spring sees a normal successful return → transaction COMMITS.
+
+This is a very common Spring interview trap.
+
+────────────────────────────────────────
+1. How Spring decides commit vs rollback
+
+Spring’s transaction proxy wraps the method.
+
+- Exception propagates out of the @Transactional method
+  → by default ROLLBACK for RuntimeException / Error
+- Method returns normally (no exception leaving the method)
+  → COMMIT
+
+So try-catch matters because catching can hide the exception from the proxy.
+
+Default rollback rules:
+| Exception type              | Default behavior      |
+| --------------------------- | --------------------- |
+| RuntimeException / Error    | ROLLBACK              |
+| Checked Exception           | COMMIT (unless `rollbackFor`) |
+
+────────────────────────────────────────
+2. Normal case (exception escapes) → ROLLBACK
+
+@Transactional
+public void transfer() {
+    accountRepo.debit(100);
+
+    throw new RuntimeException("Error");
+
+    // credit never reached
+}
+
+Result: RuntimeException leaves the method → ROLLBACK (debit undone).
+
+────────────────────────────────────────
+3. try-catch without rethrow → COMMIT (danger)
+
+@Transactional
+public void transfer() {
+    try {
+        accountRepo.debit(100);
+        throw new RuntimeException("Error");
+        // accountRepo.credit(100); never reached
+    } catch (Exception e) {
+        System.out.println("Handled");
+        // swallowed — method ends normally
+    }
+}
+
+Result:
+- Exception caught inside method
+- Proxy does NOT see a failure
+- Transaction COMMITS
+- debit may be saved, credit never ran → inconsistency
+
+────────────────────────────────────────
+4. Correct approach A — rethrow
+
+@Transactional
+public void transfer() {
+    try {
+        accountRepo.debit(100);
+        throw new RuntimeException("Error");
+    } catch (Exception e) {
+        log.error("transfer failed", e);
+        throw e; // must propagate
+    }
+}
+
+Result: exception reaches proxy → ROLLBACK.
+
+────────────────────────────────────────
+5. Correct approach B — mark rollback only
+
+If you must catch and not rethrow (e.g. return an error DTO):
+
+catch (Exception e) {
+    TransactionAspectSupport
+            .currentTransactionStatus()
+            .setRollbackOnly();
+    // return error response / handle without rethrowing
+}
+
+Result: method can return normally, but Spring still rolls back on completion.
+
+────────────────────────────────────────
+6. Best practice
+
+- Prefer let exceptions propagate from transactional service methods.
+- If you catch: log + rethrow, OR setRollbackOnly().
+- Don’t swallow business/DB failures inside @Transactional.
+
+────────────────────────────────────────
+7. Interview one-liner
+
+If an exception is caught and handled inside a @Transactional method and not rethrown,
+Spring treats the method as successful and commits — unless you explicitly call setRollbackOnly().
+Rollback happens when the failure is visible to the transaction proxy (exception escapes) or rollback is marked manually.

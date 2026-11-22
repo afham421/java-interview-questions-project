@@ -1,119 +1,179 @@
-In Spring Framework AOP, there are two main ways aspects are applied:
+Types of Proxy / AOP in Spring
 
-Proxy-based AOP (Spring AOP)
+Interview topic usually covers two layers:
 
-AspectJ AOP
+1) How Spring AOP applies aspects → Proxy-based (default) vs AspectJ weaving
+2) Inside Spring proxies → JDK Dynamic Proxy vs CGLIB
 
-Understanding their difference is a very common backend interview question.
+────────────────────────────────────────
+A) Proxy-based AOP (Spring AOP) — default in Spring Boot
 
-1️⃣ Proxy-based AOP (Spring AOP)
+Spring wraps your bean in a **proxy**. Cross-cutting logic (@Transactional, @Cacheable, custom @Aspect) runs on the proxy.
 
-This is the default AOP used in Spring Boot applications.
-
-Spring creates a proxy object around your bean.
-
-How it works
 Client
   ↓
-Proxy Object
+Proxy (advice: before/after/around)
   ↓
-Target Method
+Target bean method
 
-When the client calls the method:
+Example:
+userService.createUser()
+→ actually: Proxy → Aspect/Interceptor → real UserService.createUser()
 
-Call goes to proxy
-
-Proxy executes aspect logic
-
-Then calls actual method
-
-Example Flow
-UserService (Original Bean)
-      ↑
-   Proxy Bean
-
-Client calls:
-
-userService.createUser();
-
-Actually it calls:
-
-Proxy → Aspect → Real Method
-Important Limitation
-
-Proxy-based AOP only works for public methods and external method calls.
-
-Example problem:
+Important limitations
+- Typically **public** methods on Spring beans
+- Only calls that go **through the proxy** are advised
+- Self-invocation bypasses proxy:
 
 public void methodA() {
-    methodB();   // AOP will NOT work here
+    methodB(); // this.methodB() → AOP / @Transactional may NOT apply
 }
 
-Because internal method calls bypass proxy.
+Used for: transactions, caching, security, logging, retries — most Boot apps.
 
-2️⃣ AspectJ AOP
+Note: `@Aspect` / AspectJ-style annotations are common, but runtime is still Spring’s **proxy** AOP unless you enable full AspectJ weaving.
 
-AspectJ works differently.
-It modifies the actual bytecode of the class.
+────────────────────────────────────────
+B) Types of Spring proxies (JDK vs CGLIB)
 
-So aspects are woven directly into the class.
+| Proxy type        | When used                                      | How it works                          |
+| ----------------- | ---------------------------------------------- | ------------------------------------- |
+| JDK Dynamic Proxy | Target implements an interface (classic case)  | Proxy implements the same interface   |
+| CGLIB             | No interface, or class-based proxy preferred   | Proxy is a **subclass** of the target |
 
-How it works
+JDK idea:
+Client → Proxy (implements UserService) → UserServiceImpl
+
+CGLIB idea:
+Client → UserService$$SpringCGLIB (extends UserService) → super.method()
+
+Extra points:
+- `final` class / `final` method → CGLIB cannot advise that method/class
+- Spring Boot often defaults toward CGLIB class proxies for consistency
+- Related detail file: `How does Spring create proxies internally`
+
+────────────────────────────────────────
+C) AspectJ AOP (bytecode weaving)
+
+AspectJ weaves advice into the class bytecode (compile-time / load-time / etc.).
+No Spring proxy required for those join points.
+
+────────────────────────────────────────
+How weaving works (the “how?”)
+
+Spring AOP:
+Your .class stays normal. Spring wraps a proxy at runtime.
+methodB() called via this → no proxy → no advice.
+
+AspectJ:
+A weaver **rewrites the .class** so advice calls are inserted inside the method body
+(or around join points). After weaving, the class itself contains the extra logic.
+
+Before weave (conceptually):
+void methodB() {
+    // business code
+}
+
+After weave (conceptually):
+void methodB() {
+    LoggingAspect.logBefore();   // inserted by weaver
+    // business code
+    LoggingAspect.logAfter();
+}
+
+So even:
+void methodA() {
+    methodB();   // self call
+}
+still runs advice, because methodB’s bytecode already includes it — no proxy hop needed.
+
+When weaving can happen:
+
+| Mode              | When                                              | Idea |
+| ----------------- | ------------------------------------------------- | ---- |
+| Compile-time (CTW)| During build (`ajc` / AspectJ Maven/Gradle plugin)| .java/.class → woven .class in the jar |
+| Load-time (LTW)   | When JVM loads the class (javaagent)              | Classloader weaves as classes load |
+| Binary weaving    | Post-compile on existing jars                     | Weave already-compiled classes |
+
+“No Spring proxy required” means:
+for those woven join points, interception is inside the class bytecode,
+not Client → Proxy → Target.
+
+(You can still use Spring with AspectJ; Spring may configure LTW, but the mechanism is weaving, not JDK/CGLIB proxy.)
+
+────────────────────────────────────────
+What do YOU need to do for weaving? (practical)
+
+Important:
+@Aspect + @EnableAspectJAutoProxy  → still Spring PROXY AOP (default Boot).
+That is NOT full bytecode weaving.
+
+To actually weave, pick one:
+
+── Option 1: Load-Time Weaving (LTW) with Spring (common interview “how”)
+
+1. Add dependencies (aspectjweaver, spring-instrument / aspects as needed)
+2. Start JVM with AspectJ agent, e.g.:
+   -javaagent:/path/to/aspectjweaver.jar
+   (and often spring-instrument for Spring LTW)
+3. Enable Spring LTW, e.g.:
+   @EnableLoadTimeWeaving
+   or spring.instruments / LoadTimeWeaver config
+4. Write @Aspect (or .aj) and pointcuts
+5. Run app → classes get woven as they load
+
+── Option 2: Compile-Time Weaving (CTW)
+
+1. Add AspectJ compiler plugin to Maven/Gradle (`aspectj-maven-plugin` / `ajc`)
+2. Put aspects in the project
+3. Build → plugin rewrites .class files into the jar
+4. Run normally (no javaagent required for those woven classes)
+
+── Option 3: Don’t weave (what most apps do)
+
+Keep Spring Boot defaults:
+- @EnableAspectJAutoProxy (auto in Boot for many features)
+- @Transactional / @Cacheable / @Aspect on public bean methods
+- Call through Spring proxy (or split beans) for self-invocation
+
+You only set up weaving when you truly need private/self-call/constructor join points.
+
 Client
   ↓
-Modified Class (with aspect inside)
+Class with aspect already woven in
 
-No proxy is needed.
+Can advise (depending on setup):
+- private / protected methods
+- constructors
+- field get/set
+- internal method calls (self-invocation)
 
-Advantages
+More powerful, more setup/complexity → less common in typical Spring Boot microservices.
 
-AspectJ can apply AOP to:
+────────────────────────────────────────
+D) Comparison
 
-private methods
+| Feature          | Spring Proxy AOP              | AspectJ weaving                 |
+| ---------------- | ----------------------------- | ------------------------------- |
+| Mechanism        | Proxy around bean             | Bytecode weaving                |
+| Self-invocation  | ❌ Bypasses proxy              | ✅ Can be advised                |
+| Private methods  | ❌ (normal Spring AOP)         | ✅                               |
+| Constructors     | ❌                             | ✅                               |
+| Setup            | Easy (default Boot)           | More complex                    |
+| Typical use      | TX, cache, security, logging  | Deep / special AOP needs        |
 
-protected methods
+Performance: AspectJ avoids proxy indirection; Spring proxy overhead is usually small.
+Don’t oversell “AspectJ is always faster” in interviews — prefer capability differences.
 
-constructors
+────────────────────────────────────────
+E) What companies usually use
 
-field access
+Most Spring Boot services → **Spring Proxy AOP** (JDK or CGLIB under the hood).
+AspectJ weaving → only when you truly need non-proxy join points.
 
-internal method calls
-
-3️⃣ Visual Difference
-Spring Proxy AOP
-Client
-  ↓
-Proxy
-  ↓
-Target Class
-AspectJ AOP
-Client
-  ↓
-Aspect + Target (woven together)
-4️⃣ Performance Difference
-| Feature         | Spring Proxy AOP | AspectJ          |
-| --------------- | ---------------- | ---------------- |
-| Implementation  | Proxy            | Bytecode weaving |
-| Internal calls  | ❌ Not supported  | ✅ Supported      |
-| Private methods | ❌                | ✅                |
-| Performance     | Slightly slower  | Faster           |
-| Complexity      | Easy             | More complex     |
-
-5️⃣ What Companies Usually Use
-
-Most microservices built with Spring Boot use:
-
-✅ Spring Proxy AOP
-
-Because:
-
-Easy to configure
-
-Works well for logging, transactions, security
-
-AspectJ is used only when deep bytecode-level AOP is required.
-
+────────────────────────────────────────
 🔑 Interview Answer (Short)
 
-Spring AOP is proxy-based and applies aspects by creating proxy objects around beans,
- while AspectJ performs bytecode weaving and can apply aspects directly to classes, including private methods and internal calls.
+Spring AOP is proxy-based: Spring wraps beans (JDK interface proxy or CGLIB subclass) and intercepts external calls — so self-invocation bypasses advice.
+AspectJ weaves aspects into bytecode and can advise private methods, constructors, and internal calls.
+In Spring Boot we almost always use proxy AOP; AspectJ only for advanced cases.

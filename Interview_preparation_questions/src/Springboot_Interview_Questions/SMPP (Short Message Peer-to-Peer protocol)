@@ -1,0 +1,132 @@
+SMPP — Interview Notes
+
+────────────────────────────────────────
+Q: What is SMPP?
+
+SMPP = **Short Message Peer-to-Peer** protocol.
+
+It is an open protocol used to send/receive **SMS** between:
+- Your application (ESME — External Short Messaging Entity)
+- SMSC (Short Message Service Center) of a telecom / SMS aggregator
+
+Think:
+Your Spring Boot service  ←SMPP→  SMS provider / telecom SMSC  →  user’s phone
+
+Not an HTTP API by itself (though many modern providers also offer HTTP REST for SMS).
+SMPP is the classic, high-throughput, binary TCP protocol for SMS.
+
+────────────────────────────────────────
+Why use SMPP?
+
+| Reason            | Explanation                                      |
+| ----------------- | ------------------------------------------------ |
+| High volume SMS   | Designed for bulk / continuous SMS traffic       |
+| Persistent link   | Keep a TCP bind open; send many messages         |
+| Delivery reports  | Get DLR (delivered / failed / expired, etc.)     |
+| Industry standard | Telecom / aggregators still widely use it        |
+
+When HTTP SMS APIs are enough: low volume, simple integrations.
+When SMPP shines: thousands of SMS/sec, telecom-grade control, DLR streaming.
+
+────────────────────────────────────────
+Core concepts
+
+| Term   | Meaning |
+| ------ | ------- |
+| ESME   | Your app that binds to SMSC |
+| SMSC   | Message center that routes SMS to mobile network |
+| Bind   | Login/session to SMSC (like opening a channel) |
+| PDU    | Protocol Data Unit — SMPP message packet |
+| DLR    | Delivery receipt / delivery report |
+
+Bind types:
+- **BIND_TRANSMITTER** — send SMS only
+- **BIND_RECEIVER** — receive SMS / DLRs only
+- **BIND_TRANSCEIVER** — send + receive on same session (common)
+
+────────────────────────────────────────
+High-level flow (submit SMS)
+
+1. App opens TCP connection to SMSC host:port
+2. Send **bind** (system_id, password, bind type)
+3. SMSC accepts bind
+4. App sends **submit_sm** (from, to, text, optional params)
+5. SMSC replies **submit_sm_resp** (message_id)
+6. Later SMSC may send **deliver_sm** as DLR (status of that message_id)
+7. On shutdown: **unbind**
+
+Conceptual:
+
+Spring Boot App (ESME)
+        │  TCP + SMPP
+        ▼
+     SMSC / Aggregator
+        │
+        ▼
+   Mobile Network → Phone
+
+────────────────────────────────────────
+Important PDUs (know names for interviews)
+
+| PDU              | Role                              |
+| ---------------- | --------------------------------- |
+| bind_*           | Start session                     |
+| submit_sm        | Send MT (mobile-terminated) SMS   |
+| submit_sm_resp   | Ack + message id                  |
+| deliver_sm       | MO SMS or DLR from SMSC           |
+| enquire_link     | Keepalive / heartbeat             |
+| unbind           | Close session                     |
+
+────────────────────────────────────────
+Java / Spring Boot angle
+
+SMPP is not built into Spring Boot.
+You use a library + connection management, e.g.:
+- OpenSMPP
+- jsmpp
+- cloudhopper-smpp (common historically)
+
+Typical design in a microservice:
+
+SMS API / Order Service
+        ↓
+   SMS Outbox / Queue (Kafka/Rabbit)
+        ↓
+   SMPP Gateway service (keeps bind alive)
+        ↓
+   SMSC
+
+Why separate gateway?
+- One long-lived SMPP session (or pool)
+- Rate limits, retries, DLR handling
+- Don’t open/close bind per HTTP request
+
+────────────────────────────────────────
+Interview tips / pitfalls
+
+- Bind is expensive → reuse session; use enquire_link to keep alive
+- Handle reconnect if SMSC drops TCP
+- Encode correctly (GSM-7 vs UCS-2 for Unicode/Arabic/Urdu, etc.)
+- Long SMS → segmentation (UDH / message parts)
+- Idempotency + outbox if “send SMS” must not duplicate on retry
+- Secure credentials; prefer private network / VPN to SMSC
+- Distinguish **submit success** (accepted by SMSC) vs **delivered to phone** (DLR)
+
+────────────────────────────────────────
+SMPP vs HTTP SMS API
+
+| Point        | SMPP                         | HTTP SMS API            |
+| ------------ | ---------------------------- | ----------------------- |
+| Transport    | TCP binary PDUs              | REST/JSON over HTTP     |
+| Session      | Persistent bind              | Usually request/response|
+| Throughput   | Very high                    | Often lower / rate-limited differently |
+| Complexity   | Higher                       | Easier                  |
+| DLR          | Streaming deliver_sm         | Webhooks / poll         |
+
+────────────────────────────────────────
+✅ Short Interview Answer
+
+SMPP is the Short Message Peer-to-Peer protocol used to exchange SMS with an SMSC.
+Our app binds as an ESME over TCP, submits messages with submit_sm, and can receive delivery reports via deliver_sm.
+In Spring Boot we typically run a dedicated SMS gateway service using a library like jsmpp/cloudhopper, 
+keeping a persistent bind for high-volume, reliable SMS — unlike simple one-off HTTP SMS APIs.

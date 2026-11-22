@@ -1,153 +1,114 @@
-These two concepts are usually discussed in transaction management in frameworks like Spring (Java).
+@Transactional — Isolation & Propagation
 
+These two attributes control different things:
+
+- Isolation   → how concurrent transactions see each other’s data
+- Propagation → what happens when one transactional method calls another
+
+@Transactional(
+    isolation = Isolation.READ_COMMITTED,
+    propagation = Propagation.REQUIRED
+)
+public void transfer() { ... }
+
+────────────────────────────────────────
 1. Transaction Isolation
 
-Isolation defines how one transaction is visible to other concurrent transactions.
+Isolation = visibility rules between concurrent transactions.
 
-It controls data consistency when multiple transactions run at the same time.
-
-Common Problems Without Isolation
+Without enough isolation you can get:
 
 1️⃣ Dirty Read
-Reading data that another transaction has not committed yet.
+T2 reads data T1 changed but has not committed yet.
+If T1 rolls back → T2 used invalid data.
 
-Example:
-
-Transaction T1
-
-UPDATE account SET balance = 900 WHERE id = 1;
-
-Transaction T2 reads balance = 900 before T1 commits.
-
-If T1 rolls back → T2 read invalid data.
+T1: UPDATE account SET balance = 900 WHERE id = 1;  (not committed)
+T2: SELECT balance → 900
+T1: ROLLBACK
 
 2️⃣ Non-Repeatable Read
-Reading the same row twice but getting different values.
+Same row read twice in T1; value changes because T2 committed an UPDATE/DELETE.
 
-Example:
-
-T1:
-
-SELECT balance FROM account WHERE id = 1;
-
-T2 updates the balance and commits.
-
-T1 reads again → value changed.
+T1: SELECT balance ... → 1000
+T2: UPDATE ... COMMIT
+T1: SELECT balance ... → 900
 
 3️⃣ Phantom Read
+Same query twice in T1; result set changes because T2 inserted/deleted matching rows.
 
-Example:
+T1: SELECT * FROM orders WHERE amount > 1000;  → 5 rows
+T2: INSERT matching row + COMMIT
+T1: same SELECT → 6 rows
 
-T1
-
-SELECT * FROM orders WHERE amount > 1000;
-
-T2 inserts a new row that matches the condition.
-
-T1 runs the same query again → new row appears.
-
+────────────────────────────────────────
 Isolation Levels
 
-1️⃣ Read Uncommitted (lowest)
+| Level            | Dirty | Non-repeatable | Phantom (ANSI idea) | Notes |
+| ---------------- | ----- | -------------- | ------------------- | ----- |
+| READ UNCOMMITTED | Yes   | Yes            | Yes                 | Lowest |
+| READ COMMITTED   | No    | Yes            | Yes                 | Common default (Postgres/Oracle/SQL Server) |
+| REPEATABLE READ  | No    | No             | Possible (ANSI)     | MySQL InnoDB default |
+| SERIALIZABLE     | No    | No             | No                  | Strongest; least concurrency |
 
-Allows dirty reads.
+Interview nuance (MySQL InnoDB):
+- ANSI: REPEATABLE READ may still allow phantoms.
+- InnoDB REPEATABLE READ uses MVCC (+ gap locks for many locking reads) and often prevents phantoms in practice.
+- SERIALIZABLE ≈ transactions behave as if run one after another (more locking / less concurrency).
 
-2️⃣ Read Committed         >>>>>>>>   resolve dirty read problem
+Higher isolation → safer, usually slower / more contention.
 
-Only committed data is visible.
-
-3️⃣ Repeatable Read          >>>>>>>>>>   resolve Non-Repeatable Read  and phantom also   but it does not lock records physically in DB means insertion can happen
-(( but phantom read prevented by this because it keep snapshot of the exact time and return value on 2nd read from snapshot not from DB)
-Same rows return same data during transaction.
-
-4️⃣ Serializable (highest)        >>>>>>>>>>>   resolve ALL ( dirty read , Non-Repeatable Read , Phantom read )   it lock DB rows physically under
-where conditon like id less then 100 means less then 100 no one can insert during this transaction
-
-Transactions run like sequential execution.
-
-
-
-
+────────────────────────────────────────
 2. Transaction Propagation
 
-Propagation defines how a transaction behaves when one transactional method calls another transactional method.
+Propagation = how transactions nest when Method A (TX) calls Method B (TX).
 
-Example:
+Method A
+   └── Method B   ← join A? new TX? no TX?
 
-Method A (transaction)
-   |
-   ---> Method B (transaction)
+Must call B through another Spring bean/proxy (self-invocation bypasses propagation).
 
-Propagation decides whether B will use A's transaction or create a new one.
+────────────────────────────────────────
+Propagation Types
 
-Common Propagation Types
-1️⃣ REQUIRED (Most Common)
-
-If a transaction exists → join it
-If none exists → create new
-
-Example:
-
-ServiceA.methodA()  (Transaction started)
-       |
-       ---> ServiceB.methodB()
-
-Method B joins the same transaction.
-
-If B fails → whole transaction rolls back.
+1️⃣ REQUIRED (default)
+- Existing TX → join it
+- None → create new
+- If B fails → whole shared TX can roll back
 
 2️⃣ REQUIRES_NEW
+- Always start a new TX; suspend outer
+- B failure rolls back only B; A can still commit
+- Typical: audit/logging that must save even if business TX fails
 
-Always creates a new transaction.
+3️⃣ NESTED
+- Nested TX / savepoint inside current TX
+- Inner rollback can roll back to savepoint; outer may continue
+- Needs JDBC savepoint support
 
-Example:
+4️⃣ SUPPORTS
+- Join if TX exists; else run without TX
 
-Method A transaction
-       |
-       ---> Method B (new transaction)
+5️⃣ NOT_SUPPORTED
+- Always non-transactional; suspend existing TX
 
-If B fails → only B rolls back, A can still commit.
+6️⃣ MANDATORY
+- Must join existing TX; else exception
 
-Used in:
+7️⃣ NEVER
+- Must run without TX; else exception
 
-Logging
+────────────────────────────────────────
+Isolation vs Propagation
 
-Audit
+| Feature  | Isolation                                         | Propagation                                              |
+| -------- | ------------------------------------------------- | -------------------------------------------------------- |
+| Purpose  | Concurrent visibility / anomalies                 | Nested method TX boundaries                              |
+| About    | Multiple users/transactions at once               | A calls B in same app                                    |
+| Example  | Dirty / non-repeatable / phantom                  | REQUIRED, REQUIRES_NEW, NEVER                            |
 
-Notifications
+────────────────────────────────────────
+Short Interview Answer
 
-3️⃣ SUPPORTS
-
-If a transaction exists → use it
-If not → run without transaction.
-
-4️⃣ NOT_SUPPORTED
-
-Always run without transaction.
-
-Existing transaction is suspended.
-
-5️⃣ MANDATORY
-
-Must run inside an existing transaction.
-
-If no transaction exists → exception.
-
-6️⃣ NEVER
-
-Must run without transaction.
-
-If transaction exists → exception.
-
-Simple Interview Difference
-| Feature  | Isolation                                          | Propagation                                                  |
-| -------- | -------------------------------------------------- | ------------------------------------------------------------ |
-| Purpose  | Control visibility between concurrent transactions | Control behavior when one transactional method calls another |
-| Used for | Concurrency control                                | Transaction flow                                             |
-| Example  | Dirty reads, phantom reads                         | REQUIRED, REQUIRES_NEW                                       |
-
-Very Short Interview Answer
-
-Isolation defines how transactions interact with each other when running concurrently.
-
-Propagation defines how transactions behave when one transactional method calls another transactional method.
+Isolation defines how concurrent transactions see each other’s data and which read anomalies are allowed.
+Propagation defines whether a called method joins the current transaction, starts a new one, or refuses to run in a transaction.
+In Spring both are configured on @Transactional.

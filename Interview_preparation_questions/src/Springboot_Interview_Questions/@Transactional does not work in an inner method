@@ -1,0 +1,102 @@
+Q: Why does @Transactional not work on an inner / same-class method call?
+
+Most common reason: Spring’s **proxy-based** transaction management + **self-invocation**.
+
+────────────────────────────────────────
+1️⃣ The Problem (Self Invocation)
+
+Spring applies @Transactional through a proxy around the bean.
+A call from inside the same class uses `this.method()` → **bypasses the proxy** → `@Transactional` on that inner method is ignored.
+
+Example (inner @Transactional does NOT start):
+
+@Service
+public class OrderService {
+
+    public void createOrder() {
+        saveOrder();   // this.saveOrder() — no proxy
+    }
+
+    @Transactional
+    public void saveOrder() {
+        // expected transaction may NOT start
+    }
+}
+
+Flow:
+
+Client → Proxy → createOrder()
+                    ↓
+               this.saveOrder()   ← direct call, proxy skipped
+                    ↓
+            @Transactional ignored
+
+────────────────────────────────────────
+Important nuance
+
+If the **outer** method is already `@Transactional`, DB work in the inner method still runs in that outer transaction
+(same thread / persistence context) — even on self-call.
+
+Self-invocation is the problem when you need the **inner** method’s own annotation to apply, e.g.:
+- only inner method has `@Transactional`
+- inner has `Propagation.REQUIRES_NEW` (must suspend outer and start a new TX)
+- inner has different rollback/isolation settings
+
+────────────────────────────────────────
+2️⃣ Solution 1 (Recommended) — another Spring bean
+
+@Service
+public class OrderService {
+
+    @Autowired
+    private OrderPersistenceService orderPersistenceService;
+
+    public void createOrder() {
+        orderPersistenceService.saveOrder(); // goes through that bean’s proxy
+    }
+}
+
+@Service
+public class OrderPersistenceService {
+
+    @Transactional
+    public void saveOrder() {
+        // transaction works
+    }
+}
+
+Flow: Client → … → Proxy(OrderPersistenceService) → saveOrder()
+
+────────────────────────────────────────
+3️⃣ Solution 2 — call through proxy (self inject)
+
+@Autowired
+@Lazy  // often needed to avoid circular dependency on self
+private OrderService self;
+
+public void createOrder() {
+    self.saveOrder(); // proxy → @Transactional applies
+}
+
+────────────────────────────────────────
+4️⃣ Solution 3 — AspectJ mode (less common)
+
+Switch transaction weaving to AspectJ so self-invocation is also advised.
+Usually overkill; prefer separate bean.
+
+────────────────────────────────────────
+5️⃣ Other reasons @Transactional “doesn’t work”
+
+- Method not public (Spring proxy AOP typically needs public)
+- Class not a Spring bean (missing @Service / @Component)
+- Exception swallowed (try-catch without rethrow / setRollbackOnly)
+- Checked exception without rollbackFor
+- Wrong propagation
+- Calling from outside Spring context (new OrderService())
+
+────────────────────────────────────────
+6️⃣ Interview one-liner
+
+@Transactional is applied via a Spring AOP proxy, so same-class (self) calls bypass the proxy
+and the inner method’s transactional advice is not applied.
+Fix by moving it to another bean, calling through an injected proxy, or using AspectJ.
