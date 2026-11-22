@@ -10,6 +10,21 @@
 | Introduced In | Java 1.2 (`Collections`)                      | Java 5 (`java.util.concurrent`)                             |
 | Best For      | Simple / low concurrency                      | High concurrency, servers, shared caches                    |
 
+
+1. How does CAS work?
+CAS works with three values:
+1. Expected value: The value we expect to find.
+2. New value: The value we want to update.
+3. Current value: The actual value in memory.
+
+CAS performs this operation:
+- If the current value equals the expected value, update it with the new value.
+- Otherwise, don't update it because another thread may have changed it.
+
+e.g
+If the current value is 10, change it to 20.
+Otherwise, return false.
+
 ────────────────────────────────────────
 🔧 1. `Collections.synchronizedMap`
 

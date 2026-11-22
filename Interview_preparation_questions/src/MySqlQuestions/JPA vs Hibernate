@@ -1,0 +1,57 @@
+Q: JPA aur Hibernate mein kya difference hai?
+
+────────────────────────────────────────
+One-line
+
+JPA = specification (standard API / interfaces + annotations)
+Hibernate = most popular implementation (actual ORM framework that implements JPA)
+
+JPA = “rules / contract”
+Hibernate = “engine that follows those rules” (and adds extras)
+
+────────────────────────────────────────
+Comparison
+
+| Point            | JPA                                      | Hibernate                                      |
+| ---------------- | ---------------------------------------- | ---------------------------------------------- |
+| What is it?      | Spec / API (Jakarta Persistence)         | ORM framework / JPA provider                   |
+| Alone usable?    | No — needs an implementation             | Yes (native API) + as JPA provider             |
+| Package          | jakarta.persistence.*                    | org.hibernate.* (+ implements JPA)             |
+| Query language   | JPQL                                     | HQL (similar) + native SQL + Criteria          |
+| Who defines it?  | Jakarta EE                               | Red Hat / Hibernate community                  |
+| Spring Boot      | Spring Data JPA uses JPA APIs            | Default provider under spring-boot-starter-data-jpa |
+
+────────────────────────────────────────
+How they work together in Spring Boot
+
+Your code (JPA annotations / EntityManager / Spring Data)
+                    ↓
+              Hibernate (provider)
+                    ↓
+                 JDBC / HikariCP
+                    ↓
+                 Database
+
+You mostly write JPA-style code:
+@Entity, @Id, EntityManager, @Query (JPQL)
+
+Hibernate does the real SQL generation, caching (L1/L2), dirty checking, etc.
+
+────────────────────────────────────────
+Extra Hibernate features (beyond plain JPA)
+
+- Better caching controls / L2 cache integrations
+- Hibernate-specific annotations (@Cache, @BatchSize, @Filter, …)
+- HQL extensions / StatelessSession
+- More tuning / statistics
+
+Rule of thumb:
+Prefer portable JPA APIs in app code; use Hibernate-specific features only when needed.
+
+────────────────────────────────────────
+✅ Short Interview Answer
+
+JPA ek standard specification hai jo batati hai entities ko DB se kaise map karna hai.
+Hibernate us specification ka implementation hai — actual ORM jo SQL generate karta hai.
+Spring Boot mein hum JPA annotations use karte hain; peeche default provider Hibernate hota hai.
+JPA = interface/standard; Hibernate = implementation.

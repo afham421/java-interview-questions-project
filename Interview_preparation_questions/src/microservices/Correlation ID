@@ -1,0 +1,63 @@
+Q: Correlation ID kya hoti hai?
+
+Correlation ID (sometimes called Request ID) = ek unique ID jo ek request ke saath poori journey mein travel karti hai —
+API Gateway → Service A → Service B → logs / queues — taake us request ke saare logs ek ID se search ho saken.
+
+Example:
+X-Correlation-Id: 8f7a91c2-4b21-4c9a-9e11-22aa33bb44cc
+
+────────────────────────────────────────
+Why needed?
+
+Microservices mein ek user call kai services touch karti hai.
+Bina common ID ke har service ke logs alag dikhte hain — failure trace karna mushkil.
+
+With Correlation ID:
+grep / Kibana search → 8f7a91c2
+→ Gateway + Order + Payment + Notification sab logs mil jate hain.
+
+────────────────────────────────────────
+Correlation ID vs Trace ID
+
+| Term            | Typical meaning                                      |
+| --------------- | ---------------------------------------------------- |
+| Correlation ID  | App/business request id (often custom header)        |
+| Trace ID        | Distributed tracing id (OpenTelemetry / Zipkin / Jaeger) |
+| Span ID         | One hop/operation inside a trace                     |
+
+Practice:
+- Many teams use Trace ID as the correlation id in logs.
+- Some keep both: business Correlation-Id + OpenTelemetry TraceId.
+
+────────────────────────────────────────
+How it flows
+
+Client / Gateway generates ID (or accepts incoming)
+        ↓
+Header: X-Correlation-Id / X-Request-Id
+        ↓
+Service A logs it (MDC)
+        ↓
+Outbound HTTP / Kafka header mein same ID forward
+        ↓
+Service B logs same ID
+
+Spring tip:
+- Put id in MDC (Mapped Diagnostic Context) so every log line includes it
+- Filter / interceptor at entry; clear MDC in finally
+
+────────────────────────────────────────
+Related question: Ek service call ke logs kaise trace karenge?
+
+1. Take Correlation ID / Trace ID from failing response or gateway log
+2. Search that ID in log aggregator (ELK / Loki / CloudWatch)
+3. Or open distributed trace in Jaeger / Tempo / Zipkin
+4. See which service/span failed or was slow
+
+See also: "How would you trace a request across distributed services"
+
+────────────────────────────────────────
+✅ Interview one-liner
+
+Correlation ID ek unique request identifier hai jo har service call aur log line ke saath propagate hoti hai,
+taake distributed system mein ek request ka full path logs se trace ho sake.

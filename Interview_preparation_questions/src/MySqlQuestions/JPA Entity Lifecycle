@@ -1,4 +1,27 @@
-Yes. Let's use one Employee class and one service method so you can see the entire JPA lifecycle in one place.
+JPA Entity Lifecycle — one Employee walkthrough (EntityManager)
+
+Four states (memorize):
+| State     | Meaning                                      | In persistence context? | Usually in DB? |
+| --------- | -------------------------------------------- | ----------------------- | -------------- |
+| TRANSIENT | New object, not tracked, not in DB           | No                      | No             |
+| MANAGED   | Tracked by persistence context               | Yes                     | Yes (or will be on flush) |
+| DETACHED  | Was managed; no longer tracked               | No                      | Usually YES — row already exists |
+| REMOVED   | Marked for DELETE on flush                   | Marked for delete       | Will be deleted on flush |
+
+Important: DETACHED ≠ “not inserted in DB”
+
+Detached means Hibernate stopped tracking the Java object.
+The database row usually still exists (from when it was managed / flushed earlier).
+
+Example from the walkthrough below:
+1. persist + flush  → row is in DB
+2. detach           → object leaves persistence context (row still in DB)
+3. setName("Usman")  → DB is NOT updated (change ignored)
+4. merge            → state brought back under tracking → UPDATE can happen
+
+So:
+- TRANSIENT = not in DB
+- DETACHED  = often already in DB, but further changes are not synced until merge() / find again
 
 @Service
 public class EmployeeService {
@@ -44,6 +67,10 @@ public class EmployeeService {
          * The INSERT may not execute immediately.
          * It normally executes when Hibernate flushes.
          *
+         * EXCEPTION / interview note:
+         * With @GeneratedValue(IDENTITY), Hibernate often
+         * must INSERT early (during persist) to obtain the id.
+         *
          * Conceptually:
          *
          * Employee Object
@@ -66,18 +93,14 @@ public class EmployeeService {
          *
          * Hibernate is watching it.
          *
-         * Hibernate detects:
-         *
-         * Old value: Ali
-         * New value: Ahmed
-         *
          * This is called DIRTY CHECKING.
          *
-         * Hibernate can generate:
-         *
-         * UPDATE employee
-         * SET name = 'Ahmed'
-         * WHERE id = ?;
+         * On flush:
+         * - If INSERT already happened (common with IDENTITY):
+         *     UPDATE employee SET name = 'Ahmed' WHERE id = ?;
+         * - If INSERT was still pending:
+         *     often a single INSERT with current state "Ahmed"
+         *     (no separate Ali → Ahmed UPDATE)
          */
 
 
@@ -309,3 +332,9 @@ entityManager.remove(employee);
 means:
 
 "Mark this managed entity for deletion from the database."
+
+Extra interview notes:
+- remove() only works on a MANAGED entity (detached → merge first, or find again).
+- flush() ≠ commit(): flush writes SQL to DB inside the open transaction; commit ends the transaction.
+- clear() detaches ALL managed entities in the persistence context (not shown above).
+- After method ends successfully → Spring commits → final flush + COMMIT.

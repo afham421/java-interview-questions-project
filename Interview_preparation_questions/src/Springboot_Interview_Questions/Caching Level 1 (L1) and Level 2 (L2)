@@ -1,0 +1,178 @@
+In Hibernate/JPA (Spring Boot), caching has two levels: L1 (first-level) and L2 (second-level).
+Interviewers usually mean these when they ask about L1 vs L2 cache — not Spring’s @Cacheable alone.
+
+────────────────────────────────────────
+🔹 Level 1 (L1) Cache — Session / Persistence Context Cache
+
+What it is
+- Enabled by default in Hibernate.
+- Scoped to one Session / EntityManager (one persistence context / usually one transaction).
+- Stores entities already loaded in that session so the same entity is not fetched again from DB within the same session.
+
+Flow
+
+Request / Transaction
+        ↓
+   EntityManager / Session
+        ↓
+   L1 Cache (in-memory, per session)
+        ↓
+   Database (only on first load)
+
+Example
+
+User u1 = entityManager.find(User.class, 1L);  // hits DB, stores in L1
+User u2 = entityManager.find(User.class, 1L);  // L1 hit → NO second DB call
+// u1 == u2  (same instance in that persistence context)
+
+Key points
+- Automatic — you don’t configure it.
+- Private to one session — other sessions / app instances don’t see it.
+- Cleared when the session/persistence context closes (typically end of transaction).
+- Guarantees identity: same ID → same Java object inside one session.
+
+Limitations
+- Not shared across requests/sessions.
+- Lost when transaction ends.
+- Does not help if many concurrent users need the same data (each has its own L1).
+
+────────────────────────────────────────
+🔹 Level 2 (L2) Cache — SessionFactory / Shared Cache
+
+What it is
+- Optional — must be enabled and configured.
+- Scoped to SessionFactory / EntityManagerFactory (shared across sessions).
+- Stores entity data so different sessions can reuse it without hitting DB again.
+
+Flow
+
+Session A                    Session B
+    ↓                            ↓
+ L1 (session A)              L1 (session B)
+    ↓                            ↓
+         └──→  L2 Cache  ←──────┘
+                  ↓
+               Database
+
+Example providers
+- Ehcache
+- Caffeine (with Hibernate cache region factory)
+- Infinispan
+- Redis (via custom / 3rd-party region factory)
+- Hazelcast
+
+How it works (conceptually)
+
+1. Session looks in its L1 → miss
+2. Looks in L2 → hit → copy into L1 → return
+3. If L2 miss → query DB → put in L1 and L2
+
+Enable (Hibernate / Spring Boot style)
+
+application.properties / yml:
+
+spring.jpa.properties.hibernate.cache.use_second_level_cache=true
+spring.jpa.properties.hibernate.cache.use_query_cache=true
+spring.jpa.properties.hibernate.cache.region.factory_class=...
+
+Entity must be cacheable:
+
+@Entity
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+public class User {
+    ...
+}
+
+Concurrency strategies (important for interviews)
+| Strategy            | Meaning                                      |
+| ------------------- | -------------------------------------------- |
+| READ_ONLY           | Data never changes (safest / fastest)        |
+| NONSTRICT_READ_WRITE| Occasional inconsistency OK                  |
+| READ_WRITE          | Soft locks; safer for updatable entities     |
+| TRANSACTIONAL       | Fully transactional (needs JTA + provider)   |
+
+What L2 stores
+- Entity data (dehydrated state by ID), not the live managed entity instance.
+- Can also cache collections and query results (query cache is separate but related).
+
+────────────────────────────────────────
+🔹 L1 vs L2 (Quick Comparison)
+
+| Point              | L1 Cache                         | L2 Cache                              |
+| ------------------ | -------------------------------- | ------------------------------------ |
+| Enabled by default | Yes                              | No                                   |
+| Scope              | One Session / EntityManager      | SessionFactory (shared)              |
+| Shared?            | No                               | Yes (across sessions in same JVM / cluster depending on provider) |
+| Lifetime           | Until session closes             | Until eviction / TTL / invalidate    |
+| Purpose            | Avoid repeat DB hits in one unit of work | Reuse data across many requests   |
+| Config needed      | None                             | Yes (provider + @Cacheable entity)   |
+
+What “Until eviction / TTL / invalidate” means (L2 lifetime)
+
+L1 dies with the session. L2 can outlive many transactions — an entry leaves L2 only when:
+
+1. Eviction
+   Cache is full (or hits size/policy limit) → provider removes older / least-used entries.
+   Example: max 10,000 users → when full, LRU drops the least recently used one.
+
+2. TTL (Time To Live)
+   Entry is kept only for a configured time, then expires automatically.
+   Example: TTL = 10 minutes → after 10 minutes gone; next find() hits DB (and may refill L2).
+
+3. Invalidate
+   Something deliberately removes / marks the entry stale — usually after update/delete
+   so other sessions don’t read outdated data.
+   Example: user updated → that entity’s L2 entry is invalidated → next read reloads from DB.
+
+────────────────────────────────────────
+🔹 Lookup Order
+
+When you call find(id):
+
+1. Check L1 → HIT → return
+2. Check L2 → HIT → put into L1 → return
+3. Hit Database → put into L1 (+ L2 if enabled) → return
+
+────────────────────────────────────────
+🔹 L2 vs Spring Cache (@Cacheable) — don’t mix them up
+
+Hibernate L1 / L2
+- Works at persistence / entity level inside JPA/Hibernate.
+- Transparent when loading entities via EntityManager / repositories (for L1 always; L2 when enabled).
+
+Spring Cache (@Cacheable, Redis, Caffeine)
+- Works at method / service level.
+- You choose what to cache (DTO, list, API response).
+- More common in microservices for application-level caching.
+
+Both can be used together in a real system.
+
+────────────────────────────────────────
+🔹 Multi-level app caching (related interview angle)
+
+Sometimes “L1 / L2” is also used for app architecture:
+
+Request
+  ↓
+Local in-memory cache (Caffeine)   ← “L1”
+  ↓
+Distributed cache (Redis)          ← “L2”
+  ↓
+Database
+
+If Redis fails → still use local cache / DB (graceful degradation).
+
+Clarify with interviewer which meaning they want: Hibernate L1/L2 or app multi-level cache.
+
+────────────────────────────────────────
+✅ Short Interview Answer
+
+L1 cache is Hibernate’s first-level cache, enabled by default, and bound to a single Session/EntityManager.
+Within one transaction, the same entity is loaded from DB only once and reused from memory.
+
+L2 cache is the optional second-level cache at SessionFactory level, shared across sessions.
+It needs a cache provider (Ehcache, etc.) and entity-level configuration.
+Lookup order is L1 → L2 → Database.
+L1 avoids duplicate queries in one unit of work; L2 reduces DB load across many requests.
+

@@ -1,0 +1,152 @@
+Q: Microservice mein OutOfMemoryError kaise investigate karenge?
+Q: Agar logs mein sirf OOM show ho raha ho to kaise debug karenge?
+Q: Memory usage aur memory logs kaise check karenge?
+
+(People say “memory out of bound” — usually they mean **java.lang.OutOfMemoryError**, not ArrayIndexOutOfBoundsException.)
+
+One-liner:
+Stabilize the service, capture evidence (heap dump/metrics), find what consumes memory, fix code/config, then add monitoring so it doesn’t return.
+
+────────────────────────────────────────
+Q: Memory usage aur memory logs kaise check karenge?
+
+Live / metrics:
+- Spring Actuator + Micrometer → /actuator/metrics/jvm.memory.used , jvm.gc.*
+- Grafana / Prometheus dashboards (heap used, GC pause, container memory)
+- K8s: kubectl top pod ; container memory vs limit (OOMKilled?)
+- jstat -gcutil <pid> 1000
+- jcmd <pid> VM.native_memory summary (if NMT enabled)
+
+Logs / JVM:
+- GC logs: -Xlog:gc*:file=gc.log (Java 9+) or older PrintGCDetails
+- Application logs around the crash timestamp
+- Look for rising Old Gen / frequent Full GC before crash
+
+Heap evidence:
+- -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp
+- Analyze dump with Eclipse MAT / VisualVM
+
+────────────────────────────────────────
+Q: Agar logs mein sirf OOM show ho raha ho (kam detail) to kaise debug karenge?
+
+1. Read exact subtype if present
+   Java heap space / Metaspace / Direct buffer / Unable to create new native thread
+2. If only “OutOfMemoryError” with no dump:
+   - Enable HeapDumpOnOutOfMemoryError + ExitOnOutOfMemoryError for next time
+   - Check container exit reason: OOMKilled (cgroup limit) vs Java heap OOM
+3. Check metrics history (Grafana) before crash — heap climb? spike? metaspace?
+4. Check recent deploy / traffic / batch job / big export
+5. Thread dump + GC log from same window if available
+6. If no dump left: reproduce in lower env with same load + heap dump flags
+7. Code review hotspots: findAll(), unbounded cache, big file in memory, ThreadLocal
+
+Important:
+K8s “OOMKilled” ≠ always Java heap message in app logs — pod memory limit may kill process first.
+Compare: container limit vs -Xmx (leave headroom for metaspace/native).
+
+────────────────────────────────────────
+0) Confirm what error it is
+
+Check logs for exact message:
+- `java.lang.OutOfMemoryError: Java heap space`
+- `GC overhead limit exceeded`
+- `Metaspace`
+- `Unable to create new native thread`
+- `Direct buffer memory`
+
+Different subtype → different fix.
+
+────────────────────────────────────────
+Step-by-step actions
+
+1️⃣ Stabilize production (stop the bleeding)
+- Restart pod/instance if service is down / thrashing GC
+- Scale out temporarily if traffic spike (K8s replicas)
+- Shed load: rate limit, disable heavy job, pause consumer (Kafka lag OK vs total outage)
+- Do NOT only restart forever without investigation
+
+2️⃣ Collect evidence NOW (before restart if possible)
+- Exact OOM stack + timestamp
+- Heap dump (best evidence)
+  - `-XX:+HeapDumpOnOutOfMemoryError`
+  - `-XX:HeapDumpPath=/tmp`
+- GC logs / metrics: heap used, GC pause, old gen full?
+- Metrics: request rate, queue lag, cache size, DB connections
+- Recent deploy? traffic spike? batch job?
+
+If already restarted: use previous dump/metrics/APM if available.
+
+3️⃣ Reproduce / analyze memory
+Tools:
+- Eclipse MAT / VisualVM / YourKit / JProfiler
+- `jcmd`, `jmap`, `jstat` (careful on prod)
+
+Ask:
+- Is heap growing until OOM? (leak)
+- Big spike then crash? (one huge allocation)
+- Which objects dominate retained heap? (sessions, lists, caches, byte[])
+
+4️⃣ Common root causes in Spring Boot services
+
+| Cause | Example | Fix direction |
+| ----- | ------- | ------------- |
+| Memory leak | static collections, unbounded cache, ThreadLocal not removed | bound cache, clear ThreadLocal, fix lifecycle |
+| Loading too much | `findAll()` huge table into List | pagination / streaming / projection |
+| Unbounded queues | in-memory queue grows | bounded queue, backpressure, Kafka lag monitoring |
+| Big request/response | huge JSON/file in memory | streaming upload/download, size limits |
+| Parallel streams / many threads | too much concurrency | limit pool sizes |
+| Metaspace OOM | classloader leak (hot reload/deploy) | fix classloader leak, tune Metaspace |
+| Heap too small | under-provisioned container | raise `-Xmx` carefully + fix real leak |
+
+5️⃣ Fix properly (code + config)
+Code:
+- Paginate big queries
+- Don’t keep large collections in memory longer than needed
+- Bound caches (Caffeine/Redis TTL/max size)
+- Clear ThreadLocal in filters (`finally`)
+- Stream large files instead of `byte[]` whole file
+
+JVM / container:
+- Set sensible `-Xms` / `-Xmx`
+- In K8s: memory request/limit aligned with `-Xmx` (leave room for metaspace/native)
+- Enable:
+  `-XX:+HeapDumpOnOutOfMemoryError`
+  `-XX:+ExitOnOutOfMemoryError` (optional, so orchestrator restarts cleanly)
+
+6️⃣ Verify
+- Load test the same scenario
+- Watch heap/GC in Grafana/Actuator/Micrometer
+- Confirm no continuous old-gen growth
+
+7️⃣ Prevent recurrence
+- Alerts: heap > 80–85% for N minutes, GC time high, OOM kill count
+- Limit payload size / page size
+- Circuit breaker / rate limit
+- Review after every major feature that loads bulk data
+
+────────────────────────────────────────
+Quick decision tree
+
+OOM once after traffic spike + heap small?
+→ maybe increase memory + verify no leak
+
+OOM repeatedly + heap climbs over hours?
+→ leak — must find retained objects (dump)
+
+OOM only when running report/export?
+→ loading too much data — paginate/stream
+
+Metaspace OOM?
+→ classloader / dynamic class issue, not normal business list size
+
+────────────────────────────────────────
+Interview answer (60 sec)
+
+“First I stabilize — restart/scale and reduce load if needed. Then I capture evidence: OOM type, heap dump, GC and traffic metrics. I analyze the dump to see whether it’s a leak or a single huge allocation — common Spring causes are unbounded caches, findAll on large tables, or big in-memory buffers. I fix with pagination, bounded caches, ThreadLocal cleanup, and proper Xmx/container limits, then add heap/GC alerts so it doesn’t silently return.”
+
+────────────────────────────────────────
+Related
+- JVM tuning / Actuator metrics
+- Pagination Page vs Slice
+- Redis caching (bounded TTL)
+- Request body caching / ThreadLocal clear

@@ -1,0 +1,105 @@
+Q: SOAP aur REST mein kya difference hai?
+
+SOAP (Simple Object Access Protocol) and REST (Representational State Transfer) are two ways to build web services / APIs.
+SOAP is a protocol; REST is an architectural style.
+
+────────────────────────────────────────
+Quick comparison
+
+| Point              | SOAP                                      | REST                                      |
+| ------------------ | ----------------------------------------- | ----------------------------------------- |
+| Type               | Protocol (strict rules)                   | Architectural style                       |
+| Message format     | XML only (SOAP envelope)                  | JSON (common), XML, text, etc.            |
+| Transport          | HTTP, SMTP, TCP… (often HTTP)             | Usually HTTP/HTTPS                        |
+| Contract           | WSDL (strong contract)                    | OpenAPI/Swagger (optional, looser)        |
+
+────────────────────────────────────────
+What is WSDL?
+
+WSDL = Web Services Description Language
+
+It is an XML document that describes a SOAP web service completely — like a formal API contract.
+
+WSDL tells the client:
+- What operations/methods exist (e.g. transferMoney, getBalance)
+- What input/output messages look like (XML structure / types)
+- Where the service is (endpoint URL)
+- How to call it (protocol / SOAP binding)
+
+Think of it as:
+SOAP service ka “menu + address + rules” in one XML file.
+
+Rough structure (concept):
+- types      → data structures (XSD)
+- message    → request/response parts
+- portType   → operations (like an interface)
+- binding    → how operations map to SOAP/HTTP
+- service    → actual endpoint URL
+
+Example idea:
+Client reads BankService.wsdl
+  → generates stub/proxy code
+  → calls transferMoney() as if it were a local method
+  → under the hood SOAP XML goes over the network
+
+REST comparison:
+- SOAP → WSDL (required for classic SOAP tooling)
+- REST → OpenAPI / Swagger (optional but common)
+
+Why interviews care:
+WSDL = strong, machine-readable contract → good for banks/enterprise where client and server must agree strictly on message format.
+| Standards          | WS-Security, WS-ReliableMessaging, etc.   | HTTPS + app-level auth (JWT, OAuth)       |
+| Style              | Operation / RPC oriented (verbs)          | Resource oriented (nouns + HTTP methods)  |
+| Payload size       | Heavier (XML verbose)                     | Lighter (especially JSON)                 |
+| Caching            | Harder                                    | Natural with HTTP GET caching             |
+| Browser / mobile   | Less friendly                             | Very friendly                             |
+| Typical use        | Banks, legacy enterprise, strict contracts| Most modern public APIs / microservices   |
+
+────────────────────────────────────────
+SOAP example idea
+
+POST /TransferService
+Content-Type: text/xml
+
+<soap:Envelope>
+  <soap:Body>
+    <TransferMoney>
+      <from>101</from>
+      <to>202</to>
+      <amount>500</amount>
+    </TransferMoney>
+  </soap:Body>
+</soap:Envelope>
+
+────────────────────────────────────────
+REST example idea
+
+POST /accounts/101/transfers
+Content-Type: application/json
+
+{ "toAccountId": 202, "amount": 500 }
+
+GET    /users/1
+POST   /users
+PUT    /users/1
+DELETE /users/1
+
+────────────────────────────────────────
+When choose what?
+
+Choose SOAP when:
+- Enterprise / bank needs formal WSDL contract
+- Advanced WS-* security / reliable messaging required
+- Existing SOAP legacy systems
+
+Choose REST when:
+- Modern microservices, mobile, public APIs
+- Need speed, simplicity, JSON, HTTP caching
+- Easier tooling with Spring Boot (@RestController)
+
+────────────────────────────────────────
+✅ Short Interview Answer
+
+SOAP ek protocol hai jo mostly XML + WSDL use karta hai — strict contract, heavier, enterprise/legacy mein common.
+REST ek architectural style hai — resources + HTTP methods, usually JSON, lightweight, modern APIs ke liye preferred.
+SOAP = protocol + XML; REST = style + HTTP resources.

@@ -1,8 +1,7 @@
-Exactly. Now let's connect the JPA lifecycle methods (persist, merge, remove, etc.)
-with the Spring Data JPA built-in methods like save(), findById(), delete(), etc.
+JPA Entity Lifecycle methods (persist, merge, remove, …)
+vs Spring Data JPA built-in methods (save, findById, delete, …)
 
-The key point is:
-
+Key point:
 Spring Data JPA Repository methods internally use EntityManager methods.
 
 1. save() → persist() or merge()
@@ -55,7 +54,7 @@ MANAGED
   ↓
 INSERT
 
-Existing employee:
+Existing / not-new employee (id already set):
 
 Employee employee = new Employee();
 employee.setId(10L);
@@ -71,11 +70,14 @@ isNew() = false
   ↓
 merge()
   ↓
-MANAGED
+MANAGED copy returned
   ↓
-UPDATE
+flush → UPDATE (if row exists) or INSERT (if id not in DB)
 
-Important: The exact isNew determination depends on the entity/repository setup (commonly the ID being null, or Persistable.isNew()).
+Important caveats:
+- isNew() depends on setup (id == null, @Version, or Persistable.isNew()).
+- merge() returns a managed instance; the original object can stay detached — use the returned value if you keep working with it.
+- Manually setting a generated id on a brand-new object often makes Spring call merge() instead of persist().
 
 2. findById() → EntityManager.find()
 
@@ -248,7 +250,10 @@ This is different from:
 
 findById(10)
 
-which is intended to retrieve the entity.
+which immediately loads the entity (or empty Optional).
+
+Note: older getOne(id) is deprecated → use getReferenceById(id).
+If the id does not exist, accessing the proxy later can throw EntityNotFoundException.
 
 8. existsById()
 

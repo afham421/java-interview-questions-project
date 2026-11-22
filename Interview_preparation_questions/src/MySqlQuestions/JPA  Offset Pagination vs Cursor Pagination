@@ -1,0 +1,142 @@
+Offset Pagination vs Cursor Pagination (Keyset)
+
+────────────────────────────────────────
+1️⃣ Offset Pagination
+
+📌 What it is
+
+Uses LIMIT + OFFSET in SQL.
+
+SELECT *
+FROM users
+ORDER BY id
+LIMIT 10 OFFSET 20;
+
+Means: skip first 20 rows, return next 10.
+
+📌 How it works
+
+UI-style 1-based page numbers:
+
+OFFSET = (pageNumber - 1) * pageSize
+page 3, size 10 → OFFSET = 20
+
+Spring Data Pageable is 0-based:
+page 0 → first page (OFFSET 0)
+page 2 → third page (OFFSET 20)
+PageRequest.of(page, size) → same OFFSET idea.
+
+📌 Example
+
+Page 1: LIMIT 10 OFFSET 0
+Page 2: LIMIT 10 OFFSET 10
+Page 3: LIMIT 10 OFFSET 20
+
+📌 Advantages
+
+✅ Simple
+✅ Easy “go to page 50”
+✅ Good for admin tables / small-medium data
+
+📌 Problems
+
+❌ Slow for deep pages / large data
+   Deep OFFSET often forces the DB to walk/skip many rows before returning the page.
+
+❌ Unstable if rows insert/delete while paging
+   Can see duplicates or miss rows between page requests.
+
+Spring example: Specification + Page / PageRequest (OFFSET).
+
+────────────────────────────────────────
+2️⃣ Cursor Pagination (also called Keyset Pagination)
+
+📌 What it is
+
+No OFFSET. Resume from a cursor = last seen sort-key value(s).
+
+SELECT *
+FROM users
+WHERE id > 20
+ORDER BY id
+LIMIT 10;
+
+`20` = last `id` from previous page (the cursor).
+
+📌 How it works
+
+Page 1:
+SELECT * FROM users ORDER BY id LIMIT 10;
+→ remember last returned id (e.g. 15) — not “always page*size”
+
+Page 2:
+SELECT * FROM users WHERE id > 15 ORDER BY id LIMIT 10;
+
+Important: cursor = actual last value from previous result, not a calculated OFFSET.
+
+📌 Composite cursor (real world)
+
+If you sort by created_at (not unique), add a unique tie-break (usually id):
+
+WHERE (created_at > :ts)
+   OR (created_at = :ts AND id > :id)
+ORDER BY created_at, id
+LIMIT 10
+
+📌 Advantages
+
+✅ Fast on large data (index-friendly seek)
+✅ No deep OFFSET skip cost
+✅ More stable with inserts (continues after last seen key)
+
+📌 Limitations
+
+❌ Cannot jump directly to “page 50”
+❌ Needs stable ORDER BY + indexed cursor columns
+❌ Slightly more complex (encode/pass cursor)
+❌ Sort keys should be non-null for reliable keyset
+
+Spring example: manual `id > :cursor` query, or ScrollPosition + Window (keyset).
+
+────────────────────────────────────────
+🔥 Comparison
+
+| Feature              | Offset Pagination      | Cursor / Keyset        |
+| -------------------- | ---------------------- | ---------------------- |
+| Large data           | Slow for deep pages    | Fast                   |
+| Jump to page N       | Yes                    | No (next/prev only)    |
+| Inserts while paging | Can dup/miss           | More consistent        |
+| Implementation       | Easy                   | Medium                 |
+| Typical SQL          | LIMIT/OFFSET           | WHERE key > last LIMIT |
+
+────────────────────────────────────────
+🎯 When to use what
+
+Use OFFSET when:
+- Small/medium dataset
+- Admin panel with page numbers
+- Need “page 50” jump
+
+Use CURSOR / KEYSET when:
+- Large dataset
+- Infinite scroll / feeds / mobile APIs
+- High throughput list endpoints
+
+Examples: Instagram/Twitter-style feeds → cursor  
+Admin dashboards → offset
+
+────────────────────────────────────────
+Vs Spring Data ScrollPosition
+
+Cursor/keyset = the technique.
+ScrollPosition.keyset() + Window = Spring Data’s built-in way to do keyset scrolling.
+Manual `WHERE id > ?` = same idea, full SQL control.
+
+────────────────────────────────────────
+🚀 Interview Answer
+
+Offset pagination uses LIMIT/OFFSET — simple and allows jumping to any page,
+but deep pages get slow and concurrent inserts can cause duplicates/missed rows.
+
+Cursor (keyset) pagination uses a reference like id > lastSeen with ORDER BY + LIMIT.
+It is faster and more consistent for large/infinite-scroll APIs, but you cannot jump to an arbitrary page number.
