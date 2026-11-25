@@ -1,4 +1,4 @@
-Q1: Why Kafka instead of REST API communication?
+﻿Q1: Why Kafka instead of REST API communication?
 
 Answer:
 
@@ -414,3 +414,152 @@ cooperative rebalancing
 static group membership
 
 proper session timeout configuration
+
+
+════════════════════════════════════════════════════════════════
+EXTRA — Master FAQ checklist (added; does not replace notes above)
+Deeper detail also in:
+- `RabbitMQ_and_Kafka/Kafka`
+- `Kafka scenario-based interview questions`
+- `How would you handle Kafka retries, ordering and idempotency`
+- `different ways to integrate Kafka with Spring`
+- `RabbitMQ vs Kafka`
+════════════════════════════════════════════════════════════════
+
+🔹 1. Kafka Fundamentals (quick answers)
+
+Q: What is Apache Kafka?
+A: Distributed event streaming platform — durable, append-only log for high-throughput publish/subscribe and stream processing.
+
+Q: Why do we use Kafka?
+A: Async decoupling, high throughput, fault tolerance (replication), horizontal scale (partitions), message replay (retention), many independent consumer groups.
+
+Q: Main components of Kafka architecture?
+A: Producer, Broker, Topic (+ Partitions), Consumer, Consumer Group, Cluster; metadata via KRaft (modern) or ZooKeeper (legacy).
+
+Q: What is a Topic?
+A: Named stream/category where messages are published (e.g. `orders`, `payments`).
+
+Q: What is a Partition?
+A: Ordered slice of a topic (append-only log). Enables parallelism. Ordering guaranteed **per partition**.
+
+Q: What is an Offset?
+A: Sequential id of a message inside a partition. Consumers commit offsets to resume after restart. Tracked per **group + partition**.
+
+Q: What is a Broker?
+A: A Kafka server process that stores partition data and serves produce/consume requests.
+
+Q: What is a Kafka Cluster?
+A: Multiple brokers working together for scale + HA. (Same idea as Q7 examples above.)
+
+────────────────────────────────────────
+🔹 2. Producer & Consumer (quick answers)
+
+Q: What is a Kafka Producer?
+A: App that publishes records to topics (optionally with a key for partition affinity/ordering).
+
+Q: What is a Kafka Consumer?
+A: App that reads records from topic partitions (usually pull-based).
+
+Q: What is a Consumer Group?
+A: Set of consumers sharing a `groupId`. Partitions divided among them (load share). Different groups each get a full copy (fan-out). See partition examples above.
+
+Q: How does Producer send messages?
+A: Serialize → choose partition (key hash / round-robin / custom) → send to partition **leader** → wait per `acks` setting.
+
+Q: Role of Consumer Offset?
+A: Bookmark of progress. After crash/restart, resume from last **committed** offset (may reprocess if crash before commit → at-least-once). See Q2 above.
+
+Q: What happens when a consumer goes down?
+A: Group **rebalances**; partitions move to other members; continue from committed offsets. See rebalance section above.
+
+Q: What is Consumer Rebalancing?
+A: Redistributing partitions when members join/leave/fail. See detailed examples above.
+
+Q: How to handle duplicate messages?
+A: Assume at-least-once. Make consumer **idempotent** (eventId / unique constraint / upsert). Optionally idempotent producer + transactions for EOS.
+
+────────────────────────────────────────
+🔹 3. Architecture & Performance (quick answers)
+
+Q: What is Replication?
+A: Each partition has multiple replicas on different brokers (RF=3 → 3 copies).
+
+Q: Leader and Follower?
+A: Leader handles reads/writes for a partition; followers replicate. On leader failure, ISR follower becomes leader.
+
+Q: What is ISR (In-Sync Replicas)?
+A: Replicas caught up with the leader. `acks=all` waits for ISR acks (with `min.insync.replicas`).
+
+Q: Kafka vs RabbitMQ?
+A: See file `RabbitMQ vs Kafka`. Kafka = durable event log, replay, huge throughput, many consumer groups.
+
+Q: How does Kafka achieve high throughput?
+A: Sequential disk writes, batching, compression, partition parallelism, efficient networking / zero-copy style transfers.
+
+Q: How does Kafka guarantee message ordering?
+A: Only within a partition — use same key (see Q5 above).
+
+Q: What is Retention Policy?
+A: Keep data by time/size even after consume (`retention.ms`) — enables replay (see Q6).
+
+Q: What is Log Compaction?
+A: Keep **latest value per key** (changelog / current-state topics). Different from time retention.
+
+────────────────────────────────────────
+🔹 4. Advanced Concepts (quick answers)
+
+Q: What is acks?
+A: `0` fire-and-forget | `1` leader wrote | `all` leader + ISR (safest with min.insync.replicas).
+
+Q: at-most-once / at-least-once / exactly-once?
+A: See table in section 7️⃣ above. Prefer at-least-once + idempotent consumers in most microservices.
+
+Q: Idempotent Producer?
+A: `enable.idempotence=true` — broker dedupes producer retries (PID + seq). Does not alone make whole business EOS.
+
+Q: Kafka Transaction?
+A: Atomic multi-partition produces; used for exactly-once read-process-write pipelines.
+
+Q: Dead Letter Topic (DLT)?
+A: Topic for messages that fail after retries — inspect/replay later.
+
+Q: Kafka Connect?
+A: Source/sink connectors (DB → Kafka → ES/S3) without custom producer/consumer apps.
+
+Q: Kafka Streams?
+A: Java library for stream processing (map/filter/join/aggregate) inside your app.
+
+Q: Schema Registry?
+A: Stores Avro/Protobuf/JSON schemas + compatibility rules so events can evolve safely.
+
+────────────────────────────────────────
+🔹 5. Kafka with Spring Boot (quick answers)
+
+Q: How integrate with Spring Boot?
+A: Usually `spring-kafka`: `KafkaTemplate` + `@KafkaListener`. Also raw clients / Spring Cloud Stream — see `different ways to integrate Kafka with Spring`.
+
+Q: @KafkaListener and KafkaTemplate?
+A: Template = produce/send. `@KafkaListener` = consume method.
+
+Q: Configure producer/consumer?
+A: `spring.kafka.bootstrap-servers`, consumer `group-id` / deserializers, producer `acks` / serializers / `enable.idempotence`.
+
+Q: Consumer exceptions / retries / failed messages?
+A: Spring `DefaultErrorHandler` + backoff retries → DLT after max attempts; alert on DLT/lag; idempotent processing.
+
+Q: Monitor Consumer Lag?
+A: Lag = latest − committed offset (see lag section above). Prometheus/Burrow/Cloud metrics + `kafka-consumer-groups.sh`.
+
+Q: Reliable MS communication?
+A: Contracts (+ schema registry), partition keys, acks=all + RF, idempotent consumers, retries+DLT, lag monitoring, outbox for DB+produce consistency.
+
+────────────────────────────────────────
+🔥 Scenario shorts (see also scenario file)
+
+- Duplicate processing → idempotent consumer (event/txn id)
+- Kafka unavailable → don’t fake success; outbox + retries; consumers resume from offsets; alert brokers/ISR
+- Consumer failure → rebalance + committed offsets; poison → retry → DLT
+- Ordering → same key → same partition
+- High volume → more partitions/consumers/brokers; batching; avoid huge payloads
+- Prod failures → retries, DLT, idempotency, lag alerts, replay runbooks

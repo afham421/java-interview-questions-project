@@ -294,3 +294,57 @@ acks=all
 exactly-once semantics
 
 database transaction
+
+
+────────────────────────────────────────
+1️⃣1️⃣ Scenario: Kafka is unavailable
+
+Question
+
+What happens if Kafka is down / unreachable? How do you design for it?
+
+Answer
+
+Producers:
+- Retries with timeout; fail the API if produce cannot be acknowledged (don’t silently “success”)
+- For DB + event consistency: **Transactional Outbox** — write DB + outbox in one TX, relay to Kafka when available
+- Circuit breaker / degrade non-critical emits
+
+Consumers:
+- Stop receiving; lag grows; resume from committed offsets after recovery
+- Alert on broker down, under-replicated partitions, disk full
+
+Ops:
+- Multi-broker RF>=3, monitor ISR, disk, network
+- Don’t run single-broker “HA” in prod
+
+
+1️⃣2️⃣ Scenario: Failed messages in production
+
+Question
+
+How do you manage Kafka message failures in production?
+
+Answer
+
+1. Limited retries + backoff (transient DB/network errors)
+2. After max attempts → **Dead Letter Topic (DLT)** with headers (exception, original topic/partition/offset)
+3. Alert on DLT rate / consumer lag
+4. Idempotent processing so retries/replays are safe
+5. Replay tooling / ops process to reprocess DLT after fix
+6. Poison messages quarantined — don’t block the whole partition forever
+
+
+1️⃣3️⃣ Scenario: Spring Boot consumer exception / retry
+
+Question
+
+How do you handle exceptions and retries with @KafkaListener?
+
+Answer
+
+- Prefer Spring Kafka `DefaultErrorHandler` (or SeekToCurrentErrorHandler in older versions)
+- Configure retry attempts + backoff
+- Recoverer publishes to DLT after failures
+- Manual ack mode if you need “process then commit”
+- Never catch-and-swallow if you still want Kafka retry/DLT semantics

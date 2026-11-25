@@ -526,6 +526,36 @@ High lag = consumers too slow / under-scaled / stuck.
 | **Compaction**         | Keep only the latest value per key               |
 | **Retention Policies** | Delete messages after time and/or size           |
 
+Quick expansions (interview):
+
+Log compaction vs retention
+- Retention (delete): drop old messages by time/size — good for event history windows
+- Compaction: for each key, keep **latest** value — good for current-state / changelog topics
+- Can combine both on a topic
+
+Idempotent producer
+- `enable.idempotence=true` (implies safe acks/retries)
+- Broker dedupes producer retries using producer id + sequence
+- Stops duplicate **writes** from producer retry storms — consumer still needs idempotency for business EOS
+
+Kafka transactions
+- Atomic multi-partition produces; foundation for exactly-once read-process-write
+- Heavier; use when pipeline correctness needs EOS, not for every simple topic
+
+Kafka Connect
+- Source connectors: DB/CDC → Kafka
+- Sink connectors: Kafka → ES/S3/DB
+- Prefer Connect for integration plumbing vs hand-rolled sync jobs
+
+Kafka Streams
+- In-app library: filter/map/join/window/aggregate on topics
+- Different from Kafka cluster itself — runs in your service JVMs
+
+Schema Registry
+- Central schemas (Avro/Protobuf/JSON Schema)
+- Compatibility rules (BACKWARD/FORWARD/FULL) when events evolve
+- Prevents producer/consumer breaking each other silently
+
 
 📜 Kafka with Spring Cloud Stream (Optional)
 Prefer the modern functional style (older @EnableBinding / @StreamListener is legacy):
